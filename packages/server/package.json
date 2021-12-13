@@ -1,0 +1,30 @@
+{
+  "name": "server",
+  "version": "0.0.0",
+  "description": "> TODO: description",
+  "author": "Polgár András <azazdeaz@gmail.com>",
+  "homepage": "https://gitlab.com/our-sci/software/coffee-shop#readme",
+  "license": "ISC",
+  "main": "lib/server.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/our-sci/software/coffee-shop.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://gitlab.com/our-sci/software/coffee-shop/issues"
+  },
+  "dependencies": {
+    "apollo-server": "^3.5.0",
+    "graphql": "^16.1.0"
+  }
+}
