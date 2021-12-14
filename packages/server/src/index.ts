@@ -1,4 +1,6 @@
-import { typeDefs, resolvers } from "./schema";
+require('dotenv').config()
+
+import { typeDefs, resolvers } from "./schema/schema";
 
 import { ApolloServer } from "apollo-server-express";
 import { ApolloServerPluginDrainHttpServer } from "apollo-server-core";
