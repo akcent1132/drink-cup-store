@@ -48,8 +48,8 @@ export const resolvers = {
       if (!process.env.FARMOS_AGGREGATOR_KEY) {
         throw new Error("process.env.FARMOS_AGGREGATOR_KEY not set (update .env)");
       }
-      if (!process.env.FARMOS_AGGREGATOR_FARM_URL) {
-        throw new Error("process.env.FARMOS_AGGREGATOR_FARM_URL not set (update .env)");
+      if (!process.env.FARMOS_AGGREGATOR_URL) {
+        throw new Error("process.env.FARMOS_AGGREGATOR_URL not set (update .env)");
       }
       if (!process.env.FARMOS_AGGREGATOR_FARM_URL) {
         throw new Error("process.env.FARMOS_AGGREGATOR_FARM_URL not set (update .env)");
