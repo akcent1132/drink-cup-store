@@ -19,7 +19,6 @@ const Template: ComponentStory<typeof ValueDistribution> = (args) => <ValueDistr
 export const Primary = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
 Primary.args = {
-  primary: true,
   label: 'ValueDistribution',
 };
 
@@ -30,12 +29,10 @@ Secondary.args = {
 
 export const Large = Template.bind({});
 Large.args = {
-  size: 'large',
   label: 'ValueDistribution',
 };
 
 export const Small = Template.bind({});
 Small.args = {
-  size: 'small',
   label: 'ValueDistribution',
 };

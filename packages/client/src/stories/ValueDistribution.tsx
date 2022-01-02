@@ -1,28 +1,36 @@
 import React, { useCallback, useEffect, useState } from "react";
 import styled from "@emotion/styled";
-
+import '../index.css';
 import { useCanvas } from "../utils/useCanvas";
 
-
+// TODO read height from props
 
 const Bar = styled.div`
   display: flex;
   width: 100%;
-  height: 23px;
-  background-color: tomato;
+  height: 20px;
 `;
 
 const Label = styled.div`
   flex: 0;
-  width: 300px;
+  min-width: 145px;
   height: 100%;
+  font-size: 11px;
+  font-family: 'Acumin Pro Bold';
+  text-transform: uppercase;
+  line-height: 22px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 4px;
+  color: white;
+  background-color: #80945A;
 `;
 
 const Plot = styled.canvas`
   flex: 1;
   height: 100%;
   min-width: 0px;
-  background-color: grey;
+  background-color: #091D00;
 `;
 
 interface Props {
