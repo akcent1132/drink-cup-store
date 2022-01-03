@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback } from "react";
 import styled from "@emotion/styled";
 import '../index.css';
 import { useCanvas } from "../utils/useCanvas";
