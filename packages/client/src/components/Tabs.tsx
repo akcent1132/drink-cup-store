@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import styled from "@emotion/styled";
-import "../../index.css";
+import "../index.css";
 import { Button } from "./Button";
 // TODO read height from props
 

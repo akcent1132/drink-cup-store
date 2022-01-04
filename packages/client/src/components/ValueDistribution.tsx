@@ -5,10 +5,13 @@ import { useCanvas } from "../utils/useCanvas";
 
 // TODO read height from props
 
+const BAR_HEIGHT = 20;
+const TICK_WIDTH = 2;
+
 const Bar = styled.div`
   display: flex;
   width: 100%;
-  height: 20px;
+  height: ${BAR_HEIGHT}px;
 `;
 
 const Label = styled.div`
@@ -38,6 +41,7 @@ interface Props {
    * Data name
    */
   label: string;
+  values: number[];
 }
 
 /**
@@ -45,12 +49,21 @@ interface Props {
  */
 export const ValueDistribution = ({
   label,
+  values,
 }: Props) => {
   const draw = useCallback((ctx: CanvasRenderingContext2D, width: number, height: number) => {
+    const min = Math.min(...values);
+    const range = Math.max(...values) - min;
     ctx.beginPath();
-    ctx.rect(3, 3, width-6, height-6);
-    ctx.stroke();
-  }, []);
+    ctx.fillStyle = 'white'
+    values.map(value => {
+      value = (value - min) / range;
+
+      ctx.rect(value * (width - TICK_WIDTH), 0, TICK_WIDTH, height);
+    })
+    
+    ctx.fill();
+  }, [values]);
   const canvasRef = useCanvas(draw);
   return (
     <Bar>

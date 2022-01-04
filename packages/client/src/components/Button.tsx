@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { withTheme } from "@emotion/react";
-import "../../index.css";
+import "../index.css";
 // TODO read height from props
 
 const Root = withTheme(styled.button<{ color: string, className?: string }>`
