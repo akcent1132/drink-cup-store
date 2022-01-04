@@ -1,10 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import "../index.css";
-import { useCanvas } from "../utils/useCanvas";
 import bgImage from "../assets/images/Background-corngrains.jpg";
 import { Tabs } from "../components/Tabs";
-import { Button } from "../components/Button";
 import { ValueDistribution } from "../components/ValueDistribution";
 import { withTheme } from "@emotion/react";
 import { genDataPoints } from '../utils/random'
@@ -28,21 +26,21 @@ interface Props {
 const RowContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 30 px;
+  gap: 20px;
   padding: 4px;
 `
 
 const RowGroupHead = withTheme(styled.div`
   color: white;
   font-family: ${(props) => props.theme.fonts.baseBold};
-  font-size: 25px;
+  font-size: 18px;
 `)
 
 const RandomContent = () => {
   return (
     <RowContainer>
       <RowGroupHead>Indicators</RowGroupHead>
-      <ValueDistribution label="soilcarbon" values={genDataPoints('soilcarbon')} />
+      <ValueDistribution label="soil carbon" values={genDataPoints('soil arbon')} />
       <ValueDistribution label="infiltration" values={genDataPoints('infiltration')} />
       <ValueDistribution label="biodiversity" values={genDataPoints('biodiversity')} />
       <RowGroupHead>Goals</RowGroupHead>
