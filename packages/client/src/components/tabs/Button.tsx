@@ -4,7 +4,7 @@ import { withTheme } from "@emotion/react";
 import "../../index.css";
 // TODO read height from props
 
-const Root = withTheme(styled.button<{ color: string }>`
+const Root = withTheme(styled.button<{ color: string, className?: string }>`
   /* reset style */
   font-family: ${(props) => props.theme.fonts.baseBold};
   font-size: 100%;
@@ -25,13 +25,15 @@ const Root = withTheme(styled.button<{ color: string }>`
 `);
 
 interface Props {
-  color: string;
+  color?: string;
   label: string;
+  className?: string;
+  onClick: () => void;
 }
 
 /**
  * Button component
  */
-export const Button = ({ label, color = "green" }: Props) => {
-  return <Root {...{ color }}>{label}</Root>;
+export const Button = ({ label, color = "green", onClick, className }: Props) => {
+  return <Root {...{ color, onClick, className }}>{label}</Root>;
 };
