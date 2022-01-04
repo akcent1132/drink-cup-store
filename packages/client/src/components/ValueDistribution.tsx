@@ -5,7 +5,7 @@ import { useCanvas } from "../utils/useCanvas";
 
 // TODO read height from props
 
-const BAR_HEIGHT = 20;
+const BAR_HEIGHT = 25;
 const TICK_WIDTH = 2;
 
 const Bar = styled.div`
@@ -18,10 +18,10 @@ const Label = styled.div`
   flex: 0;
   min-width: 145px;
   height: 100%;
-  font-size: 11px;
+  font-size: 17px;
   font-family: 'Acumin Pro Bold';
   text-transform: uppercase;
-  line-height: 22px;
+  line-height: 28px;
   overflow: hidden;
   text-overflow: ellipsis;
   padding: 0 4px;

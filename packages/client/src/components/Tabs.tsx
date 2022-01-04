@@ -34,7 +34,7 @@ const Tab = styled(Button)<{ active: boolean }>`
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
   
-  background-color: ${(props) => (props.active ? BG_COLOR : "rgba(0,0,0,.3)")};
+  background-color: ${(props) => (props.active ? BG_COLOR : "rgba(0,0,0,.5)")};
   ${props => props.active ? `box-shadow: 0px 1px 0px 0px ${BG_COLOR}; z-index: 1;` : ''}
 `;
 
@@ -53,7 +53,6 @@ interface Props {
  * Primary UI component for user interaction
  */
 export const Tabs = ({ pages, index, onChange }: Props) => {
-  console.log({ index, onChange });
   return (
     <Root>
       <Head>
@@ -66,7 +65,6 @@ export const Tabs = ({ pages, index, onChange }: Props) => {
         ))}
       </Head>
       <Body>
-        Panel {index}
         {pages[index] ? pages[index].renderPanel() : null}
       </Body>
     </Root>

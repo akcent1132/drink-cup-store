@@ -1,8 +1,13 @@
 import React, { useCallback, useEffect, useState } from "react";
 import styled from "@emotion/styled";
-import '../index.css';
+import "../index.css";
 import { useCanvas } from "../utils/useCanvas";
 import bgImage from "../assets/images/Background-corngrains.jpg";
+import { Tabs } from "../components/Tabs";
+import { Button } from "../components/Button";
+import { ValueDistribution } from "../components/ValueDistribution";
+import { withTheme } from "@emotion/react";
+import { genDataPoints } from '../utils/random'
 
 // TODO read height from props
 
@@ -20,15 +25,47 @@ interface Props {
   label: string;
 }
 
+const RowContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 30 px;
+  padding: 4px;
+`
+
+const RowGroupHead = withTheme(styled.div`
+  color: white;
+  font-family: ${(props) => props.theme.fonts.baseBold};
+  font-size: 25px;
+`)
+
+const RandomContent = () => {
+  return (
+    <RowContainer>
+      <RowGroupHead>Indicators</RowGroupHead>
+      <ValueDistribution label="soilcarbon" values={genDataPoints('soilcarbon')} />
+      <ValueDistribution label="infiltration" values={genDataPoints('infiltration')} />
+      <ValueDistribution label="biodiversity" values={genDataPoints('biodiversity')} />
+      <RowGroupHead>Goals</RowGroupHead>
+      <ValueDistribution label="profitability" values={genDataPoints('profitability')} />
+      <ValueDistribution label="risk reduction" values={genDataPoints('risk reduction')} />
+      <ValueDistribution label="crop quality" values={genDataPoints('crop quality')} />
+    </RowContainer>
+  )
+}
+
 /**
  * Primary UI component for user interaction
  */
-export const Dashboard = ({
-  label,
-}: Props) => {
+export const Dashboard = ({ label }: Props) => {
+  const [tabIndex, setTabIndex] = useState(0);
 
+  const pages = [
+    { label: "Compare", renderPanel: () => <RandomContent /> },
+    { label: "My Data", renderPanel: () => <RandomContent /> },
+  ];
   return (
     <Root>
+      <Tabs pages={pages} index={tabIndex} onChange={setTabIndex}/>
     </Root>
   );
 };

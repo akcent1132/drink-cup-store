@@ -29,23 +29,8 @@ const Template: ComponentStory<typeof Dashboard> = (args) => (
   <Dashboard {...args} />
 );
 
-export const Primary = Template.bind({});
+export const Default = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
-Primary.args = {
-  label: "Dashboard",
-};
-
-export const Secondary = Template.bind({});
-Secondary.args = {
-  label: "Dashboard",
-};
-
-export const Large = Template.bind({});
-Large.args = {
-  label: "Dashboard",
-};
-
-export const Small = Template.bind({});
-Small.args = {
+Default.args = {
   label: "Dashboard",
 };
