@@ -20,6 +20,9 @@ const Template: ComponentStory<typeof ValueDistribution> = (args) => <ValueDistr
 export const Default = Template.bind({});
 Default.args = {
   label: 'Value Distribution',
-  values: genDataPoints('fooo oo'),
+  values: [{
+    color: 'teal',
+    values: genDataPoints('foo')
+  }],
 };
 

@@ -8,6 +8,7 @@ const colors = {
   orange: "#ff8500",
   red: "#f40000",
   violet: "#c42687",
+  darkTransparent: "rgba(0,0,0,.5)",
 };
 
 interface IDictionary {

@@ -9,10 +9,10 @@ export function randn_bm() {
     return Math.sqrt( -2.0 * Math.log( u ) ) * Math.cos( 2.0 * Math.PI * v );
 }
 
-export const genDataPoints = (seed = '0') => {
+export const genDataPoints = (seed = '0', countMax = 100, stdMax = 2, meanMax = 5) => {
     const rnd = seedrandom(seed);
-    const count = 100 * rnd();
-    const mean = rnd() * 5;
-    const std = rnd() * 3;
+    const count = countMax * rnd();
+    const mean = rnd() * meanMax;
+    const std = rnd() * stdMax;
     return range(count).map(() => randn_bm() * std + mean)
 }
