@@ -17,7 +17,14 @@ const Template: ComponentStory<typeof Button> = (args) => {
 };
 
 export const Default = Template.bind({});
-// More on args: https://storybook.js.org/docs/react/writing-stories/args
 Default.args = {  
-  label: "Click Here"
+  label: "+ Add"
 };
+
+export const Wide = Template.bind({});
+Wide.args = {  
+  label: "Button Text",
+  color: 'teal',
+  isWide: true
+};
+

@@ -18,9 +18,7 @@ const Head = styled.div`
   flex: 0;
   display: flex;
   justify-content: flex-end;
-  & :last-child {
-    margin-right: 40px;
-  }
+  padding-right: 40px;
 `;
 
 const Body = styled.div`
@@ -61,6 +59,7 @@ export const Tabs = ({ pages, index, onChange }: Props) => {
             onClick={() => onChange(tabIndex)}
             label={page.label}
             active={tabIndex === index}
+            isWide
           />
         ))}
       </Head>

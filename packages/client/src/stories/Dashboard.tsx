@@ -4,7 +4,7 @@ import "../index.css";
 import bgImage from "../assets/images/Background-corngrains.jpg";
 import { Tabs } from "../components/Tabs";
 import { ValueDistribution } from "../components/ValueDistribution";
-import { withTheme } from "@emotion/react";
+import { css, withTheme } from "@emotion/react";
 import { genDataPoints } from "../utils/random";
 import { Button } from "../components/Button";
 import faker from "faker";
@@ -18,6 +18,7 @@ const Root = styled.div`
   height: 100vh;
   background-image: url(${bgImage});
   background-size: cover;
+  display: flex;
 `;
 
 interface Props {
@@ -30,6 +31,8 @@ interface Props {
 const PaneHead = styled.div`
   display: flex;
   justify-content: flex-end;
+  gap: 15px;
+  margin-top: 12px;
 `;
 
 const RowContainer = styled.div`
@@ -45,6 +48,16 @@ const RowGroupHead = withTheme(styled.div`
   font-size: 18px;
 `);
 
+const LeftSide = styled.div`
+  width: max(500px, 75vw);
+  flex: 1;
+`
+
+const RightSide = styled.div`
+  width: 300px;
+  flex: 1;
+`
+
 const COLORS = [
   "purple",
   "blue",
@@ -59,7 +72,18 @@ const COLORS = [
 
 const ROWS = {
   Indicators: ["soil carbon", "infiltration", "biodiversity"],
-  Goals: ["profitability", "risk reduction", "crop quality"],
+  Goals: [
+    "profitability",
+    "risk reduction",
+    "crop quality",
+    "soil structure",
+    "soil fertility",
+    "soil biology",
+    "environment",
+  ],
+  Practices: ["tillage", "irrigation", "amendments"],
+  Soil: ["ponential", "texture"],
+  Weather: ["zone", "degree days", "rainfall (in)"],
 };
 
 const RandomContent = () => {
@@ -89,6 +113,7 @@ const RandomContent = () => {
             label={group.name}
             color={group.color}
             onClick={() => removeGroup(group.name)}
+            isWide
           />
         ))}
         <Button
@@ -103,11 +128,11 @@ const RandomContent = () => {
           <ValueDistribution
             label={row}
             values={[
-              { color: 'grey', values: genDataPoints(row, 80, 10)},
+              { color: "grey", values: genDataPoints(row, 80, 10) },
               ...groups.map(({ color, name }) => ({
                 color,
                 values: genDataPoints(row + name, 32),
-              }))
+              })),
             ]}
           />
         )),
@@ -133,7 +158,8 @@ export const Dashboard = ({ label }: Props) => {
   ];
   return (
     <Root>
-      <Tabs pages={pages} index={tabIndex} onChange={setTabIndex} />
+      <Tabs css={css`width=70vw; flex: 1;`} pages={pages} index={tabIndex} onChange={setTabIndex} />
+      <RightSide/>
     </Root>
   );
 };

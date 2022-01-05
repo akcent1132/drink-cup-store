@@ -4,7 +4,7 @@ import { withTheme } from "@emotion/react";
 import "../index.css";
 // TODO read height from props
 
-const Root = withTheme(styled.button<{ color: string, className?: string }>`
+const Root = withTheme(styled.button<{ color: string; className?: string }>`
   /* reset style */
   font-family: ${(props) => props.theme.fonts.baseBold};
   font-size: 100%;
@@ -16,24 +16,50 @@ const Root = withTheme(styled.button<{ color: string, className?: string }>`
   height: 100%;
   border-radius: 15px;
   height: 30px;
-  line-height: 32px;
+  line-height: 31px;
   font-size: 15px;
-  padding: 0 50px;
   border-width: 0;
   background-color: ${(props) => props.theme.color(props.color)};
   color: white;
+
+  display: flex;
+  flex-wrap: nowrap;
 `);
+
+const Padding = styled.div<{ isWide: boolean }>`
+  flex-shrink: 100;
+  width: ${(props) => (props.isWide ? 50 : 15)}px;
+`;
+
+const Caption = styled.div`
+  white-space: nowrap;
+  overflow: hidden;
+  flex-shrink: 0;
+`
 
 interface Props {
   color?: string;
   label: string;
   className?: string;
-  onClick: () => void;
+  isWide?: boolean;
+  onClick?: () => void;
 }
 
 /**
  * Button component
  */
-export const Button = ({ label, color = "green", onClick, className }: Props) => {
-  return <Root {...{ color, onClick, className }}>{label}</Root>;
+export const Button = ({
+  label,
+  color = "green",
+  onClick,
+  className,
+  isWide = false,
+}: Props) => {
+  return (
+    <Root {...{ color, onClick, className }}>
+      <Padding isWide={isWide} />
+      <Caption>{label}</Caption>
+      <Padding isWide={isWide} />
+    </Root>
+  );
 };

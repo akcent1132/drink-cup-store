@@ -7,7 +7,7 @@ import { useTheme } from "@emotion/react";
 // TODO read height from props
 
 const BAR_HEIGHT = 20;
-const TICK_WIDTH = 2;
+const TICK_WIDTH = 3;
 
 const Bar = styled.div`
   display: flex;
@@ -65,8 +65,9 @@ export const ValueDistribution = ({ label, values }: Props) => {
         ctx.fillStyle = theme.color(valueSet.color);
         valueSet.values.map((value) => {
           value = (value - min) / range;
+          const x = Math.round(value * (width - TICK_WIDTH))
 
-          ctx.rect(value * (width - TICK_WIDTH), 0, TICK_WIDTH, height);
+          ctx.rect(x, 0, TICK_WIDTH, height);
         });
 
         ctx.fill();
