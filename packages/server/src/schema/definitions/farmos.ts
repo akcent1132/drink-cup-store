@@ -151,8 +151,9 @@ export const resolvers = {
   },
   Farm: {
     harvestLogs: async () => {
-      const response = await getClient("https://crowriverfarm.farmos.dev");
-      return get(response, "data.data");
+      const client = await getClient("https://crowriverfarm.farmos.dev");
+      const result = await client.remote.request.get("/api/log/harvest");
+      return get(result, "data.data");
     },
   },
 };
