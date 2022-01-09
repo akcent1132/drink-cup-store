@@ -16,3 +16,14 @@ export const genDataPoints = (seed = '0', countMax = 100, stdMax = 2, meanMax = 
     const std = rnd() * stdMax;
     return range(count).map(() => randn_bm() * std + mean)
 }
+
+export const getFarmEvents = () => {
+    return [
+        { color: 'violet', date: new Date('Thu May 3 2022') },
+        { color: 'blue', date: new Date('Thu Jun 10 2022') },
+        { color: 'yellow', date: new Date('Thu Jun 27 2022') },
+        { color: 'blue', date: new Date('Thu Jul 08 2022') },
+        { color: 'green', date: new Date('Thu Jul 29 2022') },
+        { color: 'red', date: new Date('Thu Oct 12 2022') },
+    ]
+}

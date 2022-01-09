@@ -14,7 +14,6 @@ export default {
   },
 } as ComponentMeta<typeof ValueDistribution>;
 
-// More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
 const Template: ComponentStory<typeof ValueDistribution> = (args) => <ValueDistribution {...args} />;
 
 export const Default = Template.bind({});

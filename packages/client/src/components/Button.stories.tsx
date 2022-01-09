@@ -9,12 +9,7 @@ export default {
   component: Button,
 } as ComponentMeta<typeof Button>;
 
-// More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
-const Template: ComponentStory<typeof Button> = (args) => {
-  const [index, onChange] = useState(0);
-  console.log('template', index)
- return  <Button {...{...args, index, onChange}}/>
-};
+const Template: ComponentStory<typeof Button> = (args) => <Button {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {  

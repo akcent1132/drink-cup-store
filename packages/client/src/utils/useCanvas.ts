@@ -1,7 +1,15 @@
-import { useRef, useEffect, useLayoutEffect, useState } from "react";
+import {
+  useRef,
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useCallback,
+} from "react";
 import useResizeObserver from "@react-hook/resize-observer";
 
-const useSize = (target: React.RefObject<HTMLCanvasElement>): DOMRect | null => {
+export const useSize = (
+  target: React.RefObject<HTMLCanvasElement>
+): DOMRect | null => {
   const [size, setSize] = useState<DOMRect>();
 
   useLayoutEffect(() => {
@@ -13,15 +21,15 @@ const useSize = (target: React.RefObject<HTMLCanvasElement>): DOMRect | null => 
   return size || null;
 };
 
-export const useCanvas = (draw: Function) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  const size = useSize(canvasRef);
+export const useCanvas = () => {
+  const ref = useRef<HTMLCanvasElement>(null);
+  const size = useSize(ref);
   const width = size ? size.width : 0;
   const height = size ? size.height : 0;
+  console.log('useCanvas', width)
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
+  const resize = useCallback(() => {
+    const canvas = ref.current;
     if (!canvas) {
       return;
     }
@@ -31,9 +39,8 @@ export const useCanvas = (draw: Function) => {
       canvas.width = width * ratio;
       canvas.height = height * ratio;
       context.scale(ratio, ratio);
-      draw(context, width, height);
+      return context;
     }
-    
-  }, [draw, width, height]);
-  return canvasRef;
+  }, [ref, width, height]);
+  return { ref, width, height, resize };
 };

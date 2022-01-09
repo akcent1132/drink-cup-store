@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import styled from "@emotion/styled";
 import "../index.css";
 import { useCanvas } from "../utils/useCanvas";
@@ -55,8 +55,13 @@ type Props = {
  */
 export const ValueDistribution = ({ label, values }: Props) => {
   const theme = useTheme();
-  const draw = useCallback(
-    (ctx: CanvasRenderingContext2D, width: number, height: number) => {
+  const canvas = useCanvas();
+  useEffect(
+    () => {
+      const ctx = canvas.resize();
+      if (!ctx) {
+        return;
+      }
       const allValues = values.map((v) => v.values).flat();
       const min = Math.min(...allValues);
       const range = Math.max(...allValues) - min;
@@ -65,21 +70,20 @@ export const ValueDistribution = ({ label, values }: Props) => {
         ctx.fillStyle = theme.color(valueSet.color);
         valueSet.values.map((value) => {
           value = (value - min) / range;
-          const x = Math.round(value * (width - TICK_WIDTH))
+          const x = Math.round(value * (canvas.width - TICK_WIDTH))
 
-          ctx.rect(x, 0, TICK_WIDTH, height);
+          ctx.rect(x, 0, TICK_WIDTH, canvas.height);
         });
 
         ctx.fill();
       }
     },
-    [values]
+    [values, canvas]
   );
-  const canvasRef = useCanvas(draw);
   return (
     <Bar>
       <Label>{label}</Label>
-      <Plot ref={canvasRef} />
+      <Plot ref={canvas.ref} />
     </Bar>
   );
 };

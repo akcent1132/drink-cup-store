@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { withTheme } from "@emotion/react";
 import "../index.css";
+import { EventsBar, FarmEvent } from "./EventsBar";
 
 const SIDE_PAD = 10;
 
@@ -49,21 +50,13 @@ const ParamValue = withTheme(styled.div`
   justify-self: start;
 `);
 
-type Event = {
-  color: string;
-  date: Date;
-};
-
 interface Props {
   color?: string;
-  events?: Event[];
+  events?: FarmEvent[];
   params: { [key: string]: string };
 }
 
-/**
- * TimelineCard component
- */
-export const TimelineCard = ({
+export const EventsCard = ({
   color = "white",
   events = [],
   params = {},
@@ -80,6 +73,7 @@ export const TimelineCard = ({
           <ParamValue>{value}</ParamValue>,
         ])}
       </Params>
+      <EventsBar events={events} />
     </Root>
   );
 };
