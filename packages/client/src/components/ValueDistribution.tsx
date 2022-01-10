@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useEffect } from "react";
 import styled from "@emotion/styled";
 import "../index.css";
 import { useCanvas } from "../utils/useCanvas";
@@ -31,11 +31,18 @@ const Label = styled.div`
   background-color: #80945a;
 `;
 
-const Plot = styled.canvas`
+const Plot = styled.div`
   flex: 1;
   height: 100%;
   min-width: 0px;
   background-color: #091d00;
+  position: relative;
+`;
+
+const PlotCanvas = styled.canvas`
+  width: 100%;
+  position: absolute;
+  height: 100%;
 `;
 
 type Values = {
@@ -56,34 +63,33 @@ type Props = {
 export const ValueDistribution = ({ label, values }: Props) => {
   const theme = useTheme();
   const canvas = useCanvas();
-  useEffect(
-    () => {
-      const ctx = canvas.resize();
-      if (!ctx) {
-        return;
-      }
-      const allValues = values.map((v) => v.values).flat();
-      const min = Math.min(...allValues);
-      const range = Math.max(...allValues) - min;
-      for (const valueSet of values) {
-        ctx.beginPath();
-        ctx.fillStyle = theme.color(valueSet.color);
-        valueSet.values.map((value) => {
-          value = (value - min) / range;
-          const x = Math.round(value * (canvas.width - TICK_WIDTH))
+  useEffect(() => {
+    const ctx = canvas.resize();
+    if (!ctx) {
+      return;
+    }
+    const allValues = values.map((v) => v.values).flat();
+    const min = Math.min(...allValues);
+    const range = Math.max(...allValues) - min;
+    for (const valueSet of values) {
+      ctx.beginPath();
+      ctx.fillStyle = theme.color(valueSet.color);
+      valueSet.values.map((value) => {
+        value = (value - min) / range;
+        const x = Math.round(value * (canvas.width - TICK_WIDTH));
 
-          ctx.rect(x, 0, TICK_WIDTH, canvas.height);
-        });
+        ctx.rect(x, 0, TICK_WIDTH, canvas.height);
+      });
 
-        ctx.fill();
-      }
-    },
-    [values, canvas]
-  );
+      ctx.fill();
+    }
+  }, [values, canvas]);
   return (
     <Bar>
       <Label>{label}</Label>
-      <Plot ref={canvas.ref} />
+      <Plot>
+        <PlotCanvas ref={canvas.ref} />
+      </Plot>
     </Bar>
   );
 };
