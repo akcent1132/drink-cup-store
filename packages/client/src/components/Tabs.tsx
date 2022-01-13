@@ -1,7 +1,11 @@
-import React, { useCallback, useEffect, useState } from "react";
+/** @jsxImportSource @emotion/react */
+
+import { ComponentProps } from "react";
 import styled from "@emotion/styled";
 import "../index.css";
 import { Button } from "./Button";
+import { css } from "@emotion/react";
+import tinycolor from "tinycolor2";
 // TODO read height from props
 
 const BG_COLOR = "#4B5F25";
@@ -27,14 +31,30 @@ const Body = styled.div`
   border-top: 1px solid white;
 `;
 
-const Tab = styled(Button)<{ active: boolean }>`
-  height-100%;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
+const Tab = (
+  props: { active: boolean } & ComponentProps<typeof Button>
+) => {
+  const { active, ...buttonProps } = props;
+  const color = active ? BG_COLOR : "rgba(23,23,23,.5)";
   
-  background-color: ${(props) => (props.active ? BG_COLOR : "rgba(0,0,0,.5)")};
-  ${props => props.active ? `box-shadow: 0px 1px 0px 0px ${BG_COLOR}; z-index: 1;` : ''}
-`;
+  return (
+    <Button
+      {...{ ...buttonProps, color }}
+      css={css`
+        height-100%;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        ${active ? `box-shadow: 0px 1px 0px 0px ${BG_COLOR}; z-index: 1;` : ""}
+        :hover {
+          background: linear-gradient(to bottom, ${tinycolor(color).lighten(4).toString()}, ${color} );
+        }
+        :active {
+          background: linear-gradient(to bottom, ${tinycolor(color).darken(1).toString()}, ${color} );
+        }
+      `}
+    />
+  );
+};
 
 interface Page {
   label: string;
@@ -63,9 +83,7 @@ export const Tabs = ({ pages, index, onChange }: Props) => {
           />
         ))}
       </Head>
-      <Body>
-        {pages[index] ? pages[index].renderPanel() : null}
-      </Body>
+      <Body>{pages[index] ? pages[index].renderPanel() : null}</Body>
     </Root>
   );
 };

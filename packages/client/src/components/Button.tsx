@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { withTheme } from "@emotion/react";
 import "../index.css";
+import tinycolor from "tinycolor2";
 // TODO read height from props
 
 const Root = withTheme(styled.button<{ color: string }>`
@@ -20,6 +21,12 @@ const Root = withTheme(styled.button<{ color: string }>`
   font-size: 15px;
   border-width: 0;
   background-color: ${(props) => props.theme.color(props.color)};
+  :hover {
+    background-color: ${(props) => tinycolor(props.theme.color(props.color)).brighten(4).toString()};
+  }
+  :active {
+    background-color: ${(props) => tinycolor(props.theme.color(props.color)).darken(1).toString()};
+  }
   color: white;
 
   display: flex;

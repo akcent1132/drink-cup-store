@@ -23,6 +23,7 @@
     "react-dom": "^17.0.2",
     "react-scripts": "5.0.0",
     "seedrandom": "^3.0.5",
+    "tinycolor2": "^1.4.2",
     "typescript": "^4.4.2",
     "web-vitals": "^2.1.0"
   },
@@ -33,7 +34,7 @@
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public",
-    "chromatic": "npx chromatic --project-token=e536d82ec42f"
+    "chromatic": "npx chromatic --auto-accept-changes --project-token=e536d82ec42f"
   },
   "eslintConfig": {
     "extends": [
@@ -79,6 +80,7 @@
     "@types/faker": "^5.5.9",
     "@types/lodash": "^4.14.178",
     "@types/seedrandom": "^3.0.1",
+    "@types/tinycolor2": "^1.4.3",
     "chromatic": "^6.3.3",
     "webpack": "^5.65.0"
   }
