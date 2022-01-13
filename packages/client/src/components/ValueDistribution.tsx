@@ -5,6 +5,7 @@ import { useCanvas } from "../utils/useCanvas";
 import { useTheme } from "@emotion/react";
 import { scaleLinear } from "d3-scale";
 import { quantile } from "d3-array";
+import { sortBy } from "lodash";
 
 // TODO read height from props
 
@@ -26,7 +27,6 @@ const Label = styled.div<{knobs: typeof defaultKnobs}>`
   flex: 0;
   margin-top: ${props => props.knobs.varianceLineHeight}px;
   min-width: 145px;
-  height: 100%;
   font-size: 14px;
   font-family: "Acumin Pro Bold";
   text-transform: uppercase;
@@ -55,6 +55,8 @@ const PlotCanvas = styled.canvas`
 type Values = {
   color: string;
   values: number[];
+  showVariance?: boolean,
+  isHighlighted?: boolean,
 };
 
 type Props = {
@@ -91,14 +93,16 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
     ctx.rect(0, knobs.varianceLineHeight, canvas.width, canvas.height);
     ctx.fill();
 
-    for (const valueSet of values) {
+    for (const valueSet of sortBy(values, 'isHighlighted')) {
       ctx.beginPath();
       ctx.fillStyle = theme.color(valueSet.color);
 
-      const q1 = quantile(valueSet.values, 0.25);
-      const q3 = quantile(valueSet.values, 0.75);
-      if (q1 && q3) {
-        ctx.rect(scale(q1), 0, scale(q3) - scale(q1), knobs.varianceLineHeight);
+      if (valueSet.showVariance) {
+        const q1 = quantile(valueSet.values, 0.25);
+        const q3 = quantile(valueSet.values, 0.75);
+        if (q1 && q3) {
+          ctx.rect(scale(q1), 0, scale(q3) - scale(q1), knobs.varianceLineHeight);
+        }
       }
       
       // draw ticks

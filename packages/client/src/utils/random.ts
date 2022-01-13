@@ -1,5 +1,6 @@
 import seedrandom from 'seedrandom'
 import { range } from 'lodash'
+import {randomNormal} from "d3-random";
 
 // Standard Normal variate using Box-Muller transform.
 export function randn_bm() {
@@ -14,7 +15,8 @@ export const genDataPoints = (seed = '0', countMax = 100, stdMax = 2, meanMax = 
     const count = countMax * rnd();
     const mean = rnd() * meanMax;
     const std = rnd() * stdMax;
-    return range(count).map(() => randn_bm() * std + mean)
+    const norm = randomNormal.source(rnd)(mean, std);
+    return range(count).map(() => norm())
 }
 
 export const getFarmEvents = () => {

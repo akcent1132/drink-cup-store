@@ -22,10 +22,12 @@ const Root = withTheme(styled.button<{ color: string }>`
   border-width: 0;
   background-color: ${(props) => props.theme.color(props.color)};
   :hover {
-    background-color: ${(props) => tinycolor(props.theme.color(props.color)).brighten(4).toString()};
+    background-color: ${(props) =>
+      tinycolor(props.theme.color(props.color)).brighten(4).toString()};
   }
   :active {
-    background-color: ${(props) => tinycolor(props.theme.color(props.color)).darken(1).toString()};
+    background-color: ${(props) =>
+      tinycolor(props.theme.color(props.color)).darken(1).toString()};
   }
   color: white;
 
@@ -50,6 +52,8 @@ interface Props {
   className?: string;
   isWide?: boolean;
   onClick?: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }
 
 /**
@@ -59,11 +63,13 @@ export const Button = ({
   label,
   color = "green",
   onClick,
+  onMouseEnter,
+  onMouseLeave,
   className,
   isWide = false,
 }: Props) => {
   return (
-    <Root {...{ color, onClick, className }}>
+    <Root {...{ color, onClick, onMouseEnter, onMouseLeave, className }}>
       <Padding isWide={isWide} />
       <Caption>{label}</Caption>
       <Padding isWide={isWide} />

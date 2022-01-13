@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useReducer, useState } from "react";
 import styled from "@emotion/styled";
 import "../index.css";
 import bgImage from "../assets/images/Background-corngrains.jpg";
@@ -10,7 +10,7 @@ import { genDataPoints } from "../utils/random";
 import { Button } from "../components/Button";
 import { EventsCard } from "../components/EventsCard";
 import faker from "faker";
-import { sample, without } from "lodash";
+import { reverse, sample, without } from "lodash";
 
 // TODO read height from props
 
@@ -111,35 +111,61 @@ const ROWS = {
   Weather: ["zone", "degree days", "rainfall (in)"],
 };
 
+function hoverReducer(
+  state: string | null,
+  action: { type: "enter" | "leave"; name: string }
+) {
+  switch (action.type) {
+    case "enter":
+      return action.name;
+    case "leave":
+      return state === action.name ? null : state;
+    default:
+      throw new Error();
+  }
+}
+
 const RandomContent = () => {
+  const [hoverState, hoverDispatch] = useReducer(hoverReducer, null);
   const [groups, setGroups] = useState<Group[]>([]);
+
   const addGroup = useCallback(() => {
     const freeColors = without(COLORS, ...groups.map((g) => g.color)) || COLORS;
     const group = {
       name: faker.company.companyName(),
       color: sample(freeColors)!,
     };
+    console.log("setGroups([...groups, group]);");
     setGroups([...groups, group]);
     return group;
   }, [groups]);
   const removeGroup = useCallback(
     (name: string) => {
+      console.log("setGroups(groups.filter((g) => g.name !== name));");
       setGroups(groups.filter((g) => g.name !== name));
     },
     [groups]
   );
+
   useEffect(() => {
+    console.log("setGroups([addGroup(), addGroup()]);");
     setGroups([addGroup(), addGroup()]);
   }, []);
 
   return (
     <RowContainer>
       <PaneHead>
-        {groups.reverse().map((group) => (
+        {[...groups].reverse().map((group) => (
           <Button
             label={group.name}
             color={group.color}
             onClick={() => removeGroup(group.name)}
+            onMouseEnter={() =>
+              hoverDispatch({ type: "enter", name: group.name })
+            }
+            onMouseLeave={() =>
+              hoverDispatch({ type: "leave", name: group.name })
+            }
             isWide
           />
         ))}
@@ -159,6 +185,8 @@ const RandomContent = () => {
               ...groups.map(({ color, name }) => ({
                 color,
                 values: genDataPoints(row + name, 32),
+                showVariance: true,
+                isHighlighted: hoverState === name,
               })),
             ]}
           />
