@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import styled from "@emotion/styled";
 import "../index.css";
 import { useCanvas } from "../utils/useCanvas";
 import { useTheme } from "@emotion/react";
+import { scaleLinear } from "d3-scale";
 
 // TODO read height from props
 
@@ -63,27 +64,30 @@ type Props = {
 export const ValueDistribution = ({ label, values }: Props) => {
   const theme = useTheme();
   const canvas = useCanvas();
+  const scale = useMemo(() => {
+    const allValues = values.map((v) => v.values).flat();
+    return scaleLinear()
+      .domain(allValues)
+      .rangeRound([0, canvas.width - TICK_WIDTH]);
+  }, [values, canvas.width]);
+
   useEffect(() => {
     const ctx = canvas.resize();
     if (!ctx) {
       return;
     }
-    const allValues = values.map((v) => v.values).flat();
-    const min = Math.min(...allValues);
-    const range = Math.max(...allValues) - min;
+
     for (const valueSet of values) {
       ctx.beginPath();
       ctx.fillStyle = theme.color(valueSet.color);
       valueSet.values.map((value) => {
-        value = (value - min) / range;
-        const x = Math.round(value * (canvas.width - TICK_WIDTH));
-
-        ctx.rect(x, 0, TICK_WIDTH, canvas.height);
+        ctx.rect(scale(value), 0, TICK_WIDTH, canvas.height);
       });
 
       ctx.fill();
     }
-  }, [values, canvas]);
+  }, [values, canvas, scale]);
+  
   return (
     <Bar>
       <Label>{label}</Label>
