@@ -26,7 +26,6 @@ export const useCanvas = () => {
   const size = useSize(ref);
   const width = size ? size.width : 0;
   const height = size ? size.height : 0;
-  console.log('useCanvas', width)
 
   const resize = useCallback(() => {
     const canvas = ref.current;
