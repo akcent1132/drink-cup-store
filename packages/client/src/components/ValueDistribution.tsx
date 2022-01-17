@@ -12,7 +12,7 @@ import { pull, range, sortBy } from "lodash";
 export const defaultKnobs = Object.freeze({
   barHeight: 24,
   tickWidth: 3,
-  varianceLineHeight: 4,
+  varianceLineHeight: 8,
   varianceStripeWidth: 8,
 });
 
@@ -114,38 +114,56 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
     const currentColors: string[] = [];
     let lastValue = 0;
     for (const { type, color, value } of varianceBounds) {
+      const hFr2 = knobs.varianceLineHeight / 2;
       const xStart = scale(lastValue);
-      const xWidth = scale(value) - xStart;
+      const xValue = scale(value);
+      const xWidth = xValue - xStart;
+      ctx.beginPath();
+      ctx.fillStyle = theme.color(color);
+      ctx.moveTo(xValue, 0);
+      ctx.lineTo(xValue, hFr2);
+      if (type === "start") {
+        ctx.lineTo(xValue + hFr2, hFr2);
+      } else {
+        ctx.lineTo(xValue - hFr2, hFr2);
+      }
+      ctx.closePath();
+      ctx.fill();
+
       if (currentColors.length === 1) {
         ctx.beginPath();
         ctx.fillStyle = theme.color(currentColors[0]);
-        ctx.rect(xStart, 0, xWidth, knobs.varianceLineHeight);
+        ctx.rect(xStart, hFr2, xWidth, hFr2);
         ctx.fill();
 
-      // draw overlapping lines
+        // draw overlapping lines
       } else if (currentColors.length > 1) {
         ctx.save();
         let region = new Path2D();
-        region.rect(xStart, 0, xWidth, knobs.varianceLineHeight);
+        region.rect(xStart, hFr2, xWidth, hFr2);
         ctx.clip(region);
-        ctx.lineCap = 'square'
+        ctx.lineCap = "square";
         ctx.lineWidth = knobs.varianceStripeWidth;
-        const steps = [...range(xStart, xStart + xWidth, knobs.varianceStripeWidth), xStart + xWidth]
+        const steps = [
+          ...range(xStart, xStart + xWidth, knobs.varianceStripeWidth),
+          xStart + xWidth,
+        ];
         steps.forEach((x, i) => {
           ctx.beginPath();
-          ctx.strokeStyle = theme.color(currentColors[i % currentColors.length]);
-          ctx.moveTo(x, 0)
-          ctx.lineTo(x - knobs.varianceLineHeight, knobs.varianceLineHeight)
+          ctx.strokeStyle = theme.color(
+            currentColors[i % currentColors.length]
+          );
+          ctx.moveTo(x, hFr2);
+          ctx.lineTo(x - hFr2, knobs.varianceLineHeight);
           ctx.stroke();
-        })
+        });
         ctx.restore();
       }
       lastValue = value;
-      if (type === 'start') {
-        currentColors.push(color)
-      }
-      else {
-        pull(currentColors, color)
+      if (type === "start") {
+        currentColors.push(color);
+      } else {
+        pull(currentColors, color);
       }
     }
 

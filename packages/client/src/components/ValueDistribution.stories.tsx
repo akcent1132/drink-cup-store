@@ -23,7 +23,7 @@ export const Default = Template.bind({});
 Default.args = {
   label: 'Value Distribution',
   values: [{
-    color: 'teal',
+    color: 'orange',
     values: genDataPoints('foo3'),
     showVariance: true,
   }, {
