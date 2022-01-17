@@ -1,7 +1,7 @@
 import React from 'react';
 import { ComponentStory, ComponentMeta } from '@storybook/react';
 
-import { ValueDistribution } from './ValueDistribution';
+import { ValueDistribution, defaultKnobs } from './ValueDistribution';
 import { genDataPoints } from '../utils/random'
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
@@ -9,6 +9,9 @@ export default {
   title: 'Example/ValueDistribution',
   component: ValueDistribution,
   // More on argTypes: https://storybook.js.org/docs/react/api/argtypes
+  args: {
+    knobs: defaultKnobs,
+  },
   argTypes: {
     backgroundColor: { control: 'color' },
   },
@@ -21,7 +24,12 @@ Default.args = {
   label: 'Value Distribution',
   values: [{
     color: 'teal',
-    values: genDataPoints('foo')
+    values: genDataPoints('foo3'),
+    showVariance: true,
+  }, {
+    color: 'yellow',
+    values: genDataPoints('foo2'),
+    showVariance: true,
   }],
 };
 

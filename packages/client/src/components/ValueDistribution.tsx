@@ -4,28 +4,27 @@ import "../index.css";
 import { useCanvas } from "../utils/useCanvas";
 import { useTheme } from "@emotion/react";
 import { scaleLinear } from "d3-scale";
-import { quantile } from "d3-array";
-import { sortBy } from "lodash";
+import { extent, quantile, zip } from "d3-array";
+import { pull, range, sortBy } from "lodash";
 
 // TODO read height from props
-
-
 
 export const defaultKnobs = Object.freeze({
   barHeight: 24,
   tickWidth: 3,
   varianceLineHeight: 4,
+  varianceStripeWidth: 8,
 });
 
-const Bar = styled.div<{knobs: typeof defaultKnobs}>`
+const Bar = styled.div<{ knobs: typeof defaultKnobs }>`
   display: flex;
   width: 100%;
-  height: ${props => props.knobs.barHeight}px;
+  height: ${(props) => props.knobs.barHeight}px;
 `;
 
-const Label = styled.div<{knobs: typeof defaultKnobs}>`
+const Label = styled.div<{ knobs: typeof defaultKnobs }>`
   flex: 0;
-  margin-top: ${props => props.knobs.varianceLineHeight}px;
+  margin-top: ${(props) => props.knobs.varianceLineHeight}px;
   min-width: 145px;
   font-size: 14px;
   font-family: "Acumin Pro Bold";
@@ -55,8 +54,8 @@ const PlotCanvas = styled.canvas`
 type Values = {
   color: string;
   values: number[];
-  showVariance?: boolean,
-  isHighlighted?: boolean,
+  showVariance?: boolean;
+  isHighlighted?: boolean;
 };
 
 type Props = {
@@ -77,37 +76,104 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
   const canvas = useCanvas();
   const scale = useMemo(() => {
     const allValues = values.map((v) => v.values).flat();
+    const [min, max] = extent(allValues);
     return scaleLinear()
-      .domain(allValues)
+      .domain([min || 0, max || 1])
       .rangeRound([0, canvas.width - knobs.tickWidth]);
   }, [values, canvas.width]);
+
+  const varianceBounds = useMemo(() => {
+    return sortBy(
+      values
+        .filter((v) => v.showVariance)
+        .map(({ values, color }) => {
+          const q1 = quantile(values, 0.25);
+          const q3 = quantile(values, 0.75);
+          return q1 && q3
+            ? [
+                { type: "start", color, value: q1 },
+                { type: "stop", color, value: q3 },
+              ]
+            : [];
+        })
+        .flat(),
+      "value"
+    );
+  }, [values]);
 
   useEffect(() => {
     const ctx = canvas.resize();
     if (!ctx) {
       return;
     }
-
     // draw background
-    ctx.fillStyle =  '#091d00';
+    ctx.fillStyle = "#091d00";
     ctx.rect(0, knobs.varianceLineHeight, canvas.width, canvas.height);
     ctx.fill();
 
-    for (const valueSet of sortBy(values, 'isHighlighted')) {
+    const currentColors: string[] = [];
+    let lastValue = 0;
+    for (const { type, color, value } of varianceBounds) {
+      const xStart = scale(lastValue);
+      const xWidth = scale(value) - xStart;
+      if (currentColors.length === 1) {
+        ctx.beginPath();
+        ctx.fillStyle = theme.color(currentColors[0]);
+        ctx.rect(xStart, 0, xWidth, knobs.varianceLineHeight);
+        ctx.fill();
+
+      // draw overlapping lines
+      } else if (currentColors.length > 1) {
+        ctx.save();
+        let region = new Path2D();
+        region.rect(xStart, 0, xWidth, knobs.varianceLineHeight);
+        ctx.clip(region);
+        ctx.lineCap = 'square'
+        ctx.lineWidth = knobs.varianceStripeWidth;
+        const steps = [...range(xStart, xStart + xWidth, knobs.varianceStripeWidth), xStart + xWidth]
+        steps.forEach((x, i) => {
+          ctx.beginPath();
+          ctx.strokeStyle = theme.color(currentColors[i % currentColors.length]);
+          ctx.moveTo(x, 0)
+          ctx.lineTo(x - knobs.varianceLineHeight, knobs.varianceLineHeight)
+          ctx.stroke();
+        })
+        ctx.restore();
+      }
+      lastValue = value;
+      if (type === 'start') {
+        currentColors.push(color)
+      }
+      else {
+        pull(currentColors, color)
+      }
+    }
+
+    for (const valueSet of sortBy(values, "isHighlighted")) {
       ctx.beginPath();
       ctx.fillStyle = theme.color(valueSet.color);
 
-      if (valueSet.showVariance) {
-        const q1 = quantile(valueSet.values, 0.25);
-        const q3 = quantile(valueSet.values, 0.75);
-        if (q1 && q3) {
-          ctx.rect(scale(q1), 0, scale(q3) - scale(q1), knobs.varianceLineHeight);
-        }
-      }
-      
+      // if (valueSet.showVariance) {
+      //   const q1 = quantile(valueSet.values, 0.25);
+      //   const q3 = quantile(valueSet.values, 0.75);
+      //   if (q1 && q3) {
+      //     ctx.rect(
+      //       scale(q1),
+      //       0,
+      //       scale(q3) - scale(q1),
+      //       knobs.varianceLineHeight
+      //     );
+      //   }
+      // }
+
       // draw ticks
       valueSet.values.map((value) => {
-        ctx.rect(scale(value), knobs.varianceLineHeight, knobs.tickWidth, canvas.height);
+        ctx.rect(
+          scale(value),
+          knobs.varianceLineHeight,
+          knobs.tickWidth,
+          canvas.height
+        );
       });
 
       ctx.fill();
