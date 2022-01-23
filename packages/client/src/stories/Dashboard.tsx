@@ -71,7 +71,7 @@ const RightSide = styled.div`
 
 const RightHeader = styled.div`
   display: flex;
-  justify-content: flex-start;
+  justify-content: flex-end;
   padding: 0 40px 20px;
 `;
 
