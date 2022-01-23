@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from "react";
 import styled from "@emotion/styled";
 import "../index.css";
 import { useCanvas } from "../utils/useCanvas";
-import { useTheme } from "@emotion/react";
+import { useTheme, withTheme } from "@emotion/react";
 import { scaleLinear } from "d3-scale";
 import { extent, quantile, zip } from "d3-array";
 import { pull, range, sortBy } from "lodash";
@@ -22,21 +22,21 @@ const Bar = styled.div<{ knobs: typeof defaultKnobs }>`
   height: ${(props) => props.knobs.barHeight}px;
 `;
 
-const Label = styled.div<{ knobs: typeof defaultKnobs }>`
+const Label = withTheme(styled.div<{ knobs: typeof defaultKnobs }>`
   flex: 0;
   margin-top: ${(props) => props.knobs.varianceLineHeight}px;
   min-width: 145px;
   font-size: 14px;
-  font-family: "Acumin Pro Bold";
+  font-family: ${(props) => props.theme.fonts.baseBold};
   text-transform: uppercase;
-  line-height: 23px;
+  line-height: 20px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   padding: 0 4px;
   color: white;
   background-color: #80945a;
-`;
+`);
 
 const Plot = styled.div`
   flex: 1;

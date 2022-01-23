@@ -9,6 +9,7 @@ import { css, withTheme } from "@emotion/react";
 import { genDataPoints } from "../utils/random";
 import { Button } from "../components/Button";
 import { EventsCard } from "../components/EventsCard";
+import { Legend } from "../components/Legend";
 import faker from "faker";
 import { reverse, sample, without } from "lodash";
 
@@ -76,12 +77,20 @@ const RightHeader = styled.div`
 
 const Events = styled.div`
   display: flex;
-  padding: 0 40px;
+  padding: 10px 40px 50px;
   backdrop-filter: blur(12px);
   flex-direction: column;
   justify-content: flex-start;
   gap: 20px;
 `;
+
+const FarmerName = withTheme(styled.div`
+  font-family: ${(props) => props.theme.fonts.baseBold};
+  padding: 0 29px;
+  line-height: 5px;
+  font-size: 19px;
+  color: white;
+`);
 
 const COLORS = [
   "purple",
@@ -237,6 +246,16 @@ const fakeEventCardData = [
     ],
   },
 ];
+
+const legendEntries = [
+  {color: 'red', name: 'tillage'},
+  {color: 'blue', name: 'irigation'},
+  {color: 'green', name: 'harvest'},
+  {color: 'orange', name: 'amendments'},
+  {color: 'violet', name: 'seeding'},
+  {color: 'yellow', name: 'weed contor'},
+];
+
 /**
  * Primary UI component for user interaction
  */
@@ -262,6 +281,8 @@ export const Dashboard = ({ label }: Props) => {
           <img src={logoImage} width="180" />
         </RightHeader>
         <Events>
+          <FarmerName>Individual farmer</FarmerName>
+          <Legend entries={legendEntries}/>
           {fakeEventCardData.map((props, i) => (
             <EventsCard {...props} key={i} />
           ))}
