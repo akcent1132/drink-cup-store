@@ -22,6 +22,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 const Root = styled.div`
   width: 100%;
   height: 100%;
+  min-height: 1600px;
   padding-top: 32px;
   padding-left: 52px;
   box-sizing: border-box;
@@ -75,6 +76,7 @@ const RowGroup: React.FC<{
         css={css`
           display: flex;
           margin: ${sub ? "10px 0 0px" : "14px 0 8px"};
+          cursor: ${isAccordion ? 'pointer' : 'auto'};
         `}
         onClick={() => setOpen(!open)}
       >
@@ -115,7 +117,7 @@ const Events = styled.div`
 
 const FarmerName = withTheme(styled.div`
   font-family: ${(props) => props.theme.fonts.baseBold};
-  padding: 0 29px;
+  padding: 20px 29px 0;
   line-height: 5px;
   font-size: 19px;
   color: white;
@@ -261,7 +263,8 @@ const NestedRows = ({
           {/* @ts-ignore */}
           <NestedRows rows={children} groups={groups} hoverState={hoverState} />
         </RowGroup>
-      ) : (
+      )
+      : (
         <ValueDistribution
           key={i}
           label={name}
@@ -271,7 +274,7 @@ const NestedRows = ({
               color,
               values: genDataPoints(name + orgName, 32),
               showVariance: true,
-              isHighlighted: hoverState === name,
+              isHighlighted: hoverState === orgName,
             })),
           ]}
           css={css`

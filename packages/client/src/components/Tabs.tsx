@@ -76,6 +76,7 @@ export const Tabs = ({ pages, index, onChange }: Props) => {
       <Head>
         {pages.map((page, tabIndex) => (
           <Tab
+            key={tabIndex}
             onClick={() => onChange(tabIndex)}
             label={page.label}
             active={tabIndex === index}

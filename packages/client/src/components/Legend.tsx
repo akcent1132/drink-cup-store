@@ -51,7 +51,7 @@ export const Legend = ({
 }: Props) => {
   return (
     <Root>
-      {entries.map(entry => <Tag><ColorDot color={entry.color} />{entry.name}</Tag>)}
+      {entries.map((entry, i) => <Tag key={i}><ColorDot color={entry.color} />{entry.name}</Tag>)}
     </Root>
   );
 };
