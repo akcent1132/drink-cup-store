@@ -65,6 +65,7 @@ type Props = {
   label: string;
   values: Values[];
   knobs?: Partial<typeof defaultKnobs>;
+  className?: string;
 };
 
 /**
@@ -199,7 +200,7 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
   }, [values, canvas, scale]);
 
   return (
-    <Bar knobs={knobs}>
+    <Bar knobs={knobs} className={props.className}>
       <Label knobs={knobs}>{label}</Label>
       <Plot>
         <PlotCanvas ref={canvas.ref} />

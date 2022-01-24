@@ -1,3 +1,5 @@
+/** @jsxImportSource @emotion/react */
+
 import React, { useCallback, useEffect, useReducer, useState } from "react";
 import styled from "@emotion/styled";
 import "../index.css";
@@ -11,7 +13,9 @@ import { Button } from "../components/Button";
 import { EventsCard } from "../components/EventsCard";
 import { Legend } from "../components/Legend";
 import faker from "faker";
-import { reverse, sample, without } from "lodash";
+import { sample, without } from "lodash";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 // TODO read height from props
 
@@ -55,14 +59,39 @@ const PaneHead = styled.div`
 const RowContainer = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 20px;
   padding: 12px 50px 50px 4px;
 `;
 
-const RowGroupHead = withTheme(styled.div`
+const RowGroup: React.FC<{
+  name: string;
+  isAccordion?: boolean;
+  sub?: boolean;
+}> = ({ children, name, isAccordion, sub }) => {
+  const [open, setOpen] = useState(true);
+  const Icon = open ? ExpandMoreIcon : ChevronRightIcon;
+  return (
+    <>
+      <div
+        css={css`
+          display: flex;
+          margin: ${sub ? "10px 0 0px" : "14px 0 8px"};
+        `}
+        onClick={() => setOpen(!open)}
+      >
+        {children && isAccordion ? (
+          <Icon sx={{ color: "white", fontSize: sub ? "15px" : "15px" }} />
+        ) : null}
+        <RowGroupText sub={sub}>{name}</RowGroupText>
+      </div>
+      {open ? children : null}
+    </>
+  );
+};
+
+const RowGroupText = withTheme(styled.div<{ sub?: boolean }>`
   color: white;
   font-family: ${(props) => props.theme.fonts.baseBold};
-  font-size: 18px;
+  font-size: ${(props) => (props.sub ? 14 : 18)}px;
 `);
 
 const RightSide = styled.div`
@@ -100,25 +129,100 @@ const COLORS = [
   "olive",
   "yellow",
   "orange",
-  "red",
+  // "red",
   "violet",
 ];
 
-const ROWS = {
-  Indicators: ["soil carbon", "infiltration", "biodiversity"],
-  Goals: [
-    "profitability",
-    "risk reduction",
-    "crop quality",
-    "soil structure",
-    "soil fertility",
-    "soil biology",
-    "environment",
-  ],
-  Practices: ["tillage", "irrigation", "amendments"],
-  Soil: ["ponential", "texture"],
-  Weather: ["zone", "degree days", "rainfall (in)"],
-};
+const ROWS: RowData[] = [
+  {
+    name: "Indicators	",
+    type: "group",
+    children: [
+      {
+        name: "Profitability	",
+        type: "sub-group",
+        children: [
+          { name: "Proteins", type: "value" },
+          { name: "Density", type: "value" },
+          { name: "LOI Soil Carbon", type: "value" },
+          { name: "Crop Establishment", type: "value" },
+        ],
+      },
+      {
+        name: "Risk Reduction	",
+        type: "sub-group",
+        children: [
+          { name: "LOI Soil Carbon", type: "value" },
+          { name: "Soil Respiration", type: "value" },
+          { name: "Available water capacity", type: "value" },
+          { name: "Aggregate stability", type: "value" },
+          { name: "Organic Matter", type: "value" },
+          { name: "Active Carbon", type: "value" },
+          { name: "Crop Establishment", type: "value" },
+        ],
+      },
+      {
+        name: "Product Quality	",
+        type: "sub-group",
+        children: [
+          { name: "Polyphenols", type: "value" },
+          { name: "Antioxidants", type: "value" },
+          { name: "Proteins", type: "value" },
+          { name: "Brix", type: "value" },
+          { name: "Minerals", type: "value" },
+          // { name: "Minerals", type: "value" },
+          // { name: "Minerals", type: "value" },
+          // { name: "Minerals", type: "value" },
+          // { name: "Minerals", type: "value" },
+          // { name: "Minerals", type: "value" },
+          { name: "Density	", type: "value" },
+        ],
+      },
+    ],
+  },
+  // { name: "Animal Health	", type: "group", children: [] },
+  // { name: "Soil Structure	", type: "group", children: [] },
+  // { name: "Soil Fertility	", type: "group", children: [] },
+  // { name: "Soil Biology	", type: "group", children: [] },
+  // { name: "Environment	", type: "group", children: [] },
+
+  {
+    name: "Weather	",
+    type: "group",
+    children: [
+      { name: "Growing Degree Days", type: "value" },
+      { name: "Temperature", type: "value" },
+      { name: "Rainfall", type: "value" },
+      { name: "Climate Zone", type: "value" },
+      { name: "Hardiness Zone", type: "value" },
+    ],
+  },
+
+  {
+    name: "Soil	",
+    type: "group",
+    children: [
+      { name: "% clay", type: "value" },
+      { name: "% carbon", type: "value" },
+      { name: "slope", type: "value" },
+      { name: "pH", type: "value" },
+    ],
+  },
+
+  {
+    name: "Management	",
+    type: "group",
+    children: [
+      { name: "Tillage", type: "value" },
+      { name: "Grazing", type: "value" },
+      { name: "Weed Control", type: "value" },
+      { name: "Pest-Disease Control", type: "value" },
+      { name: "Thinning / Pruning", type: "value" },
+      { name: "Amendments", type: "value" },
+      { name: "Irrigation", type: "value" },
+    ],
+  },
+];
 
 function hoverReducer(
   state: string | null,
@@ -133,6 +237,51 @@ function hoverReducer(
       throw new Error();
   }
 }
+
+type RowData = { name: string; type: string; children?: RowData[] };
+
+const NestedRows = ({
+  rows,
+  groups,
+  hoverState,
+}: {
+  rows: RowData[];
+  hoverState: string | null;
+  groups: Group[];
+}) => (
+  <React.Fragment>
+    {rows.map(({ name, type, children = [] }, i) =>
+      type === "group" || type === "sub-group" ? (
+        <RowGroup
+          key={i}
+          name={name}
+          sub={type === "sub-group"}
+          isAccordion
+        >
+          {/* @ts-ignore */}
+          <NestedRows rows={children} groups={groups} hoverState={hoverState} />
+        </RowGroup>
+      ) : (
+        <ValueDistribution
+          key={i}
+          label={name}
+          values={[
+            { color: "grey", values: genDataPoints(name, 80, 10) },
+            ...groups.map(({ color, name: orgName }) => ({
+              color,
+              values: genDataPoints(name + orgName, 32),
+              showVariance: true,
+              isHighlighted: hoverState === name,
+            })),
+          ]}
+          css={css`
+            margin: 4px 0;
+          `}
+        />
+      )
+    )}
+  </React.Fragment>
+);
 
 const RandomContent = () => {
   const [hoverState, hoverDispatch] = useReducer(hoverReducer, null);
@@ -164,8 +313,9 @@ const RandomContent = () => {
   return (
     <RowContainer>
       <PaneHead>
-        {[...groups].reverse().map((group) => (
+        {[...groups].reverse().map((group, i) => (
           <Button
+            key={i}
             label={group.name}
             color={group.color}
             onClick={() => removeGroup(group.name)}
@@ -184,23 +334,7 @@ const RandomContent = () => {
           onClick={() => addGroup()}
         />
       </PaneHead>
-      {Object.entries(ROWS).map(([category, rows]) => [
-        <RowGroupHead>{category}</RowGroupHead>,
-        ...rows.map((row) => (
-          <ValueDistribution
-            label={row}
-            values={[
-              { color: "grey", values: genDataPoints(row, 80, 10) },
-              ...groups.map(({ color, name }) => ({
-                color,
-                values: genDataPoints(row + name, 32),
-                showVariance: true,
-                isHighlighted: hoverState === name,
-              })),
-            ]}
-          />
-        )),
-      ])}
+      <NestedRows rows={ROWS} groups={groups} hoverState={hoverState} />
     </RowContainer>
   );
 };
@@ -248,12 +382,12 @@ const fakeEventCardData = [
 ];
 
 const legendEntries = [
-  {color: 'red', name: 'tillage'},
-  {color: 'blue', name: 'irigation'},
-  {color: 'green', name: 'harvest'},
-  {color: 'orange', name: 'amendments'},
-  {color: 'violet', name: 'seeding'},
-  {color: 'yellow', name: 'weed contor'},
+  { color: "red", name: "tillage" },
+  { color: "blue", name: "irigation" },
+  { color: "green", name: "harvest" },
+  { color: "orange", name: "amendments" },
+  { color: "violet", name: "seeding" },
+  { color: "yellow", name: "weed contor" },
 ];
 
 /**
@@ -282,7 +416,7 @@ export const Dashboard = ({ label }: Props) => {
         </RightHeader>
         <Events>
           <FarmerName>Individual farmer</FarmerName>
-          <Legend entries={legendEntries}/>
+          <Legend entries={legendEntries} />
           {fakeEventCardData.map((props, i) => (
             <EventsCard {...props} key={i} />
           ))}
