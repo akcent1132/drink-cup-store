@@ -4,7 +4,7 @@ import "../index.css";
 import { useCanvas } from "../utils/useCanvas";
 import { useTheme, withTheme } from "@emotion/react";
 import { scaleLinear } from "d3-scale";
-import { extent, quantile, zip } from "d3-array";
+import { extent, mean, quantile, zip } from "d3-array";
 import { pull, range, sortBy } from "lodash";
 
 // TODO read height from props
@@ -75,13 +75,14 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
   const knobs = { ...defaultKnobs, ...props.knobs };
   const theme = useTheme();
   const canvas = useCanvas();
+  const allValues = useMemo(() => values.map((v) => v.values).flat(), [values]);
   const scale = useMemo(() => {
-    const allValues = values.map((v) => v.values).flat();
     const [min, max] = extent(allValues);
     return scaleLinear()
       .domain([min || 0, max || 1])
       .rangeRound([0, canvas.width - knobs.tickWidth]);
-  }, [values, canvas.width]);
+  }, [allValues, canvas.width]);
+  const allMean = useMemo(() =>  mean(allValues) || 0, [allValues]);
 
   const varianceBounds = useMemo(() => {
     return sortBy(
@@ -197,7 +198,20 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
 
       ctx.fill();
     }
-  }, [values, canvas, scale]);
+
+    // Draw mean
+    ctx.beginPath();
+      ctx.fillStyle = theme.color('red');
+      ctx.rect(
+        scale(allMean),
+        knobs.varianceLineHeight,
+        knobs.tickWidth * 2,
+        canvas.height
+      );
+
+
+    ctx.fill();
+  }, [values, canvas, scale, allMean]);
 
   return (
     <Bar knobs={knobs} className={props.className}>
