@@ -287,11 +287,11 @@ const RandomContent = () => {
   const [hoverState, hoverDispatch] = useReducer(hoverReducer, null);
   const [groups, setGroups] = useState<Group[]>([]);
 
-  const addGroup = useCallback(() => {
+  const addGroup = useCallback((color?: string) => {
     const freeColors = without(COLORS, ...groups.map((g) => g.color)) || COLORS;
     const group = {
       name: faker.company.companyName(),
-      color: sample(freeColors)!,
+      color: color || sample(freeColors)!,
     };
     console.log("setGroups([...groups, group]);");
     setGroups([...groups, group]);
@@ -306,8 +306,7 @@ const RandomContent = () => {
   );
 
   useEffect(() => {
-    console.log("setGroups([addGroup(), addGroup()]);");
-    setGroups([addGroup(), addGroup()]);
+    setGroups([addGroup('olive'), addGroup('orange')]);
   }, []);
 
   return (
