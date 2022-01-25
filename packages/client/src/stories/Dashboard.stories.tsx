@@ -32,5 +32,5 @@ const Template: ComponentStory<typeof Dashboard> = (args) => (
 export const Default = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
 Default.args = {
-  iframeSrc: "https://www.hylo.com/groups/general-mills-ks",
+  iframeSrc: "https://www.hylo.com/all",
 };
