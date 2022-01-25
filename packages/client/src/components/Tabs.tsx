@@ -21,8 +21,7 @@ const Head = styled.div`
   height: 39px;
   flex: 0;
   display: flex;
-  justify-content: flex-end;
-  padding-right: 40px;
+  justify-content: flex-start;
 `;
 
 const Body = styled.div`
@@ -65,14 +64,15 @@ interface Props {
   index: number;
   onChange: (index: number) => void;
   pages: Page[];
+  className?: string;
 }
 
 /**
  * Primary UI component for user interaction
  */
-export const Tabs = ({ pages, index, onChange }: Props) => {
+export const Tabs = ({ pages, index, onChange, className }: Props) => {
   return (
-    <Root>
+    <Root className={className}>
       <Head>
         {pages.map((page, tabIndex) => (
           <Tab

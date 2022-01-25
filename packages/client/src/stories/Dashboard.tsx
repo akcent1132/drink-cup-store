@@ -35,12 +35,19 @@ const Root = styled.div`
   background-size: cover;
   display: grid;
   grid-template-columns: 1fr max(500px, 34%);
-  grid-template-rows: auto;
-  grid-template-areas: "values events";
+  grid-template-rows: 60px auto;
+  grid-template-areas: "values header" "values events";
   & > * {
     overflow: hidden;
     max-width: 100%;
   }
+`;
+
+const Header = styled.div`
+  grid-area: header;
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 40px;
 `;
 
 interface Props {
@@ -76,7 +83,7 @@ const RowGroup: React.FC<{
         css={css`
           display: flex;
           margin: ${sub ? "10px 0 0px" : "14px 0 8px"};
-          cursor: ${isAccordion ? 'pointer' : 'auto'};
+          cursor: ${isAccordion ? "pointer" : "auto"};
         `}
         onClick={() => setOpen(!open)}
       >
@@ -98,12 +105,6 @@ const RowGroupText = withTheme(styled.div<{ sub?: boolean }>`
 
 const RightSide = styled.div`
   grid-area: events;
-`;
-
-const RightHeader = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  padding: 0 40px 20px;
 `;
 
 const Events = styled.div`
@@ -246,17 +247,11 @@ const NestedRows = ({
   <React.Fragment>
     {rows.map(({ name, type, children = [] }, i) =>
       type === "group" || type === "sub-group" ? (
-        <RowGroup
-          key={i}
-          name={name}
-          sub={type === "sub-group"}
-          isAccordion
-        >
+        <RowGroup key={i} name={name} sub={type === "sub-group"} isAccordion>
           {/* @ts-ignore */}
           <NestedRows rows={children} groups={groups} hoverState={hoverState} />
         </RowGroup>
-      )
-      : (
+      ) : (
         <ValueDistribution
           key={i}
           label={name}
@@ -282,16 +277,20 @@ const RandomContent = () => {
   const [hoverState, hoverDispatch] = useReducer(hoverReducer, null);
   const [groups, setGroups] = useState<Group[]>([]);
 
-  const addGroup = useCallback((name?: string, color?: string) => {
-    const freeColors = without(COLORS, ...groups.map((g) => g.color)) || COLORS;
-    const group = {
-      name: name || faker.company.companyName(),
-      color: color || sample(freeColors)!,
-    };
-    console.log("setGroups([...groups, group]);");
-    setGroups([...groups, group]);
-    return group;
-  }, [groups]);
+  const addGroup = useCallback(
+    (name?: string, color?: string) => {
+      const freeColors =
+        without(COLORS, ...groups.map((g) => g.color)) || COLORS;
+      const group = {
+        name: name || faker.company.companyName(),
+        color: color || sample(freeColors)!,
+      };
+      console.log("setGroups([...groups, group]);");
+      setGroups([...groups, group]);
+      return group;
+    },
+    [groups]
+  );
   const removeGroup = useCallback(
     (name: string) => {
       console.log("setGroups(groups.filter((g) => g.name !== name));");
@@ -301,7 +300,10 @@ const RandomContent = () => {
   );
 
   useEffect(() => {
-    setGroups([addGroup('Produce Corn, Beef', 'violet'), addGroup('General Mills - KS', '#0055a7')]);
+    setGroups([
+      addGroup("Produce Corn, Beef", "violet"),
+      addGroup("General Mills - KS", "#0055a7"),
+    ]);
   }, []);
 
   return (
@@ -400,20 +402,35 @@ export const Dashboard = ({ label }: Props) => {
   ];
   return (
     <Root>
+      <Header>
+        <img
+          css={css`
+            height: 92%;
+            width: auto;
+            align-self: center;
+          `}
+          src={logoImage}
+          width="180"
+        />
+      </Header>
       <Tabs
         css={css`
           grid-area: values;
+          /* header_height - tabs-height */
+          margin-top: 30px;
         `}
         pages={pages}
         index={tabIndex}
         onChange={setTabIndex}
       />
       <RightSide>
-        <RightHeader>
-          <img src={logoImage} width="180" />
-        </RightHeader>
         <Events>
-          <Legend css={css`margin-top: 10px`} entries={legendEntries} />
+          <Legend
+            css={css`
+              margin-top: 10px;
+            `}
+            entries={legendEntries}
+          />
           {fakeEventCardData.map((props, i) => (
             <EventsCard {...props} key={i} />
           ))}
