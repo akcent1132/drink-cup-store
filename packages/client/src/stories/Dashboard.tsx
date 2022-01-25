@@ -23,7 +23,6 @@ const Root = styled.div`
   width: 100%;
   height: 100%;
   min-height: 1600px;
-  padding-top: 32px;
   padding-left: 52px;
   box-sizing: border-box;
   background-image: linear-gradient(
@@ -49,13 +48,6 @@ const Header = styled.div`
   justify-content: flex-end;
   padding: 0 40px;
 `;
-
-interface Props {
-  /**
-   * Data name
-   */
-  label: string;
-}
 
 const PaneHead = styled.div`
   display: flex;
@@ -390,10 +382,66 @@ const legendEntries = [
   { color: "yellow", name: "weed contor" },
 ];
 
-/**
- * Primary UI component for user interaction
- */
-export const Dashboard = ({ label }: Props) => {
+const HyloDragger = styled.div<{
+  height: number;
+  headerHeight: number;
+  open: boolean;
+  hovering: boolean;
+}>`
+  width: 400px;
+  height: 600px;
+  position: fixed;
+  right: 40px;
+  bottom: ${(props) =>
+    props.open
+      ? 0
+      : props.headerHeight - props.height + (props.hovering ? 10 : 0)}px;
+  background-color: #00c6b4;
+  transition: bottom 0.3s cubic-bezier(0.14, -0.03, 0.49, 1.02);
+`;
+
+const HyloIFrame = styled.iframe`
+  width: 100%;
+  height: 100%;
+`;
+
+const HeaderClick = styled.div<{ open: boolean, headerHeight: number }>`
+  height: ${props => props.open ? `${props.headerHeight}px` : '100%'};
+  width: 100%;
+  position: absolute;
+  top: 0px;
+  cursor: pointer;
+`;
+
+const Hylo = ({
+  src = "https://www.hylo.com/groups/loud-cacti/explore",
+}: {
+  src: string;
+}) => {
+  const [open, setOpen] = useState(false);
+  const [hovering, setHovering] = useState(false);
+  return (
+    <HyloDragger height={600} headerHeight={56} open={open} hovering={hovering}>
+      <HyloIFrame src={src} title="Hylo Group" frameBorder="0"></HyloIFrame>
+      <HeaderClick
+        open={open}
+        headerHeight={56}
+        onClick={() => setOpen(!open)}
+        onMouseEnter={() => setHovering(true)}
+        onMouseLeave={() => setHovering(false)}
+      />
+    </HyloDragger>
+  );
+};
+
+interface Props {
+  /**
+   * URL for the Hylo iframe box
+   */
+  iframeSrc: string;
+}
+
+export const Dashboard = ({ iframeSrc }: Props) => {
   const [tabIndex, setTabIndex] = useState(0);
 
   const pages = [
@@ -435,6 +483,7 @@ export const Dashboard = ({ label }: Props) => {
             <EventsCard {...props} key={i} />
           ))}
         </Events>
+        <Hylo src={iframeSrc} />
       </RightSide>
     </Root>
   );
