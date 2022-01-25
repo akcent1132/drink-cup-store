@@ -7,7 +7,7 @@ import { EventsBar, FarmEvent } from "./EventsBar";
 const SIDE_PAD = 10;
 
 const Root = withTheme(styled.div<{ color: string }>`
-  border-left: 20px solid ${(props) => props.theme.color(props.color)};
+  border-right: 20px solid ${(props) => props.theme.color(props.color)};
   background-color: ${(props) => props.theme.colors.darkTransparent};
 `);
 

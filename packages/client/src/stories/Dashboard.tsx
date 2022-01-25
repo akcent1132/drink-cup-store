@@ -101,7 +101,7 @@ const RightSide = styled.div`
 
 const Events = styled.div`
   display: flex;
-  padding: 0px 40px 50px;
+  padding: 0px 40px 50px 0px;
   backdrop-filter: blur(12px);
   flex-direction: column;
   justify-content: flex-start;
@@ -388,7 +388,7 @@ const HyloDragger = styled.div<{
   open: boolean;
   hovering: boolean;
 }>`
-  width: 400px;
+  width: 450px;
   height: 600px;
   position: fixed;
   right: 40px;
