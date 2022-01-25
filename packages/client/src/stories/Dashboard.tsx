@@ -115,14 +115,6 @@ const Events = styled.div`
   gap: 20px;
 `;
 
-const FarmerName = withTheme(styled.div`
-  font-family: ${(props) => props.theme.fonts.baseBold};
-  padding: 20px 29px 0;
-  line-height: 5px;
-  font-size: 19px;
-  color: white;
-`);
-
 const COLORS = [
   "purple",
   "blue",
@@ -348,6 +340,8 @@ type Group = {
 
 const fakeEventCardData = [
   {
+    title: "Corn 2020",
+    name: "My Farm",
     color: "teal",
     params: {
       zone: "8b",
@@ -365,12 +359,14 @@ const fakeEventCardData = [
     ],
   },
   {
+    title: "Corn 2020",
+    name: "Farmer Pete",
     color: "orange",
     params: {
-      zone: "8b",
-      temperature: "65",
+      zone: "7a",
+      temperature: "67",
       precipitation: "47 in",
-      texture: "Sand: 38% | Slit 41% | Clay 21%",
+      texture: "Sand: 40% | Slit 38% | Clay 20%",
     },
     events: [
       { color: "violet", date: new Date("Thu May 12 2022") },
@@ -417,8 +413,7 @@ export const Dashboard = ({ label }: Props) => {
           <img src={logoImage} width="180" />
         </RightHeader>
         <Events>
-          <FarmerName>Individual farmer</FarmerName>
-          <Legend entries={legendEntries} />
+          <Legend css={css`margin-top: 10px`} entries={legendEntries} />
           {fakeEventCardData.map((props, i) => (
             <EventsCard {...props} key={i} />
           ))}

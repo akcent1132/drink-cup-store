@@ -41,16 +41,18 @@ type Entry = {
 }
 interface Props {
   entries: Entry[]
+  className?: string
 }
 
 /**
  * Legend component
  */
 export const Legend = ({
-  entries
+  entries,
+  className
 }: Props) => {
   return (
-    <Root>
+    <Root className={className}>
       {entries.map((entry, i) => <Tag key={i}><ColorDot color={entry.color} />{entry.name}</Tag>)}
     </Root>
   );

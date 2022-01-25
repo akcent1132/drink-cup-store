@@ -53,18 +53,22 @@ interface Props {
   color?: string;
   events?: FarmEvent[];
   params: { [key: string]: string };
+  title?: string,
+  name?: string,
 }
 
 export const EventsCard = ({
   color = "white",
   events = [],
   params = {},
+  title = "2020 Corn",
+  name = "My Farm"
 }: Props) => {
   return (
     <Root color={color}>
       <Head>
-        <Title>2020 Corn</Title>
-        <Name>Farmer Pete</Name>
+        <Title>{title}</Title>
+        <Name>{name}</Name>
       </Head>
       <Params>
         {Object.entries(params).map(([key, value]) => [
