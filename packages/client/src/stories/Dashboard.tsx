@@ -60,7 +60,7 @@ const PaneHead = styled.div`
 const RowContainer = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 12px 50px 50px 4px;
+  padding: 12px 20px 20px 20px;
 `;
 
 const RowGroup: React.FC<{
