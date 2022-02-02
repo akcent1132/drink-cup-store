@@ -1,6 +1,13 @@
 /** @jsxImportSource @emotion/react */
 
-import React, { useCallback, useEffect, useReducer, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import styled from "@emotion/styled";
 import "../index.css";
 import bgImage from "../assets/images/Background-corngrains.jpg";
@@ -16,6 +23,9 @@ import faker from "faker";
 import { sample, without } from "lodash";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { HyloBox } from "./HyloBox";
+import useScrollPosition from "@react-hook/window-scroll";
+import { useWindowWidth } from "@react-hook/window-size";
 
 // TODO read height from props
 
@@ -381,59 +391,6 @@ const legendEntries = [
   { color: "violet", name: "seeding" },
   { color: "yellow", name: "weed contor" },
 ];
-
-const HyloDragger = styled.div<{
-  height: number;
-  headerHeight: number;
-  open: boolean;
-  hovering: boolean;
-}>`
-  width: 450px;
-  height: 600px;
-  position: fixed;
-  right: 40px;
-  bottom: ${(props) =>
-    props.open
-      ? 0
-      : props.headerHeight - props.height + (props.hovering ? 10 : 0)}px;
-  background-color: #00c6b4;
-  transition: bottom 0.3s cubic-bezier(0.14, -0.03, 0.49, 1.02);
-`;
-
-const HyloIFrame = styled.iframe`
-  width: 100%;
-  height: 100%;
-`;
-
-const HeaderClick = styled.div<{ open: boolean, headerHeight: number }>`
-  height: ${props => props.open ? `${props.headerHeight}px` : '100%'};
-  width: 100%;
-  position: absolute;
-  top: 0px;
-  cursor: pointer;
-`;
-
-const Hylo = ({
-  src = "https://www.hylo.com/groups/loud-cacti/explore",
-}: {
-  src: string;
-}) => {
-  const [open, setOpen] = useState(false);
-  const [hovering, setHovering] = useState(false);
-  return (
-    <HyloDragger height={600} headerHeight={56} open={open} hovering={hovering}>
-      <HyloIFrame src={src} title="Hylo Group" frameBorder="0"></HyloIFrame>
-      <HeaderClick
-        open={open}
-        headerHeight={56}
-        onClick={() => setOpen(!open)}
-        onMouseEnter={() => setHovering(true)}
-        onMouseLeave={() => setHovering(false)}
-      />
-    </HyloDragger>
-  );
-};
-
 interface Props {
   /**
    * URL for the Hylo iframe box
@@ -443,6 +400,16 @@ interface Props {
 
 export const Dashboard = ({ iframeSrc }: Props) => {
   const [tabIndex, setTabIndex] = useState(0);
+  const rightSide = useRef<HTMLDivElement>(null);
+  const windowWidth = useWindowWidth();
+  const scrollY = useScrollPosition();
+
+  const [rightRect, setRightRect] = useState<DOMRect | null>(null);
+  useLayoutEffect(() => {
+    if (rightSide.current) {
+      setRightRect(rightSide.current.getBoundingClientRect());
+    }
+  }, [rightSide.current, windowWidth, scrollY]);
 
   const pages = [
     { label: "Compare", renderPanel: () => <RandomContent /> },
@@ -471,16 +438,14 @@ export const Dashboard = ({ iframeSrc }: Props) => {
         index={tabIndex}
         onChange={setTabIndex}
       />
-      <RightSide>
+      <RightSide ref={rightSide}>
         <Events>
-          <Legend
-            entries={legendEntries}
-          />
+          <Legend entries={legendEntries} />
           {fakeEventCardData.map((props, i) => (
             <EventsCard {...props} key={i} />
           ))}
         </Events>
-        <Hylo src={iframeSrc} />
+        {rightRect ? <HyloBox rect={rightRect} src={iframeSrc} /> : null}
       </RightSide>
     </Root>
   );
