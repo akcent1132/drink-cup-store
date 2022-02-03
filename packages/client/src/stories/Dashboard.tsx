@@ -20,7 +20,7 @@ import { Button } from "../components/Button";
 import { EventsCard } from "../components/EventsCard";
 import { Legend } from "../components/Legend";
 import faker from "faker";
-import { sample, without } from "lodash";
+import { findLastIndex, sample, without } from "lodash";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { HyloBox } from "./HyloBox";
@@ -71,39 +71,6 @@ const RowContainer = styled.div`
   flex-direction: column;
   padding: 12px 20px 20px 20px;
 `;
-
-const RowGroup: React.FC<{
-  name: string;
-  isAccordion?: boolean;
-  sub?: boolean;
-}> = ({ children, name, isAccordion, sub }) => {
-  const [open, setOpen] = useState(true);
-  const Icon = open ? ExpandMoreIcon : ChevronRightIcon;
-  return (
-    <>
-      <div
-        css={css`
-          display: flex;
-          margin: ${sub ? "10px 0 0px" : "14px 0 8px"};
-          cursor: ${isAccordion ? "pointer" : "auto"};
-        `}
-        onClick={() => setOpen(!open)}
-      >
-        {children && isAccordion ? (
-          <Icon sx={{ color: "white", fontSize: sub ? "15px" : "15px" }} />
-        ) : null}
-        <RowGroupText sub={sub}>{name}</RowGroupText>
-      </div>
-      {open ? children : null}
-    </>
-  );
-};
-
-const RowGroupText = withTheme(styled.div<{ sub?: boolean }>`
-  color: white;
-  font-family: ${(props) => props.theme.fonts.baseBold};
-  font-size: ${(props) => (props.sub ? 14 : 18)}px;
-`);
 
 const RightSide = styled.div`
   grid-area: events;
@@ -237,23 +204,67 @@ function hoverReducer(
 
 type RowData = { name: string; type: string; children?: RowData[] };
 
+const RowGroup: React.FC<{
+  name: string;
+  isAccordion?: boolean;
+  sub?: boolean;
+}> = ({ children, name, isAccordion, sub }) => {
+  const [open, setOpen] = useState(true);
+  const Icon = open ? ExpandMoreIcon : ChevronRightIcon;
+  return (
+    <>
+      <div
+        css={css`
+          display: flex;
+          margin: ${sub ? "10px 0 0px" : "14px 0 8px"};
+          cursor: ${isAccordion ? "pointer" : "auto"};
+        `}
+        onClick={() => setOpen(!open)}
+      >
+        {children && isAccordion ? (
+          <Icon sx={{ color: "white", fontSize: sub ? "15px" : "15px" }} />
+        ) : null}
+        <RowGroupText sub={sub}>{name}</RowGroupText>
+      </div>
+      {open ? children : null}
+    </>
+  );
+};
+
+const RowGroupText = withTheme(styled.div<{ sub?: boolean }>`
+  color: white;
+  font-family: ${(props) => props.theme.fonts.baseBold};
+  font-size: ${(props) => (props.sub ? 14 : 18)}px;
+`);
+
 const NestedRows = ({
   rows,
   groups,
   hoverState,
+  nesting = 0,
 }: {
   rows: RowData[];
   hoverState: string | null;
   groups: Group[];
-}) => (
-  <React.Fragment>
-    {rows.map(({ name, type, children = [] }, i) =>
-      type === "group" || type === "sub-group" ? (
-        <RowGroup key={i} name={name} sub={type === "sub-group"} isAccordion>
-          {/* @ts-ignore */}
-          <NestedRows rows={children} groups={groups} hoverState={hoverState} />
-        </RowGroup>
-      ) : (
+  nesting?: number;
+}) => {
+  const [open, setOpen] = useState(new Array(rows.length).fill(true));
+  const flattenRows = (
+    rows: RowData[],
+    nesting = 0
+  ): { row: RowData; nesting: number; childCount: number }[] =>
+    rows
+      .map((row) => {
+        const children = flattenRows(row.children || [], nesting + 1);
+        const childCount = children ? findLastIndex(children, {nesting: nesting+1}) + 1 : 0
+        return [{ row, nesting, childCount }, ...children];
+      })
+      .flat();
+
+  const flatRows = flattenRows(rows);
+  return (
+    <React.Fragment>
+      {flatRows.map(({ row: { name }, nesting, childCount }, i) => (
         <ValueDistribution
           key={i}
           label={name}
@@ -266,14 +277,13 @@ const NestedRows = ({
               isHighlighted: hoverState === orgName,
             })),
           ]}
-          css={css`
-            margin: 4px 0;
-          `}
+          nesting={nesting}
+          childCount={childCount}
         />
-      )
-    )}
-  </React.Fragment>
-);
+      ))}
+    </React.Fragment>
+  );
+};
 
 const RandomContent = () => {
   const [hoverState, hoverDispatch] = useReducer(hoverReducer, null);

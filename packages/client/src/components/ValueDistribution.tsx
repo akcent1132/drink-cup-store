@@ -10,7 +10,10 @@ import { pull, range, sortBy } from "lodash";
 // TODO read height from props
 
 export const defaultKnobs = Object.freeze({
-  barHeight: 24,
+  rowGap: 8,
+  rowHeight: 24,
+  tabSize: 6,
+  branchWidth: 3,
   tickWidth: 3,
   varianceLineHeight: 8,
   varianceStripeWidth: 8,
@@ -18,16 +21,22 @@ export const defaultKnobs = Object.freeze({
 
 const Bar = styled.div<{ knobs: typeof defaultKnobs }>`
   display: flex;
+  position: relative;
   width: 100%;
-  height: ${(props) => props.knobs.barHeight}px;
+  height: ${(p) => p.knobs.rowHeight}px;
+  margin: ${(p) => p.knobs.rowGap / 2}px 0;
 `;
 
-const Label = withTheme(styled.div<{ knobs: typeof defaultKnobs }>`
+const Label = withTheme(styled.div<{
+  knobs: typeof defaultKnobs;
+  nesting: number;
+}>`
   flex: 0;
-  margin-top: ${(props) => props.knobs.varianceLineHeight}px;
-  min-width: 145px;
+  margin-top: ${(p) => p.knobs.varianceLineHeight}px;
+  margin-left: ${(p) => p.nesting * p.knobs.tabSize}px;
+  min-width: ${(p) => 145 - p.nesting * p.knobs.tabSize}px;
   font-size: 14px;
-  font-family: ${(props) => props.theme.fonts.baseBold};
+  font-family: ${(p) => p.theme.fonts.baseBold};
   text-transform: uppercase;
   line-height: 20px;
   white-space: nowrap;
@@ -36,7 +45,19 @@ const Label = withTheme(styled.div<{ knobs: typeof defaultKnobs }>`
   padding: 0 4px;
   color: white;
   background-color: #80945a;
+  border-bottom-left-radius: ${(p) => p.nesting === 0 ? p.knobs.branchWidth : 0}px;
+  border-top-left-radius: ${(p) => p.nesting === 0 ? p.knobs.branchWidth : 0}px;
 `);
+
+const Branch = styled.div<{ knobs: typeof defaultKnobs; nesting: number, childCount: number }>`
+  width: ${(p) => p.knobs.branchWidth}px;
+  height: ${(p) => (p.knobs.rowGap + p.knobs.rowHeight) * p.childCount}px;
+  top: ${(p) => p.knobs.rowHeight}px;
+  left: ${(p) => (p.nesting + 1) * p.knobs.tabSize - p.knobs.branchWidth}px;
+  position: absolute;
+  background-color: #80945a;
+  border-bottom-left-radius: ${(p) => p.knobs.branchWidth}px;
+`;
 
 const Plot = styled.div`
   flex: 1;
@@ -66,6 +87,8 @@ type Props = {
   values: Values[];
   knobs?: Partial<typeof defaultKnobs>;
   className?: string;
+  nesting?: number;
+  childCount?: number;
 };
 
 /**
@@ -82,7 +105,7 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
       .domain([min || 0, max || 1])
       .rangeRound([0, canvas.width - knobs.tickWidth]);
   }, [allValues, canvas.width]);
-  const allMean = useMemo(() =>  mean(allValues) || 0, [allValues]);
+  const allMean = useMemo(() => mean(allValues) || 0, [allValues]);
 
   const varianceBounds = useMemo(() => {
     return sortBy(
@@ -201,24 +224,26 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
 
     // Draw mean
     ctx.beginPath();
-      ctx.fillStyle = theme.color('red');
-      ctx.rect(
-        scale(allMean),
-        knobs.varianceLineHeight,
-        knobs.tickWidth * 2,
-        canvas.height
-      );
-
+    ctx.fillStyle = theme.color("red");
+    ctx.rect(
+      scale(allMean),
+      knobs.varianceLineHeight,
+      knobs.tickWidth * 2,
+      canvas.height
+    );
 
     ctx.fill();
   }, [values, canvas, scale, allMean]);
 
   return (
     <Bar knobs={knobs} className={props.className}>
-      <Label knobs={knobs}>{label}</Label>
+      <Label knobs={knobs} nesting={props.nesting || 0}>
+        {label}
+      </Label>
       <Plot>
         <PlotCanvas ref={canvas.ref} />
       </Plot>
+      <Branch knobs={knobs} nesting={props.nesting || 0} childCount={props.childCount || 0} />
     </Bar>
   );
 };
