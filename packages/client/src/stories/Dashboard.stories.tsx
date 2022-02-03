@@ -1,13 +1,21 @@
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 
-import { Dashboard } from "./Dashboard";
+import { Dashboard, Knobs } from "./Dashboard";
 import { Global, css } from "@emotion/react";
+import { defaultKnobs as valueDistributionKnobs } from "../components/ValueDistribution";
+import { defaultKnobs as eventsBarKnobs } from "../components/EventsBar";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
   title: "Example/Dashboard",
   component: Dashboard,
+  args: {
+    knobs: {
+      valueDistribution: valueDistributionKnobs,
+      eventsBar: eventsBarKnobs,
+    },
+  },
   decorators: [
     (Story) => (
       <div>

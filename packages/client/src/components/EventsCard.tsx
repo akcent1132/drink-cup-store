@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { withTheme } from "@emotion/react";
 import "../index.css";
-import { EventsBar, FarmEvent } from "./EventsBar";
+import { EventsBar, FarmEvent, defaultKnobs as defaultEventsBarKnobs } from "./EventsBar";
 
 const SIDE_PAD = 10;
 
@@ -55,6 +55,7 @@ interface Props {
   params: { [key: string]: string };
   title?: string,
   name?: string,
+  eventsBarKnobs?: typeof defaultEventsBarKnobs,
 }
 
 export const EventsCard = ({
@@ -62,7 +63,8 @@ export const EventsCard = ({
   events = [],
   params = {},
   title = "2020 Corn",
-  name = "My Farm"
+  name = "My Farm",
+  eventsBarKnobs,
 }: Props) => {
   return (
     <Root color={color}>
@@ -76,7 +78,7 @@ export const EventsCard = ({
           <ParamValue>{value}</ParamValue>,
         ])}
       </Params>
-      <EventsBar events={events} />
+      <EventsBar events={events} knobs={eventsBarKnobs}/>
     </Root>
   );
 };

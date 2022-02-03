@@ -13,7 +13,11 @@ import "../index.css";
 import bgImage from "../assets/images/Background-corngrains.jpg";
 import logoImage from "../assets/images/Farmers-coffeeshop-logo-white_transparent.png";
 import { Tabs } from "../components/Tabs";
-import { ValueDistribution } from "../components/ValueDistribution";
+import {
+  ValueDistribution,
+  defaultKnobs as defaultValueDistributionKnobs,
+} from "../components/ValueDistribution";
+import { defaultKnobs as defaultEventsBarKnobs } from '../components/EventsBar';
 import { css, withTheme } from "@emotion/react";
 import { genDataPoints } from "../utils/random";
 import { Button } from "../components/Button";
@@ -26,6 +30,11 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { HyloBox } from "./HyloBox";
 import useScrollPosition from "@react-hook/window-scroll";
 import { useWindowWidth } from "@react-hook/window-size";
+
+export type Knobs = {
+  valueDistribution: typeof defaultValueDistributionKnobs,
+  eventsBar: typeof defaultEventsBarKnobs,
+}
 
 // TODO read height from props
 
@@ -241,12 +250,12 @@ const NestedRows = ({
   rows,
   groups,
   hoverState,
-  nesting = 0,
+  knobs,
 }: {
   rows: RowData[];
   hoverState: string | null;
   groups: Group[];
-  nesting?: number;
+  knobs: Knobs,
 }) => {
   const [open, setOpen] = useState(new Array(rows.length).fill(true));
   const flattenRows = (
@@ -256,7 +265,9 @@ const NestedRows = ({
     rows
       .map((row) => {
         const children = flattenRows(row.children || [], nesting + 1);
-        const childCount = children ? findLastIndex(children, {nesting: nesting+1}) + 1 : 0
+        const childCount = children
+          ? findLastIndex(children, { nesting: nesting + 1 }) + 1
+          : 0;
         return [{ row, nesting, childCount }, ...children];
       })
       .flat();
@@ -279,13 +290,14 @@ const NestedRows = ({
           ]}
           nesting={nesting}
           childCount={childCount}
+          knobs={knobs.valueDistribution}
         />
       ))}
     </React.Fragment>
   );
 };
 
-const RandomContent = () => {
+const RandomContent = ({knobs}: {knobs: Knobs}) => {
   const [hoverState, hoverDispatch] = useReducer(hoverReducer, null);
   const [groups, setGroups] = useState<Group[]>([]);
 
@@ -342,7 +354,7 @@ const RandomContent = () => {
           onClick={() => addGroup()}
         />
       </PaneHead>
-      <NestedRows rows={ROWS} groups={groups} hoverState={hoverState} />
+      <NestedRows rows={ROWS} groups={groups} hoverState={hoverState} knobs={knobs} />
     </RowContainer>
   );
 };
@@ -406,9 +418,10 @@ interface Props {
    * URL for the Hylo iframe box
    */
   iframeSrc: string;
+  knobs: Knobs
 }
 
-export const Dashboard = ({ iframeSrc }: Props) => {
+export const Dashboard = ({ iframeSrc, knobs }: Props) => {
   const [tabIndex, setTabIndex] = useState(0);
   const rightSide = useRef<HTMLDivElement>(null);
   const windowWidth = useWindowWidth();
@@ -422,9 +435,20 @@ export const Dashboard = ({ iframeSrc }: Props) => {
   }, [rightSide.current, windowWidth, scrollY]);
 
   const pages = [
-    { label: "Compare", renderPanel: () => <RandomContent /> },
-    { label: "My Data", renderPanel: () => <RandomContent /> },
+    {
+      label: "Compare",
+      renderPanel: () => (
+        <RandomContent knobs={knobs} />
+      ),
+    },
+    {
+      label: "My Data",
+      renderPanel: () => (
+        <RandomContent knobs={knobs} />
+      ),
+    },
   ];
+
   return (
     <Root>
       <Header>
@@ -452,7 +476,7 @@ export const Dashboard = ({ iframeSrc }: Props) => {
         <Events>
           <Legend entries={legendEntries} />
           {fakeEventCardData.map((props, i) => (
-            <EventsCard {...props} key={i} />
+            <EventsCard {...props} eventsBarKnobs={knobs.eventsBar} key={i} />
           ))}
         </Events>
         {rightRect ? <HyloBox rect={rightRect} src={iframeSrc} /> : null}
