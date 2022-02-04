@@ -30,26 +30,38 @@ const Bar = styled.div<{ knobs: typeof defaultKnobs }>`
 const Label = withTheme(styled.div<{
   knobs: typeof defaultKnobs;
   nesting: number;
+  childCount: number;
 }>`
   flex: 0;
   margin-top: ${(p) => p.knobs.varianceLineHeight}px;
   margin-left: ${(p) => p.nesting * p.knobs.tabSize}px;
   min-width: ${(p) => 145 - p.nesting * p.knobs.tabSize}px;
-  font-size: 14px;
-  font-family: ${(p) => p.theme.fonts.baseBold};
+  font-size: 13.5px;
+  font-family: ${(p) => p.theme.font};
+  font-weight: ${(p) => (p.childCount > 0 ? 700 : 400)};
   text-transform: uppercase;
-  line-height: 20px;
+  line-height: ${(p) => p.knobs.rowHeight - p.knobs.varianceLineHeight}px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   padding: 0 4px;
   color: white;
   background-color: #80945a;
-  border-bottom-left-radius: ${(p) => p.nesting === 0 ? p.knobs.branchWidth : 0}px;
-  border-top-left-radius: ${(p) => p.nesting === 0 ? p.knobs.branchWidth : 0}px;
+  ${(p) =>
+    p.childCount === 0
+      ? `background: linear-gradient(to right, #80945a, #6E8248 6px);`
+      : ""}
+  border-bottom-left-radius: ${(p) =>
+    p.nesting === 0 ? p.knobs.branchWidth : 0}px;
+  border-top-left-radius: ${(p) =>
+    p.nesting === 0 ? p.knobs.branchWidth : 0}px;
 `);
 
-const Branch = styled.div<{ knobs: typeof defaultKnobs; nesting: number, childCount: number }>`
+const Branch = styled.div<{
+  knobs: typeof defaultKnobs;
+  nesting: number;
+  childCount: number;
+}>`
   width: ${(p) => p.knobs.branchWidth}px;
   height: ${(p) => (p.knobs.rowGap + p.knobs.rowHeight) * p.childCount}px;
   top: ${(p) => p.knobs.rowHeight}px;
@@ -132,7 +144,7 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
       return;
     }
     // draw background
-    ctx.fillStyle = "#091d00";
+    ctx.fillStyle = props.childCount === 0 ? "#123104" : "#091d00";
     ctx.rect(0, knobs.varianceLineHeight, canvas.width, canvas.height);
     ctx.fill();
 
@@ -237,13 +249,21 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
 
   return (
     <Bar knobs={knobs} className={props.className}>
-      <Label knobs={knobs} nesting={props.nesting || 0}>
+      <Label
+        knobs={knobs}
+        nesting={props.nesting || 0}
+        childCount={props.childCount || 0}
+      >
         {label}
       </Label>
       <Plot>
         <PlotCanvas ref={canvas.ref} />
       </Plot>
-      <Branch knobs={knobs} nesting={props.nesting || 0} childCount={props.childCount || 0} />
+      <Branch
+        knobs={knobs}
+        nesting={props.nesting || 0}
+        childCount={props.childCount || 0}
+      />
     </Bar>
   );
 };
