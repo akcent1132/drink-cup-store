@@ -21,5 +21,6 @@ declare module "@emotion/react" {
       baseBold: string;
       baseBoldItalic: string;
     };
+    font: string;
   }
 }

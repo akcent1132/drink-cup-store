@@ -26,4 +26,5 @@ export const theme = {
   color: (color: string) => (colors as IDictionary)[color] || color,
   colors,
   fonts,
+  font: "'Roboto', sans-serif"
 };
