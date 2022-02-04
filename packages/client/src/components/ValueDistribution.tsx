@@ -19,9 +19,10 @@ export const defaultKnobs = Object.freeze({
   varianceStripeWidth: 8,
 });
 
-const Bar = styled.div<{ knobs: typeof defaultKnobs }>`
+const Bar = styled.div<{ knobs: typeof defaultKnobs, hideBranches: number }>`
   display: flex;
   position: relative;
+  padding-left: ${p=>p.hideBranches * p.knobs.tabSize}px;
   width: 100%;
   height: ${(p) => p.knobs.rowHeight}px;
   margin: ${(p) => p.knobs.rowGap / 2}px 0;
@@ -34,7 +35,6 @@ const Label = withTheme(styled.div<{
 }>`
   flex: 0;
   margin-top: ${(p) => p.knobs.varianceLineHeight}px;
-  margin-left: ${(p) => p.nesting * p.knobs.tabSize}px;
   min-width: ${(p) => 145 - p.nesting * p.knobs.tabSize}px;
   font-size: 13.5px;
   font-family: ${(p) => p.theme.font};
@@ -57,18 +57,34 @@ const Label = withTheme(styled.div<{
     p.nesting === 0 ? p.knobs.branchWidth : 0}px;
 `);
 
-const Branch = styled.div<{
+const BranchDown = styled.div<{
   knobs: typeof defaultKnobs;
   nesting: number;
   childCount: number;
 }>`
   width: ${(p) => p.knobs.branchWidth}px;
-  height: ${(p) => (p.knobs.rowGap + p.knobs.rowHeight) * p.childCount}px;
+  height: ${(p) => p.knobs.rowGap / 2}px;
   top: ${(p) => p.knobs.rowHeight}px;
   left: ${(p) => (p.nesting + 1) * p.knobs.tabSize - p.knobs.branchWidth}px;
   position: absolute;
   background-color: #80945a;
-  border-bottom-left-radius: ${(p) => p.knobs.branchWidth}px;
+  // border-bottom-left-radius: ${(p) => p.knobs.branchWidth}px;
+`;
+
+const BranchLeft = styled.div<{
+  knobs: typeof defaultKnobs;
+  isEnd: boolean;
+}>`
+  width: ${(p) => p.knobs.branchWidth}px;
+  height: ${(p) => p.knobs.rowHeight + (p.isEnd ? p.knobs.rowGap / 2 : p.knobs.rowGap)}px;
+  margin-left: ${(p) => p.knobs.tabSize - p.knobs.branchWidth}px;
+  position: relative;
+  top: ${p => -p.knobs.rowGap/2}px;
+  background-color: #80945a;
+  ${(p) =>
+    p.isEnd
+      ? `border-bottom-left-radius: ${p.knobs.branchWidth}px;`
+      : ""}
 `;
 
 const Plot = styled.div`
@@ -99,8 +115,10 @@ type Props = {
   values: Values[];
   knobs?: Partial<typeof defaultKnobs>;
   className?: string;
-  nesting?: number;
-  childCount?: number;
+  nesting: number;
+  childCount: number;
+  isLastChild: boolean;
+  hideBranches: number;
 };
 
 /**
@@ -247,8 +265,14 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
     ctx.fill();
   }, [values, canvas, scale, allMean]);
 
+
+  const leftBranches = props.nesting - props.hideBranches;
+
   return (
-    <Bar knobs={knobs} className={props.className}>
+    <Bar knobs={knobs} className={props.className} hideBranches={props.hideBranches}>
+      {range(leftBranches).map((i) => (
+        <BranchLeft knobs={knobs} isEnd={props.isLastChild && i === leftBranches-1} />
+      ))}
       <Label
         knobs={knobs}
         nesting={props.nesting || 0}
@@ -259,11 +283,13 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
       <Plot>
         <PlotCanvas ref={canvas.ref} />
       </Plot>
-      <Branch
-        knobs={knobs}
-        nesting={props.nesting || 0}
-        childCount={props.childCount || 0}
-      />
+      {props.childCount !== 0 ? (
+        <BranchDown
+          knobs={knobs}
+          nesting={props.nesting || 0}
+          childCount={props.childCount || 0}
+        />
+      ) : null}
     </Bar>
   );
 };

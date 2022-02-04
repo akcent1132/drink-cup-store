@@ -17,14 +17,14 @@ import {
   ValueDistribution,
   defaultKnobs as defaultValueDistributionKnobs,
 } from "../components/ValueDistribution";
-import { defaultKnobs as defaultEventsBarKnobs } from '../components/EventsBar';
+import { defaultKnobs as defaultEventsBarKnobs } from "../components/EventsBar";
 import { css, withTheme } from "@emotion/react";
 import { genDataPoints } from "../utils/random";
 import { Button } from "../components/Button";
 import { EventsCard } from "../components/EventsCard";
 import { Legend } from "../components/Legend";
 import faker from "faker";
-import { findLastIndex, sample, without } from "lodash";
+import { findLastIndex, last, sample, without } from "lodash";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { HyloBox } from "./HyloBox";
@@ -32,9 +32,9 @@ import useScrollPosition from "@react-hook/window-scroll";
 import { useWindowWidth } from "@react-hook/window-size";
 
 export type Knobs = {
-  valueDistribution: typeof defaultValueDistributionKnobs,
-  eventsBar: typeof defaultEventsBarKnobs,
-}
+  valueDistribution: typeof defaultValueDistributionKnobs;
+  eventsBar: typeof defaultEventsBarKnobs;
+};
 
 // TODO read height from props
 
@@ -213,38 +213,37 @@ function hoverReducer(
 
 type RowData = { name: string; type: string; children?: RowData[] };
 
-const RowGroup: React.FC<{
-  name: string;
-  isAccordion?: boolean;
-  sub?: boolean;
-}> = ({ children, name, isAccordion, sub }) => {
-  const [open, setOpen] = useState(true);
-  const Icon = open ? ExpandMoreIcon : ChevronRightIcon;
-  return (
-    <>
-      <div
-        css={css`
-          display: flex;
-          margin: ${sub ? "10px 0 0px" : "14px 0 8px"};
-          cursor: ${isAccordion ? "pointer" : "auto"};
-        `}
-        onClick={() => setOpen(!open)}
-      >
-        {children && isAccordion ? (
-          <Icon sx={{ color: "white", fontSize: sub ? "15px" : "15px" }} />
-        ) : null}
-        <RowGroupText sub={sub}>{name}</RowGroupText>
-      </div>
-      {open ? children : null}
-    </>
-  );
-};
-
-const RowGroupText = withTheme(styled.div<{ sub?: boolean }>`
-  color: white;
-  font-family: ${(props) => props.theme.fonts.baseBold};
-  font-size: ${(props) => (props.sub ? 14 : 18)}px;
-`);
+const flattenRows = (
+  rows: RowData[],
+  nesting = 0
+): {
+  row: RowData;
+  nesting: number;
+  childCount: number;
+  isLastChild: boolean;
+  hideBranches: number;
+}[] =>
+  rows
+    .map((row) => {
+      const children = flattenRows(row.children || [], nesting + 1);
+      const childCount = children
+        ? findLastIndex(children, { nesting: nesting + 1 }) + 1
+        : 0;
+      children
+        .slice(childCount)
+        .forEach((child) => (child.hideBranches += 1));
+      return [
+        {
+          row,
+          nesting,
+          childCount,
+          isLastChild: row === last(rows),
+          hideBranches: 0,
+        },
+        ...children,
+      ];
+    })
+    .flat();
 
 const NestedRows = ({
   rows,
@@ -255,49 +254,43 @@ const NestedRows = ({
   rows: RowData[];
   hoverState: string | null;
   groups: Group[];
-  knobs: Knobs,
+  knobs: Knobs;
 }) => {
   const [open, setOpen] = useState(new Array(rows.length).fill(true));
-  const flattenRows = (
-    rows: RowData[],
-    nesting = 0
-  ): { row: RowData; nesting: number; childCount: number }[] =>
-    rows
-      .map((row) => {
-        const children = flattenRows(row.children || [], nesting + 1);
-        const childCount = children
-          ? findLastIndex(children, { nesting: nesting + 1 }) + 1
-          : 0;
-        return [{ row, nesting, childCount }, ...children];
-      })
-      .flat();
 
   const flatRows = flattenRows(rows);
   return (
     <React.Fragment>
-      {flatRows.map(({ row: { name }, nesting, childCount }, i) => (
-        <ValueDistribution
-          key={i}
-          label={name}
-          values={[
-            { color: "grey", values: genDataPoints(name, 80, 10) },
-            ...groups.map(({ color, name: orgName }) => ({
-              color,
-              values: genDataPoints(name + orgName, 32),
-              showVariance: true,
-              isHighlighted: hoverState === orgName,
-            })),
-          ]}
-          nesting={nesting}
-          childCount={childCount}
-          knobs={knobs.valueDistribution}
-        />
-      ))}
+      {flatRows.map(
+        (
+          { row: { name }, nesting, childCount, isLastChild, hideBranches },
+          i
+        ) => (
+          <ValueDistribution
+            key={i}
+            label={name}
+            values={[
+              { color: "grey", values: genDataPoints(name, 80, 10) },
+              ...groups.map(({ color, name: orgName }) => ({
+                color,
+                values: genDataPoints(name + orgName, 32),
+                showVariance: true,
+                isHighlighted: hoverState === orgName,
+              })),
+            ]}
+            nesting={nesting}
+            childCount={childCount}
+            isLastChild={isLastChild}
+            hideBranches={hideBranches}
+            knobs={knobs.valueDistribution}
+          />
+        )
+      )}
     </React.Fragment>
   );
 };
 
-const RandomContent = ({knobs}: {knobs: Knobs}) => {
+const RandomContent = ({ knobs }: { knobs: Knobs }) => {
   const [hoverState, hoverDispatch] = useReducer(hoverReducer, null);
   const [groups, setGroups] = useState<Group[]>([]);
 
@@ -354,7 +347,12 @@ const RandomContent = ({knobs}: {knobs: Knobs}) => {
           onClick={() => addGroup()}
         />
       </PaneHead>
-      <NestedRows rows={ROWS} groups={groups} hoverState={hoverState} knobs={knobs} />
+      <NestedRows
+        rows={ROWS}
+        groups={groups}
+        hoverState={hoverState}
+        knobs={knobs}
+      />
     </RowContainer>
   );
 };
@@ -418,7 +416,7 @@ interface Props {
    * URL for the Hylo iframe box
    */
   iframeSrc: string;
-  knobs: Knobs
+  knobs: Knobs;
 }
 
 export const Dashboard = ({ iframeSrc, knobs }: Props) => {
@@ -437,15 +435,11 @@ export const Dashboard = ({ iframeSrc, knobs }: Props) => {
   const pages = [
     {
       label: "Compare",
-      renderPanel: () => (
-        <RandomContent knobs={knobs} />
-      ),
+      renderPanel: () => <RandomContent knobs={knobs} />,
     },
     {
       label: "My Data",
-      renderPanel: () => (
-        <RandomContent knobs={knobs} />
-      ),
+      renderPanel: () => <RandomContent knobs={knobs} />,
     },
   ];
 
