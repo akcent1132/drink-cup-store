@@ -19,10 +19,9 @@ export const defaultKnobs = Object.freeze({
   varianceStripeWidth: 8,
 });
 
-const Bar = styled.div<{ knobs: typeof defaultKnobs, hideBranches: number }>`
+const Bar = styled.div<{ knobs: typeof defaultKnobs }>`
   display: flex;
   position: relative;
-  padding-left: ${p=>p.hideBranches * p.knobs.tabSize}px;
   width: 100%;
   height: ${(p) => p.knobs.rowHeight}px;
   margin: ${(p) => p.knobs.rowGap / 2}px 0;
@@ -85,6 +84,12 @@ const BranchLeft = styled.div<{
     p.isEnd
       ? `border-bottom-left-radius: ${p.knobs.branchWidth}px;`
       : ""}
+`;
+
+const BranchLeftHidden = styled.div<{
+  knobs: typeof defaultKnobs;
+}>`
+  width: ${(p) => p.knobs.tabSize}px;
 `;
 
 const Plot = styled.div`
@@ -269,7 +274,10 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
   const leftBranches = props.nesting - props.hideBranches;
 
   return (
-    <Bar knobs={knobs} className={props.className} hideBranches={props.hideBranches}>
+    <Bar knobs={knobs} className={props.className}>
+      {range(props.hideBranches).map((i) => (
+        <BranchLeftHidden knobs={knobs} />
+      ))}
       {range(leftBranches).map((i) => (
         <BranchLeft knobs={knobs} isEnd={props.isLastChild && i === leftBranches-1} />
       ))}
