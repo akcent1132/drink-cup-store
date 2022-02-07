@@ -1,5 +1,5 @@
-import { findLastIndex, last } from "lodash";
-import React, { useState } from "react";
+import { findIndex, findLastIndex, last, range } from "lodash";
+import React, { useCallback, useMemo, useState } from "react";
 import { ValueDistribution } from "../components/ValueDistribution";
 import { genDataPoints } from "../utils/random";
 import { Knobs } from "./Dashboard";
@@ -9,7 +9,8 @@ export type Group = { color: string; name: string };
 
 const flattenRows = (
   rows: RowData[],
-  nesting = 0
+  nesting = 0,
+  parentClosed = false
 ): {
   row: RowData;
   nesting: number;
@@ -48,9 +49,42 @@ export const NestedRows = ({
   groups: Group[];
   knobs: Knobs;
 }) => {
-  const [open, setOpen] = useState(new Array(rows.length).fill(true));
+  const flatRows = useMemo(() => flattenRows(rows), [rows]);
+  const [isClosed, setIsClosed] = useState<boolean[]>(
+    new Array(rows.length).fill(false)
+  );
+  const toggleOpen = useCallback(
+    (rowIndex: number) => {
+      const states = [...isClosed];
+      states[rowIndex] = !states[rowIndex];
+      setIsClosed(states);
+    },
+    [isClosed]
+  );
+  const openStates = useMemo(() => {
+    let closedAtLevel = -1;
+    return flatRows.map(({ nesting }, rowIndex) => {
+      if (closedAtLevel < 0) {
+        if (isClosed[rowIndex]) {
+          closedAtLevel = nesting;
+          return "closed";
+        } else {
+          return "open";
+        }
+      } else {
+        if (closedAtLevel < nesting) {
+          return "parentClosed";
+        } else if (isClosed[rowIndex]) {
+          closedAtLevel = nesting;
+          return "closed";
+        } else {
+          closedAtLevel = -1;
+          return "open";
+        }
+      }
+    });
+  }, [flatRows, isClosed]);
 
-  const flatRows = flattenRows(rows);
   return (
     <React.Fragment>
       {flatRows.map(
@@ -75,6 +109,8 @@ export const NestedRows = ({
             isLastChild={isLastChild}
             hideBranches={hideBranches}
             knobs={knobs.valueDistribution}
+            onToggleChildren={() => toggleOpen(i)}
+            openState={openStates[i]}
           />
         )
       )}

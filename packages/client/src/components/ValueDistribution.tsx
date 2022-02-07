@@ -1,11 +1,13 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styled from "@emotion/styled";
 import "../index.css";
 import { useCanvas } from "../utils/useCanvas";
-import { useTheme, withTheme } from "@emotion/react";
+import { css, useTheme, withTheme } from "@emotion/react";
 import { scaleLinear } from "d3-scale";
 import { extent, mean, quantile, zip } from "d3-array";
 import { pull, range, sortBy } from "lodash";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
 // TODO read height from props
 
@@ -19,21 +21,33 @@ export const defaultKnobs = Object.freeze({
   varianceStripeWidth: 8,
 });
 
-const Bar = styled.div<{ knobs: typeof defaultKnobs }>`
+type OpenState = "open" | "closed" | "parentClosed";
+
+const Bar = styled.div<{
+  knobs: typeof defaultKnobs;
+  openState: OpenState;
+}>`
   display: flex;
   position: relative;
   width: 100%;
-  height: ${(p) => p.knobs.rowHeight}px;
-  margin: ${(p) => p.knobs.rowGap / 2}px 0;
+  height: ${(p) =>
+    p.openState === "parentClosed" ? 0 : p.knobs.rowHeight + p.knobs.rowGap}px;
+  opacity: ${(p) => (p.openState === "parentClosed" ? 0 : 1)};
+  pointer-events: ${(p) => (p.openState === "parentClosed" ? "none" : "auto")};
+  transition: all 0.3s cubic-bezier(0.17, 0.42, 0.28, 0.99);
+  transform: translateY(${p => p.openState === "parentClosed" ? -12 : 0}px);
 `;
 
 const Label = withTheme(styled.div<{
   knobs: typeof defaultKnobs;
   nesting: number;
   childCount: number;
+  isHovering: boolean;
 }>`
   flex: 0;
-  margin-top: ${(p) => p.knobs.varianceLineHeight}px;
+  position: relative;
+  margin-top: ${(p) => p.knobs.varianceLineHeight + p.knobs.rowGap / 2}px;
+  margin-bottom: ${(p) => p.knobs.rowGap / 2}px;
   min-width: ${(p) => 145 - p.nesting * p.knobs.tabSize}px;
   font-size: 13.5px;
   font-family: ${(p) => p.theme.font};
@@ -54,20 +68,26 @@ const Label = withTheme(styled.div<{
     p.nesting === 0 ? p.knobs.branchWidth : 0}px;
   border-top-left-radius: ${(p) =>
     p.nesting === 0 ? p.knobs.branchWidth : 0}px;
+  // box-shadow: 0px ${(p) => (p.isHovering ? 5 : 0)}px 0px 0px #6e8248;
+  transition: all 0.2s cubic-bezier(0.17, 0.42, 0.28, 0.99);
+  cursor: pointer;
 `);
 
 const BranchDown = styled.div<{
   knobs: typeof defaultKnobs;
   nesting: number;
   childCount: number;
+  isClosed: boolean;
+  isHovering: boolean;
 }>`
   width: ${(p) => p.knobs.branchWidth}px;
-  height: ${(p) => p.knobs.rowGap / 2}px;
+  height: ${(p) =>
+    p.isClosed && !p.isHovering ? p.knobs.rowGap / 4 : p.knobs.rowGap / 2}px;
   top: ${(p) => p.knobs.rowHeight}px;
   left: ${(p) => (p.nesting + 1) * p.knobs.tabSize - p.knobs.branchWidth}px;
   position: absolute;
   background-color: #80945a;
-  // border-bottom-left-radius: ${(p) => p.knobs.branchWidth}px;
+  transition: all 0.2s cubic-bezier(0.17, 0.42, 0.28, 0.99);
 `;
 
 const BranchLeft = styled.div<{
@@ -75,15 +95,13 @@ const BranchLeft = styled.div<{
   isEnd: boolean;
 }>`
   width: ${(p) => p.knobs.branchWidth}px;
-  height: ${(p) => p.knobs.rowHeight + (p.isEnd ? p.knobs.rowGap / 2 : p.knobs.rowGap)}px;
+  height: 100%;
   margin-left: ${(p) => p.knobs.tabSize - p.knobs.branchWidth}px;
   position: relative;
-  top: ${p => -p.knobs.rowGap/2}px;
+  top: ${(p) => -p.knobs.rowGap / 2}px;
   background-color: #80945a;
   ${(p) =>
-    p.isEnd
-      ? `border-bottom-left-radius: ${p.knobs.branchWidth}px;`
-      : ""}
+    p.isEnd ? `border-bottom-left-radius: ${p.knobs.branchWidth}px;` : ""}
 `;
 
 const BranchLeftHidden = styled.div<{
@@ -92,17 +110,28 @@ const BranchLeftHidden = styled.div<{
   width: ${(p) => p.knobs.tabSize}px;
 `;
 
-const Plot = styled.div`
+const Plot = styled.div<{ knobs: typeof defaultKnobs }>`
   flex: 1;
-  height: 100%;
   min-width: 0px;
   position: relative;
+  margin: ${(p) => p.knobs.rowGap / 2}px 0;
 `;
 
 const PlotCanvas = styled.canvas`
   width: 100%;
   position: absolute;
   height: 100%;
+`;
+
+const LabelIcon = styled.div`
+  display: flex;
+  align-content: center;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
 `;
 
 type Values = {
@@ -124,12 +153,15 @@ type Props = {
   childCount: number;
   isLastChild: boolean;
   hideBranches: number;
+  onToggleChildren: () => void;
+  openState: "open" | "closed" | "parentClosed";
 };
 
 /**
  * Primary UI component for user interaction
  */
 export const ValueDistribution = ({ label, values, ...props }: Props) => {
+  const [isHovering, setIsHovering] = useState(false);
   const knobs = { ...defaultKnobs, ...props.knobs };
   const theme = useTheme();
   const canvas = useCanvas();
@@ -270,34 +302,51 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
     ctx.fill();
   }, [values, canvas, scale, allMean]);
 
-
   const leftBranches = props.nesting - props.hideBranches;
 
   return (
-    <Bar knobs={knobs} className={props.className}>
+    <Bar knobs={knobs} className={props.className} openState={props.openState}>
       {range(props.hideBranches).map((i) => (
         <BranchLeftHidden knobs={knobs} />
       ))}
       {range(leftBranches).map((i) => (
-        <BranchLeft knobs={knobs} isEnd={props.isLastChild && i === leftBranches-1} />
+        <BranchLeft
+          knobs={knobs}
+          isEnd={props.isLastChild && i === leftBranches - 1}
+        />
       ))}
       <Label
         knobs={knobs}
         nesting={props.nesting || 0}
         childCount={props.childCount || 0}
+        onClick={() => props.onToggleChildren()}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
+        isHovering={isHovering && props.openState === "closed"}
       >
         {label}
+        {isHovering && props.childCount > 0 ? (
+          <LabelIcon>
+            {props.openState === "open" ? (
+              <ExpandLessIcon fontSize="inherit" />
+            ) : (
+              <ExpandMoreIcon fontSize="inherit" />
+            )}
+          </LabelIcon>
+        ) : null}
       </Label>
-      <Plot>
+      <Plot knobs={knobs}>
         <PlotCanvas ref={canvas.ref} />
       </Plot>
-      {props.childCount !== 0 ? (
+      {/* {props.childCount !== 0 ? (
         <BranchDown
           knobs={knobs}
           nesting={props.nesting || 0}
           childCount={props.childCount || 0}
+          isClosed={props.openState === "closed"}
+          isHovering={isHovering}
         />
-      ) : null}
+      ) : null} */}
     </Bar>
   );
 };
