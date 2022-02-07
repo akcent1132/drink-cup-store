@@ -35,6 +35,7 @@ const HeaderClick = styled.div<{ open: boolean; headerHeight: number }>`
   position: absolute;
   top: 0px;
   cursor: pointer;
+  clip-path: ${p => p.open ? 'polygon(91px 0px,89px 100%,335px 100%,335px 16px,356px 16px,356px 40px,335px 40px,335px 100%, 100% 100%,100% 0px)' : 'none'};
 `;
 
 export const HyloBox = ({
