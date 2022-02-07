@@ -8,6 +8,7 @@ import { extent, mean, quantile, zip } from "d3-array";
 import { pull, range, sortBy } from "lodash";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import tinycolor from "tinycolor2";
 
 // TODO read height from props
 
@@ -203,76 +204,41 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
     ctx.rect(0, knobs.varianceLineHeight, canvas.width, canvas.height);
     ctx.fill();
 
-    const currentColors: string[] = [];
-    let lastValue = 0;
-    for (const { type, color, value } of varianceBounds) {
-      const hFr2 = knobs.varianceLineHeight / 2;
-      const xStart = scale(lastValue);
-      const xValue = scale(value);
-      const xWidth = xValue - xStart;
-      ctx.beginPath();
-      ctx.fillStyle = theme.color(color);
-      ctx.moveTo(xValue, 0);
-      ctx.lineTo(xValue, hFr2);
-      if (type === "start") {
-        ctx.lineTo(xValue + hFr2, hFr2);
-      } else {
-        ctx.lineTo(xValue - hFr2, hFr2);
-      }
-      ctx.closePath();
-      ctx.fill();
-
-      // if (currentColors.length === 1) {
-      //   ctx.beginPath();
-      //   ctx.fillStyle = theme.color(currentColors[0]);
-      //   ctx.rect(xStart, hFr2, xWidth, hFr2);
-      //   ctx.fill();
-
-      //   // draw overlapping lines
-      // } else if (currentColors.length > 1) {
-      //   ctx.save();
-      //   let region = new Path2D();
-      //   region.rect(xStart, hFr2, xWidth, hFr2);
-      //   ctx.clip(region);
-      //   ctx.lineCap = "square";
-      //   ctx.lineWidth = knobs.varianceStripeWidth;
-      //   const steps = [
-      //     ...range(xStart, xStart + xWidth, knobs.varianceStripeWidth),
-      //     xStart + xWidth,
-      //   ];
-      //   steps.forEach((x, i) => {
-      //     ctx.beginPath();
-      //     ctx.strokeStyle = theme.color(
-      //       currentColors[i % currentColors.length]
-      //     );
-      //     ctx.moveTo(x, hFr2);
-      //     ctx.lineTo(x - hFr2, knobs.varianceLineHeight);
-      //     ctx.stroke();
-      //   });
-      //   ctx.restore();
-      // }
-      lastValue = value;
-      if (type === "start") {
-        currentColors.push(color);
-      } else {
-        pull(currentColors, color);
-      }
-    }
-
     for (const valueSet of sortBy(values, "isHighlighted")) {
       ctx.beginPath();
       ctx.fillStyle = theme.color(valueSet.color);
+      ctx.shadowColor = tinycolor(theme.color(valueSet.color)).brighten(12).toString();
+      ctx.shadowBlur = valueSet.isHighlighted ? 4 : 0;
 
       if (valueSet.showVariance) {
         const q1 = quantile(valueSet.values, 0.25);
         const q3 = quantile(valueSet.values, 0.75);
         if (q1 && q3) {
+
+          // Draw variance line
           ctx.rect(
             scale(q1),
             knobs.varianceLineHeight / 2,
             scale(q3) - scale(q1),
             knobs.varianceLineHeight / 2
           );
+          ctx.fill();
+          
+          // Draw horns
+          [q1, q3].forEach((value, i) => {
+            const hFr2 = knobs.varianceLineHeight / 2;
+            const xValue = scale(value);
+            ctx.beginPath();
+            ctx.moveTo(xValue, 0);
+            ctx.lineTo(xValue, hFr2);
+            if (i===0) {
+              ctx.lineTo(xValue + hFr2, hFr2);
+            } else {
+              ctx.lineTo(xValue - hFr2, hFr2);
+            }
+            ctx.closePath();
+            ctx.fill();
+          })
         }
       }
 
