@@ -2,9 +2,10 @@
   "name": "server",
   "version": "0.0.0",
   "description": "> TODO: description",
-  "author": "Polgár András <azazdeaz@gmail.com>",
+  "author": "Our Sci",
+  "license": "GPL-3.0-only",
+  "private": true,
   "homepage": "https://gitlab.com/our-sci/software/coffee-shop#readme",
-  "license": "ISC",
   "type": "module",
   "repository": {
     "type": "git",
