@@ -12,7 +12,7 @@
     "url": "git+ssh://git@gitlab.com/our-sci/software/coffee-shop.git"
   },
   "scripts": {
-    "serve": "nodemon --watch './**/*.ts' --exec 'node --experimental-specifier-resolution=node --loader ts-node/esm' src/index.ts",
+    "start": "nodemon --watch './**/*.ts' --exec 'node --experimental-specifier-resolution=node --loader ts-node/esm' src/index.ts",
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "bugs": {
