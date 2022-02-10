@@ -1,7 +1,9 @@
 import { ThemeProvider } from "@emotion/react";
 import { addDecorator } from "@storybook/react";
+// import { withThemes } from '@react-theming/storybook-addon';
 import { theme } from "../src/theme/theme";
 
+// addDecorator(withThemes(ThemeProvider, [theme]))
 // add emotion theme
 addDecorator((Story) => (
   <ThemeProvider theme={theme}>

@@ -23,8 +23,10 @@ const fonts = {
 };
 
 export const theme = {
-  color: (color: string) => (colors as IDictionary)[color] || color,
+  color(color: string) { return (this.colors as IDictionary)[color] || color},
   colors,
   fonts,
   font: "'Roboto', sans-serif"
 };
+
+export const regularColor = (t: typeof theme, color: string) => (t.colors as IDictionary)[color] || color;

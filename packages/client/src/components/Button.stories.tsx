@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 
 import { Button } from "./Button";
+import { theme } from "../theme/theme";
+import { withEditableTheme } from "../theme/withTheme";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
@@ -9,17 +11,22 @@ export default {
   component: Button,
 } as ComponentMeta<typeof Button>;
 
-const Template: ComponentStory<typeof Button> = (args) => <Button {...args} />;
+
+
+const ButtonWithTheme = withEditableTheme(Button);
+
+const Template: ComponentStory<typeof ButtonWithTheme> = (args) => (
+  <ButtonWithTheme {...args} />
+);
 
 export const Default = Template.bind({});
-Default.args = {  
-  label: "+ Add"
+Default.args = {
+  label: "+ Add",
 };
 
 export const Wide = Template.bind({});
-Wide.args = {  
+Wide.args = {
   label: "Button Text",
-  color: 'teal',
-  isWide: true
+  color: "teal",
+  isWide: true,
 };
-

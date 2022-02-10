@@ -1,10 +1,11 @@
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 
-import { Dashboard, Knobs } from "./Dashboard";
+import { Dashboard } from "./Dashboard";
 import { Global, css } from "@emotion/react";
 import { defaultKnobs as valueDistributionKnobs } from "../components/ValueDistribution";
 import { defaultKnobs as eventsBarKnobs } from "../components/EventsBar";
+import { withEditableTheme } from "../theme/withTheme";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
@@ -32,9 +33,9 @@ export default {
   ],
 } as ComponentMeta<typeof Dashboard>;
 
-// More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
-const Template: ComponentStory<typeof Dashboard> = (args) => (
-  <Dashboard {...args} />
+const DashboardWithTheme = withEditableTheme(Dashboard);
+const Template: ComponentStory<typeof DashboardWithTheme> = (args) => (
+  <DashboardWithTheme {...args} />
 );
 
 export const Default = Template.bind({});
