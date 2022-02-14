@@ -251,7 +251,7 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
     );
 
     ctx.fill();
-  }, [values, canvas, scale, allMean]);
+  }, [values, canvas.width, canvas.height, scale, allMean]);
 
   const leftBranches = props.nesting - props.hideBranches;
 

@@ -1,4 +1,4 @@
-import { findIndex, findLastIndex, last, range } from "lodash";
+import { findIndex, findLastIndex, last, memoize, range } from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
 import { ValueDistribution } from "../components/ValueDistribution";
 import { genDataPoints } from "../utils/random";
@@ -37,6 +37,19 @@ const flattenRows = (
       ];
     })
     .flat();
+
+const randomValues = memoize(
+  (groups: Group[], valueName, hoverState) => [
+    { color: "grey", values: genDataPoints(valueName, 80, 10) },
+    ...groups.map(({ color, name: orgName }) => ({
+      color,
+      values: genDataPoints(valueName + orgName, 32),
+      showVariance: true,
+      isHighlighted: hoverState === orgName,
+    })),
+  ],
+  (groups, valueName, hoverState) => groups.length + valueName + hoverState
+);
 
 export const NestedRows = ({
   rows,
@@ -95,15 +108,7 @@ export const NestedRows = ({
           <ValueDistribution
             key={i}
             label={name}
-            values={[
-              { color: "grey", values: genDataPoints(name, 80, 10) },
-              ...groups.map(({ color, name: orgName }) => ({
-                color,
-                values: genDataPoints(name + orgName, 32),
-                showVariance: true,
-                isHighlighted: hoverState === orgName,
-              })),
-            ]}
+            values={randomValues(groups, name, hoverState)}
             nesting={nesting}
             childCount={childCount}
             isLastChild={isLastChild}
