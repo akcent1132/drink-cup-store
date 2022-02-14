@@ -5,7 +5,7 @@ import { Dashboard } from "./Dashboard";
 import { Global, css } from "@emotion/react";
 import { defaultKnobs as valueDistributionKnobs } from "../components/ValueDistribution";
 import { defaultKnobs as eventsBarKnobs } from "../components/EventsBar";
-import { withEditableTheme } from "../theme/withTheme";
+import { withEditableTheme } from "../theme/withEditableTheme";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {

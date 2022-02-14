@@ -9,6 +9,16 @@ const colors = {
   red: "#f40000",
   violet: "#c42687",
   darkTransparent: "rgba(23,23,23,.5)",
+  bg: "#181818",
+  bgTab: "#212121",
+  bgSidePanel: "#333333",
+  divider: "rgba(255, 255, 255, 0.1)",
+  textPrimary: "#ffffff",
+  textSecondary: "#aaaaaa",
+  treeTitlePrimary: "#444444",
+  treeTitleSecondary: "#333333",
+  treeBgPrimary: "#444444",
+  treeBgSecondary: "#333333"
 };
 
 interface IDictionary {
@@ -23,10 +33,13 @@ const fonts = {
 };
 
 export const theme = {
-  color(color: string) { return (this.colors as IDictionary)[color] || color},
+  color(color: string) {
+    return (this.colors as IDictionary)[color] || color;
+  },
   colors,
   fonts,
-  font: "'Roboto', sans-serif"
+  font: "'Roboto', sans-serif",
 };
 
-export const regularColor = (t: typeof theme, color: string) => (t.colors as IDictionary)[color] || color;
+export const regularColor = (t: typeof theme, color: string) =>
+  (t.colors as IDictionary)[color] || color;

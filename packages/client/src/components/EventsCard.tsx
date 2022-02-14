@@ -8,7 +8,7 @@ const SIDE_PAD = 10;
 
 const Root = withTheme(styled.div<{ color: string }>`
   border-right: 20px solid ${(props) => props.theme.color(props.color)};
-  background-color: ${(props) => props.theme.colors.darkTransparent};
+  background-color: ${(props) => props.theme.colors.bgSidePanel};
 `);
 
 const Head = styled.div`

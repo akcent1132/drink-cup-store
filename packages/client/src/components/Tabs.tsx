@@ -4,7 +4,7 @@ import { ComponentProps } from "react";
 import styled from "@emotion/styled";
 import "../index.css";
 import { Button } from "./Button";
-import { css } from "@emotion/react";
+import { css, useTheme, withTheme } from "@emotion/react";
 import tinycolor from "tinycolor2";
 // TODO read height from props
 
@@ -24,17 +24,18 @@ const Head = styled.div`
   justify-content: flex-start;
 `;
 
-const Body = styled.div`
+const Body = withTheme(styled.div`
   flex: 1;
-  background-color: ${BG_COLOR};
-  border-top: 1px solid white;
-`;
+  background-color: ${p => p.theme.colors.bgTab};
+  border: 1px solid ${(p) => p.theme.colors.divider};
+`);
 
 const Tab = (
   props: { active: boolean } & ComponentProps<typeof Button>
 ) => {
+  const { colors } = useTheme();
   const { active, ...buttonProps } = props;
-  const color = active ? BG_COLOR : "rgba(23,23,23,.5)";
+  const color = active ? colors.bgTab : colors.bgSidePanel;
   
   return (
     <Button
@@ -43,12 +44,14 @@ const Tab = (
         height-100%;
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
-        ${active ? `box-shadow: 0px 1px 0px 0px ${BG_COLOR}; z-index: 1;` : ""}
+        border: ${active ? 1 : 0}px solid ${colors.divider};
+        border-bottom: none;
+        ${active ? `box-shadow: 0px 1px 0px 0px ${colors.bgTab}; z-index: 1;` : ""}
         :hover {
-          background: linear-gradient(to bottom, ${tinycolor(color).lighten(4).toString()}, ${color} );
+          background: linear-gradient(to bottom, ${tinycolor(color).lighten(7).toString()}, ${color} );
         }
         :active {
-          background: linear-gradient(to bottom, ${tinycolor(color).darken(1).toString()}, ${color} );
+          background: linear-gradient(to bottom, ${tinycolor(color).lighten(10).toString()}, ${color} );
         }
       `}
     />

@@ -18,7 +18,7 @@ import {
   defaultKnobs as defaultValueDistributionKnobs,
 } from "../components/ValueDistribution";
 import { defaultKnobs as defaultEventsBarKnobs } from "../components/EventsBar";
-import { css, withTheme } from "@emotion/react";
+import { css, useTheme, withTheme } from "@emotion/react";
 import { genDataPoints } from "../utils/random";
 import { Button } from "../components/Button";
 import { EventsCard } from "../components/EventsCard";
@@ -31,6 +31,7 @@ import { HyloBox } from "./HyloBox";
 import useScrollPosition from "@react-hook/window-scroll";
 import { useWindowWidth } from "@react-hook/window-size";
 import { RowData, Group, NestedRows } from "./NesterRows";
+import { schemeTableau10 } from "d3-scale-chromatic"
 
 export type Knobs = {
   valueDistribution: typeof defaultValueDistributionKnobs;
@@ -39,19 +40,20 @@ export type Knobs = {
 
 // TODO read height from props
 
-const Root = styled.div`
+const Root = withTheme(styled.div`
   width: 100%;
   height: 100%;
   min-height: 1600px;
   padding-left: 52px;
   box-sizing: border-box;
-  background-image: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 4) 0%,
-      rgba(0, 0, 0, 0.34) 10%
-    ),
-    url(${bgImage});
-  background-size: cover;
+  // background-image: linear-gradient(
+  //     to bottom,
+  //     rgba(0, 0, 0, 4) 0%,
+  //     rgba(0, 0, 0, 0.34) 10%
+  //   ),
+  //   url(${bgImage});
+  // background-size: cover;
+  background-color: ${p => p.theme.colors.bg};
   display: grid;
   grid-template-columns: 1fr max(500px, 34%);
   grid-template-rows: 60px auto;
@@ -60,7 +62,7 @@ const Root = styled.div`
     overflow: hidden;
     max-width: 100%;
   }
-`;
+`);
 
 const Header = styled.div`
   grid-area: header;
@@ -95,17 +97,17 @@ const Events = styled.div`
   gap: 20px;
 `;
 
-const COLORS = [
-  "purple",
-  "blue",
-  "teal",
-  "green",
-  "olive",
-  "yellow",
-  "orange",
-  // "red",
-  "violet",
-];
+const COLORS = schemeTableau10.slice(0,9)//[
+//   "purple",
+//   "blue",
+//   "teal",
+//   "green",
+//   "olive",
+//   "yellow",
+//   "orange",
+//   // "red",
+//   "violet",
+// ];
 
 const ROWS: RowData[] = [
   {
@@ -202,7 +204,7 @@ function hoverReducer(
   state: string | null,
   action: { type: "enter" | "leave"; name: string }
 ) {
-  switch (action.type) {
+switch (action.type) {
     case "enter":
       return action.name;
     case "leave":
@@ -213,16 +215,17 @@ function hoverReducer(
 }
 
 const RandomContent = ({ knobs }: { knobs: Knobs }) => {
+  const { colors } = useTheme();
   const [hoverState, hoverDispatch] = useReducer(hoverReducer, null);
   const [groups, setGroups] = useState<Group[]>([]);
 
   const addGroup = useCallback(
     (name?: string, color?: string) => {
       const freeColors =
-        without(COLORS, ...groups.map((g) => g.color)) || COLORS;
+        without(COLORS, ...groups.map((g) => g.color));
       const group = {
         name: name || faker.company.companyName(),
-        color: color || sample(freeColors)!,
+        color: color || sample(freeColors.length > 0 ? freeColors : COLORS)!,
       };
       console.log("setGroups([...groups, group]);");
       setGroups([...groups, group]);
@@ -240,8 +243,8 @@ const RandomContent = ({ knobs }: { knobs: Knobs }) => {
 
   useEffect(() => {
     setGroups([
-      addGroup("Produce Corn, Beef", "violet"),
-      addGroup("General Mills - KS", "#0055a7"),
+      addGroup("Produce Corn, Beef", schemeTableau10[4]),
+      addGroup("General Mills - KS", schemeTableau10[0]),
     ]);
   }, []);
 
@@ -265,7 +268,7 @@ const RandomContent = ({ knobs }: { knobs: Knobs }) => {
         ))}
         <Button
           label="+ Add"
-          color="darkTransparent"
+          color={colors.bgSidePanel}
           onClick={() => addGroup()}
         />
       </PaneHead>

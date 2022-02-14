@@ -14,6 +14,16 @@ declare module "@emotion/react" {
       red: string;
       violet: string;
       darkTransparent: string;
+      bg: string;
+      bgTab: string;
+      bgSidePanel: string;
+      divider: string;
+      textPrimary: string;
+      textSecondary: string;
+      treeTitlePrimary: string;
+      treeTitleSecondary: string;
+      treeBgPrimary: string;
+      treeBgSecondary: string;
     };
     fonts: {
       base: string;

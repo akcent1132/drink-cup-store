@@ -36,7 +36,7 @@ const Bar = styled.div<{
   opacity: ${(p) => (p.openState === "parentClosed" ? 0 : 1)};
   pointer-events: ${(p) => (p.openState === "parentClosed" ? "none" : "auto")};
   transition: all 0.3s cubic-bezier(0.17, 0.42, 0.28, 0.99);
-  transform: translateY(${p => p.openState === "parentClosed" ? -12 : 0}px);
+  transform: translateY(${(p) => (p.openState === "parentClosed" ? -12 : 0)}px);
 `;
 
 const Label = withTheme(styled.div<{
@@ -59,39 +59,21 @@ const Label = withTheme(styled.div<{
   overflow: hidden;
   text-overflow: ellipsis;
   padding: 0 4px;
-  color: white;
-  background-color: #80945a;
+  color: ${(p) => p.theme.colors.textPrimary};
+  background-color: ${(p) => p.theme.colors.treeTitlePrimary};
   ${(p) =>
     p.childCount === 0
-      ? `background: linear-gradient(to right, #80945a, #6E8248 6px);`
+      ? `background: linear-gradient(to right, ${p.theme.colors.treeTitlePrimary}, ${p.theme.colors.treeTitleSecondary} 6px);`
       : ""}
   border-bottom-left-radius: ${(p) =>
     p.nesting === 0 ? p.knobs.branchWidth : 0}px;
   border-top-left-radius: ${(p) =>
     p.nesting === 0 ? p.knobs.branchWidth : 0}px;
-  // box-shadow: 0px ${(p) => (p.isHovering ? 5 : 0)}px 0px 0px #6e8248;
   transition: all 0.2s cubic-bezier(0.17, 0.42, 0.28, 0.99);
   cursor: pointer;
 `);
 
-const BranchDown = styled.div<{
-  knobs: typeof defaultKnobs;
-  nesting: number;
-  childCount: number;
-  isClosed: boolean;
-  isHovering: boolean;
-}>`
-  width: ${(p) => p.knobs.branchWidth}px;
-  height: ${(p) =>
-    p.isClosed && !p.isHovering ? p.knobs.rowGap / 4 : p.knobs.rowGap / 2}px;
-  top: ${(p) => p.knobs.rowHeight}px;
-  left: ${(p) => (p.nesting + 1) * p.knobs.tabSize - p.knobs.branchWidth}px;
-  position: absolute;
-  background-color: #80945a;
-  transition: all 0.2s cubic-bezier(0.17, 0.42, 0.28, 0.99);
-`;
-
-const BranchLeft = styled.div<{
+const BranchLeft = withTheme(styled.div<{
   knobs: typeof defaultKnobs;
   isEnd: boolean;
 }>`
@@ -100,10 +82,10 @@ const BranchLeft = styled.div<{
   margin-left: ${(p) => p.knobs.tabSize - p.knobs.branchWidth}px;
   position: relative;
   top: ${(p) => -p.knobs.rowGap / 2}px;
-  background-color: #80945a;
+  background-color: ${p => p.theme.colors.treeTitlePrimary};
   ${(p) =>
     p.isEnd ? `border-bottom-left-radius: ${p.knobs.branchWidth}px;` : ""}
-`;
+`);
 
 const BranchLeftHidden = styled.div<{
   knobs: typeof defaultKnobs;
@@ -162,6 +144,7 @@ type Props = {
  * Primary UI component for user interaction
  */
 export const ValueDistribution = ({ label, values, ...props }: Props) => {
+  const { colors } = useTheme();
   const [isHovering, setIsHovering] = useState(false);
   const knobs = { ...defaultKnobs, ...props.knobs };
   const theme = useTheme();
@@ -200,21 +183,23 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
       return;
     }
     // draw background
-    ctx.fillStyle = props.childCount === 0 ? "#123104" : "#091d00";
+    ctx.fillStyle =
+      props.childCount === 0 ? colors.treeBgSecondary : colors.treeBgPrimary;
     ctx.rect(0, knobs.varianceLineHeight, canvas.width, canvas.height);
     ctx.fill();
 
     for (const valueSet of sortBy(values, "isHighlighted")) {
       ctx.beginPath();
       ctx.fillStyle = theme.color(valueSet.color);
-      ctx.shadowColor = tinycolor(theme.color(valueSet.color)).brighten(12).toString();
+      ctx.shadowColor = tinycolor(theme.color(valueSet.color))
+        .brighten(12)
+        .toString();
       ctx.shadowBlur = valueSet.isHighlighted ? 4 : 0;
 
       if (valueSet.showVariance) {
         const q1 = quantile(valueSet.values, 0.25);
         const q3 = quantile(valueSet.values, 0.75);
         if (q1 && q3) {
-
           // Draw variance line
           ctx.rect(
             scale(q1),
@@ -223,7 +208,7 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
             knobs.varianceLineHeight / 2
           );
           ctx.fill();
-          
+
           // Draw horns
           [q1, q3].forEach((value, i) => {
             const hFr2 = knobs.varianceLineHeight / 2;
@@ -231,14 +216,14 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
             ctx.beginPath();
             ctx.moveTo(xValue, 0);
             ctx.lineTo(xValue, hFr2);
-            if (i===0) {
+            if (i === 0) {
               ctx.lineTo(xValue + hFr2, hFr2);
             } else {
               ctx.lineTo(xValue - hFr2, hFr2);
             }
             ctx.closePath();
             ctx.fill();
-          })
+          });
         }
       }
 

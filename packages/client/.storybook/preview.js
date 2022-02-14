@@ -20,11 +20,11 @@ export const parameters = {
     },
   },
   backgrounds: {
-    default: "dark green",
+    default: "dark",
     values: [
       {
         name: "dark green",
-        value: "#4B5F25",
+        value: "#181818",
       },
       {
         name: "light",
