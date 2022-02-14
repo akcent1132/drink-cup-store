@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import styled from "@emotion/styled";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const HyloDragger = styled.div<{
   height: number;
@@ -35,7 +36,45 @@ const HeaderClick = styled.div<{ open: boolean; headerHeight: number }>`
   position: absolute;
   top: 0px;
   cursor: pointer;
-  clip-path: ${p => p.open ? 'polygon(91px 0px,89px 100%,335px 100%,335px 16px,356px 16px,356px 40px,335px 40px,335px 100%, 100% 100%,100% 0px)' : 'none'};
+  pointer-events: ${(p) => (p.open ? "none" : "auto")};
+`;
+
+const CloseEar = styled.div<{ headerHeight: number }>`
+  width: ${(p) => p.headerHeight}px;
+  height: ${(p) => p.headerHeight}px;
+  position: absolute;
+  left: -${(p) => p.headerHeight}px;
+  top: 0;
+  pointer-events: none;
+  overflow: hidden;
+`;
+
+const CloseEarContent = styled.div<{ open: boolean }>`
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: ${(p) => (p.open ? "0" : "100%")};
+  width: 100%;
+  height: 100%;
+  pointer-events: auto;
+  border-radius: 5px 0 0 5px;
+  background-color: white;
+  transition: all 0.3s cubic-bezier(0.14, -0.03, 0.49, 1.02);
+  box-shadow: inset rgba(0, 0, 0, 0.15) -7px 0 8px -7px;
+  color: rgba(44, 64, 89, 0.6);
+  
+  svg {
+
+  transition: all 0.1s ease;//cubic-bezier(0.14, -0.03, 0.49, 1.02);
+  }
+  :hover {
+    color: rgba(44, 64, 89, 1.0);
+    svg {
+      transform: translateY(2px);
+    }
+  }
 `;
 
 export const HyloBox = ({
@@ -65,6 +104,11 @@ export const HyloBox = ({
         onMouseEnter={() => setHovering(true)}
         onMouseLeave={() => setHovering(false)}
       />
+      <CloseEar headerHeight={56} onClick={() => setOpen(false)}>
+        <CloseEarContent open={open}>
+          <ExpandMoreIcon fontSize="large" color="inherit"/>
+        </CloseEarContent>
+      </CloseEar>
     </HyloDragger>
   );
 };
