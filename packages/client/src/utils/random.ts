@@ -39,3 +39,19 @@ export const getFarmEvents = () => {
     { type: "tillage", color: "red", date: new Date("Thu Oct 12 2022") },
   ];
 };
+
+export const getFarmEvent = (seed?: string) => {
+  const rnd = seedrandom(seed);
+  const eventTypes = [
+    "amendments",
+    "weeding",
+    "harvest",
+    "seeding",
+    "tillage",
+    "irrigation",
+  ];
+  const type = eventTypes[Math.floor(eventTypes.length * rnd())];
+  const date = new Date("2022");
+  date.setDate(365 * rnd());
+  return { type, date };
+};

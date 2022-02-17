@@ -45,6 +45,7 @@ const getEventIcon = (type: string) => {
 // TODO read height from prop
 const Bar = styled.div`
   display: flex;
+  position: relative;
   width: 100%;
   height: 80px;
 `;
@@ -69,17 +70,8 @@ type IconNode = {
   event: FarmEvent;
 };
 
-export const defaultKnobs = Object.freeze({
-  middleLineWidth: 3,
-  middleLineColor: "white",
-  middleLineY: 20,
-  tickWidth: 5,
-  tickHeight: 17,
-});
-
 type Props = {
   events?: FarmEvent[];
-  knobs?: Partial<typeof defaultKnobs>;
 };
 
 const drawTickText = (
@@ -116,7 +108,7 @@ const dateForce = (() => {
 /**
  * Primary UI component for user interaction
  */
-export const EventsBar = (props: Props) => {
+export const IconEventsBar = (props: Props) => {
   const events = props.events || [];
   const ref = useRef<HTMLDivElement>(null);
   const [width, height] = useSize(ref);

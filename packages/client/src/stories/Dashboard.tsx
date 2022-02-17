@@ -19,12 +19,12 @@ import {
 } from "../components/ValueDistribution";
 import { defaultKnobs as defaultEventsBarKnobs } from "../components/EventsBar";
 import { css, useTheme, withTheme } from "@emotion/react";
-import { genDataPoints } from "../utils/random";
+import { genDataPoints, getFarmEvent } from "../utils/random";
 import { Button } from "../components/Button";
 import { EventsCard } from "../components/EventsCard";
 import { Legend } from "../components/Legend";
 import faker from "faker";
-import { findLastIndex, last, sample, without } from "lodash";
+import { findLastIndex, last, range, sample, without } from "lodash";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { HyloBox } from "./HyloBox";
@@ -293,14 +293,7 @@ const fakeEventCardData = [
       precipitation: "47 in",
       texture: "Sand: 38% | Slit 41% | Clay 21%",
     },
-    events: [
-      { color: "violet", date: new Date("Thu May 3 2022") },
-      { color: "blue", date: new Date("Thu Jun 10 2022") },
-      { color: "yellow", date: new Date("Thu Jun 27 2022") },
-      { color: "blue", date: new Date("Thu Jul 08 2022") },
-      { color: "green", date: new Date("Thu Jul 29 2022") },
-      { color: "red", date: new Date("Thu Oct 12 2022") },
-    ],
+    events: range(10).map(i => getFarmEvent((-i).toString())),
   },
   {
     title: "Corn 2020",
@@ -312,14 +305,7 @@ const fakeEventCardData = [
       precipitation: "47 in",
       texture: "Sand: 40% | Slit 38% | Clay 20%",
     },
-    events: [
-      { color: "violet", date: new Date("Thu May 12 2022") },
-      { color: "blue", date: new Date("Thu Jun 14 2022") },
-      { color: "yellow", date: new Date("Thu Jun 22 2022") },
-      { color: "blue", date: new Date("Thu Jul 05 2022") },
-      { color: "green", date: new Date("Thu Aug 4 2022") },
-      { color: "red", date: new Date("Thu Sep 30 2022") },
-    ],
+    events: range(8).map(i => getFarmEvent(i.toString())),
   },
 ];
 
@@ -390,7 +376,7 @@ export const Dashboard = ({ iframeSrc, knobs }: Props) => {
         <Events>
           <Legend entries={legendEntries} />
           {fakeEventCardData.map((props, i) => (
-            <EventsCard {...props} eventsBarKnobs={knobs.eventsBar} key={i} />
+            <EventsCard {...props} key={i} />
           ))}
         </Events>
         {rightRect ? <HyloBox rect={rightRect} src={iframeSrc} /> : null}
