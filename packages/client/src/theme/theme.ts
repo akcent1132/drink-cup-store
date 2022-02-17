@@ -1,3 +1,5 @@
+import { defaultTheme } from "../components/IconEventsBar";
+
 const colors = {
   purple: "#5d54af",
   blue: "#1d6bb3",
@@ -39,6 +41,7 @@ export const theme = {
   colors,
   fonts,
   font: "'Roboto', sans-serif",
+  iconEventsBar: defaultTheme,
 };
 
 export const regularColor = (t: typeof theme, color: string) =>

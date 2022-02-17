@@ -1,4 +1,5 @@
 import "@emotion/react";
+import { defaultTheme } from "../components/IconEventsBar";
 
 declare module "@emotion/react" {
   export interface Theme {
@@ -32,5 +33,6 @@ declare module "@emotion/react" {
       baseBoldItalic: string;
     };
     font: string;
+    iconEventsBar: typeof defaultTheme;
   }
 }

@@ -17,15 +17,17 @@ export const withEditableTheme = <P extends object>(
     class WithTheme extends React.Component<P & WithLoadingProps> {
       render() {
         const { theme, ...props } = this.props;
-        // const t = knobs.object('theme', {
-        //     ...theme,
-        // }, 'theme')
         const colors = mapValues(theme.colors, (c, name) =>
           knobs.color(name, c, "theme.colors")
         );
-        const t = { ...theme, colors };
+        const iconEventsBar = knobs.object(
+          "IconEventsBar",
+          {...theme.iconEventsBar},
+          "theme.IconEventsBar"
+        );
+        const t = { ...theme, colors, iconEventsBar };
         return (
-          <ThemeProvider theme={theme}>
+          <ThemeProvider theme={t}>
             <Component {...(props as P)} />
           </ThemeProvider>
         );
