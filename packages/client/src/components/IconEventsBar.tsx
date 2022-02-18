@@ -1,9 +1,15 @@
 /** @jsxImportSource @emotion/react */
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import styled from "@emotion/styled";
 import "../index.css";
-import { css, useTheme } from "@emotion/react";
+import { css, useTheme, withTheme } from "@emotion/react";
 import { timeFormat } from "d3-time-format";
 import { timeYear } from "d3-time";
 import { ScaleTime, scaleTime } from "d3-scale";
@@ -17,6 +23,7 @@ import { ReactComponent as IconIrrigation } from "../assets/foodIcons/noun-water
 import { ReactComponent as IconJoker } from "../assets/foodIcons/noun-indigenous-knowledge-4476235.svg";
 import useSize from "@react-hook/size";
 import { forceCenter, forceCollide, forceSimulation, forceY } from "d3-force";
+import { getFarmEvent } from "../utils/random";
 
 export const defaultTheme = {
   iconSize: 26,
@@ -48,15 +55,24 @@ const Bar = styled.div`
   position: relative;
   width: 100%;
   height: 80px;
+  overflow: hidden;
 `;
 
-const Plot = styled.canvas`
-  flex: 1;
-  height: 100%;
-  min-width: 0px;
-`;
+const DateText = withTheme(styled.div<{ left: number }>`
+  position: absolute;
+  top: 60px;
+  left: ${(p) => p.left}px;
+  font-size: 11px;
+  color: white;
+  font-family: ${(p) => p.theme.font};
+  width: 0;
+  white-space: nowrap;
+  display: flex;
+  justify-content: center;
+`);
 
 export type FarmEvent = {
+  id: string;
   type: string;
   date: Date;
 };
@@ -89,36 +105,39 @@ const drawTickText = (
   ctx.restore();
 };
 
-const dateForce = (() => {
+const createDateForce = () => {
   let nodes: IconNode[] = [];
   let scale: ScaleTime<number, number, never>;
   const force = (alpha: number) => {
     if (!scale) return;
 
     nodes.map((node) => {
-      node.vx += (scale(node.event.date) - node.x) * alpha;
+      node.vx += (scale(node.event.date) - node.x) * alpha * 0.2;
+      node.y = Math.min(node.y, 30);
       node.targetX = scale(node.event.date);
     });
   };
   force.initialize = (n: IconNode[]) => (nodes = n);
   force.setScale = (n: ScaleTime<number, number, never>) => (scale = n);
   return force;
-})();
+};
 
 /**
  * Primary UI component for user interaction
  */
 export const IconEventsBar = (props: Props) => {
-  const events = props.events || [];
+  const [events, setEvents] = useState(props.events || []);
+  const [hoveredEvent, setHoveredEvent] = useState<FarmEvent | null>(null);
   const ref = useRef<HTMLDivElement>(null);
   const [width, height] = useSize(ref);
   const theme = useTheme().iconEventsBar;
+  const dateForce = useMemo(() => createDateForce(), []);
   const simulation = useMemo(
     () =>
       forceSimulation<IconNode>([])
-        .force("y", forceY(30))
+        .force("y", forceY(30).strength(0.6))
         .force("date", dateForce)
-        .force("radius", forceCollide(theme.iconSize*0.55)),
+        .force("radius", forceCollide(theme.iconSize * 0.55)),
     []
   );
   const scale = useMemo(() => {
@@ -126,56 +145,110 @@ export const IconEventsBar = (props: Props) => {
     const start = timeYear.floor(first || new Date());
     const end = timeYear.ceil(last || new Date());
 
-    const xStart = theme.middleLineMargin;
-    const xEnd = (width || 100) - theme.middleLineMargin;
+    const xStart = theme.middleLineMargin + theme.iconSize / 2;
+    const xEnd = (width || 100) - theme.middleLineMargin - theme.iconSize / 2;
     const scale = scaleTime().domain([start, end]).range([xStart, xEnd]);
     dateForce.setScale(scale);
     simulation.tick(100).alpha(1).restart();
     return scale;
   }, [width, theme.middleLineMargin]);
-  const [nodes, setNodes] = useState<IconNode[]>([]);
+  const addClick = useCallback(
+    (e: React.MouseEvent) => {
+      const event = getFarmEvent();
+      event.date = scale.invert(e.nativeEvent.offsetX);
+      setEvents([...events, event]);
+    },
+    [scale, events]
+  );
+  const removeClick = useCallback(
+    (e: React.MouseEvent, event: FarmEvent) => {
+      e.stopPropagation();
+      setEvents(events.filter(({ id }) => id !== event.id));
+    },
+    [events]
+  );
+
+  const eventHover = useCallback((event) => {
+    setHoveredEvent(event);
+  }, []);
+  const eventLeave = useCallback(
+    (event) => {
+      if (hoveredEvent && hoveredEvent.id === event.id) {
+        setHoveredEvent(null);
+      }
+    },
+    [hoveredEvent]
+  );
 
   // add events to the simulation
   useEffect(() => {
-    const n = simulation.nodes;
-    simulation.nodes(
-      events.map((event) => ({
-        x: scale(event.date),
-        y: 30,
-        vx: 0,
-        vy: 0,
-        event,
-      }))
-    );
-    // simulation.restart();
+    // removes nodes of non-existing events
+    const nodes = simulation
+      .nodes()
+      .filter((node) => events.some((event) => event.id === node.event.id));
+    // add missing nodes to the simulation
+    for (const event of events) {
+      if (!nodes.some((n) => n.event.id === event.id)) {
+        nodes.push({
+          x: scale(event.date),
+          y: 30,
+          vx: 0,
+          vy: 0,
+          event,
+        });
+      }
+    }
+    simulation.nodes(nodes).alpha(1).restart();
   }, [events]);
   useEffect(() => {
     simulation.on("tick", () => {
-      setNodes(simulation.nodes());
+      if (!ref.current) {
+        return;
+      }
+
+      for (const node of simulation.nodes()) {
+        const icon = ref.current.querySelector<SVGElement>(
+          `#icon-${node.event.id}`
+        );
+        if (icon) {
+          icon.style.left = `${node.x - theme.iconSize / 2}px`;
+          icon.style.top = `${node.y}px`;
+          icon.style.opacity = "1";
+        }
+      }
     });
   }, []);
-  nodes.forEach(({ event, x, y, vx, targetX }) =>
-    console.log({ x, y, vx, targetX })
-  );
-  console.log("sim alpha", simulation.alpha())
   return (
-    <Bar ref={ref}>
-      {nodes.map(({ event, x, y }) => {
+    <Bar ref={ref} onClick={addClick}>
+      {events.map((event) => {
         const iconProps = {
+          id: `icon-${event.id}`,
+          key: event.id,
           css: css`
             position: absolute;
-            left: ${x}px;
-            top: ${y}px;
+            :hover {
+              transform: scale(1.12);
+            }
+            transition: all 0.4s cubic-bezier(0.56, 1.49, 0.67, 0.99);
+            opacity: 0;
           `,
           width: theme.iconSize,
           height: theme.iconSize,
           fill: "white",
           title: event.type,
+          onClick: (e: React.MouseEvent) => removeClick(e, event),
+          onMouseEnter: () => eventHover(event),
+          onMouseLeave: () => eventLeave(event),
         };
 
         const Icon = getEventIcon(event.type);
         return <Icon {...iconProps} />;
       })}
+      {hoveredEvent ? (
+        <DateText left={scale(hoveredEvent.date)}>
+          <div>{timeFormat("%b %-d")(hoveredEvent.date)}</div>
+        </DateText>
+      ) : null}
     </Bar>
   );
 };

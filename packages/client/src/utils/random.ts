@@ -1,5 +1,5 @@
 import seedrandom from "seedrandom";
-import { range } from "lodash";
+import { range, uniqueId } from "lodash";
 import { randomNormal } from "d3-random";
 
 // Standard Normal variate using Box-Muller transform.
@@ -27,16 +27,16 @@ export const genDataPoints = (
 
 export const getFarmEvents = () => {
   return [
-    { type: "seeding", color: "violet", date: new Date("Thu May 3 2022") },
-    { type: "irrigation", color: "blue", date: new Date("Thu Jun 10 2022") },
+    { id: "1", type: "seeding", color: "violet", date: new Date("Thu May 3 2022") },
+    { id: "2", type: "irrigation", color: "blue", date: new Date("Thu Jun 10 2022") },
     {
-      type: "weed control",
+      id: "3", type: "weed control",
       color: "yellow",
       date: new Date("Thu Jun 27 2022"),
     },
-    { type: "irrigation", color: "blue", date: new Date("Thu Jul 08 2022") },
-    { type: "harvest", color: "green", date: new Date("Thu Jul 29 2022") },
-    { type: "tillage", color: "red", date: new Date("Thu Oct 12 2022") },
+    { id: "4", type: "irrigation", color: "blue", date: new Date("Thu Jul 08 2022") },
+    { id: "5", type: "harvest", color: "green", date: new Date("Thu Jul 29 2022") },
+    { id: "6", type: "tillage", color: "red", date: new Date("Thu Oct 12 2022") },
   ];
 };
 
@@ -53,5 +53,5 @@ export const getFarmEvent = (seed?: string) => {
   const type = eventTypes[Math.floor(eventTypes.length * rnd())];
   const date = new Date("2022");
   date.setDate(365 * rnd());
-  return { type, date };
+  return { type, date, id: uniqueId() };
 };

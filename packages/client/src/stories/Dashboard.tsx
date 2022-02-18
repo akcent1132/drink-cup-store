@@ -91,7 +91,7 @@ const RightSide = styled.div`
 const Events = styled.div`
   display: flex;
   padding: 0px 40px 50px 0px;
-  backdrop-filter: blur(12px);
+  // backdrop-filter: blur(12px);
   flex-direction: column;
   justify-content: flex-start;
   gap: 20px;
@@ -286,7 +286,7 @@ const fakeEventCardData = [
   {
     title: "Corn 2020",
     name: "My Farm",
-    color: "teal",
+    color: schemeTableau10[4],
     params: {
       zone: "8b",
       temperature: "65",
@@ -298,7 +298,7 @@ const fakeEventCardData = [
   {
     title: "Corn 2020",
     name: "Farmer Pete",
-    color: "orange",
+    color: schemeTableau10[0],
     params: {
       zone: "7a",
       temperature: "67",
@@ -374,7 +374,7 @@ export const Dashboard = ({ iframeSrc, knobs }: Props) => {
       />
       <RightSide ref={rightSide}>
         <Events>
-          <Legend entries={legendEntries} />
+          {/* <Legend entries={legendEntries} /> */}
           {fakeEventCardData.map((props, i) => (
             <EventsCard {...props} key={i} />
           ))}
