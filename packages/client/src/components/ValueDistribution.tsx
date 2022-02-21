@@ -1,10 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import styled from "@emotion/styled";
 import "../index.css";
 import { useCanvas } from "../utils/useCanvas";
 import { useTheme, withTheme } from "@emotion/react";
 import { scaleLinear } from "d3-scale";
-import { extent, mean, quantile, zip } from "d3-array";
+import { extent, mean, min, minIndex, quantile, zip } from "d3-array";
 import { pull, range, sortBy } from "lodash";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -18,8 +18,8 @@ export const defaultTheme = {
   tabSize: 6,
   branchWidth: 3,
   tickWidth: 3,
+  meanTickWidth: 6,
   varianceLineHeight: 8,
-  varianceStripeWidth: 8,
 };
 
 type OpenState = "open" | "closed" | "parentClosed";
@@ -161,6 +161,22 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
       .rangeRound([0, canvas.width - theme.valueDistribution.tickWidth]);
   }, [allValues, canvas.width]);
   const allMean = useMemo(() => mean(allValues) || 0, [allValues]);
+  const [hoverValue, setHoverValue] = useState<null | number>(null);
+  const handlePlotMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      if (allValues.length === 0) {
+        return;
+      }
+      const mouseX = e.nativeEvent.offsetX;
+      const targetValue = scale.invert(mouseX);
+      const closestValue =
+        allValues[minIndex(allValues, (v) => Math.abs(v - targetValue))];
+      const closestValueX = scale(closestValue);
+      setHoverValue(Math.abs(closestValueX - mouseX) < 3 ? closestValue : null);
+    },
+    [scale, allValues]
+  );
+  const handlePlotMouseLeave = useCallback(() => setHoverValue(null), []);
 
   const varianceBounds = useMemo(() => {
     return sortBy(
@@ -256,12 +272,24 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
     ctx.rect(
       scale(allMean),
       theme.valueDistribution.varianceLineHeight,
-      theme.valueDistribution.tickWidth * 2,
+      theme.valueDistribution.meanTickWidth,
       canvas.height
     );
-
     ctx.fill();
-  }, [values, canvas.width, canvas.height, scale, allMean]);
+
+    // Draw hover
+    if (hoverValue) {
+      ctx.beginPath();
+      ctx.fillStyle = theme.color("white");
+      ctx.rect(
+        scale(hoverValue),
+        theme.valueDistribution.varianceLineHeight,
+        theme.valueDistribution.tickWidth,
+        canvas.height
+      );
+      ctx.fill();
+    }
+  }, [values, canvas.width, canvas.height, scale, allMean, hoverValue]);
 
   const leftBranches = props.nesting - props.hideBranches;
 
@@ -293,7 +321,11 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
         ) : null}
       </Label>
       <Plot>
-        <PlotCanvas ref={canvas.ref} />
+        <PlotCanvas
+          onMouseMove={handlePlotMouseMove}
+          onMouseLeave={handlePlotMouseLeave}
+          ref={canvas.ref}
+        />
       </Plot>
       {/* {props.childCount !== 0 ? (
         <BranchDown
