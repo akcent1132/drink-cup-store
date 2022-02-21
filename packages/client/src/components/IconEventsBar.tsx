@@ -221,7 +221,7 @@ export const IconEventsBar = (props: Props) => {
         if (icon) {
           icon.style.left = `${node.x - theme.iconSize / 2}px`;
           icon.style.top = `${node.y}px`;
-          icon.style.opacity = "1";
+          icon.style.opacity = "0.7";
         }
       }
     });
@@ -235,7 +235,8 @@ export const IconEventsBar = (props: Props) => {
           css: css`
             position: absolute;
             :hover {
-              transform: scale(1.12);
+              // transform: scale(1.12);
+              opacity: 1;
             }
             transition: all 0.4s cubic-bezier(0.56, 1.49, 0.67, 0.99);
             opacity: 0;
