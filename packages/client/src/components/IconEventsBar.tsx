@@ -113,6 +113,8 @@ const createDateForce = () => {
 
     nodes.map((node) => {
       node.vx += (scale(node.event.date) - node.x) * alpha * 0.2;
+      const [left, right] = scale.range();
+      node.x = Math.max(left, Math.min(right, node.x))
       node.y = Math.min(node.y, 30);
       node.targetX = scale(node.event.date);
     });
@@ -198,7 +200,7 @@ export const IconEventsBar = (props: Props) => {
         });
       }
     }
-    simulation.nodes(nodes).alpha(1).restart();
+    simulation.nodes(nodes).alpha(1).tick(500).restart();
   }, [events]);
   useEffect(() => {
     simulation.on("tick", () => {
