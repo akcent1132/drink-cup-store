@@ -157,7 +157,7 @@ export const IconEventsBar = (props: Props) => {
     const xEnd = (width || 100) - theme.middleLineMargin - theme.iconSize / 2;
     const scale = scaleTime().domain([start, end]).range([xStart, xEnd]);
     dateForce.setScale(scale);
-    simulation.tick(100).alpha(1).restart();
+    simulation.alpha(1).tick(500).restart();
     return scale;
   }, [width, theme.middleLineMargin]);
   const addClick = useCallback(
@@ -221,7 +221,6 @@ export const IconEventsBar = (props: Props) => {
         if (icon) {
           icon.style.left = `${node.x - theme.iconSize / 2}px`;
           icon.style.top = `${node.y}px`;
-          icon.style.opacity = "0.7";
         }
       }
     });
@@ -233,13 +232,15 @@ export const IconEventsBar = (props: Props) => {
           id: `icon-${event.id}`,
           key: event.id,
           css: css`
+            left: ${scale(event.date) - theme.iconSize / 2}px;
+            top: 30px;
             position: absolute;
             :hover {
               // transform: scale(1.12);
               opacity: 1;
             }
-            transition: all 0.4s cubic-bezier(0.56, 1.49, 0.67, 0.99);
-            opacity: 0;
+            transition: all 0.4s cubic-bezier(.87,1.32,.68,1);
+            opacity: 0.7;
           `,
           width: theme.iconSize,
           height: theme.iconSize,
