@@ -24,6 +24,7 @@ import { ReactComponent as IconJoker } from "../assets/foodIcons/noun-indigenous
 import useSize from "@react-hook/size";
 import { forceCenter, forceCollide, forceSimulation, forceY } from "d3-force";
 import { getFarmEvent } from "../utils/random";
+import { useXOverlap } from "../utils/useOverlap";
 
 export const defaultTheme = {
   iconSize: 26,
@@ -114,7 +115,7 @@ const createDateForce = () => {
     nodes.map((node) => {
       node.vx += (scale(node.event.date) - node.x) * alpha * 0.2;
       const [left, right] = scale.range();
-      node.x = Math.max(left, Math.min(right, node.x))
+      node.x = Math.max(left, Math.min(right, node.x));
       node.y = Math.min(node.y, 30);
       node.targetX = scale(node.event.date);
     });
@@ -131,6 +132,11 @@ export const IconEventsBar = (props: Props) => {
   const [events, setEvents] = useState(props.events || []);
   const [hoveredEvent, setHoveredEvent] = useState<FarmEvent | null>(null);
   const ref = useRef<HTMLDivElement>(null);
+  const refDate = useRef<HTMLDivElement>(null);
+  const refDateStart = useRef<HTMLDivElement>(null);
+  const refDateEnd = useRef<HTMLDivElement>(null);
+  const hideStartDate = useXOverlap(refDate, refDateStart, [hoveredEvent]);
+  const hideEndDate = useXOverlap(refDate, refDateEnd, [hoveredEvent]);
   const [width, height] = useSize(ref);
   const theme = useTheme().iconEventsBar;
   const dateForce = useMemo(() => createDateForce(), []);
@@ -248,9 +254,27 @@ export const IconEventsBar = (props: Props) => {
       })}
       {hoveredEvent ? (
         <DateText left={scale(hoveredEvent.date)}>
-          <div>{timeFormat("%b %-d")(hoveredEvent.date)}</div>
+          <div ref={refDate}>{timeFormat("%b %-d")(hoveredEvent.date)}</div>
         </DateText>
       ) : null}
+      <DateText
+        left={scale(scale.domain()[0])}
+        css={css`
+          opacity: ${hideStartDate ? 0 : 1};
+        `}
+      >
+        <div ref={refDateStart}>{timeFormat("%b %-d")(scale.domain()[0])}</div>
+      </DateText>
+      <DateText
+        left={scale(scale.domain()[1])}
+        css={css`
+          opacity: ${hideEndDate ? 0 : 1};
+        `}
+      >
+        <div ref={refDateEnd}>
+          {timeFormat("%b %-d")(new Date(scale.domain()[1].getTime() - 1))}
+        </div>
+      </DateText>
     </Bar>
   );
 };
