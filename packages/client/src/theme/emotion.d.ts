@@ -1,19 +1,20 @@
 import "@emotion/react";
-import { defaultTheme } from "../components/IconEventsBar";
+import { defaultTheme as iconEventsBarTheme } from "../components/IconEventsBar";
+import { defaultTheme as valueDistributionTheme } from "../components/ValueDistribution";
 
 declare module "@emotion/react" {
   export interface Theme {
     color(color: string): string;
     colors: {
-      purple: string;
-      blue: string;
-      teal: string;
-      green: string;
-      olive: string;
-      yellow: string;
-      orange: string;
-      red: string;
-      violet: string;
+      // purple: string;
+      // blue: string;
+      // teal: string;
+      // green: string;
+      // olive: string;
+      // yellow: string;
+      // orange: string;
+      // red: string;
+      // violet: string;
       darkTransparent: string;
       bg: string;
       bgTab: string;
@@ -33,6 +34,7 @@ declare module "@emotion/react" {
       baseBoldItalic: string;
     };
     font: string;
-    iconEventsBar: typeof defaultTheme;
+    iconEventsBar: typeof iconEventsBarTheme;
+    valueDistribution: typeof valueDistributionTheme;
   }
 }

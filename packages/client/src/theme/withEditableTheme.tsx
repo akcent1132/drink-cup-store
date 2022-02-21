@@ -25,7 +25,12 @@ export const withEditableTheme = <P extends object>(
           {...theme.iconEventsBar},
           "theme.IconEventsBar"
         );
-        const t = { ...theme, colors, iconEventsBar };
+        const valueDistribution = knobs.object(
+          "ValueDistribution",
+          {...theme.valueDistribution},
+          "theme.ValueDistribution"
+        );
+        const t = { ...theme, colors, iconEventsBar, valueDistribution };
         return (
           <ThemeProvider theme={t}>
             <Component {...(props as P)} />

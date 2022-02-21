@@ -2,7 +2,6 @@ import { findIndex, findLastIndex, last, memoize, range } from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
 import { ValueDistribution } from "../components/ValueDistribution";
 import { genDataPoints } from "../utils/random";
-import { Knobs } from "./Dashboard";
 
 export type RowData = { name: string; type: string; children?: RowData[] };
 export type Group = { color: string; name: string };
@@ -55,12 +54,10 @@ export const NestedRows = ({
   rows,
   groups,
   hoverState,
-  knobs,
 }: {
   rows: RowData[];
   hoverState: string | null;
   groups: Group[];
-  knobs: Knobs;
 }) => {
   const flatRows = useMemo(() => flattenRows(rows), [rows]);
   const [isClosed, setIsClosed] = useState<boolean[]>(
@@ -113,7 +110,6 @@ export const NestedRows = ({
             childCount={childCount}
             isLastChild={isLastChild}
             hideBranches={hideBranches}
-            knobs={knobs.valueDistribution}
             onToggleChildren={() => toggleOpen(i)}
             openState={openStates[i]}
           />

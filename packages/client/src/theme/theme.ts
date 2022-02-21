@@ -1,15 +1,16 @@
-import { defaultTheme } from "../components/IconEventsBar";
+import { defaultTheme as iconEventsBarTheme } from "../components/IconEventsBar";
+import { defaultTheme as valueDistributionTheme } from "../components/ValueDistribution";
 
 const colors = {
-  purple: "#5d54af",
-  blue: "#1d6bb3",
-  teal: "#017e9c",
-  green: "#339e2c",
-  olive: "#a1bc0b",
-  yellow: "#ffe603",
-  orange: "#ff8500",
-  red: "#f40000",
-  violet: "#c42687",
+  // purple: "#5d54af",
+  // blue: "#1d6bb3",
+  // teal: "#017e9c",
+  // green: "#339e2c",
+  // olive: "#a1bc0b",
+  // yellow: "#ffe603",
+  // orange: "#ff8500",
+  // red: "#f40000",
+  // violet: "#c42687",
   darkTransparent: "rgba(23,23,23,.5)",
   bg: "#181818",
   bgTab: "#212121",
@@ -41,7 +42,8 @@ export const theme = {
   colors,
   fonts,
   font: "'Roboto', sans-serif",
-  iconEventsBar: defaultTheme,
+  iconEventsBar: iconEventsBarTheme,
+  valueDistribution: valueDistributionTheme,
 };
 
 export const regularColor = (t: typeof theme, color: string) =>

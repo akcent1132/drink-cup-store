@@ -15,7 +15,6 @@ import logoImage from "../assets/images/Farmers-coffeeshop-logo-white_transparen
 import { Tabs } from "../components/Tabs";
 import {
   ValueDistribution,
-  defaultKnobs as defaultValueDistributionKnobs,
 } from "../components/ValueDistribution";
 import { defaultKnobs as defaultEventsBarKnobs } from "../components/EventsBar";
 import { css, useTheme, withTheme } from "@emotion/react";
@@ -32,13 +31,6 @@ import useScrollPosition from "@react-hook/window-scroll";
 import { useWindowWidth } from "@react-hook/window-size";
 import { RowData, Group, NestedRows } from "./NesterRows";
 import { schemeTableau10 } from "d3-scale-chromatic"
-
-export type Knobs = {
-  valueDistribution: typeof defaultValueDistributionKnobs;
-  eventsBar: typeof defaultEventsBarKnobs;
-};
-
-// TODO read height from props
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -214,7 +206,7 @@ switch (action.type) {
   }
 }
 
-const RandomContent = ({ knobs }: { knobs: Knobs }) => {
+const RandomContent = () => {
   const { colors } = useTheme();
   const [hoverState, hoverDispatch] = useReducer(hoverReducer, null);
   const [groups, setGroups] = useState<Group[]>([]);
@@ -276,7 +268,6 @@ const RandomContent = ({ knobs }: { knobs: Knobs }) => {
         rows={ROWS}
         groups={groups}
         hoverState={hoverState}
-        knobs={knobs}
       />
     </RowContainer>
   );
@@ -322,10 +313,9 @@ interface Props {
    * URL for the Hylo iframe box
    */
   iframeSrc: string;
-  knobs: Knobs;
 }
 
-export const Dashboard = ({ iframeSrc, knobs }: Props) => {
+export const Dashboard = ({ iframeSrc }: Props) => {
   const [tabIndex, setTabIndex] = useState(0);
   const rightSide = useRef<HTMLDivElement>(null);
   const windowWidth = useWindowWidth();
@@ -341,11 +331,11 @@ export const Dashboard = ({ iframeSrc, knobs }: Props) => {
   const pages = [
     {
       label: "Compare",
-      renderPanel: () => <RandomContent knobs={knobs} />,
+      renderPanel: () => <RandomContent/>,
     },
     {
       label: "My Data",
-      renderPanel: () => <RandomContent knobs={knobs} />,
+      renderPanel: () => <RandomContent/>,
     },
   ];
 
