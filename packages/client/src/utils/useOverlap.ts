@@ -10,13 +10,6 @@ export const useXOverlap = (
     if (refA.current && refB.current) {
       const bbA = refA.current.getBoundingClientRect();
       const bbB = refB.current.getBoundingClientRect();
-      console.log(
-        { bbA, bbB },
-        bbA.left < bbB.left && bbA.right > bbA.left,
-        bbA.left < bbB.right && bbA.right > bbA.right,
-        bbA.left < bbB.left && bbA.right > bbA.right,
-        bbA.left > bbB.left && bbA.right < bbA.right
-      );
       setOverlap(
         (bbA.left < bbB.left && bbA.right > bbB.left) ||
           (bbA.left < bbB.right && bbA.right > bbB.right) ||

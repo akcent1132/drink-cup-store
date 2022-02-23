@@ -12,9 +12,9 @@ import styled from "@emotion/styled";
 import "../index.css";
 import bgImage from "../assets/images/Background-corngrains.jpg";
 import logoImage from "../assets/images/Farmers-coffeeshop-logo-white_transparent.png";
-import { Tabs } from "../components/Tabs"
+import { Tabs } from "../components/Tabs";
 import { css, useTheme, withTheme } from "@emotion/react";
-import {  getFarmEvent } from "../utils/random";
+import { getFarmEvent } from "../utils/random";
 import { Button } from "../components/Button";
 import { EventsCard } from "../components/EventsCard";
 import faker from "faker";
@@ -24,6 +24,8 @@ import useScrollPosition from "@react-hook/window-scroll";
 import { useWindowWidth } from "@react-hook/window-size";
 import { RowData, Filtering, NestedRows, PlantingData } from "./NesterRows";
 import { schemeTableau10 } from "d3-scale-chromatic";
+import seedrandom from "seedrandom";
+import { randomNormal } from "d3-random";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -189,21 +191,35 @@ const ROWS: RowData[] = [
   },
 ];
 
-const createPlantingData = (): PlantingData[] => {
-  const values: {name: string, value: number, id: string}[] = [];
-  const id = uniqueId();
-  const walk = (items: RowData[]) => {
-    for (const item of items) {
-      if (item.type === "value") {
-        values.push({ name: item.name, value: Math.random(), id });
+const createFilteringData = (
+  filteringName: string,
+  countMax = 30,
+  stdMax = 2,
+  meanMax = 5
+): PlantingData[][] => {
+  const rnd = seedrandom(filteringName);
+  return range(rnd() * 12).map(() => {
+    const values: { name: string; value: number; id: string }[] = [];
+    const id = uniqueId();
+    const walk = (rows: RowData[]) => {
+      for (const row of rows) {
+        const rndValue = seedrandom(filteringName + row.name);
+        // TODO add multilpe measurements to some value types
+        // const count = countMax * rndValue();
+        const mean = rndValue() * meanMax;
+        const std = rndValue() * stdMax;
+        const norm = randomNormal.source(rnd)(mean, std);
+        if (row.type === "value") {
+          values.push({ name: row.name, value: norm(), id });
+        }
+        if (row.children) {
+          walk(row.children);
+        }
       }
-      if (item.children) {
-        walk(item.children)
-      }
-    }
-  };
-  walk(ROWS);
-  return values;
+    };
+    walk(ROWS);
+    return values;
+  });
 };
 
 function hoverReducer(
@@ -228,13 +244,14 @@ const RandomContent = () => {
   const addFilter = useCallback(
     (name?: string, color?: string) => {
       const freeColors = without(COLORS, ...filterings.map((g) => g.color));
-      const group = {
-        name: name || faker.company.companyName(),
+      name = name || faker.company.companyName();
+      const filtering = {
+        name,
         color: color || sample(freeColors.length > 0 ? freeColors : COLORS)!,
-        plantings: range(Math.random() * 10).map(() => createPlantingData()),
+        plantings: createFilteringData(name),
       };
-      setFilterings([...filterings, group]);
-      return group;
+      setFilterings([...filterings, filtering]);
+      return filtering;
     },
     [filterings]
   );

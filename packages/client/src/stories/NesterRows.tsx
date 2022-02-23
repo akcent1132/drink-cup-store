@@ -1,15 +1,6 @@
-import {
-  filter,
-  findIndex,
-  findLastIndex,
-  last,
-  memoize,
-  range,
-  sum,
-} from "lodash";
+import { findLastIndex, last, memoize } from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
 import { ValueDistribution } from "../components/ValueDistribution";
-import { genDataPoints } from "../utils/random";
 
 export type RowData = {
   name: string;
