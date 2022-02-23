@@ -12,25 +12,18 @@ import styled from "@emotion/styled";
 import "../index.css";
 import bgImage from "../assets/images/Background-corngrains.jpg";
 import logoImage from "../assets/images/Farmers-coffeeshop-logo-white_transparent.png";
-import { Tabs } from "../components/Tabs";
-import {
-  ValueDistribution,
-} from "../components/ValueDistribution";
-import { defaultKnobs as defaultEventsBarKnobs } from "../components/EventsBar";
+import { Tabs } from "../components/Tabs"
 import { css, useTheme, withTheme } from "@emotion/react";
-import { genDataPoints, getFarmEvent } from "../utils/random";
+import {  getFarmEvent } from "../utils/random";
 import { Button } from "../components/Button";
 import { EventsCard } from "../components/EventsCard";
-import { Legend } from "../components/Legend";
 import faker from "faker";
-import { findLastIndex, last, range, sample, without } from "lodash";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { range, sample, uniqueId, without } from "lodash";
 import { HyloBox } from "./HyloBox";
 import useScrollPosition from "@react-hook/window-scroll";
 import { useWindowWidth } from "@react-hook/window-size";
-import { RowData, Group, NestedRows } from "./NesterRows";
-import { schemeTableau10 } from "d3-scale-chromatic"
+import { RowData, Filtering, NestedRows, PlantingData } from "./NesterRows";
+import { schemeTableau10 } from "d3-scale-chromatic";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -45,7 +38,7 @@ const Root = withTheme(styled.div`
   //   ),
   //   url(${bgImage});
   // background-size: cover;
-  background-color: ${p => p.theme.colors.bg};
+  background-color: ${(p) => p.theme.colors.bg};
   display: grid;
   grid-template-columns: 1fr max(500px, 34%);
   grid-template-rows: 60px auto;
@@ -89,7 +82,7 @@ const Events = styled.div`
   gap: 20px;
 `;
 
-const COLORS = schemeTableau10.slice(0,9)//[
+const COLORS = schemeTableau10.slice(0, 9); //[
 //   "purple",
 //   "blue",
 //   "teal",
@@ -105,10 +98,12 @@ const ROWS: RowData[] = [
   {
     name: "Indicators	",
     type: "group",
+    showAggregation: true,
     children: [
       {
         name: "Profitability	",
         type: "sub-group",
+        showAggregation: true,
         children: [
           { name: "Proteins", type: "value" },
           { name: "Density", type: "value" },
@@ -119,6 +114,7 @@ const ROWS: RowData[] = [
       {
         name: "Risk Reduction	",
         type: "sub-group",
+        showAggregation: true,
         children: [
           { name: "LOI Soil Carbon", type: "value" },
           { name: "Soil Respiration", type: "value" },
@@ -132,6 +128,7 @@ const ROWS: RowData[] = [
       {
         name: "Product Quality	",
         type: "sub-group",
+        showAggregation: true,
         children: [
           { name: "Polyphenols", type: "value" },
           { name: "Antioxidants", type: "value" },
@@ -192,11 +189,28 @@ const ROWS: RowData[] = [
   },
 ];
 
+const createPlantingData = (): PlantingData[] => {
+  const values: {name: string, value: number, id: string}[] = [];
+  const id = uniqueId();
+  const walk = (items: RowData[]) => {
+    for (const item of items) {
+      if (item.type === "value") {
+        values.push({ name: item.name, value: Math.random(), id });
+      }
+      if (item.children) {
+        walk(item.children)
+      }
+    }
+  };
+  walk(ROWS);
+  return values;
+};
+
 function hoverReducer(
   state: string | null,
   action: { type: "enter" | "leave"; name: string }
 ) {
-switch (action.type) {
+  switch (action.type) {
     case "enter":
       return action.name;
     case "leave":
@@ -209,41 +223,39 @@ switch (action.type) {
 const RandomContent = () => {
   const { colors } = useTheme();
   const [hoverState, hoverDispatch] = useReducer(hoverReducer, null);
-  const [groups, setGroups] = useState<Group[]>([]);
+  const [filterings, setFilterings] = useState<Filtering[]>([]);
 
-  const addGroup = useCallback(
+  const addFilter = useCallback(
     (name?: string, color?: string) => {
-      const freeColors =
-        without(COLORS, ...groups.map((g) => g.color));
+      const freeColors = without(COLORS, ...filterings.map((g) => g.color));
       const group = {
         name: name || faker.company.companyName(),
         color: color || sample(freeColors.length > 0 ? freeColors : COLORS)!,
+        plantings: range(Math.random() * 10).map(() => createPlantingData()),
       };
-      console.log("setGroups([...groups, group]);");
-      setGroups([...groups, group]);
+      setFilterings([...filterings, group]);
       return group;
     },
-    [groups]
+    [filterings]
   );
   const removeGroup = useCallback(
     (name: string) => {
-      console.log("setGroups(groups.filter((g) => g.name !== name));");
-      setGroups(groups.filter((g) => g.name !== name));
+      setFilterings(filterings.filter((g) => g.name !== name));
     },
-    [groups]
+    [filterings]
   );
 
   useEffect(() => {
-    setGroups([
-      addGroup("Produce Corn, Beef", schemeTableau10[4]),
-      addGroup("General Mills - KS", schemeTableau10[0]),
+    setFilterings([
+      addFilter("Produce Corn, Beef", schemeTableau10[4]),
+      addFilter("General Mills - KS", schemeTableau10[0]),
     ]);
   }, []);
 
   return (
     <RowContainer>
       <PaneHead>
-        {[...groups].reverse().map((group, i) => (
+        {[...filterings].reverse().map((group, i) => (
           <Button
             key={i}
             label={group.name}
@@ -261,14 +273,10 @@ const RandomContent = () => {
         <Button
           label="+ Add"
           color={colors.bgSidePanel}
-          onClick={() => addGroup()}
+          onClick={() => addFilter()}
         />
       </PaneHead>
-      <NestedRows
-        rows={ROWS}
-        groups={groups}
-        hoverState={hoverState}
-      />
+      <NestedRows rows={ROWS} filterings={filterings} hoverState={hoverState} />
     </RowContainer>
   );
 };
@@ -284,7 +292,7 @@ const fakeEventCardData = [
       precipitation: "47 in",
       texture: "Sand: 38% | Slit 41% | Clay 21%",
     },
-    events: range(10).map(i => getFarmEvent((-i).toString())),
+    events: range(10).map((i) => getFarmEvent((-i).toString())),
   },
   {
     title: "Corn 2020",
@@ -296,7 +304,7 @@ const fakeEventCardData = [
       precipitation: "47 in",
       texture: "Sand: 40% | Slit 38% | Clay 20%",
     },
-    events: range(8).map(i => getFarmEvent(i.toString())),
+    events: range(8).map((i) => getFarmEvent(i.toString())),
   },
 ];
 
@@ -331,11 +339,11 @@ export const Dashboard = ({ iframeSrc }: Props) => {
   const pages = [
     {
       label: "Compare",
-      renderPanel: () => <RandomContent/>,
+      renderPanel: () => <RandomContent />,
     },
     {
       label: "My Data",
-      renderPanel: () => <RandomContent/>,
+      renderPanel: () => <RandomContent />,
     },
   ];
 

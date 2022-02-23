@@ -1,21 +1,39 @@
-import { findIndex, findLastIndex, last, memoize, range } from "lodash";
+import {
+  filter,
+  findIndex,
+  findLastIndex,
+  last,
+  memoize,
+  range,
+  sum,
+} from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
 import { ValueDistribution } from "../components/ValueDistribution";
 import { genDataPoints } from "../utils/random";
 
-export type RowData = { name: string; type: string; children?: RowData[] };
-export type Group = { color: string; name: string };
+export type RowData = {
+  name: string;
+  type: string;
+  children?: RowData[];
+  showAggregation?: boolean;
+};
+export type PlantingData = { name: string; value: number; id: string };
+export type Filtering = {
+  color: string;
+  name: string;
+  plantings: PlantingData[][];
+};
 
 const flattenRows = (
   rows: RowData[],
-  nesting = 0,
-  parentClosed = false
+  nesting = 0
 ): {
   row: RowData;
   nesting: number;
   childCount: number;
   isLastChild: boolean;
   hideBranches: number;
+  childRowNames: string[];
 }[] =>
   rows
     .map((row) => {
@@ -31,33 +49,42 @@ const flattenRows = (
           childCount,
           isLastChild: row === last(rows),
           hideBranches: 0,
+          childRowNames: children.map((c) => c.row.name),
         },
         ...children,
       ];
     })
     .flat();
 
-const randomValues = memoize(
-  (groups: Group[], valueName, hoverState) => [
-    { color: "grey", values: genDataPoints(valueName, 80, 10) },
-    ...groups.map(({ color, name: orgName }) => ({
+const convertValues = memoize(
+  (filterings: Filtering[], valueNames: string[], hoverState) => {
+    return filterings.map(({ plantings, color, name: filterName }) => ({
       color,
-      values: genDataPoints(valueName + orgName, 32),
+      values: plantings
+        .map((p) =>
+          p.filter((v) => valueNames.includes(v.name)).map((v) => v.value)
+        )
+        .flat(),
       showVariance: true,
-      isHighlighted: hoverState === orgName,
-    })),
-  ],
-  (groups, valueName, hoverState) => groups.length + valueName + hoverState
+      isHighlighted: hoverState === filterName,
+    }));
+  },
+  //
+  (filterings, valueNames, hoverState) =>
+    `${filterings
+      .map((f) => f.name + f.plantings.length)
+      .join("/")}-${valueNames.join("/")} - ${hoverState}`
 );
 
+let prevProps: any[] = [];
 export const NestedRows = ({
   rows,
-  groups,
+  filterings,
   hoverState,
 }: {
   rows: RowData[];
   hoverState: string | null;
-  groups: Group[];
+  filterings: Filtering[];
 }) => {
   const flatRows = useMemo(() => flattenRows(rows), [rows]);
   const [isClosed, setIsClosed] = useState<boolean[]>(
@@ -99,13 +126,24 @@ export const NestedRows = ({
     <React.Fragment>
       {flatRows.map(
         (
-          { row: { name }, nesting, childCount, isLastChild, hideBranches },
+          {
+            row: { name, showAggregation },
+            nesting,
+            childCount,
+            isLastChild,
+            hideBranches,
+            childRowNames,
+          },
           i
         ) => (
           <ValueDistribution
-            key={i}
+            key={`${name}-${i}`}
             label={name}
-            values={randomValues(groups, name, hoverState)}
+            values={convertValues(
+              filterings,
+              showAggregation ? childRowNames : [name],
+              hoverState
+            )}
             nesting={nesting}
             childCount={childCount}
             isLastChild={isLastChild}

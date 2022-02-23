@@ -72,8 +72,8 @@ export const EventsCard = ({
       </Head>
       <Params>
         {Object.entries(params).map(([key, value]) => [
-          <ParamName>{key}</ParamName>,
-          <ParamValue>{value}</ParamValue>,
+          <ParamName key={`name-${key}`}>{key}</ParamName>,
+          <ParamValue key={`value-${key}`}>{value}</ParamValue>,
         ])}
       </Params>
       <IconEventsBar events={events}/>

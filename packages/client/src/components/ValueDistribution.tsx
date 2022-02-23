@@ -267,15 +267,18 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
     }
 
     // Draw mean
-    ctx.beginPath();
-    ctx.fillStyle = theme.color("red");
-    ctx.rect(
-      scale(allMean),
-      theme.valueDistribution.varianceLineHeight,
-      theme.valueDistribution.meanTickWidth,
-      canvas.height
-    );
-    ctx.fill();
+    if (allValues.length > 0) {
+      ctx.beginPath();
+      ctx.fillStyle = theme.color("red");
+      ctx.rect(
+        scale(allMean),
+        theme.valueDistribution.varianceLineHeight,
+        theme.valueDistribution.meanTickWidth,
+        canvas.height
+      );
+      ctx.fill();
+    }
+    
 
     // Draw hover
     if (hoverValue) {
@@ -296,10 +299,10 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
   return (
     <Bar className={props.className} openState={props.openState}>
       {range(props.hideBranches).map((i) => (
-        <BranchLeftHidden />
+        <BranchLeftHidden key={`blh-${i}`}/>
       ))}
       {range(leftBranches).map((i) => (
-        <BranchLeft isEnd={props.isLastChild && i === leftBranches - 1} />
+        <BranchLeft key={`bl-${i}`} isEnd={props.isLastChild && i === leftBranches - 1} />
       ))}
       <Label
         nesting={props.nesting || 0}
