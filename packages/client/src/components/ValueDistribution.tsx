@@ -4,11 +4,12 @@ import "../index.css";
 import { useCanvas } from "../utils/useCanvas";
 import { useTheme, withTheme } from "@emotion/react";
 import { scaleLinear } from "d3-scale";
-import { extent, mean, min, minIndex, quantile, zip } from "d3-array";
-import { pull, range, sortBy } from "lodash";
+import { extent, mean, minIndex, quantile } from "d3-array";
+import { range, sortBy } from "lodash";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import tinycolor from "tinycolor2";
+import { Filtering, PlantingData } from "../stories/NesterRows";
 
 // TODO read height from props
 
@@ -135,7 +136,9 @@ type Props = {
    * Data name
    */
   label: string;
-  values: Values[];
+  filterings: Filtering[];
+  valueNames: string[];
+  highlightedFiltering?: string | null;
   className?: string;
   nesting: number;
   childCount: number;
@@ -143,17 +146,42 @@ type Props = {
   hideBranches: number;
   onToggleChildren: () => void;
   openState: "open" | "closed" | "parentClosed";
+  hoveredData: PlantingData | null;
+  onHoverData: (value: PlantingData) => void;
+  onLeaveData: (value: PlantingData) => void;
 };
 
 /**
  * Primary UI component for user interaction
  */
-export const ValueDistribution = ({ label, values, ...props }: Props) => {
+export const ValueDistribution = ({
+  label,
+  filterings,
+  highlightedFiltering,
+  valueNames,
+  hoveredData,
+  onHoverData,
+  onLeaveData,
+  ...props
+}: Props) => {
   const { colors } = useTheme();
   const [isHovering, setIsHovering] = useState(false);
   const theme = useTheme();
   const canvas = useCanvas();
-  const allValues = useMemo(() => values.map((v) => v.values).flat(), [values]);
+  const values = useMemo(() => {
+    return filterings.map(({ plantings, color, name: filterName }) => ({
+      color,
+      values: plantings
+        .map(
+          (p) => p.filter((v) => valueNames.includes(v.name)) //.map((v) => v.value)
+        )
+        .flat(),
+      showVariance: true,
+      isHighlighted: highlightedFiltering === filterName,
+    }));
+  }, [filterings, highlightedFiltering, valueNames]);
+  const allData = useMemo(() => values.map((v) => v.values).flat(), [values]);
+  const allValues = useMemo(() => allData.map((d) => d.value), [allData]);
   const scale = useMemo(() => {
     const [min, max] = extent(allValues);
     return scaleLinear()
@@ -161,41 +189,41 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
       .rangeRound([0, canvas.width - theme.valueDistribution.tickWidth]);
   }, [allValues, canvas.width]);
   const allMean = useMemo(() => mean(allValues) || 0, [allValues]);
-  const [hoverValue, setHoverValue] = useState<null | number>(null);
+  const [localHoveredValue, setLocalHoveredValue] =
+    useState<PlantingData | null>(null);
   const handlePlotMouseMove = useCallback(
     (e: React.MouseEvent) => {
       if (allValues.length === 0) {
         return;
       }
+      if (e.nativeEvent.offsetY < theme.valueDistribution.varianceLineHeight) {
+        if (localHoveredValue) {
+          onLeaveData(localHoveredValue);
+        }
+        return;
+      }
       const mouseX = e.nativeEvent.offsetX;
       const targetValue = scale.invert(mouseX);
-      const closestValue =
-        allValues[minIndex(allValues, (v) => Math.abs(v - targetValue))];
-      const closestValueX = scale(closestValue);
-      setHoverValue(Math.abs(closestValueX - mouseX) < 3 ? closestValue : null);
+      const closestData =
+        allData[minIndex(allValues, (v) => Math.abs(v - targetValue))];
+      const closestValueX = scale(closestData.value);
+      const newLocalHoveredValue =
+        Math.abs(closestValueX - mouseX) < 3 ? closestData : null;
+      if (newLocalHoveredValue) {
+        onHoverData(newLocalHoveredValue);
+      } else if (localHoveredValue) {
+        onLeaveData(localHoveredValue);
+      }
+      setLocalHoveredValue(newLocalHoveredValue);
     },
-    [scale, allValues]
+    [scale, allValues, allData, localHoveredValue]
   );
-  const handlePlotMouseLeave = useCallback(() => setHoverValue(null), []);
-
-  const varianceBounds = useMemo(() => {
-    return sortBy(
-      values
-        .filter((v) => v.showVariance)
-        .map(({ values, color }) => {
-          const q1 = quantile(values, 0.25);
-          const q3 = quantile(values, 0.75);
-          return q1 && q3
-            ? [
-                { type: "start", color, value: q1 },
-                { type: "stop", color, value: q3 },
-              ]
-            : [];
-        })
-        .flat(),
-      "value"
-    );
-  }, [values]);
+  const handlePlotMouseLeave = useCallback(() => {
+    if (localHoveredValue) {
+      onLeaveData(localHoveredValue);
+    }
+    setLocalHoveredValue(null);
+  }, [localHoveredValue]);
 
   useEffect(() => {
     const ctx = canvas.resize();
@@ -222,8 +250,9 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
       ctx.shadowBlur = valueSet.isHighlighted ? 4 : 0;
 
       if (valueSet.showVariance) {
-        const q1 = quantile(valueSet.values, 0.25);
-        const q3 = quantile(valueSet.values, 0.75);
+        const values = valueSet.values.map((v) => v.value);
+        const q1 = quantile(values, 0.25);
+        const q3 = quantile(values, 0.75);
         if (q1 && q3) {
           // Draw variance line
           ctx.rect(
@@ -256,7 +285,7 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
       // draw ticks
       valueSet.values.map((value) => {
         ctx.rect(
-          scale(value),
+          scale(value.value),
           theme.valueDistribution.varianceLineHeight,
           theme.valueDistribution.tickWidth,
           canvas.height
@@ -278,31 +307,37 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
       );
       ctx.fill();
     }
-    
 
     // Draw hover
-    if (hoverValue) {
+    if (hoveredData) {
       ctx.beginPath();
       ctx.fillStyle = theme.color("white");
-      ctx.rect(
-        scale(hoverValue),
-        theme.valueDistribution.varianceLineHeight,
-        theme.valueDistribution.tickWidth,
-        canvas.height
-      );
+      allData.map((data) => {
+        if (data.id === hoveredData.id) {
+          ctx.rect(
+            scale(data.value),
+            theme.valueDistribution.varianceLineHeight,
+            theme.valueDistribution.tickWidth,
+            canvas.height
+          );
+        }
+      });
       ctx.fill();
     }
-  }, [values, canvas.width, canvas.height, scale, allMean, hoverValue]);
+  }, [values, canvas.width, canvas.height, scale, allMean, hoveredData]);
 
   const leftBranches = props.nesting - props.hideBranches;
 
   return (
     <Bar className={props.className} openState={props.openState}>
       {range(props.hideBranches).map((i) => (
-        <BranchLeftHidden key={`blh-${i}`}/>
+        <BranchLeftHidden key={`blh-${i}`} />
       ))}
       {range(leftBranches).map((i) => (
-        <BranchLeft key={`bl-${i}`} isEnd={props.isLastChild && i === leftBranches - 1} />
+        <BranchLeft
+          key={`bl-${i}`}
+          isEnd={props.isLastChild && i === leftBranches - 1}
+        />
       ))}
       <Label
         nesting={props.nesting || 0}
@@ -330,15 +365,6 @@ export const ValueDistribution = ({ label, values, ...props }: Props) => {
           ref={canvas.ref}
         />
       </Plot>
-      {/* {props.childCount !== 0 ? (
-        <BranchDown
-          knobs={knobs}
-          nesting={props.nesting || 0}
-          childCount={props.childCount || 0}
-          isClosed={props.openState === "closed"}
-          isHovering={isHovering}
-        />
-      ) : null} */}
     </Bar>
   );
 };

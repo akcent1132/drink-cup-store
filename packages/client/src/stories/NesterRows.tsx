@@ -47,27 +47,6 @@ const flattenRows = (
     })
     .flat();
 
-const convertValues = memoize(
-  (filterings: Filtering[], valueNames: string[], hoverState) => {
-    return filterings.map(({ plantings, color, name: filterName }) => ({
-      color,
-      values: plantings
-        .map((p) =>
-          p.filter((v) => valueNames.includes(v.name)).map((v) => v.value)
-        )
-        .flat(),
-      showVariance: true,
-      isHighlighted: hoverState === filterName,
-    }));
-  },
-  //
-  (filterings, valueNames, hoverState) =>
-    `${filterings
-      .map((f) => f.name + f.plantings.length)
-      .join("/")}-${valueNames.join("/")} - ${hoverState}`
-);
-
-let prevProps: any[] = [];
 export const NestedRows = ({
   rows,
   filterings,
@@ -80,6 +59,19 @@ export const NestedRows = ({
   const flatRows = useMemo(() => flattenRows(rows), [rows]);
   const [isClosed, setIsClosed] = useState<boolean[]>(
     new Array(rows.length).fill(false)
+  );
+  const [hoveredData, setHoveredData] = useState<PlantingData | null>(null);
+  const handleHoverData = useCallback(
+    (data: PlantingData) => setHoveredData(data),
+    []
+  );
+  const handleLeaveData = useCallback(
+    (data: PlantingData) => {
+      if (hoveredData && data.id === hoveredData.id) {
+        setHoveredData(null);
+      }
+    },
+    [hoveredData]
   );
   const toggleOpen = useCallback(
     (rowIndex: number) => {
@@ -130,17 +122,18 @@ export const NestedRows = ({
           <ValueDistribution
             key={`${name}-${i}`}
             label={name}
-            values={convertValues(
-              filterings,
-              showAggregation ? childRowNames : [name],
-              hoverState
-            )}
+            filterings={filterings}
+            valueNames={showAggregation ? childRowNames : [name]}
+            highlightedFiltering={hoverState}
             nesting={nesting}
             childCount={childCount}
             isLastChild={isLastChild}
             hideBranches={hideBranches}
             onToggleChildren={() => toggleOpen(i)}
             openState={openStates[i]}
+            hoveredData={hoveredData}
+            onHoverData={handleHoverData}
+            onLeaveData={handleLeaveData}
           />
         )
       )}

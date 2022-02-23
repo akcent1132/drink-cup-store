@@ -16,17 +16,17 @@ export default {
 
 const Template: ComponentStory<typeof ValueDistribution> = (args) => <ValueDistribution {...args} />;
 
-export const Default = Template.bind({});
-Default.args = {
-  label: 'Value Distribution',
-  values: [{
-    color: 'orange',
-    values: genDataPoints('foo3'),
-    showVariance: true,
-  }, {
-    color: 'yellow',
-    values: genDataPoints('foo2'),
-    showVariance: true,
-  }],
-};
+// export const Default = Template.bind({});
+// Default.args = {
+//   label: 'Value Distribution',
+//   values: [{
+//     color: 'orange',
+//     values: genDataPoints('foo3'),
+//     showVariance: true,
+//   }, {
+//     color: 'yellow',
+//     values: genDataPoints('foo2'),
+//     showVariance: true,
+//   }],
+// };
 
