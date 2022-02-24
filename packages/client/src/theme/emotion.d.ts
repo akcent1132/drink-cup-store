@@ -36,5 +36,6 @@ declare module "@emotion/react" {
     font: string;
     iconEventsBar: typeof iconEventsBarTheme;
     valueDistribution: typeof valueDistributionTheme;
+    useBackgroundImage: boolean;
   }
 }

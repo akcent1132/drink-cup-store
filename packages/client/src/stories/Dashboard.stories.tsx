@@ -9,6 +9,9 @@ import { withEditableTheme } from "../theme/withEditableTheme";
 export default {
   title: "Example/Dashboard",
   component: Dashboard,
+  parameters: {
+    backgrounds: { disable: true },
+  },
   decorators: [
     (Story) => (
       <div>

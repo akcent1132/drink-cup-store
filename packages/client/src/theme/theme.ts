@@ -44,6 +44,7 @@ export const theme = {
   font: "'Roboto', sans-serif",
   iconEventsBar: iconEventsBarTheme,
   valueDistribution: valueDistributionTheme,
+  useBackgroundImage: true,
 };
 
 export const regularColor = (t: typeof theme, color: string) =>

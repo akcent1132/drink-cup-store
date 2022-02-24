@@ -10,7 +10,7 @@ import React, {
 } from "react";
 import styled from "@emotion/styled";
 import "../index.css";
-import bgImage from "../assets/images/Background-corngrains.jpg";
+import bgCorn from "../assets/images/Background-corngrains.jpg";
 import logoImage from "../assets/images/Farmers-coffeeshop-logo-white_transparent.png";
 import { Tabs } from "../components/Tabs";
 import { css, useTheme, withTheme } from "@emotion/react";
@@ -33,13 +33,21 @@ const Root = withTheme(styled.div`
   min-height: 1600px;
   padding-left: 52px;
   box-sizing: border-box;
-  // background-image: linear-gradient(
-  //     to bottom,
-  //     rgba(0, 0, 0, 4) 0%,
-  //     rgba(0, 0, 0, 0.34) 10%
-  //   ),
-  //   url(${bgImage});
-  // background-size: cover;
+  ${(p) =>
+    p.theme.useBackgroundImage
+      ? `
+      background-image: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 4) 0%,
+        rgba(0, 0, 0, 0.34) 10%
+      ),
+      url(${bgCorn});
+      background-size: max(100%, 900px) auto;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+  `
+      : ""}
+
   background-color: ${(p) => p.theme.colors.bg};
   display: grid;
   grid-template-columns: 1fr max(500px, 34%);

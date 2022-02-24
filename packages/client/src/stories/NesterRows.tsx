@@ -1,4 +1,4 @@
-import { findLastIndex, last, memoize } from "lodash";
+import { findLastIndex, last } from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
 import { ValueDistribution } from "../components/ValueDistribution";
 

@@ -17,6 +17,7 @@ export const withEditableTheme = <P extends object>(
     class WithTheme extends React.Component<P & WithLoadingProps> {
       render() {
         const { theme, ...props } = this.props;
+        const useBackgroundImage = knobs.boolean("UseBackgroundImage", theme.useBackgroundImage, 'theme.colors');
         const colors = mapValues(theme.colors, (c, name) =>
           knobs.color(name, c, "theme.colors")
         );
@@ -30,7 +31,7 @@ export const withEditableTheme = <P extends object>(
           {...theme.valueDistribution},
           "theme.ValueDistribution"
         );
-        const t = { ...theme, colors, iconEventsBar, valueDistribution };
+        const t = { ...theme, colors, iconEventsBar, valueDistribution, useBackgroundImage };
         return (
           <ThemeProvider theme={t}>
             <Component {...(props as P)} />
