@@ -201,12 +201,12 @@ const ROWS: RowData[] = [
 
 const createFilteringData = (
   filteringName: string,
-  countMax = 30,
+  countMax = 12,
   stdMax = 2,
   meanMax = 5
 ): PlantingData[][] => {
   const rnd = seedrandom(filteringName);
-  return range(rnd() * 12).map(() => {
+  return range(rnd() * countMax).map(() => {
     const values: { name: string; value: number; id: string }[] = [];
     const id = uniqueId();
     const walk = (rows: RowData[]) => {
@@ -214,7 +214,7 @@ const createFilteringData = (
         const rndValue = seedrandom(filteringName + row.name);
         // TODO add multilpe measurements to some value types
         // const count = countMax * rndValue();
-        const mean = rndValue() * meanMax;
+        const mean = (rndValue() - 0.5) * meanMax;
         const std = rndValue() * stdMax;
         const norm = randomNormal.source(rnd)(mean, std);
         if (row.type === "value") {
@@ -248,7 +248,7 @@ const RandomContent = () => {
   const { colors } = useTheme();
   const [hoverState, hoverDispatch] = useReducer(hoverReducer, null);
   const [filterings, setFilterings] = useState<Filtering[]>([]);
-
+  const averageValues = createFilteringData('average', 36, 5, 2);
   const addFilter = useCallback(
     (name?: string, color?: string) => {
       const freeColors = without(COLORS, ...filterings.map((g) => g.color));
@@ -256,7 +256,7 @@ const RandomContent = () => {
       const filtering = {
         name,
         color: color || sample(freeColors.length > 0 ? freeColors : COLORS)!,
-        plantings: createFilteringData(name),
+        plantings: createFilteringData(name, 12, 3, 2),
       };
       setFilterings([...filterings, filtering]);
       return filtering;
@@ -301,7 +301,7 @@ const RandomContent = () => {
           onClick={() => addFilter()}
         />
       </PaneHead>
-      <NestedRows rows={ROWS} filterings={filterings} hoverState={hoverState} />
+      <NestedRows rows={ROWS} filterings={filterings} hoverState={hoverState} averageValues={averageValues}/>
     </RowContainer>
   );
 };

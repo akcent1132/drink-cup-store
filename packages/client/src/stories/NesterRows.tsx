@@ -51,10 +51,12 @@ export const NestedRows = ({
   rows,
   filterings,
   hoverState,
+  averageValues,
 }: {
   rows: RowData[];
   hoverState: string | null;
   filterings: Filtering[];
+  averageValues: PlantingData[][];
 }) => {
   const flatRows = useMemo(() => flattenRows(rows), [rows]);
   const [isClosed, setIsClosed] = useState<boolean[]>(
@@ -123,6 +125,7 @@ export const NestedRows = ({
             key={`${name}-${i}`}
             label={name}
             filterings={filterings}
+            averageValues={averageValues}
             valueNames={showAggregation ? childRowNames : [name]}
             highlightedFiltering={hoverState}
             nesting={nesting}

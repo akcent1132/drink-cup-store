@@ -124,19 +124,13 @@ const LabelIcon = styled.div`
   right: 0;
 `;
 
-type Values = {
-  color: string;
-  values: number[];
-  showVariance?: boolean;
-  isHighlighted?: boolean;
-};
-
 type Props = {
   /**
    * Data name
    */
   label: string;
   filterings: Filtering[];
+  averageValues: PlantingData[][];
   valueNames: string[];
   highlightedFiltering?: string | null;
   className?: string;
@@ -157,6 +151,7 @@ type Props = {
 export const ValueDistribution = ({
   label,
   filterings,
+  averageValues,
   highlightedFiltering,
   valueNames,
   hoveredData,
@@ -169,16 +164,24 @@ export const ValueDistribution = ({
   const theme = useTheme();
   const canvas = useCanvas();
   const values = useMemo(() => {
-    return filterings.map(({ plantings, color, name: filterName }) => ({
-      color,
-      values: plantings
-        .map(
-          (p) => p.filter((v) => valueNames.includes(v.name)) //.map((v) => v.value)
-        )
-        .flat(),
-      showVariance: true,
-      isHighlighted: highlightedFiltering === filterName,
-    }));
+    const average = {
+      plantings: averageValues,
+      color: tinycolor("white").setAlpha(0.1).toString(),
+      name: "average",
+    };
+    return [average, ...filterings].map(
+      ({ plantings, color, name: filterName }) => ({
+        color,
+        values: plantings
+          .map(
+            (p) => p.filter((v) => valueNames.includes(v.name)) //.map((v) => v.value)
+          )
+          .flat(),
+        showVariance: filterName !== "average",
+        isSelectable: filterName !== "average",
+        isHighlighted: highlightedFiltering === filterName,
+      })
+    );
   }, [filterings, highlightedFiltering, valueNames]);
   const allData = useMemo(() => values.map((v) => v.values).flat(), [values]);
   const allValues = useMemo(() => allData.map((d) => d.value), [allData]);
@@ -193,7 +196,12 @@ export const ValueDistribution = ({
     useState<PlantingData | null>(null);
   const handlePlotMouseMove = useCallback(
     (e: React.MouseEvent) => {
-      if (allValues.length === 0) {
+      const allSelectableData = values
+        .filter((v) => v.isSelectable)
+        .map((v) => v.values)
+        .flat();
+      const allSelectableValues = allSelectableData.map((d) => d.value);
+      if (allSelectableValues.length === 0) {
         return;
       }
       if (e.nativeEvent.offsetY < theme.valueDistribution.varianceLineHeight) {
@@ -205,7 +213,9 @@ export const ValueDistribution = ({
       const mouseX = e.nativeEvent.offsetX;
       const targetValue = scale.invert(mouseX);
       const closestData =
-        allData[minIndex(allValues, (v) => Math.abs(v - targetValue))];
+        allSelectableData[
+          minIndex(allSelectableValues, (v) => Math.abs(v - targetValue))
+        ];
       const closestValueX = scale(closestData.value);
       const newLocalHoveredValue =
         Math.abs(closestValueX - mouseX) < 3 ? closestData : null;
@@ -216,7 +226,7 @@ export const ValueDistribution = ({
       }
       setLocalHoveredValue(newLocalHoveredValue);
     },
-    [scale, allValues, allData, localHoveredValue]
+    [scale, values, localHoveredValue]
   );
   const handlePlotMouseLeave = useCallback(() => {
     if (localHoveredValue) {
@@ -244,11 +254,12 @@ export const ValueDistribution = ({
     const thereAreHighlighteds = values.some((v) => v.isHighlighted);
     for (const valueSet of sortBy(values, "isHighlighted")) {
       ctx.beginPath();
+      const color = tinycolor(valueSet.color);
       ctx.fillStyle = !thereAreHighlighteds
         ? valueSet.color
         : valueSet.isHighlighted
-        ? tinycolor(valueSet.color).saturate(2).toString()
-        : tinycolor(valueSet.color).desaturate(12).setAlpha(0.5).toString();
+        ? color.saturate(2).toString()
+        : color.desaturate(12).setAlpha(color.getAlpha()/2).toString();
       // ctx.shadowColor = tinycolor(theme.color(valueSet.color))
       //   .brighten(12)
       //   .toString();
