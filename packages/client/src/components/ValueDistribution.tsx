@@ -241,13 +241,18 @@ export const ValueDistribution = ({
     );
     ctx.fill();
 
+    const thereAreHighlighteds = values.some((v) => v.isHighlighted);
     for (const valueSet of sortBy(values, "isHighlighted")) {
       ctx.beginPath();
-      ctx.fillStyle = theme.color(valueSet.color);
-      ctx.shadowColor = tinycolor(theme.color(valueSet.color))
-        .brighten(12)
-        .toString();
-      ctx.shadowBlur = valueSet.isHighlighted ? 4 : 0;
+      ctx.fillStyle = !thereAreHighlighteds
+        ? valueSet.color
+        : valueSet.isHighlighted
+        ? tinycolor(valueSet.color).saturate(2).toString()
+        : tinycolor(valueSet.color).desaturate(12).setAlpha(0.5).toString();
+      // ctx.shadowColor = tinycolor(theme.color(valueSet.color))
+      //   .brighten(12)
+      //   .toString();
+      // ctx.shadowBlur = valueSet.isHighlighted ? 4 : 0;
 
       if (valueSet.showVariance) {
         const values = valueSet.values.map((v) => v.value);
