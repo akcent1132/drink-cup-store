@@ -18,7 +18,7 @@ export const defaultTheme = {
   rowHeight: 24,
   tabSize: 6,
   branchWidth: 3,
-  tickWidth: 3,
+  tickWidth: 2,
   meanTickWidth: 6,
   varianceLineHeight: 8,
 };
@@ -191,7 +191,10 @@ export const ValueDistribution = ({
     const [min, max] = extent(allValues);
     return scaleLinear()
       .domain([min || 0, max || 1])
-      .rangeRound([0, canvas.width - theme.valueDistribution.tickWidth]);
+      .rangeRound([
+        theme.valueDistribution.tickWidth / 2,
+        canvas.width - theme.valueDistribution.tickWidth / 2,
+      ]);
   }, [allValues, canvas.width]);
   const allMean = useMemo(() => mean(allValues) || 0, [allValues]);
   const [localHoveredValue, setLocalHoveredValue] =
@@ -237,10 +240,11 @@ export const ValueDistribution = ({
     setLocalHoveredValue(null);
   }, [localHoveredValue]);
   const handlePlotMouseClick = useCallback(() => {
-    console.log("CLICKCI", localHoveredValue)
     if (localHoveredValue) {
-      const color = values.find(v => v.values.some(v => v.id === localHoveredValue.id))?.color
-      console.log({color})
+      const color = values.find((v) =>
+        v.values.some((v) => v.id === localHoveredValue.id)
+      )?.color;
+      console.log({ color });
       if (color) {
         onClickData(localHoveredValue, color);
       }
@@ -271,7 +275,10 @@ export const ValueDistribution = ({
         ? valueSet.color
         : valueSet.isHighlighted
         ? color.saturate(2).toString()
-        : color.desaturate(12).setAlpha(color.getAlpha()/2).toString();
+        : color
+            .desaturate(12)
+            .setAlpha(color.getAlpha() / 2)
+            .toString();
       // ctx.shadowColor = tinycolor(theme.color(valueSet.color))
       //   .brighten(12)
       //   .toString();
@@ -313,7 +320,7 @@ export const ValueDistribution = ({
       // draw ticks
       valueSet.values.map((value) => {
         ctx.rect(
-          scale(value.value),
+          scale(value.value) - theme.valueDistribution.tickWidth / 2,
           theme.valueDistribution.varianceLineHeight,
           theme.valueDistribution.tickWidth,
           canvas.height
@@ -328,7 +335,7 @@ export const ValueDistribution = ({
       ctx.beginPath();
       ctx.fillStyle = theme.color("red");
       ctx.rect(
-        scale(allMean),
+        scale(allMean) - theme.valueDistribution.meanTickWidth / 2,
         theme.valueDistribution.varianceLineHeight,
         theme.valueDistribution.meanTickWidth,
         canvas.height
@@ -343,7 +350,7 @@ export const ValueDistribution = ({
       allData.map((data) => {
         if (data.id === hoveredData.id) {
           ctx.rect(
-            scale(data.value),
+            scale(data.value) - theme.valueDistribution.tickWidth / 2,
             theme.valueDistribution.varianceLineHeight,
             theme.valueDistribution.tickWidth,
             canvas.height
