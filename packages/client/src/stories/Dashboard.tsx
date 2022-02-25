@@ -317,7 +317,7 @@ const RandomContent = ({
 };
 
 const createFakePlantingCardData = memoize((_id: string, color: string) => {
-  let texture = [Math.random(), Math.random(), Math.random()];
+  let texture = [Math.random(), Math.random()];
   texture = texture.map((t) => Math.round((t / sum(texture)) * 100));
   return {
     title: "Corn 2020",
@@ -327,7 +327,7 @@ const createFakePlantingCardData = memoize((_id: string, color: string) => {
       zone: faker.random.alphaNumeric(2),
       temperature: (65 + Math.floor(21 * Math.random())).toString(),
       precipitation: `${32 + Math.floor(32 * Math.random())} in`,
-      texture: `Sand: ${texture[0]}% | Slit ${texture[1]}% | Clay ${texture[2]}%`,
+      texture: `Sand: ${texture[0]}% | Clay ${texture[1]}%`,
     },
     events: range(6 + 6 * Math.random()).map((i) =>
       getFarmEvent((-i).toString())
