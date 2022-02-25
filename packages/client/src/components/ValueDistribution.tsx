@@ -143,6 +143,7 @@ type Props = {
   hoveredData: PlantingData | null;
   onHoverData: (value: PlantingData) => void;
   onLeaveData: (value: PlantingData) => void;
+  onClickData: (value: PlantingData, color: string) => void;
 };
 
 /**
@@ -157,6 +158,7 @@ export const ValueDistribution = ({
   hoveredData,
   onHoverData,
   onLeaveData,
+  onClickData,
   ...props
 }: Props) => {
   const { colors } = useTheme();
@@ -234,6 +236,16 @@ export const ValueDistribution = ({
     }
     setLocalHoveredValue(null);
   }, [localHoveredValue]);
+  const handlePlotMouseClick = useCallback(() => {
+    console.log("CLICKCI", localHoveredValue)
+    if (localHoveredValue) {
+      const color = values.find(v => v.values.some(v => v.id === localHoveredValue.id))?.color
+      console.log({color})
+      if (color) {
+        onClickData(localHoveredValue, color);
+      }
+    }
+  }, [localHoveredValue, values]);
 
   useEffect(() => {
     const ctx = canvas.resize();
@@ -378,6 +390,7 @@ export const ValueDistribution = ({
         <PlotCanvas
           onMouseMove={handlePlotMouseMove}
           onMouseLeave={handlePlotMouseLeave}
+          onClick={handlePlotMouseClick}
           ref={canvas.ref}
         />
       </Plot>

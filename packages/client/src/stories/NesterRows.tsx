@@ -52,11 +52,13 @@ export const NestedRows = ({
   filterings,
   hoverState,
   averageValues,
+  onClickData,
 }: {
   rows: RowData[];
   hoverState: string | null;
   filterings: Filtering[];
   averageValues: PlantingData[][];
+  onClickData: (value: PlantingData, color: string) => void;
 }) => {
   const flatRows = useMemo(() => flattenRows(rows), [rows]);
   const [isClosed, setIsClosed] = useState<boolean[]>(
@@ -137,6 +139,7 @@ export const NestedRows = ({
             hoveredData={hoveredData}
             onHoverData={handleHoverData}
             onLeaveData={handleLeaveData}
+            onClickData={onClickData}
           />
         )
       )}

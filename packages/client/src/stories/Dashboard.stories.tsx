@@ -36,5 +36,6 @@ const Template: ComponentStory<typeof DashboardWithTheme> = (args) => (
 export const Default = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
 Default.args = {
+  // TODO use ?layoutFlags=mobileSettings
   iframeSrc: "https://www.hylo.com/all",
 };

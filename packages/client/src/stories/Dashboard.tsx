@@ -18,7 +18,7 @@ import { getFarmEvent } from "../utils/random";
 import { Button } from "../components/Button";
 import { EventsCard } from "../components/EventsCard";
 import faker from "faker";
-import { range, sample, uniqueId, without } from "lodash";
+import { memoize, range, sample, sum, uniq, uniqueId, without } from "lodash";
 import { HyloBox } from "./HyloBox";
 import useScrollPosition from "@react-hook/window-scroll";
 import { useWindowWidth } from "@react-hook/window-size";
@@ -42,7 +42,7 @@ const Root = withTheme(styled.div`
         rgba(0, 0, 0, 0.34) 10%
       ),
       url(${bgCorn});
-      background-size: max(100%, 900px) auto;
+      background-size: cover;
       background-repeat: no-repeat;
       background-attachment: fixed;
   `
@@ -244,11 +244,15 @@ function hoverReducer(
   }
 }
 
-const RandomContent = () => {
+const RandomContent = ({
+  onClickData,
+}: {
+  onClickData: (data: PlantingData, color: string) => void;
+}) => {
   const { colors } = useTheme();
   const [hoverState, hoverDispatch] = useReducer(hoverReducer, null);
   const [filterings, setFilterings] = useState<Filtering[]>([]);
-  const averageValues = createFilteringData('average', 36, 5, 2);
+  const averageValues = createFilteringData("average", 36, 5, 2);
   const addFilter = useCallback(
     (name?: string, color?: string) => {
       const freeColors = without(COLORS, ...filterings.map((g) => g.color));
@@ -301,37 +305,35 @@ const RandomContent = () => {
           onClick={() => addFilter()}
         />
       </PaneHead>
-      <NestedRows rows={ROWS} filterings={filterings} hoverState={hoverState} averageValues={averageValues}/>
+      <NestedRows
+        rows={ROWS}
+        filterings={filterings}
+        hoverState={hoverState}
+        averageValues={averageValues}
+        onClickData={onClickData}
+      />
     </RowContainer>
   );
 };
 
-const fakeEventCardData = [
-  {
+const createFakePlantingCardData = memoize((_id: string, color: string) => {
+  let texture = [Math.random(), Math.random(), Math.random()];
+  texture = texture.map((t) => Math.round((t / sum(texture)) * 100));
+  return {
     title: "Corn 2020",
-    name: "My Farm",
-    color: schemeTableau10[4],
+    name: `${faker.name.firstName()} ${faker.name.lastName()}`,
+    color,
     params: {
-      zone: "8b",
-      temperature: "65",
-      precipitation: "47 in",
-      texture: "Sand: 38% | Slit 41% | Clay 21%",
+      zone: faker.random.alphaNumeric(2),
+      temperature: (65 + Math.floor(21 * Math.random())).toString(),
+      precipitation: `${32 + Math.floor(32 * Math.random())} in`,
+      texture: `Sand: ${texture[0]}% | Slit ${texture[1]}% | Clay ${texture[2]}%`,
     },
-    events: range(10).map((i) => getFarmEvent((-i).toString())),
-  },
-  {
-    title: "Corn 2020",
-    name: "Farmer Pete",
-    color: schemeTableau10[0],
-    params: {
-      zone: "7a",
-      temperature: "67",
-      precipitation: "47 in",
-      texture: "Sand: 40% | Slit 38% | Clay 20%",
-    },
-    events: range(8).map((i) => getFarmEvent(i.toString())),
-  },
-];
+    events: range(6 + 6 * Math.random()).map((i) =>
+      getFarmEvent((-i).toString())
+    ),
+  };
+});
 
 const legendEntries = [
   { color: "red", name: "tillage" },
@@ -350,6 +352,10 @@ interface Props {
 
 export const Dashboard = ({ iframeSrc }: Props) => {
   const [tabIndex, setTabIndex] = useState(0);
+  const [plantingCards, setPlantingCards] = useState([
+    createFakePlantingCardData("seea", schemeTableau10[4]),
+    createFakePlantingCardData("seeb", schemeTableau10[0]),
+  ]);
   const rightSide = useRef<HTMLDivElement>(null);
   const windowWidth = useWindowWidth();
   const scrollY = useScrollPosition();
@@ -361,14 +367,24 @@ export const Dashboard = ({ iframeSrc }: Props) => {
     }
   }, [rightSide.current, windowWidth, scrollY]);
 
+  const handleClickRowData = useCallback(
+    (data: PlantingData, color: string) => {
+      setPlantingCards(uniq([
+        createFakePlantingCardData(data.id, color),
+        ...plantingCards,
+      ]));
+    },
+    [plantingCards]
+  );
+
   const pages = [
     {
       label: "Compare",
-      renderPanel: () => <RandomContent />,
+      renderPanel: () => <RandomContent onClickData={handleClickRowData} />,
     },
     {
       label: "My Data",
-      renderPanel: () => <RandomContent />,
+      renderPanel: () => <RandomContent onClickData={handleClickRowData} />,
     },
   ];
 
@@ -398,7 +414,7 @@ export const Dashboard = ({ iframeSrc }: Props) => {
       <RightSide ref={rightSide}>
         <Events>
           {/* <Legend entries={legendEntries} /> */}
-          {fakeEventCardData.map((props, i) => (
+          {plantingCards.map((props, i) => (
             <EventsCard {...props} key={i} />
           ))}
         </Events>

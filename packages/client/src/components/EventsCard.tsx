@@ -52,7 +52,7 @@ const ParamValue = withTheme(styled.div`
 interface Props {
   color?: string;
   events?: FarmEvent[];
-  params: { [key: string]: string };
+  params: { [index: string]: string };
   title?: string,
   name?: string,
 }
