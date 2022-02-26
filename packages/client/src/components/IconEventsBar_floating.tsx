@@ -2,6 +2,7 @@
 
 import React, {
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -24,16 +25,10 @@ import useSize from "@react-hook/size";
 import { forceCenter, forceCollide, forceSimulation, forceY } from "d3-force";
 import { getFarmEvent } from "../utils/random";
 import { useXOverlap } from "../utils/useOverlap";
-import { uniqBy } from "lodash";
 
 export const defaultTheme = {
   iconSize: 26,
   middleLineMargin: 6,
-  tickWidth: 3,
-  tickHeight: 10,
-  timelineHeight: 2,
-  timelineColor: "#4d4d4d",
-  highlightColor: "#fff683",
 };
 
 const getEventIcon = (type: string) => {
@@ -58,7 +53,6 @@ const getEventIcon = (type: string) => {
 // TODO read height from prop
 const Bar = styled.div`
   display: flex;
-  flex-direction: column;
   position: relative;
   width: 100%;
   height: 80px;
@@ -67,6 +61,7 @@ const Bar = styled.div`
 
 const DateText = withTheme(styled.div<{ left: number }>`
   position: absolute;
+  top: 60px;
   left: ${(p) => p.left}px;
   font-size: 11px;
   color: white;
@@ -75,33 +70,6 @@ const DateText = withTheme(styled.div<{ left: number }>`
   white-space: nowrap;
   display: flex;
   justify-content: center;
-`);
-
-const Tick = withTheme(styled.div<{ x: number, isHighlighted: boolean, isFaded: boolean }>`
-  position: absolute;
-  top: 0;
-  left: ${(p) => p.x - p.theme.iconEventsBar.tickWidth / 2}px;
-  width: ${(p) => p.theme.iconEventsBar.tickWidth}px;
-  height: ${(p) => p.theme.iconEventsBar.tickHeight}px;
-  border-radius: ${(p) => p.theme.iconEventsBar.tickWidth / 2}px;
-  opacity: ${p => p.isFaded ? 0.5 : 1};
-  background-color: ${p => p.isHighlighted ? p.theme.iconEventsBar.highlightColor : 'white'};
-`);
-
-const TimelineRoot = withTheme(styled.div`
-  margin-top: ${(p) => p.theme.iconEventsBar.iconSize * 2}px;
-  margin-bottom: 3px;
-  position: relative;
-  width: 100%;
-  height: ${(p) => p.theme.iconEventsBar.tickHeight}px;
-`);
-
-const TimelineLine = withTheme(styled.div`
-  margin-top: ${(p) =>
-    (p.theme.iconEventsBar.tickHeight - p.theme.iconEventsBar.timelineHeight) /
-    2}px;
-  height: ${(p) => p.theme.iconEventsBar.timelineHeight}px;
-  background-color: ${(p) => p.theme.iconEventsBar.timelineColor};
 `);
 
 export type FarmEvent = {
@@ -121,6 +89,21 @@ type IconNode = {
 
 type Props = {
   events?: FarmEvent[];
+};
+
+const drawTickText = (
+  ctx: CanvasRenderingContext2D,
+  date: Date,
+  x: number,
+  y: number
+) => {
+  const text = timeFormat("%b %-d")(date);
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(-Math.PI / 4);
+  ctx.textAlign = "right";
+  ctx.fillText(text, 0, 0);
+  ctx.restore();
 };
 
 const createDateForce = () => {
@@ -147,10 +130,6 @@ const createDateForce = () => {
  */
 export const IconEventsBar = (props: Props) => {
   const [events, setEvents] = useState(props.events || []);
-  const [hoveredEventType, setHoveredEventType] = useState<string | null>(null);
-  const [selectedEventType, setSelectedEventType] = useState<string | null>(
-    null
-  );
   const [hoveredEvent, setHoveredEvent] = useState<FarmEvent | null>(null);
   const ref = useRef<HTMLDivElement>(null);
   const refDate = useRef<HTMLDivElement>(null);
@@ -209,78 +188,95 @@ export const IconEventsBar = (props: Props) => {
     [hoveredEvent]
   );
 
+  // add events to the simulation
+  useEffect(() => {
+    // removes nodes of non-existing events
+    const nodes = simulation
+      .nodes()
+      .filter((node) => events.some((event) => event.id === node.event.id));
+    // add missing nodes to the simulation
+    for (const event of events) {
+      if (!nodes.some((n) => n.event.id === event.id)) {
+        nodes.push({
+          x: scale(event.date),
+          y: 30,
+          vx: 0,
+          vy: 0,
+          event,
+        });
+      }
+    }
+    simulation.nodes(nodes).alpha(1).tick(500).restart();
+  }, [events]);
+  useEffect(() => {
+    simulation.on("tick", () => {
+      if (!ref.current) {
+        return;
+      }
+
+      for (const node of simulation.nodes()) {
+        const icon = ref.current.querySelector<SVGElement>(
+          `#icon-${node.event.id}`
+        );
+        if (icon) {
+          icon.style.left = `${node.x - theme.iconSize / 2}px`;
+          icon.style.top = `${node.y}px`;
+        }
+      }
+    });
+  }, []);
   return (
-    <Bar ref={ref}>
-      {uniqBy(events, (e) => e.type).map((event, i) => {
+    <Bar ref={ref} onClick={addClick}>
+      {events.map((event) => {
         const iconProps = {
           id: `icon-${event.id}`,
           key: event.id,
           css: css`
-            left: ${(theme.iconSize / 2) * (i + 1)}px;
-            top: ${i % 2 === 1 ? theme.iconSize * (11 / 13) : 0}px;
+            left: ${scale(event.date) - theme.iconSize / 2}px;
+            top: 30px;
             position: absolute;
             :hover {
+              // transform: scale(1.12);
               opacity: 1;
             }
-            transition: opacity 0.4s ease-out;
+            transition: all 0.4s cubic-bezier(.87,1.32,.68,1);
             opacity: 0.7;
           `,
           width: theme.iconSize,
           height: theme.iconSize,
           fill: "white",
           title: event.type,
-          onMouseEnter: () => setHoveredEventType(event.type),
-          onMouseLeave: () => setHoveredEventType(null),
-          onClick: () => setSelectedEventType(event.type),
+          onClick: (e: React.MouseEvent) => removeClick(e, event),
+          onMouseEnter: () => eventHover(event),
+          onMouseLeave: () => eventLeave(event),
         };
 
         const Icon = getEventIcon(event.type);
         return <Icon {...iconProps} />;
       })}
-      <TimelineRoot onClick={addClick}>
-        <TimelineLine />
-        {events.map((event) => (
-          <Tick
-            x={scale(event.date)}
-            isHighlighted={(selectedEventType === null && hoveredEventType === event.type) || selectedEventType === event.type}
-            isFaded={hoveredEventType !== event.type && selectedEventType !== null && selectedEventType !== event.type}
-            key={`tick-${event.id}`}
-            onClick={(e: React.MouseEvent) => {
-              e.stopPropagation();
-              removeClick(e, event)
-            }}
-            onMouseEnter={() => eventHover(event)}
-            onMouseLeave={() => eventLeave(event)}
-          />
-        ))}
-      </TimelineRoot>
-      <div>
-        {hoveredEvent ? (
-          <DateText left={scale(hoveredEvent.date)}>
-            <div ref={refDate}>{timeFormat("%b %-d")(hoveredEvent.date)}</div>
-          </DateText>
-        ) : null}
-        <DateText
-          left={scale(scale.domain()[0])}
-          css={css`
-            opacity: ${hideStartDate ? 0 : 1};
-          `}
-        >
-          <div ref={refDateStart}>
-            {timeFormat("%b %-d")(scale.domain()[0])}
-          </div>
+      {hoveredEvent ? (
+        <DateText left={scale(hoveredEvent.date)}>
+          <div ref={refDate}>{timeFormat("%b %-d")(hoveredEvent.date)}</div>
         </DateText>
-        <DateText
-          left={scale(scale.domain()[1])}
-          css={css`
-            opacity: ${hideEndDate ? 0 : 1};
-          `}
-        >
-          <div ref={refDateEnd}>
-            {timeFormat("%b %-d")(new Date(scale.domain()[1].getTime() - 1))}
-          </div>
-        </DateText>
-      </div>
+      ) : null}
+      <DateText
+        left={scale(scale.domain()[0])}
+        css={css`
+          opacity: ${hideStartDate ? 0 : 1};
+        `}
+      >
+        <div ref={refDateStart}>{timeFormat("%b %-d")(scale.domain()[0])}</div>
+      </DateText>
+      <DateText
+        left={scale(scale.domain()[1])}
+        css={css`
+          opacity: ${hideEndDate ? 0 : 1};
+        `}
+      >
+        <div ref={refDateEnd}>
+          {timeFormat("%b %-d")(new Date(scale.domain()[1].getTime() - 1))}
+        </div>
+      </DateText>
     </Bar>
   );
 };

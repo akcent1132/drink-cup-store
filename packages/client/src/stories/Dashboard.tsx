@@ -324,7 +324,7 @@ const createFakePlantingCardData = memoize((_id: string, color: string) => {
     name: `${faker.name.firstName()} ${faker.name.lastName()}`,
     color,
     params: {
-      zone: faker.random.alphaNumeric(2),
+      zone: faker.random.alpha({count: 1}) + faker.datatype.number(9),
       temperature: (65 + Math.floor(21 * Math.random())).toString(),
       precipitation: `${32 + Math.floor(32 * Math.random())} in`,
       texture: `Sand: ${texture[0]}% | Clay ${texture[1]}%`,
