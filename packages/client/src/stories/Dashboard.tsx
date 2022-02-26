@@ -320,6 +320,7 @@ const createFakePlantingCardData = memoize((_id: string, color: string) => {
   let texture = [Math.random(), Math.random()];
   texture = texture.map((t) => Math.round((t / sum(texture)) * 100));
   return {
+    id: uniqueId(),
     title: "Corn 2020",
     name: `${faker.name.firstName()} ${faker.name.lastName()}`,
     color,
@@ -415,7 +416,7 @@ export const Dashboard = ({ iframeSrc }: Props) => {
         <Events>
           {/* <Legend entries={legendEntries} /> */}
           {plantingCards.map((props, i) => (
-            <EventsCard {...props} key={i} />
+            <EventsCard {...props} key={props.id} />
           ))}
         </Events>
         {rightRect ? <HyloBox rect={rightRect} src={iframeSrc} /> : null}
