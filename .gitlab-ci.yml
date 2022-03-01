@@ -1,3 +1,5 @@
+# .gitlab-ci.yml
+
 # Sets the docker image for the job
 image: node:latest
 
@@ -5,34 +7,18 @@ image: node:latest
 stages:
   - test
 
-# # Cache the dependencies
-# cache:
-#   key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
-#   paths:
-#     - .yarn
+# Cache the dependencies
+cache:
+  key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
+  paths:
+    - ./packages/client/.yarn
 
-.cache-policy:
-  cache:
-    key: ${CI_COMMIT_SHORT_SHA}
-    paths:
-      - node_modules/
-      - packages/client/node_modules/
-      - packages/server/node_modules/
-
-lerna bootstrap:
-  extends: .cache-policy
-  stage: test
-  script:
-    - yarn
-    - yarn lerna bootstrap
+# Installs the dependencies
+before_script:
+  - yarn --cwd ./packages/client chromatic install --frozen-lockfile --prefer-offline --cache-folder .yarn
 
 #👇Adds Chromatic as a job
 chromatic_publish:
   stage: test
   script:
-    - npx lerna --scope client run chromatic -- --auto-accept-changes --project-token=$CHROMATIC_PROJECT_TOKEN
-  needs:
-    - lerna bootstrap
-
-
-
+    - yarn --cwd ./packages/client chromatic --project-token=$CHROMATIC_PROJECT_TOKEN
