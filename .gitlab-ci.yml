@@ -11,12 +11,25 @@ cache:
   paths:
     - .yarn
 
-# Installs the dependencies
-before_script:
-  - yarn install --frozen-lockfile --prefer-offline --cache-folder .yarn
+.cache-policy:
+  cache:
+    key: ${CI_COMMIT_SHORT_SHA}
+    paths:
+      - node_modules/
+      - packages/client/node_modules/
+      - packages/server/node_modules/
+
+lerna bootstrap:
+  extends: .cache-policy
+  stage: install
+  script:
+    - yarn
+    - yarn lerna bootstrap
 
 #👇Adds Chromatic as a job
 chromatic_publish:
   stage: test
   script:
     - npx lerna --scope client run chromatic -- --auto-accept-changes --project-token=$CHROMATIC_PROJECT_TOKEN
+  needs:
+    - lerna bootstrap
