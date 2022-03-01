@@ -21,7 +21,7 @@ cache:
 
 lerna bootstrap:
   extends: .cache-policy
-  stage: install
+  stage: test
   script:
     - yarn
     - yarn lerna bootstrap
