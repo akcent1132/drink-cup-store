@@ -8,9 +8,6 @@ import { IconEventsBar, FarmEvent } from "./IconEventsBar";
 import CloseIcon from "@mui/icons-material/Close";
 import { useHoveredPlantingContext } from "../contexts";
 import tinycolor from "tinycolor2";
-import { PlantingData } from "../stories/NestedRows";
-
-const SIDE_PAD = 10;
 
 export const defaultTheme = {
   sidePad: 10,
@@ -36,13 +33,13 @@ const Root = withTheme(styled.div<{ color: string; isHighlighted: boolean }>`
   transition: all 0.1s ease-out;
 `);
 
-const Head = styled.div`
+const Head = withTheme(styled.div`
   display: flex;
   border-bottom: 2px solid rgba(255, 255, 255, 0.5);
   justify-content: space-between;
   font-size: 19px;
-  padding: 7px ${SIDE_PAD}px 2px;
-`;
+  padding: 7px ${p => p.theme.eventsCard.sidePad}px 2px;
+`);
 
 const Title = withTheme(styled.div`
   font-family: ${(p) => p.theme.fonts.base};
@@ -54,14 +51,14 @@ const Name = withTheme(styled.div`
   color: white;
 `);
 
-const Params = styled.div`
+const Params = withTheme(styled.div`
   display: grid;
   grid-template-columns: auto auto auto auto;
   column-gap: 10px;
   row-gap: 11px;
-  padding: 11px ${SIDE_PAD}px;
+  padding: 11px ${p => p.theme.eventsCard.sidePad}px;
   font-size: 11.4px;
-`;
+`);
 const ParamName = withTheme(styled.div`
   font-family: ${(p) => p.theme.fonts.baseBold};
   color: white;
