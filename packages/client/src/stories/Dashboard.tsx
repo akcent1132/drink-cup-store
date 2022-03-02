@@ -14,7 +14,7 @@ import bgCorn from "../assets/images/Background-corngrains.jpg";
 import logoImage from "../assets/images/Farmers-coffeeshop-logo-white_transparent.png";
 import { Tabs } from "../components/Tabs";
 import { css, useTheme, withTheme } from "@emotion/react";
-import { getFarmEvent } from "../utils/random";
+import { getFarmEvent, randomZone } from "../utils/random";
 import { Button } from "../components/Button";
 import { EventsCard } from "../components/EventsCard";
 import faker from "faker";
@@ -319,20 +319,19 @@ const RandomContent = ({
 const createFakePlantingCardData = memoize((_id: string, color: string) => {
   let texture = [Math.random(), Math.random()];
   texture = texture.map((t) => Math.round((t / sum(texture)) * 100));
+  const zone = randomZone();
   return {
     id: uniqueId(),
-    title: "Corn 2020",
+    title: "Corn " + (2017 + Math.floor(Math.random() * 6)),
     name: `${faker.name.firstName()} ${faker.name.lastName()}`,
     color,
     params: {
-      zone: faker.random.alpha({count: 1}) + faker.datatype.number(9),
-      temperature: (65 + Math.floor(21 * Math.random())).toString(),
+      zone: zone.name,
+      temperature: zone.temp.toString(),
       precipitation: `${32 + Math.floor(32 * Math.random())} in`,
       texture: `Sand: ${texture[0]}% | Clay ${texture[1]}%`,
     },
-    events: range(6 + 6 * Math.random()).map((i) =>
-      getFarmEvent((-i).toString())
-    ),
+    events: range(6 + 6 * Math.random()).map(() => getFarmEvent()),
   };
 });
 
@@ -354,8 +353,8 @@ interface Props {
 export const Dashboard = ({ iframeSrc }: Props) => {
   const [tabIndex, setTabIndex] = useState(0);
   const [plantingCards, setPlantingCards] = useState([
-    createFakePlantingCardData("seea", schemeTableau10[4]),
-    createFakePlantingCardData("seeb", schemeTableau10[0]),
+    createFakePlantingCardData("seeda", schemeTableau10[4]),
+    createFakePlantingCardData("seedb", schemeTableau10[0]),
   ]);
   const rightSide = useRef<HTMLDivElement>(null);
   const windowWidth = useWindowWidth();
@@ -370,10 +369,16 @@ export const Dashboard = ({ iframeSrc }: Props) => {
 
   const handleClickRowData = useCallback(
     (data: PlantingData, color: string) => {
-      setPlantingCards(uniq([
-        createFakePlantingCardData(data.id, color),
-        ...plantingCards,
-      ]));
+      setPlantingCards(
+        uniq([createFakePlantingCardData(data.id, color), ...plantingCards])
+      );
+    },
+    [plantingCards]
+  );
+
+  const handleCloseCard = useCallback(
+    (cardId: string) => {
+      setPlantingCards(plantingCards.filter((card) => card.id !== cardId));
     },
     [plantingCards]
   );
@@ -415,8 +420,12 @@ export const Dashboard = ({ iframeSrc }: Props) => {
       <RightSide ref={rightSide}>
         <Events>
           {/* <Legend entries={legendEntries} /> */}
-          {plantingCards.map((props, i) => (
-            <EventsCard {...props} key={props.id} />
+          {plantingCards.map((props) => (
+            <EventsCard
+              {...props}
+              key={props.id}
+              onClose={() => handleCloseCard(props.id)}
+            />
           ))}
         </Events>
         {rightRect ? <HyloBox rect={rightRect} src={iframeSrc} /> : null}

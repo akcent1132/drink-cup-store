@@ -1,8 +1,11 @@
+/** @jsxImportSource @emotion/react */
+
 import React, { useCallback, useEffect, useState } from "react";
 import styled from "@emotion/styled";
-import { withTheme } from "@emotion/react";
+import { css, withTheme } from "@emotion/react";
 import "../index.css";
 import { IconEventsBar, FarmEvent } from "./IconEventsBar";
+import CloseIcon from "@mui/icons-material/Close";
 
 const SIDE_PAD = 10;
 
@@ -13,7 +16,7 @@ const Root = withTheme(styled.div<{ color: string }>`
 
 const Head = styled.div`
   display: flex;
-  border-bottom: 2px solid rgba(255,255,255,0.5); 
+  border-bottom: 2px solid rgba(255, 255, 255, 0.5);
   justify-content: space-between;
   font-size: 19px;
   padding: 7px ${SIDE_PAD}px 2px;
@@ -49,12 +52,23 @@ const ParamValue = withTheme(styled.div`
   justify-self: start;
 `);
 
+const IconButton = withTheme(styled.div`
+  color: white;
+  cursor: pointer;
+  opacity: 0.7;
+  :hover {
+    opacity: 1;
+  }
+  margin-left: 10px;
+`);
+
 interface Props {
   color?: string;
   events?: FarmEvent[];
   params: { [index: string]: string };
-  title?: string,
-  name?: string,
+  title?: string;
+  name?: string;
+  onClose?: () => void;
 }
 
 export const EventsCard = ({
@@ -63,12 +77,17 @@ export const EventsCard = ({
   params = {},
   title = "2020 Corn",
   name = "My Farm",
+  onClose,
 }: Props) => {
   return (
     <Root color={color}>
       <Head>
         <Title>{title}</Title>
+        <div css={css`flex-grow: 1`}/>
         <Name>{name}</Name>
+        <IconButton onClick={onClose}>
+          <CloseIcon fontSize="inherit" onClick={onClose} color="inherit" />
+        </IconButton>
       </Head>
       <Params>
         {Object.entries(params).map(([key, value]) => [
@@ -76,7 +95,7 @@ export const EventsCard = ({
           <ParamValue key={`value-${key}`}>{value}</ParamValue>,
         ])}
       </Params>
-      <IconEventsBar events={events}/>
+      <IconEventsBar events={events} />
     </Root>
   );
 };
