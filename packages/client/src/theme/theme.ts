@@ -1,5 +1,6 @@
 import { defaultTheme as iconEventsBarTheme } from "../components/IconEventsBar";
 import { defaultTheme as valueDistributionTheme } from "../components/ValueDistribution";
+import { defaultTheme as eventsCardTheme } from "../components/EventsCard";
 
 const colors = {
   // purple: "#5d54af",
@@ -43,6 +44,7 @@ export const theme = {
   fonts,
   font: "'Roboto', sans-serif",
   iconEventsBar: iconEventsBarTheme,
+  eventsCard: eventsCardTheme,
   valueDistribution: valueDistributionTheme,
   useBackgroundImage: true,
 };

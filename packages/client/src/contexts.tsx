@@ -3,9 +3,9 @@ import { PlantingData } from "./stories/NestedRows";
 
 type HoveredPlantingAction = {
   type: "hover" | "leave";
-  planting: PlantingData;
+  planting: string;
 };
-type HoveredPlantingState = PlantingData | null;
+type HoveredPlantingState = string | null;
 const hoveredPlantingReducer = (
   state: HoveredPlantingState,
   action: HoveredPlantingAction
@@ -14,7 +14,7 @@ const hoveredPlantingReducer = (
     case "hover":
       return action.planting;
     case "leave":
-      return state && state.id === action.planting.id ? null : state;
+      return state && state === action.planting ? null : state;
   }
 };
 

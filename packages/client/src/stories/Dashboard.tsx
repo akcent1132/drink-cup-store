@@ -201,6 +201,7 @@ const ROWS: RowData[] = [
   },
 ];
 
+let plantingDataId = 0;
 const createFilteringData = (
   filteringName: string,
   countMax = 12,
@@ -210,7 +211,7 @@ const createFilteringData = (
   const rnd = seedrandom(filteringName);
   return range(rnd() * countMax).map(() => {
     const values: { name: string; value: number; id: string }[] = [];
-    const id = uniqueId();
+    const id = (plantingDataId++).toString();
     const walk = (rows: RowData[]) => {
       for (const row of rows) {
         const rndValue = seedrandom(filteringName + row.name);
@@ -355,8 +356,8 @@ interface Props {
 export const Dashboard = ({ iframeSrc }: Props) => {
   const [tabIndex, setTabIndex] = useState(0);
   const [plantingCards, setPlantingCards] = useState([
-    createFakePlantingCardData("seeda", schemeTableau10[4]),
-    createFakePlantingCardData("seedb", schemeTableau10[0]),
+    createFakePlantingCardData("72", schemeTableau10[4]),
+    createFakePlantingCardData("67", schemeTableau10[0]),
   ]);
   const rightSide = useRef<HTMLDivElement>(null);
   const windowWidth = useWindowWidth();

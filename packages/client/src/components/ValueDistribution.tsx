@@ -160,11 +160,11 @@ export const ValueDistribution = ({
   const [isHovering, setIsHovering] = useState(false);
   const [hoveredData, setHoveredData] = useHoveredPlantingContext();
   const onHoverData = useCallback(
-    (planting: PlantingData) => setHoveredData({ type: "hover", planting }),
+    (planting: string) => setHoveredData({ type: "hover", planting }),
     []
   );
   const onLeaveData = useCallback(
-    (planting: PlantingData) => setHoveredData({ type: "leave", planting }),
+    (planting: string) => setHoveredData({ type: "leave", planting }),
     []
   );
   const theme = useTheme();
@@ -215,7 +215,7 @@ export const ValueDistribution = ({
       }
       if (e.nativeEvent.offsetY < theme.valueDistribution.varianceLineHeight) {
         if (localHoveredValue) {
-          onLeaveData(localHoveredValue);
+          onLeaveData(localHoveredValue.id);
         }
         return;
       }
@@ -229,9 +229,9 @@ export const ValueDistribution = ({
       const newLocalHoveredValue =
         Math.abs(closestValueX - mouseX) < 3 ? closestData : null;
       if (newLocalHoveredValue) {
-        onHoverData(newLocalHoveredValue);
+        onHoverData(newLocalHoveredValue.id);
       } else if (localHoveredValue) {
-        onLeaveData(localHoveredValue);
+        onLeaveData(localHoveredValue.id);
       }
       setLocalHoveredValue(newLocalHoveredValue);
     },
@@ -239,7 +239,7 @@ export const ValueDistribution = ({
   );
   const handlePlotMouseLeave = useCallback(() => {
     if (localHoveredValue) {
-      onLeaveData(localHoveredValue);
+      onLeaveData(localHoveredValue.id);
     }
     setLocalHoveredValue(null);
   }, [localHoveredValue]);
@@ -352,7 +352,7 @@ export const ValueDistribution = ({
       ctx.beginPath();
       ctx.fillStyle = theme.color("white");
       allData.map((data) => {
-        if (data.id === hoveredData.id) {
+        if (data.id === hoveredData) {
           ctx.rect(
             scale(data.value) - theme.valueDistribution.tickWidth / 2,
             theme.valueDistribution.varianceLineHeight,
