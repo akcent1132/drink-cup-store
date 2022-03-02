@@ -64,19 +64,6 @@ export const NestedRows = ({
   const [isClosed, setIsClosed] = useState<boolean[]>(
     new Array(rows.length).fill(false)
   );
-  const [hoveredData, setHoveredData] = useState<PlantingData | null>(null);
-  const handleHoverData = useCallback(
-    (data: PlantingData) => setHoveredData(data),
-    []
-  );
-  const handleLeaveData = useCallback(
-    (data: PlantingData) => {
-      if (hoveredData && data.id === hoveredData.id) {
-        setHoveredData(null);
-      }
-    },
-    [hoveredData]
-  );
   const toggleOpen = useCallback(
     (rowIndex: number) => {
       const states = [...isClosed];
@@ -136,9 +123,6 @@ export const NestedRows = ({
             hideBranches={hideBranches}
             onToggleChildren={() => toggleOpen(i)}
             openState={openStates[i]}
-            hoveredData={hoveredData}
-            onHoverData={handleHoverData}
-            onLeaveData={handleLeaveData}
             onClickData={onClickData}
           />
         )

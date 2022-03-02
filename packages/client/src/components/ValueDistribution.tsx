@@ -9,7 +9,8 @@ import { range, sortBy } from "lodash";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import tinycolor from "tinycolor2";
-import { Filtering, PlantingData } from "../stories/NesterRows";
+import { Filtering, PlantingData } from "../stories/NestedRows";
+import { useHoveredPlantingContext } from "../contexts";
 
 // TODO read height from props
 
@@ -140,9 +141,6 @@ type Props = {
   hideBranches: number;
   onToggleChildren: () => void;
   openState: "open" | "closed" | "parentClosed";
-  hoveredData: PlantingData | null;
-  onHoverData: (value: PlantingData) => void;
-  onLeaveData: (value: PlantingData) => void;
   onClickData: (value: PlantingData, color: string) => void;
 };
 
@@ -155,14 +153,20 @@ export const ValueDistribution = ({
   averageValues,
   highlightedFiltering,
   valueNames,
-  hoveredData,
-  onHoverData,
-  onLeaveData,
   onClickData,
   ...props
 }: Props) => {
   const { colors } = useTheme();
   const [isHovering, setIsHovering] = useState(false);
+  const [hoveredData, setHoveredData] = useHoveredPlantingContext();
+  const onHoverData = useCallback(
+    (planting: PlantingData) => setHoveredData({ type: "hover", planting }),
+    []
+  );
+  const onLeaveData = useCallback(
+    (planting: PlantingData) => setHoveredData({ type: "leave", planting }),
+    []
+  );
   const theme = useTheme();
   const canvas = useCanvas();
   const values = useMemo(() => {

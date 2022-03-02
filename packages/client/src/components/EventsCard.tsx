@@ -1,17 +1,19 @@
 /** @jsxImportSource @emotion/react */
 
-import React, { useCallback, useEffect, useState } from "react";
+import React from "react";
 import styled from "@emotion/styled";
 import { css, withTheme } from "@emotion/react";
 import "../index.css";
 import { IconEventsBar, FarmEvent } from "./IconEventsBar";
 import CloseIcon from "@mui/icons-material/Close";
+import { useHoveredPlantingContext } from "../contexts";
+import tinycolor from "tinycolor2";
 
 const SIDE_PAD = 10;
 
-const Root = withTheme(styled.div<{ color: string }>`
-  border-right: 20px solid ${(props) => props.theme.color(props.color)};
-  background-color: ${(props) => props.theme.colors.bgSidePanel};
+const Root = withTheme(styled.div<{ color: string, isHighlighted: boolean }>`
+  border-right: 20px solid ${(p) => p.isHighlighted ? "white" : p.theme.color(p.color)};
+  background-color: ${(p) => p.isHighlighted ? tinycolor(p.theme.colors.bgSidePanel).lighten(10).toString() : p.theme.colors.bgSidePanel};
 `);
 
 const Head = styled.div`
@@ -23,12 +25,12 @@ const Head = styled.div`
 `;
 
 const Title = withTheme(styled.div`
-  font-family: ${(props) => props.theme.fonts.base};
+  font-family: ${(p) => p.theme.fonts.base};
   color: white;
 `);
 
 const Name = withTheme(styled.div`
-  font-family: ${(props) => props.theme.fonts.baseBold};
+  font-family: ${(p) => p.theme.fonts.baseBold};
   color: white;
 `);
 
@@ -41,13 +43,13 @@ const Params = styled.div`
   font-size: 11.4px;
 `;
 const ParamName = withTheme(styled.div`
-  font-family: ${(props) => props.theme.fonts.baseBold};
+  font-family: ${(p) => p.theme.fonts.baseBold};
   color: white;
   text-transform: uppercase;
   justify-self: end;
 `);
 const ParamValue = withTheme(styled.div`
-  font-family: ${(props) => props.theme.fonts.baseBold};
+  font-family: ${(p) => p.theme.fonts.baseBold};
   color: #fff683;
   justify-self: start;
 `);
@@ -63,6 +65,7 @@ const IconButton = withTheme(styled.div`
 `);
 
 interface Props {
+  id: string,
   color?: string;
   events?: FarmEvent[];
   params: { [index: string]: string };
@@ -72,6 +75,7 @@ interface Props {
 }
 
 export const EventsCard = ({
+  id,
   color = "white",
   events = [],
   params = {},
@@ -79,8 +83,10 @@ export const EventsCard = ({
   name = "My Farm",
   onClose,
 }: Props) => {
+  const [hoveredPlanting, _] = useHoveredPlantingContext();
+  const isHighlighted = hoveredPlanting?.id === id;
   return (
-    <Root color={color}>
+    <Root color={color} isHighlighted={isHighlighted}>
       <Head>
         <Title>{title}</Title>
         <div css={css`flex-grow: 1`}/>

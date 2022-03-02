@@ -1,14 +1,14 @@
 import React from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 
-import { Dashboard } from "./Dashboard";
+import { App } from "./Dashboard";
 import { Global, css } from "@emotion/react";
 import { withEditableTheme } from "../theme/withEditableTheme";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
   title: "Example/Dashboard",
-  component: Dashboard,
+  component: App,
   parameters: {
     backgrounds: { disable: true },
   },
@@ -26,9 +26,9 @@ export default {
       </div>
     ),
   ],
-} as ComponentMeta<typeof Dashboard>;
+} as ComponentMeta<typeof App>;
 
-const DashboardWithTheme = withEditableTheme(Dashboard);
+const DashboardWithTheme = withEditableTheme(App);
 const Template: ComponentStory<typeof DashboardWithTheme> = (args) => (
   <DashboardWithTheme {...args} />
 );

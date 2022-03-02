@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 
 import React, {
+  ComponentProps,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -22,10 +23,11 @@ import { memoize, range, sample, sum, uniq, uniqueId, without } from "lodash";
 import { HyloBox } from "./HyloBox";
 import useScrollPosition from "@react-hook/window-scroll";
 import { useWindowWidth } from "@react-hook/window-size";
-import { RowData, Filtering, NestedRows, PlantingData } from "./NesterRows";
+import { RowData, Filtering, NestedRows, PlantingData } from "./NestedRows";
 import { schemeTableau10 } from "d3-scale-chromatic";
 import seedrandom from "seedrandom";
 import { randomNormal } from "d3-random";
+import { HoveredPlantingProvider } from "../contexts";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -316,12 +318,12 @@ const RandomContent = ({
   );
 };
 
-const createFakePlantingCardData = memoize((_id: string, color: string) => {
+const createFakePlantingCardData = memoize((id: string, color: string) => {
   let texture = [Math.random(), Math.random()];
   texture = texture.map((t) => Math.round((t / sum(texture)) * 100));
   const zone = randomZone();
   return {
-    id: uniqueId(),
+    id,
     title: "Corn " + (2017 + Math.floor(Math.random() * 6)),
     name: `${faker.name.firstName()} ${faker.name.lastName()}`,
     color,
@@ -433,3 +435,9 @@ export const Dashboard = ({ iframeSrc }: Props) => {
     </Root>
   );
 };
+
+export const App = (props: ComponentProps<typeof Dashboard>) => (
+  <HoveredPlantingProvider>
+    <Dashboard {...props}/>
+  </HoveredPlantingProvider>
+);

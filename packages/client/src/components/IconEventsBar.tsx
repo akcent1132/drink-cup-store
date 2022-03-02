@@ -16,7 +16,7 @@ import { ReactComponent as IconTillage } from "../assets/foodIcons/noun-till-amo
 import { ReactComponent as IconIrrigation } from "../assets/foodIcons/noun-water-drop-4476116.svg";
 import { ReactComponent as IconJoker } from "../assets/foodIcons/noun-indigenous-knowledge-4476235.svg";
 import useSize from "@react-hook/size";
-import { forceCenter, forceCollide, forceSimulation, forceY } from "d3-force";
+import { forceCollide, forceSimulation, forceY } from "d3-force";
 import { getFarmEvent } from "../utils/random";
 import { useXOverlap } from "../utils/useOverlap";
 import { uniqBy } from "lodash";
@@ -28,7 +28,7 @@ export const defaultTheme = {
   tickWidth: 3,
   tickHeight: 10,
   timelineHeight: 2,
-  timelineColor: "#4d4d4d",
+  timelineColor: "rgba(255, 255, 255, 0.5)",
   highlightColor: "#fff683",
   timelineMouseMaxDistance: 6,
 };
