@@ -2,6 +2,7 @@ import "@emotion/react";
 import { defaultTheme as iconEventsBarTheme } from "../components/IconEventsBar";
 import { defaultTheme as valueDistributionTheme } from "../components/ValueDistribution";
 import { defaultTheme as eventsCardTheme } from "../components/EventsCard";
+import { defaultTheme as valuePopupTheme } from "../components/ValuePopup";
 
 declare module "@emotion/react" {
   export interface Theme {
@@ -38,6 +39,7 @@ declare module "@emotion/react" {
     iconEventsBar: typeof iconEventsBarTheme;
     valueDistribution: typeof valueDistributionTheme;
     eventsCard: typeof eventsCardTheme;
+    valuePopup: typeof valuePopupTheme;
     useBackgroundImage: boolean;
   }
 }

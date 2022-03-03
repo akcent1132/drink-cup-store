@@ -11,6 +11,8 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import tinycolor from "tinycolor2";
 import { Filtering, PlantingData } from "../stories/NestedRows";
 import { useHoveredPlantingContext } from "../contexts";
+import { ValuePopup } from "./ValuePopup";
+import { format } from "d3-format"
 
 // TODO read height from props
 
@@ -367,6 +369,8 @@ export const ValueDistribution = ({
 
   const leftBranches = props.nesting - props.hideBranches;
 
+  const formatValue = useMemo(() => format(".3f"), []);
+
   return (
     <Bar className={props.className} openState={props.openState}>
       {range(props.hideBranches).map((i) => (
@@ -404,6 +408,14 @@ export const ValueDistribution = ({
           onClick={handlePlotMouseClick}
           ref={canvas.ref}
         />
+
+        {localHoveredValue ? (
+          <ValuePopup
+            value={`${formatValue(localHoveredValue.value)}`}
+            x={scale(localHoveredValue.value)}
+            y={theme.valueDistribution.varianceLineHeight}
+          />
+        ) : null}
       </Plot>
     </Bar>
   );
