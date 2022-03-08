@@ -142,13 +142,6 @@ const RandomContent = ({
       const _color =
         color || sample(freeColors.length > 0 ? freeColors : COLORS)!;
       dispatchFiltering({ type: "new", name, color: _color });
-      // const filtering = {
-      //   name,
-      //   color: color || sample(freeColors.length > 0 ? freeColors : COLORS)!,
-      //   plantings: createFilteringData(name, 12, 3, 2),
-      // };
-      // setFilterings([...filterings, filtering]);
-      // return filtering;
     },
     [filters]
   );
@@ -156,6 +149,7 @@ const RandomContent = ({
   useEffect(() => {
     addFilter("Produce Corn, Beef", schemeTableau10[4]);
     addFilter("General Mills - KS", schemeTableau10[0]);
+    dispatchFiltering({ type: "select", filterId: null });
   }, []);
 
   return (
