@@ -1,6 +1,6 @@
 import { randomNormal } from "d3-random";
-import { range, sample, sampleSize, uniqueId } from "lodash";
-import React, { useContext, useReducer, useState } from "react";
+import { range, sample, sampleSize } from "lodash";
+import React, { useContext, useReducer } from "react";
 import seedrandom from "seedrandom";
 import { PlantingData } from "../stories/NestedRows";
 import { RowData, ROWS } from "./rows";
@@ -64,8 +64,9 @@ export type Filter = ReturnType<typeof createFilter>;
 
 type Action =
   | { type: "new", color: string, name: string }
+  | { type: "select", filterId: string | null }
   | {
-      type: "apply" | "delete" | "select";
+      type: "apply" | "delete";
       filterId: string;
     }
   | {

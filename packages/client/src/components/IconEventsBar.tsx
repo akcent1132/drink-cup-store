@@ -265,7 +265,7 @@ export const IconEventsBar = (props: Props) => {
                 hoveredEventType || hoveredEvent?.type || null,
                 selectedEventType,
                 event.type,
-                colors.primary,
+                colors.secondary,
                 "icon"
               ),
             ],
@@ -317,7 +317,7 @@ export const IconEventsBar = (props: Props) => {
               hoveredEventType || hoveredEvent?.type || null,
               selectedEventType,
               event.type,
-              colors.primary,
+              colors.secondary,
               "tick"
             )}
             key={`tick-${event.id}`}

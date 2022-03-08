@@ -67,7 +67,7 @@ const ParamName = withTheme(styled.div`
 `);
 const ParamValue = withTheme(styled.div`
   font-family: ${(p) => p.theme.fonts.baseBold};
-  color: ${(p) => p.theme.colors.primary};
+  color: ${(p) => p.theme.colors.secondary};
   justify-self: start;
 `);
 

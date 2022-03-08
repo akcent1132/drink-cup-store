@@ -135,8 +135,7 @@ const RandomContent = ({
 }) => {
   const { colors } = useTheme();
   const [hoverState, hoverDispatch] = useReducer(hoverReducer, null);
-  const [{ filters, selectedFilterId }, dispatchFiltering] =
-    useFiltersContext();
+  const [{ filters }, dispatchFiltering] = useFiltersContext();
   const averageValues = createFilteringData("average", 36, 5, 2);
   const addFilter = useCallback(
     (name?: string, color?: string) => {
@@ -236,6 +235,7 @@ export const Dashboard = ({ iframeSrc }: Props) => {
     createFakePlantingCardData("72", schemeTableau10[4]),
     createFakePlantingCardData("67", schemeTableau10[0]),
   ]);
+  const [{ selectedFilterId }] = useFiltersContext();
   const rightSide = useRef<HTMLDivElement>(null);
   const windowWidth = useWindowWidth();
   const scrollY = useScrollPosition();
@@ -298,7 +298,7 @@ export const Dashboard = ({ iframeSrc }: Props) => {
         onChange={setTabIndex}
       />
       <RightSide ref={rightSide}>
-        {false ? (
+        {selectedFilterId === null ? (
           <Events>
             {/* <Legend entries={legendEntries} /> */}
             {plantingCards.map((props) => (

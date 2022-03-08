@@ -125,10 +125,10 @@ export const FilterLabel = ({
       <Caption>{label}</Caption>
       <Padding isWide={isWide} />
       {showActions ? <Actions isVisible={isHovered} color={color}>
-        <ActionButton onClick={handleDelete}>
+        <ActionButton onClick={handleSelect}>
           <EditIcon fontSize="inherit" />
         </ActionButton>
-        <ActionButton onClick={handleSelect}>
+        <ActionButton onClick={handleDelete}>
           <DeleteIcon fontSize="inherit" />
         </ActionButton>
       </Actions> : null}

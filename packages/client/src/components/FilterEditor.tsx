@@ -5,7 +5,7 @@ import { Button as GButton, Select } from "grommet";
 import "../index.css";
 import { withTheme } from "@emotion/react";
 import { useState } from "react";
-import { CROPS, COLORS } from "../contexts/FiltersContext";
+import { CROPS, COLORS, useFiltersContext } from "../contexts/FiltersContext";
 
 const Root = withTheme(styled.div`
   background-color: ${(p) => p.theme.colors.bgSidePanel};
@@ -20,6 +20,7 @@ interface Props {}
  */
 export const FilterEditor = ({}: Props) => {
     const [crop, setCrop] = useState(CROPS[0])
+    const [{filters}, dispatchFilters] = useFiltersContext();
   return (
     <Root>
       <Select
@@ -29,7 +30,7 @@ export const FilterEditor = ({}: Props) => {
         onChange={({ value }) => setCrop(value)}
         clear
       />
-      <GButton  label="Add" />
+      <GButton  label="Close" onClick={() => dispatchFilters({type: "select", filterId: null})} />
     </Root>
   );
 };
