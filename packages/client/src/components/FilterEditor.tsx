@@ -7,7 +7,8 @@ import { withTheme } from "@emotion/react";
 import { useCallback, useMemo, useState } from "react";
 import { CROPS, COLORS, useFiltersContext } from "../contexts/FiltersContext";
 
-const Root = withTheme(styled.div`
+const Root = withTheme(styled.div<{color: string}>`
+  border-right: 10px solid ${(p) => p.color};
   background-color: ${(p) => p.theme.colors.bgSidePanel};
   padding: 12px;
   display: flex;
@@ -40,7 +41,7 @@ export const FilterEditor = ({}: Props) => {
     []
   );
   return (
-    <Root>
+    <Root color={filter.color}>
       <TextInput
         placeholder="Filter name"
         value={filter.name}
