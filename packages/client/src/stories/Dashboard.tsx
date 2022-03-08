@@ -26,8 +26,6 @@ import useScrollPosition from "@react-hook/window-scroll";
 import { useWindowWidth } from "@react-hook/window-size";
 import { NestedRows, PlantingData } from "./NestedRows";
 import { schemeTableau10 } from "d3-scale-chromatic";
-import seedrandom from "seedrandom";
-import { randomNormal } from "d3-random";
 import { HoveredPlantingProvider } from "../contexts/HoveredPlantingContext";
 import {
   createFilteringData,
@@ -73,7 +71,7 @@ const Header = styled.div`
   grid-area: header;
   display: flex;
   justify-content: flex-end;
-  padding: 0 40px;
+  padding: 0 12px;
 `;
 
 const PaneHead = styled.div`
@@ -95,7 +93,7 @@ const RightSide = styled.div`
 
 const Events = styled.div`
   display: flex;
-  padding: 0px 40px 50px 0px;
+  padding: 0px 33px 50px 0px;
   backdrop-filter: blur(12px);
   flex-direction: column;
   justify-content: flex-start;
@@ -279,7 +277,7 @@ export const Dashboard = ({ iframeSrc }: Props) => {
       <Header>
         <img
           css={css`
-            height: 92%;
+            height: 72%;
             width: auto;
             align-self: center;
           `}
