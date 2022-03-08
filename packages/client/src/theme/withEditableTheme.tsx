@@ -45,12 +45,18 @@ export const withEditableTheme = <P extends object>(
           { ...theme.valuePopup },
           "theme.ValuePopup"
         );
+        const filterLabel = knobs.object(
+          "FilterLabel",
+          { ...theme.filterLabel },
+          "theme.FilterLabel"
+        );
         const t = {
           ...theme,
           colors,
           iconEventsBar,
           valueDistribution,
           valuePopup,
+          filterLabel,
           eventsCard,
           useBackgroundImage,
         };

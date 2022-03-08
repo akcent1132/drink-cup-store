@@ -1,5 +1,4 @@
 import React, { useContext, useReducer, useState } from "react";
-import { PlantingData } from "./stories/NestedRows";
 
 type HoveredPlantingAction = {
   type: "hover" | "leave";

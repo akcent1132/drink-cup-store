@@ -16,18 +16,20 @@ import logoImage from "../assets/images/Farmers-coffeeshop-logo-white_transparen
 import { Tabs } from "../components/Tabs";
 import { css, useTheme, withTheme } from "@emotion/react";
 import { getFarmEvent, randomZone } from "../utils/random";
-import { Button } from "../components/Button";
+import { FilterLabel } from "../components/FilterLabel";
 import { EventsCard } from "../components/EventsCard";
 import faker from "faker";
 import { memoize, range, sample, sum, uniq, uniqueId, without } from "lodash";
 import { HyloBox } from "./HyloBox";
+import { FilterEditor } from "../components/FilterEditor";
 import useScrollPosition from "@react-hook/window-scroll";
 import { useWindowWidth } from "@react-hook/window-size";
-import { RowData, Filtering, NestedRows, PlantingData } from "./NestedRows";
+import { NestedRows, PlantingData } from "./NestedRows";
 import { schemeTableau10 } from "d3-scale-chromatic";
 import seedrandom from "seedrandom";
 import { randomNormal } from "d3-random";
-import { HoveredPlantingProvider } from "../contexts";
+import { HoveredPlantingProvider } from "../contexts/HoveredPlantingContext";
+import { FiltersProvider, useFiltersContext } from "../contexts/FiltersContext";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -106,132 +108,7 @@ const COLORS = schemeTableau10.slice(0, 9); //[
 //   "violet",
 // ];
 
-const ROWS: RowData[] = [
-  {
-    name: "Indicators	",
-    type: "group",
-    showAggregation: true,
-    children: [
-      {
-        name: "Profitability	",
-        type: "sub-group",
-        showAggregation: true,
-        children: [
-          { name: "Proteins", type: "value" },
-          { name: "Density", type: "value" },
-          { name: "LOI Soil Carbon", type: "value" },
-          { name: "Crop Establishment", type: "value" },
-        ],
-      },
-      {
-        name: "Risk Reduction	",
-        type: "sub-group",
-        showAggregation: true,
-        children: [
-          { name: "LOI Soil Carbon", type: "value" },
-          { name: "Soil Respiration", type: "value" },
-          { name: "Available water capacity", type: "value" },
-          { name: "Aggregate stability", type: "value" },
-          { name: "Organic Matter", type: "value" },
-          { name: "Active Carbon", type: "value" },
-          { name: "Crop Establishment", type: "value" },
-        ],
-      },
-      {
-        name: "Product Quality	",
-        type: "sub-group",
-        showAggregation: true,
-        children: [
-          { name: "Polyphenols", type: "value" },
-          { name: "Antioxidants", type: "value" },
-          { name: "Proteins", type: "value" },
-          { name: "Brix", type: "value" },
-          { name: "Minerals", type: "value" },
-          // { name: "Minerals", type: "value" },
-          // { name: "Minerals", type: "value" },
-          // { name: "Minerals", type: "value" },
-          // { name: "Minerals", type: "value" },
-          // { name: "Minerals", type: "value" },
-          { name: "Density	", type: "value" },
-        ],
-      },
-    ],
-  },
-  // { name: "Animal Health	", type: "group", children: [] },
-  // { name: "Soil Structure	", type: "group", children: [] },
-  // { name: "Soil Fertility	", type: "group", children: [] },
-  // { name: "Soil Biology	", type: "group", children: [] },
-  // { name: "Environment	", type: "group", children: [] },
 
-  {
-    name: "Weather	",
-    type: "group",
-    children: [
-      { name: "Growing Degree Days", type: "value" },
-      { name: "Temperature", type: "value" },
-      { name: "Rainfall", type: "value" },
-      { name: "Climate Zone", type: "value" },
-      { name: "Hardiness Zone", type: "value" },
-    ],
-  },
-
-  {
-    name: "Soil	",
-    type: "group",
-    children: [
-      { name: "% clay", type: "value" },
-      { name: "% carbon", type: "value" },
-      { name: "slope", type: "value" },
-      { name: "pH", type: "value" },
-    ],
-  },
-
-  {
-    name: "Management	",
-    type: "group",
-    children: [
-      { name: "Tillage", type: "value" },
-      { name: "Grazing", type: "value" },
-      { name: "Weed Control", type: "value" },
-      { name: "Pest-Disease Control", type: "value" },
-      { name: "Thinning / Pruning", type: "value" },
-      { name: "Amendments", type: "value" },
-      { name: "Irrigation", type: "value" },
-    ],
-  },
-];
-
-let plantingDataId = 0;
-const createFilteringData = (
-  filteringName: string,
-  countMax = 12,
-  stdMax = 2,
-  meanMax = 5
-): PlantingData[][] => {
-  const rnd = seedrandom(filteringName);
-  return range(rnd() * countMax).map(() => {
-    const values: { name: string; value: number; id: string }[] = [];
-    const id = (plantingDataId++).toString();
-    const walk = (rows: RowData[]) => {
-      for (const row of rows) {
-        const rndValue = seedrandom(filteringName + row.name);
-        // TODO add multilpe measurements to some value types
-        // const count = countMax * rndValue();
-        const mean = (rndValue() - 0.5) * meanMax;
-        const std = rndValue() * stdMax;
-        const norm = randomNormal.source(rnd)(mean, std);
-        if (row.type === "value") {
-          values.push({ name: row.name, value: norm(), id });
-        }
-        if (row.children) {
-          walk(row.children);
-        }
-      }
-    };
-    walk(ROWS);
-    return values;
-  });
-};
 
 function hoverReducer(
   state: string | null,
@@ -254,7 +131,7 @@ const RandomContent = ({
 }) => {
   const { colors } = useTheme();
   const [hoverState, hoverDispatch] = useReducer(hoverReducer, null);
-  const [filterings, setFilterings] = useState<Filtering[]>([]);
+  const [{filters, selectedFilterId}] = useFiltersContext();
   const averageValues = createFilteringData("average", 36, 5, 2);
   const addFilter = useCallback(
     (name?: string, color?: string) => {
@@ -288,7 +165,7 @@ const RandomContent = ({
     <RowContainer>
       <PaneHead>
         {[...filterings].reverse().map((group, i) => (
-          <Button
+          <FilterLabel
             key={i}
             label={group.name}
             color={group.color}
@@ -300,9 +177,10 @@ const RandomContent = ({
               hoverDispatch({ type: "leave", name: group.name })
             }
             isWide
+            showActions
           />
         ))}
-        <Button
+        <FilterLabel
           label="+ Add"
           color={colors.bgSidePanel}
           onClick={() => addFilter()}
@@ -421,16 +299,21 @@ export const Dashboard = ({ iframeSrc }: Props) => {
         onChange={setTabIndex}
       />
       <RightSide ref={rightSide}>
-        <Events>
-          {/* <Legend entries={legendEntries} /> */}
-          {plantingCards.map((props) => (
-            <EventsCard
-              {...props}
-              key={props.id}
-              onClose={() => handleCloseCard(props.id)}
-            />
-          ))}
-        </Events>
+        {false ? (
+          <Events>
+            {/* <Legend entries={legendEntries} /> */}
+            {plantingCards.map((props) => (
+              <EventsCard
+                {...props}
+                key={props.id}
+                onClose={() => handleCloseCard(props.id)}
+              />
+            ))}
+          </Events>
+        ) : (
+          <FilterEditor />
+        )}
+
         {rightRect ? <HyloBox rect={rightRect} src={iframeSrc} /> : null}
       </RightSide>
     </Root>
@@ -438,7 +321,9 @@ export const Dashboard = ({ iframeSrc }: Props) => {
 };
 
 export const App = (props: ComponentProps<typeof Dashboard>) => (
-  <HoveredPlantingProvider>
-    <Dashboard {...props}/>
-  </HoveredPlantingProvider>
+  <FiltersProvider>
+    <HoveredPlantingProvider>
+      <Dashboard {...props} />
+    </HoveredPlantingProvider>
+  </FiltersProvider>
 );

@@ -6,7 +6,7 @@ import { css, withTheme } from "@emotion/react";
 import "../index.css";
 import { IconEventsBar, FarmEvent } from "./IconEventsBar";
 import CloseIcon from "@mui/icons-material/Close";
-import { useHoveredPlantingContext } from "../contexts";
+import { useHoveredPlantingContext } from "../contexts/HoveredPlantingContext";
 import tinycolor from "tinycolor2";
 
 export const defaultTheme = {
@@ -67,7 +67,7 @@ const ParamName = withTheme(styled.div`
 `);
 const ParamValue = withTheme(styled.div`
   font-family: ${(p) => p.theme.fonts.baseBold};
-  color: #fff683;
+  color: ${(p) => p.theme.colors.primary};
   justify-self: start;
 `);
 

@@ -1,13 +1,9 @@
 import { findLastIndex, last } from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
 import { ValueDistribution } from "../components/ValueDistribution";
+import { RowData } from "../contexts/rows";
 
-export type RowData = {
-  name: string;
-  type: string;
-  children?: RowData[];
-  showAggregation?: boolean;
-};
+
 export type PlantingData = { name: string; value: number; id: string };
 export type Filtering = {
   color: string;

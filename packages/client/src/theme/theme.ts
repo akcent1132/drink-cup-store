@@ -2,6 +2,7 @@ import { defaultTheme as iconEventsBarTheme } from "../components/IconEventsBar"
 import { defaultTheme as valueDistributionTheme } from "../components/ValueDistribution";
 import { defaultTheme as eventsCardTheme } from "../components/EventsCard";
 import { defaultTheme as valuePopupTheme } from "../components/ValuePopup";
+import { defaultTheme as filterLabelTheme } from "../components/FilterLabel";
 
 const colors = {
   // purple: "#5d54af",
@@ -13,6 +14,8 @@ const colors = {
   // orange: "#ff8500",
   // red: "#f40000",
   // violet: "#c42687",
+  primary: '#7cb342',
+  secondary: '#ffea00',
   darkTransparent: "rgba(23,23,23,.5)",
   bg: "#181818",
   bgTab: "#212121",
@@ -48,6 +51,7 @@ export const theme = {
   eventsCard: eventsCardTheme,
   valuePopup: valuePopupTheme,
   valueDistribution: valueDistributionTheme,
+  filterLabel: filterLabelTheme,
   useBackgroundImage: true,
 };
 

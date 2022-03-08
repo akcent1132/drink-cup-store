@@ -29,7 +29,6 @@ export const defaultTheme = {
   tickHeight: 10,
   timelineHeight: 2,
   timelineColor: "rgba(255, 255, 255, 0.5)",
-  highlightColor: "#fff683",
   timelineMouseMaxDistance: 6,
 };
 
@@ -193,7 +192,7 @@ export const IconEventsBar = (props: Props) => {
   const hideStartDate = useXOverlap(refDate, refDateStart, [hoveredEvent]);
   const hideEndDate = useXOverlap(refDate, refDateEnd, [hoveredEvent]);
   const [width, height] = useSize(ref);
-  const theme = useTheme().iconEventsBar;
+  const {iconEventsBar: theme, colors} = useTheme();
   const dateForce = useMemo(() => createDateForce(), []);
   const simulation = useMemo(
     () =>
@@ -266,7 +265,7 @@ export const IconEventsBar = (props: Props) => {
                 hoveredEventType || hoveredEvent?.type || null,
                 selectedEventType,
                 event.type,
-                theme.highlightColor,
+                colors.primary,
                 "icon"
               ),
             ],
@@ -318,7 +317,7 @@ export const IconEventsBar = (props: Props) => {
               hoveredEventType || hoveredEvent?.type || null,
               selectedEventType,
               event.type,
-              theme.highlightColor,
+              colors.primary,
               "tick"
             )}
             key={`tick-${event.id}`}
