@@ -13,6 +13,7 @@ import { Filtering, PlantingData } from "../stories/NestedRows";
 import { useHoveredPlantingContext } from "../contexts/HoveredPlantingContext";
 import { ValuePopup } from "./ValuePopup";
 import { format } from "d3-format"
+import { useFiltersContext } from "../contexts/FiltersContext";
 
 // TODO read height from props
 
@@ -132,7 +133,6 @@ type Props = {
    * Data name
    */
   label: string;
-  filterings: Filtering[];
   averageValues: PlantingData[][];
   valueNames: string[];
   highlightedFiltering?: string | null;
@@ -151,7 +151,6 @@ type Props = {
  */
 export const ValueDistribution = ({
   label,
-  filterings,
   averageValues,
   highlightedFiltering,
   valueNames,
@@ -159,6 +158,7 @@ export const ValueDistribution = ({
   ...props
 }: Props) => {
   const { colors } = useTheme();
+  const [{ filters }] = useFiltersContext()
   const [isHovering, setIsHovering] = useState(false);
   const [hoveredData, setHoveredData] = useHoveredPlantingContext();
   const onHoverData = useCallback(
@@ -177,7 +177,7 @@ export const ValueDistribution = ({
       color: tinycolor("white").setAlpha(0.1).toString(),
       name: "average",
     };
-    return [average, ...filterings].map(
+    return [average, ...filters].map(
       ({ plantings, color, name: filterName }) => ({
         color,
         values: plantings
@@ -190,7 +190,7 @@ export const ValueDistribution = ({
         isHighlighted: highlightedFiltering === filterName,
       })
     );
-  }, [filterings, highlightedFiltering, valueNames]);
+  }, [filters, highlightedFiltering, valueNames]);
   const allData = useMemo(() => values.map((v) => v.values).flat(), [values]);
   const allValues = useMemo(() => allData.map((d) => d.value), [allData]);
   const scale = useMemo(() => {

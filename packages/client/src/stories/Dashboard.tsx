@@ -29,7 +29,13 @@ import { schemeTableau10 } from "d3-scale-chromatic";
 import seedrandom from "seedrandom";
 import { randomNormal } from "d3-random";
 import { HoveredPlantingProvider } from "../contexts/HoveredPlantingContext";
-import { FiltersProvider, useFiltersContext } from "../contexts/FiltersContext";
+import {
+  createFilteringData,
+  FiltersProvider,
+  useFiltersContext,
+} from "../contexts/FiltersContext";
+import { ROWS } from "../contexts/rows";
+import { Button } from "../components/Button";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -108,8 +114,6 @@ const COLORS = schemeTableau10.slice(0, 9); //[
 //   "violet",
 // ];
 
-
-
 function hoverReducer(
   state: string | null,
   action: { type: "enter" | "leave"; name: string }
@@ -131,56 +135,52 @@ const RandomContent = ({
 }) => {
   const { colors } = useTheme();
   const [hoverState, hoverDispatch] = useReducer(hoverReducer, null);
-  const [{filters, selectedFilterId}] = useFiltersContext();
+  const [{ filters, selectedFilterId }, dispatchFiltering] =
+    useFiltersContext();
   const averageValues = createFilteringData("average", 36, 5, 2);
   const addFilter = useCallback(
     (name?: string, color?: string) => {
-      const freeColors = without(COLORS, ...filterings.map((g) => g.color));
+      const freeColors = without(COLORS, ...filters.map((g) => g.color));
       name = name || faker.company.companyName();
-      const filtering = {
-        name,
-        color: color || sample(freeColors.length > 0 ? freeColors : COLORS)!,
-        plantings: createFilteringData(name, 12, 3, 2),
-      };
-      setFilterings([...filterings, filtering]);
-      return filtering;
+      const _color =
+        color || sample(freeColors.length > 0 ? freeColors : COLORS)!;
+      dispatchFiltering({ type: "new", name, color: _color });
+      // const filtering = {
+      //   name,
+      //   color: color || sample(freeColors.length > 0 ? freeColors : COLORS)!,
+      //   plantings: createFilteringData(name, 12, 3, 2),
+      // };
+      // setFilterings([...filterings, filtering]);
+      // return filtering;
     },
-    [filterings]
-  );
-  const removeGroup = useCallback(
-    (name: string) => {
-      setFilterings(filterings.filter((g) => g.name !== name));
-    },
-    [filterings]
+    [filters]
   );
 
   useEffect(() => {
-    setFilterings([
-      addFilter("Produce Corn, Beef", schemeTableau10[4]),
-      addFilter("General Mills - KS", schemeTableau10[0]),
-    ]);
+    addFilter("Produce Corn, Beef", schemeTableau10[4]);
+    addFilter("General Mills - KS", schemeTableau10[0]);
   }, []);
 
   return (
     <RowContainer>
       <PaneHead>
-        {[...filterings].reverse().map((group, i) => (
+        {[...filters].reverse().map((filter, i) => (
           <FilterLabel
-            key={i}
-            label={group.name}
-            color={group.color}
-            onClick={() => removeGroup(group.name)}
+            key={filter.id}
+            filterId={filter.id}
+            label={filter.name}
+            color={filter.color}
             onMouseEnter={() =>
-              hoverDispatch({ type: "enter", name: group.name })
+              hoverDispatch({ type: "enter", name: filter.name })
             }
             onMouseLeave={() =>
-              hoverDispatch({ type: "leave", name: group.name })
+              hoverDispatch({ type: "leave", name: filter.name })
             }
             isWide
             showActions
           />
         ))}
-        <FilterLabel
+        <Button
           label="+ Add"
           color={colors.bgSidePanel}
           onClick={() => addFilter()}
@@ -188,7 +188,6 @@ const RandomContent = ({
       </PaneHead>
       <NestedRows
         rows={ROWS}
-        filterings={filterings}
         hoverState={hoverState}
         averageValues={averageValues}
         onClickData={onClickData}

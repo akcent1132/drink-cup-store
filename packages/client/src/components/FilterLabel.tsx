@@ -64,7 +64,7 @@ const Actions = withTheme(styled.div<{ color: string; isVisible: boolean }>`
 `);
 
 // TODO use button
-const ActionButton = withTheme(styled.div<{ color: string }>`
+const ActionButton = withTheme(styled.div`
   opacity: 0.7;
   :hover {
     opacity: 1;

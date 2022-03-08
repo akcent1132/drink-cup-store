@@ -45,14 +45,12 @@ const flattenRows = (
 
 export const NestedRows = ({
   rows,
-  filterings,
   hoverState,
   averageValues,
   onClickData,
 }: {
   rows: RowData[];
   hoverState: string | null;
-  filterings: Filtering[];
   averageValues: PlantingData[][];
   onClickData: (value: PlantingData, color: string) => void;
 }) => {
@@ -109,7 +107,6 @@ export const NestedRows = ({
           <ValueDistribution
             key={`${name}-${i}`}
             label={name}
-            filterings={filterings}
             averageValues={averageValues}
             valueNames={showAggregation ? childRowNames : [name]}
             highlightedFiltering={hoverState}

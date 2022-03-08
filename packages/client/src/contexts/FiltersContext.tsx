@@ -2,8 +2,8 @@ import { randomNormal } from "d3-random";
 import { range, sample, sampleSize, uniqueId } from "lodash";
 import React, { useContext, useReducer, useState } from "react";
 import seedrandom from "seedrandom";
-import { PlantingData, RowData } from "../stories/NestedRows";
-import { ROWS } from "./rows";
+import { PlantingData } from "../stories/NestedRows";
+import { RowData, ROWS } from "./rows";
 
 let plantingDataId = 0;
 export const createFilteringData = (
@@ -37,6 +37,13 @@ export const createFilteringData = (
   });
 };
 
+const createFilterParams = () => {
+  return {
+    cropType: sample(CROPS),
+    colors: sampleSize(COLORS, Math.random() * 3 + 1),
+  }
+};
+
 let filterId = 0;
 const createFilter = (color: string, name: string) => {
   const id = (++filterId).toString();
@@ -46,16 +53,14 @@ const createFilter = (color: string, name: string) => {
     color,
     cropType: sample(CROPS),
     colors: sampleSize(COLORS, Math.random() * 3 + 1),
-    data: createFilteringData(name, 12, 3, 2)
+    plantings: createFilteringData(name, 12, 3, 2),
+    draftParams: createFilterParams() as FilterParams | null,
+    activeParams: null as FilterParams | null
   }
 };
 
+export type FilterParams = ReturnType<typeof createFilterParams>;
 export type Filter = ReturnType<typeof createFilter>;
-
-type FilterState = {
-  active?: Filter;
-  draft?: Filter;
-};
 
 type Action =
   | { type: "new", color: string, name: string }
@@ -65,30 +70,37 @@ type Action =
     }
   | {
       type: "edit";
-      filter: Filter;
+      filterId: string;
+      params: FilterParams;
     };
 
-const createDefaultState = Object.freeze({
-  filters: [] as FilterState[],
+const defaultState = Object.freeze({
+  filters: [] as Filter[],
   selectedFilterId: null as string | null,
 });
 
-type State = typeof createDefaultState;
+type State = typeof defaultState;
 
-const filtersReducer = (state: State, action: Action) => {
+const filtersReducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "new": {
       const filter = createFilter(action.color, action.name);
       return {
-        filters: [...state.filters, {draft: filter}],
+        filters: [...state.filters, filter],
         selectedFilterId: filter.id,
+      };
+    }
+    case "select": {
+      return {
+        ...state,
+        selectedFilterId: action.filterId,
       };
     }
     case "apply":
       return {
         ...state,
         filters: state.filters.map((f) =>
-          f.draft?.id === action.filterId ? { ...f, active: f.draft } : f
+          f.id === action.filterId ? { ...f, activeParams: f.draftParams } : f
         ),
       };
     case "delete":
@@ -97,15 +109,13 @@ const filtersReducer = (state: State, action: Action) => {
           state.selectedFilterId === action.filterId
             ? null
             : state.selectedFilterId,
-        filters: state.filters.filter(
-          (f) => (f.draft?.id || f.active?.id) === action.filterId
-        ),
+        filters: state.filters.filter((f) =>  f.id !== action.filterId),
       };
     case "edit":
       return {
         ...state,
         filters: state.filters.map((f) =>
-          f.draft?.id === action.filter.id ? { ...f, draft: action.filter } : f
+          f.id === action.filterId ? { ...f, draftParams: action.params } : f
         ),
       };
   }
@@ -114,12 +124,12 @@ const filtersReducer = (state: State, action: Action) => {
 
 
 const FiltersContext = React.createContext<[State, (action: Action) => void]>([
-  createDefaultState,
+  defaultState,
   () => {},
 ]);
 
 export const FiltersProvider = ({ children }: React.PropsWithChildren<{}>) => {
-  const state = useReducer(filtersReducer, createDefaultState);
+  const state = useReducer(filtersReducer, defaultState);
   return (
     <FiltersContext.Provider value={state}>{children}</FiltersContext.Provider>
   );

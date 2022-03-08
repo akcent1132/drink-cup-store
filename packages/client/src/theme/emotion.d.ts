@@ -1,4 +1,9 @@
-
+import "@emotion/react";
+import { defaultTheme as iconEventsBarTheme } from "../components/IconEventsBar";
+import { defaultTheme as valueDistributionTheme } from "../components/ValueDistribution";
+import { defaultTheme as eventsCardTheme } from "../components/EventsCard";
+import { defaultTheme as valuePopupTheme } from "../components/ValuePopup";
+import { defaultTheme as valfilterLabelThemeuePopupTheme } from "../components/FilterLabel";
 
 declare module "@emotion/react" {
   export interface Theme {
