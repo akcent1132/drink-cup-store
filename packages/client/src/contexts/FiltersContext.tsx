@@ -41,7 +41,7 @@ const createFilterParams = () => {
   return {
     cropType: sample(CROPS),
     colors: sampleSize(COLORS, Math.random() * 3 + 1),
-  }
+  };
 };
 
 let filterId = 0;
@@ -55,16 +55,17 @@ const createFilter = (color: string, name: string) => {
     colors: sampleSize(COLORS, Math.random() * 3 + 1),
     plantings: createFilteringData(name, 12, 3, 2),
     draftParams: createFilterParams() as FilterParams | null,
-    activeParams: null as FilterParams | null
-  }
+    activeParams: null as FilterParams | null,
+  };
 };
 
 export type FilterParams = ReturnType<typeof createFilterParams>;
 export type Filter = ReturnType<typeof createFilter>;
 
 type Action =
-  | { type: "new", color: string, name: string }
-  | { type: "select", filterId: string | null }
+  | { type: "new"; color: string; name: string }
+  | { type: "select"; filterId: string | null }
+  | { type: "updateName"; filterId: string; name: string }
   | {
       type: "apply" | "delete";
       filterId: string;
@@ -104,13 +105,20 @@ const filtersReducer = (state: State, action: Action): State => {
           f.id === action.filterId ? { ...f, activeParams: f.draftParams } : f
         ),
       };
+    case "updateName":
+      return {
+        ...state,
+        filters: state.filters.map((f) =>
+          f.id === action.filterId ? { ...f, name: action.name } : f
+        ),
+      };
     case "delete":
       return {
         selectedFilterId:
           state.selectedFilterId === action.filterId
             ? null
             : state.selectedFilterId,
-        filters: state.filters.filter((f) =>  f.id !== action.filterId),
+        filters: state.filters.filter((f) => f.id !== action.filterId),
       };
     case "edit":
       return {
@@ -121,8 +129,6 @@ const filtersReducer = (state: State, action: Action): State => {
       };
   }
 };
-
-
 
 const FiltersContext = React.createContext<[State, (action: Action) => void]>([
   defaultState,
@@ -174,5 +180,3 @@ export const COLORS = [
   "Yellow",
   "Orangered",
 ];
-
-
