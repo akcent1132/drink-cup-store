@@ -42,6 +42,14 @@ const createFilterParams = () => {
     cropType: sample(CROPS),
     colors: sampleSize(COLORS, Math.random() * 3 + 1),
     years: [2018, 2019, 2020],
+    sweetnessScore: range(11).slice(Math.random()  * 10, 1 + Math.random() * 3),
+    flaworScore: range(11).slice(Math.random()  * 10, 1 + Math.random() * 3),
+    tasteScore: range(11).slice(Math.random()  * 10, 1 + Math.random() * 3),
+    climateRegion: sampleSize(CLIMATE_REGION, Math.random() * 3 + 1),
+    sampleSource: sampleSize(SAMPLE_SOURCE, Math.random() * 3 + 1),
+    farmPractices: sampleSize(FARM_PRACTICES, Math.random() * 3 + 1),
+    amendments: sampleSize(AMENDMENTS, Math.random() * 3 + 1),
+    landPreparation: sampleSize(LAND_PREPARATION, Math.random() * 3 + 1),
   };
 };
 
@@ -125,7 +133,16 @@ const filtersReducer = (state: State, action: Action): State => {
       return {
         ...state,
         filters: state.filters.map((f) =>
-          f.id === action.filterId ? { ...f, draftParams: {...f.activeParams!, ...f.draftParams, ...action.params} } : f
+          f.id === action.filterId
+            ? {
+                ...f,
+                draftParams: {
+                  ...f.activeParams!,
+                  ...f.draftParams,
+                  ...action.params,
+                },
+              }
+            : f
         ),
       };
   }
@@ -181,3 +198,80 @@ export const COLORS = [
   "Yellow",
   "Orangered",
 ];
+
+export const CROP_VARIETY = [
+  "Austrian Crescent",
+  "Bonita",
+  "Carola",
+  "Laratte",
+  "Loowit",
+  "Phureja-- Andean",
+  "Satina",
+  "Adirondack Red",
+  "Amarosa",
+  "Bannock",
+  "Caribe",
+  "Carola",
+  "Cheiftain",
+  "Chioggia Guardsmark",
+  "Dark Red Norland",
+  "Ditta",
+  "Elba",
+  "Fingerling",
+  "French Fingerling",
+  "German Butterball",
+  "Huckleberry",
+  "Jester",
+];
+
+export const CLIMATE_REGION = [
+  "Central",
+  "East North Central",
+  "Northeast",
+  "Northwest",
+  "Other",
+  "South",
+  "Southeast",
+  "Southwest",
+  "West",
+  "West North Central",
+];
+
+export const SAMPLE_SOURCE = [
+  "Farm",
+  "Farm Market",
+  "Farm Retail",
+  "Garden",
+  "Research Plots",
+  "Store",
+];
+
+export const FARM_PRACTICES = [
+  "Sheet Mulching",
+  "None",
+  "Covercrops",
+  "Organic",
+  "Regenerative",
+  "Transitioning",
+  "Biodynamic",
+  "Biological",
+  "Nospray",
+  "Certified Organic",
+  "Irrigation",
+];
+
+export const AMENDMENTS = [
+  "Mulch",
+  "Lime",
+  "None",
+  "Synth Fertilizer",
+  "Organic Amendment",
+];
+
+export const LAND_PREPARATION = [
+"None",
+"Tillage",
+"Solarization",
+"Broadforking",
+"Sheet Mulching",
+]
