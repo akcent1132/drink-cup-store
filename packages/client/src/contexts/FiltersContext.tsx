@@ -41,6 +41,7 @@ const createFilterParams = () => {
   return {
     cropType: sample(CROPS),
     colors: sampleSize(COLORS, Math.random() * 3 + 1),
+    years: [2018, 2019, 2020],
   };
 };
 
@@ -73,7 +74,7 @@ type Action =
   | {
       type: "edit";
       filterId: string;
-      params: FilterParams;
+      params: Partial<FilterParams>;
     };
 
 const defaultState = Object.freeze({
@@ -124,7 +125,7 @@ const filtersReducer = (state: State, action: Action): State => {
       return {
         ...state,
         filters: state.filters.map((f) =>
-          f.id === action.filterId ? { ...f, draftParams: action.params } : f
+          f.id === action.filterId ? { ...f, draftParams: {...f.activeParams!, ...f.draftParams, ...action.params} } : f
         ),
       };
   }
