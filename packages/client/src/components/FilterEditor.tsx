@@ -15,6 +15,7 @@ import { withTheme } from "@emotion/react";
 import { useCallback, useMemo, useState } from "react";
 import { CROPS, COLORS, useFiltersContext } from "../contexts/FiltersContext";
 import { range, values } from "lodash";
+import { TagOptions } from "./TagOptions";
 
 const Root = withTheme(styled.div<{ color: string }>`
   border-right: 10px solid ${(p) => p.color};
@@ -60,6 +61,16 @@ export const FilterEditor = ({}: Props) => {
       }),
     [!filter]
   );
+  const updateColors = useCallback(
+    (colors: string[]) =>
+      filter &&
+      dispatchFilters({
+        type: "edit",
+        filterId: filter.id,
+        params: { colors },
+      }),
+    [!filter]
+  );
   const params = filter?.draftParams || filter?.activeParams;
   if (!params) {
     return null;
@@ -98,6 +109,7 @@ export const FilterEditor = ({}: Props) => {
           onChange={(values) => updateYears(values)}
         />
       </Stack>
+      <TagOptions onChange={updateColors} value={params.colors} options={COLORS} />
       <GButton
         label="Close"
         onClick={() => dispatchFilters({ type: "select", filterId: null })}
