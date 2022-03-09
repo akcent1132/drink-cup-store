@@ -68,12 +68,12 @@ export const TagSelect = ({value, onChange, options}: Props) => {
   return (
     // Uncomment <Grommet> lines when using outside of storybook
     // <Grommet theme={...}>
-    <Box fill align="center" justify="center">
+    <Box fill align="stretch" justify="center">
       <Select
         closeOnChange={false}
         multiple
         value={
-          <Box wrap direction="row" width="small">
+          <Box wrap direction="row">
             {value && value.length ? (
               value.map(option => renderSeason(option))
             ) : (
