@@ -16,6 +16,7 @@ import { useCallback, useMemo, useState } from "react";
 import { CROPS, COLORS, useFiltersContext } from "../contexts/FiltersContext";
 import { range, values } from "lodash";
 import { TagOptions } from "./TagOptions";
+import { TagSelect } from "./TagSelect";
 
 const Root = withTheme(styled.div<{ color: string }>`
   border-right: 10px solid ${(p) => p.color};
@@ -109,7 +110,7 @@ export const FilterEditor = ({}: Props) => {
           onChange={(values) => updateYears(values)}
         />
       </Stack>
-      <TagOptions onChange={updateColors} value={params.colors} options={COLORS} />
+      <TagSelect onChange={updateColors} value={params.colors} options={COLORS} />
       <GButton
         label="Close"
         onClick={() => dispatchFilters({ type: "select", filterId: null })}
