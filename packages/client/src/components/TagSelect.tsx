@@ -3,20 +3,6 @@ import React, { useState } from 'react';
 import { FormClose } from 'grommet-icons';
 import { Box, Button, Select, Text } from 'grommet';
 
-const allSeasons = [
-  'S01',
-  'S02',
-  'S03',
-  'S04',
-  'S05',
-  'S06',
-  'S07',
-  'S08',
-  'S09',
-  'S10',
-];
-
-
 type Props = {
     onChange: (value: string[]) => void;
     value: string[],

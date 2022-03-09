@@ -29,7 +29,7 @@ const Root = withTheme(styled.div<{ color: string; isHighlighted: boolean }>`
   width: ${(p) =>
     p.isHighlighted
       ? `calc(100% + ${p.theme.eventsCard.hoverExtraWidth}px)`
-      : '100%'};
+      : "100%"};
   transition: all 0.1s ease-out;
 `);
 
@@ -38,16 +38,17 @@ const Head = withTheme(styled.div`
   border-bottom: 2px solid rgba(255, 255, 255, 0.5);
   justify-content: space-between;
   font-size: 19px;
-  padding: 7px ${p => p.theme.eventsCard.sidePad}px 2px;
+  padding: 7px ${(p) => p.theme.eventsCard.sidePad}px 2px;
 `);
 
 const Title = withTheme(styled.div`
-  font-family: ${(p) => p.theme.fonts.base};
+  font-family: ${(p) => p.theme.font};
   color: white;
 `);
 
 const Name = withTheme(styled.div`
-  font-family: ${(p) => p.theme.fonts.baseBold};
+  font-family: ${(p) => p.theme.font};
+  font-weight: 600;
   color: white;
 `);
 
@@ -56,22 +57,27 @@ const Params = withTheme(styled.div`
   grid-template-columns: auto auto auto auto;
   column-gap: 10px;
   row-gap: 11px;
-  padding: 11px ${p => p.theme.eventsCard.sidePad}px;
+  padding: 11px ${(p) => p.theme.eventsCard.sidePad}px;
   font-size: 11.4px;
 `);
 const ParamName = withTheme(styled.div`
-  font-family: ${(p) => p.theme.fonts.baseBold};
+  font-family: ${(p) => p.theme.font};
+  font-weight: 600;
   color: white;
   text-transform: uppercase;
   justify-self: end;
 `);
 const ParamValue = withTheme(styled.div`
-  font-family: ${(p) => p.theme.fonts.baseBold};
+  font-family: ${(p) => p.theme.font};
+  font-weight: 600;
   color: ${(p) => p.theme.colors.secondary};
   justify-self: start;
 `);
+export const Spacer = withTheme(styled.div`
+  flex-grow: 1;
+`);
 
-const IconButton = withTheme(styled.div`
+const IconButton = styled.div`
   color: white;
   cursor: pointer;
   opacity: 0.7;
@@ -79,7 +85,7 @@ const IconButton = withTheme(styled.div`
     opacity: 1;
   }
   margin-left: 10px;
-`);
+`;
 
 interface Props {
   id: string;
@@ -111,14 +117,15 @@ export const EventsCard = ({
   );
   const isHighlighted = hoveredPlanting === id;
   return (
-    <Root color={color} isHighlighted={isHighlighted} onMouseEnter={onHoverData} onMouseLeave={onLeaveData}>
+    <Root
+      color={color}
+      isHighlighted={isHighlighted}
+      onMouseEnter={onHoverData}
+      onMouseLeave={onLeaveData}
+    >
       <Head>
         <Title>{title}</Title>
-        <div
-          css={css`
-            flex-grow: 1;
-          `}
-        />
+        <Spacer />
         <Name>{name}</Name>
         <IconButton onClick={onClose}>
           <CloseIcon fontSize="inherit" onClick={onClose} color="inherit" />

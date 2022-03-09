@@ -170,7 +170,7 @@ export const CROPS = [
 ];
 
 export const COLORS = [
-  "Beigered",
+  "Beige",
   "Brown",
   "Green",
   "Orange",
