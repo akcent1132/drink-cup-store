@@ -228,7 +228,7 @@ export const Dashboard = ({ iframeSrc }: Props) => {
     createFakePlantingCardData("72", schemeTableau10[4]),
     createFakePlantingCardData("67", schemeTableau10[0]),
   ]);
-  const [{ selectedFilterId, selectedFarmerId }] = useFiltersContext();
+  const [{ selectedFilterId, selectedFarmerId }, dispatchFilters] = useFiltersContext();
   const rightSide = useRef<HTMLDivElement>(null);
   const windowWidth = useWindowWidth();
   const scrollY = useScrollPosition();
@@ -245,6 +245,8 @@ export const Dashboard = ({ iframeSrc }: Props) => {
       setPlantingCards(
         uniq([createFakePlantingCardData(data.id, color), ...plantingCards])
       );
+      dispatchFilters({type: "select", filterId: null})
+      dispatchFilters({type: "selectFarmer", farmerId: null})
     },
     [plantingCards]
   );
