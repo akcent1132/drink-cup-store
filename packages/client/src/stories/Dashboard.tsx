@@ -34,6 +34,7 @@ import {
 } from "../contexts/FiltersContext";
 import { ROWS } from "../contexts/rows";
 import { Button } from "../components/Button";
+import { FarmerProfile } from "../components/FarmerProfile";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -227,7 +228,7 @@ export const Dashboard = ({ iframeSrc }: Props) => {
     createFakePlantingCardData("72", schemeTableau10[4]),
     createFakePlantingCardData("67", schemeTableau10[0]),
   ]);
-  const [{ selectedFilterId }] = useFiltersContext();
+  const [{ selectedFilterId, selectedFarmerId }] = useFiltersContext();
   const rightSide = useRef<HTMLDivElement>(null);
   const windowWidth = useWindowWidth();
   const scrollY = useScrollPosition();
@@ -290,7 +291,11 @@ export const Dashboard = ({ iframeSrc }: Props) => {
         onChange={setTabIndex}
       />
       <RightSide ref={rightSide}>
-        {selectedFilterId === null ? (
+        {selectedFilterId !== null ? (
+          <FilterEditor />
+        ) : selectedFarmerId !== null ? (
+          <FarmerProfile name={selectedFarmerId}/>
+        ) : (
           <Events>
             {/* <Legend entries={legendEntries} /> */}
             {plantingCards.map((props) => (
@@ -301,8 +306,6 @@ export const Dashboard = ({ iframeSrc }: Props) => {
               />
             ))}
           </Events>
-        ) : (
-          <FilterEditor />
         )}
 
         {rightRect ? <HyloBox rect={rightRect} src={iframeSrc} /> : null}

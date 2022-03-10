@@ -8,6 +8,7 @@ import { IconEventsBar, FarmEvent } from "./IconEventsBar";
 import CloseIcon from "@mui/icons-material/Close";
 import { useHoveredPlantingContext } from "../contexts/HoveredPlantingContext";
 import tinycolor from "tinycolor2";
+import { useFiltersContext } from "../contexts/FiltersContext";
 
 export const defaultTheme = {
   sidePad: 10,
@@ -50,6 +51,10 @@ const Name = withTheme(styled.div`
   font-family: ${(p) => p.theme.font};
   font-weight: 600;
   color: white;
+  cursor: pointer;
+  :hover {
+    text-decoration: underline;
+  }
 `);
 
 const Params = withTheme(styled.div`
@@ -107,6 +112,7 @@ export const EventsCard = ({
   onClose,
 }: Props) => {
   const [hoveredPlanting, setHoveredPlanting] = useHoveredPlantingContext();
+  const [_, dispatchFilters] = useFiltersContext();
   const onHoverData = useCallback(
     () => setHoveredPlanting({ type: "hover", planting: id }),
     []
@@ -126,7 +132,7 @@ export const EventsCard = ({
       <Head>
         <Title>{title}</Title>
         <Spacer />
-        <Name>{name}</Name>
+        <Name onClick={() => dispatchFilters({type: "selectFarmer", farmerId: name})}>{name}</Name>
         <IconButton onClick={onClose}>
           <CloseIcon fontSize="inherit" onClick={onClose} color="inherit" />
         </IconButton>

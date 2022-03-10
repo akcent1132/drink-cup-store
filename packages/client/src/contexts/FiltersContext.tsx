@@ -42,9 +42,12 @@ const createFilterParams = () => {
     cropType: sample(CROPS),
     colors: sampleSize(COLORS, Math.random() * 3 + 1),
     years: [2018, 2019, 2020],
-    sweetnessScore: range(1, 11).splice(Math.random()  * 8, 1 + Math.random() * 3),
-    flavorScore: range(1, 11).splice(Math.random()  * 8, 1 + Math.random() * 3),
-    tasteScore: range(1, 11).splice(Math.random()  * 8, 1 + Math.random() * 3),
+    sweetnessScore: range(1, 11).splice(
+      Math.random() * 8,
+      1 + Math.random() * 3
+    ),
+    flavorScore: range(1, 11).splice(Math.random() * 8, 1 + Math.random() * 3),
+    tasteScore: range(1, 11).splice(Math.random() * 8, 1 + Math.random() * 3),
     climateRegion: sampleSize(CLIMATE_REGION, Math.random() * 3 + 1),
     sampleSource: sampleSize(SAMPLE_SOURCE, Math.random() * 3 + 1),
     farmPractices: sampleSize(FARM_PRACTICES, Math.random() * 3 + 1),
@@ -83,11 +86,13 @@ type Action =
       type: "edit";
       filterId: string;
       params: Partial<FilterParams>;
-    };
+    }
+  | { type: "selectFarmer"; farmerId: string | null};
 
 const defaultState = Object.freeze({
   filters: [] as Filter[],
   selectedFilterId: null as string | null,
+  selectedFarmerId: null as string | null,
 });
 
 type State = typeof defaultState;
@@ -97,6 +102,7 @@ const filtersReducer = (state: State, action: Action): State => {
     case "new": {
       const filter = createFilter(action.color, action.name);
       return {
+        ...state,
         filters: [...state.filters, filter],
         selectedFilterId: filter.id,
       };
@@ -105,6 +111,14 @@ const filtersReducer = (state: State, action: Action): State => {
       return {
         ...state,
         selectedFilterId: action.filterId,
+        selectedFarmerId: null,
+      };
+    }
+    case "selectFarmer": {
+      return {
+        ...state,
+        selectedFilterId: null,
+        selectedFarmerId: action.farmerId,
       };
     }
     case "apply":
@@ -123,6 +137,7 @@ const filtersReducer = (state: State, action: Action): State => {
       };
     case "delete":
       return {
+        ...state,
         selectedFilterId:
           state.selectedFilterId === action.filterId
             ? null
@@ -269,9 +284,9 @@ export const AMENDMENTS = [
 ];
 
 export const LAND_PREPARATION = [
-"None",
-"Tillage",
-"Solarization",
-"Broadforking",
-"Sheet Mulching",
-]
+  "None",
+  "Tillage",
+  "Solarization",
+  "Broadforking",
+  "Sheet Mulching",
+];
