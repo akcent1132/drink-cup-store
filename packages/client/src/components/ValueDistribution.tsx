@@ -9,11 +9,12 @@ import { range, sortBy } from "lodash";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import tinycolor from "tinycolor2";
-import { Filtering, PlantingData } from "../stories/NestedRows";
+import { PlantingData } from "../stories/NestedRows";
 import { useHoveredPlantingContext } from "../contexts/HoveredPlantingContext";
 import { ValuePopup } from "./ValuePopup";
 import { format } from "d3-format"
 import { useFiltersContext } from "../contexts/FiltersContext";
+import { useEffectDebugger } from "../utils/useEffectDebugger";
 
 // TODO read height from props
 
@@ -134,7 +135,7 @@ type Props = {
    */
   label: string;
   averageValues: PlantingData[][];
-  valueNames: string[];
+  valueNames: string[] | string;
   highlightedFiltering?: string | null;
   className?: string;
   nesting: number;
@@ -157,6 +158,7 @@ export const ValueDistribution = ({
   onClickData,
   ...props
 }: Props) => {
+  valueNames = useMemo(() => Array.isArray(valueNames) ? valueNames : [valueNames], [valueNames]);
   const { colors } = useTheme();
   const [{ filters }] = useFiltersContext()
   const [isHovering, setIsHovering] = useState(false);
@@ -171,6 +173,7 @@ export const ValueDistribution = ({
   );
   const theme = useTheme();
   const canvas = useCanvas();
+  useEffectDebugger(() => {}, [filters, highlightedFiltering, valueNames])
   const values = useMemo(() => {
     const average = {
       plantings: averageValues,
