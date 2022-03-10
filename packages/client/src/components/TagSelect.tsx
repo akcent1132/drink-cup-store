@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import { FormClose } from 'grommet-icons';
 import { Box, Button, Select, Text } from 'grommet';
+import { css } from '@emotion/react';
 
 type Props = {
     onChange: (value: string[]) => void;
@@ -17,14 +18,14 @@ export const TagSelect = ({value, onChange, options}: Props) => {
     );
   };
 
-  const renderSeason = (season: string) => (
+  const renderTag = (option: string) => (
     <Button
-      key={`season_tag_${season}`}
+      key={`season_tag_${option}`}
       href="#"
       onClick={(event) => {
         event.preventDefault();
         event.stopPropagation();
-        onRemoveSeason(season);
+        onRemoveSeason(option);
       }}
       onFocus={(event) => event.stopPropagation()}
     >
@@ -34,10 +35,10 @@ export const TagSelect = ({value, onChange, options}: Props) => {
         gap="xsmall"
         pad={{ vertical: 'xsmall', horizontal: 'small' }}
         margin="xsmall"
-        background="brand"
+        background="accent-1"
         round="large"
       >
-        <Text size="small">{season}</Text>
+        <Text size="small" weight="bold">{option}</Text>
         <Box round="full" margin={{ left: 'xsmall' }}>
           <FormClose size="small" style={{ width: '12px', height: '12px' }} />
         </Box>
@@ -61,13 +62,13 @@ export const TagSelect = ({value, onChange, options}: Props) => {
         value={
           <Box wrap direction="row">
             {value && value.length ? (
-              value.map(option => renderSeason(option))
+              value.map(option => renderTag(option))
             ) : (
               <Box
                 pad={{ vertical: 'xsmall', horizontal: 'small' }}
                 margin="xsmall"
               >
-                Select Season
+                Select
               </Box>
             )}
           </Box>
