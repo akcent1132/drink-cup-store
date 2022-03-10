@@ -188,7 +188,7 @@ const RandomContent = ({
   );
 };
 
-const createFakePlantingCardData = memoize((id: string, color: string) => {
+export const createFakePlantingCardData = memoize((id: string, color: string) => {
   let texture = [Math.random(), Math.random()];
   texture = texture.map((t) => Math.round((t / sum(texture)) * 100));
   const zone = randomZone();

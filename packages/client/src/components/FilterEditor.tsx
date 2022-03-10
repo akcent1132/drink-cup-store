@@ -32,7 +32,7 @@ const Body = withTheme(styled.div`
   gap: 12px;
 `);
 
-const Label = ({
+export const Label = ({
   label,
   children,
 }: React.PropsWithChildren<{ label: string }>) => (

@@ -6,16 +6,20 @@ import profileImage from "../assets/images/male-placeholder-image.jpeg";
 
 import "../index.css";
 import { css, withTheme } from "@emotion/react";
-import { Box } from "grommet";
+import { Box, Button } from "grommet";
 import { Spacer } from "./EventsCard";
 import CloseIcon from "@mui/icons-material/Close";
-import { IconButton } from "./FilterEditor";
-import { useCallback } from "react";
+import { IconButton, Label } from "./FilterEditor";
+import { useCallback, useMemo } from "react";
 import { useFiltersContext } from "../contexts/FiltersContext";
+import { range } from "lodash";
+import { createFakePlantingCardData } from "../stories/Dashboard";
+import { IconEventsBar } from "./IconEventsBar";
 
 const Root = withTheme(styled.div`
   background-color: ${(p) => p.theme.colors.bgSidePanel};
   display: flex;
+  gap: 16px;
   flex-direction: column;
 `);
 
@@ -39,6 +43,11 @@ export const FarmerProfile = ({ name }: Props) => {
     () => dispatchFilters({ type: "selectFarmer", farmerId: null }),
     []
   );
+
+  const plantings = useMemo(
+    () => range(3).map((id) => createFakePlantingCardData(id.toString(), "")),
+    []
+  );
   return (
     <Root>
       <Box direction="row">
@@ -49,17 +58,31 @@ export const FarmerProfile = ({ name }: Props) => {
           src={profileImage}
           width="180px"
         />
-        <Box direction="column"  flex={{grow: 1}} justify="start">
-          <Box direction="row" align="center">
+        <Box direction="column" flex={{ grow: 1 }} justify="start">
+          <Box direction="row" align="center" css={css`padding-right: 12px`}>
             <Name>{name}</Name>
             <Spacer />
-            <IconButton onClick={handleClose} css={css`font-size: 19px`}>
+            <IconButton
+              onClick={handleClose}
+              css={css`
+                font-size: 19px;
+              `}
+            >
               <CloseIcon fontSize="inherit" color="inherit" />
             </IconButton>
           </Box>
+          <Spacer/>
+          <Box align="end" css={css`padding: 0 12px;`}><Button color="rgb(13, 195, 159)" primary label="Message on Hylo" /></Box>
         </Box>
       </Box>
       {LOREM}
+      <Name>Plantings</Name>
+      {plantings.map((p) => (
+        <Box gap="2px">
+          <Label label={p.title} />
+          <IconEventsBar events={p.events} />
+        </Box>
+      ))}
     </Root>
   );
 };
