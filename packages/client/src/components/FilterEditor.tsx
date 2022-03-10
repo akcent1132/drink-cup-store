@@ -13,7 +13,7 @@ import {
 import "../index.css";
 import { css, withTheme } from "@emotion/react";
 import React, { useCallback, useMemo, useState } from "react";
-import { CROPS, COLORS, useFiltersContext } from "../contexts/FiltersContext";
+import { CROPS, COLORS, useFiltersContext, AMENDMENTS, CLIMATE_REGION, FARM_PRACTICES, LAND_PREPARATION, SAMPLE_SOURCE } from "../contexts/FiltersContext";
 import { range } from "lodash";
 import { TagSelect } from "./TagSelect";
 import CloseIcon from "@mui/icons-material/Close";
@@ -86,6 +86,42 @@ interface Props {}
 const YEAR_MIN = 2017;
 const YEAR_MAX = 2022;
 
+const RangeInput = ({
+  min,
+  max,
+  value,
+  label,
+  onChange,
+}: {
+  min: number;
+  max: number;
+  value: number[];
+  label: string;
+  onChange: (bounds: number[]) => void;
+}) => (
+  <Label label={label}>
+    <Stack>
+      <Box direction="row" justify="between">
+        {range(min, max + 1).map((value) => (
+          <Box key={value} pad="small" border={false}>
+            <Text style={{ fontFamily: "monospace" }}>{value}</Text>
+          </Box>
+        ))}
+      </Box>
+      <RangeSelector
+        direction="horizontal"
+        invert={false}
+        min={min}
+        max={max}
+        size="full"
+        round="small"
+        values={[Math.min(...value), Math.max(...value)]}
+        onChange={(values) => onChange(values)}
+      />
+    </Stack>
+  </Label>
+);
+
 /**
  * Primary UI component for user interaction
  */
@@ -121,13 +157,43 @@ export const FilterEditor = ({}: Props) => {
       }),
     [!filter]
   );
-  const updateColors = useCallback(
-    (colors: string[]) =>
+  const updateSweetnessScore = useCallback(
+    ([from, to]) =>
       filter &&
       dispatchFilters({
         type: "edit",
         filterId: filter.id,
-        params: { colors },
+        params: { sweetnessScore: range(from, to + 1) },
+      }),
+    [!filter]
+  );
+  const updateFlavorScore = useCallback(
+    ([from, to]) =>
+      filter &&
+      dispatchFilters({
+        type: "edit",
+        filterId: filter.id,
+        params: { flavorScore: range(from, to + 1) },
+      }),
+    [!filter]
+  );
+  const updateTasteScore = useCallback(
+    ([from, to]) =>
+      filter &&
+      dispatchFilters({
+        type: "edit",
+        filterId: filter.id,
+        params: { tasteScore: range(from, to + 1) },
+      }),
+    [!filter]
+  );
+  const updateParams = useCallback(
+    (params) =>
+      filter &&
+      dispatchFilters({
+        type: "edit",
+        filterId: filter.id,
+        params,
       }),
     [!filter]
   );
@@ -162,32 +228,74 @@ export const FilterEditor = ({}: Props) => {
             clear
           />
         </Label>
-        <Label label="Years">
-          <Stack>
-            <Box direction="row" justify="between">
-              {range(YEAR_MIN, YEAR_MAX + 1).map((value) => (
-                <Box key={value} pad="small" border={false}>
-                  <Text style={{ fontFamily: "monospace" }}>{value}</Text>
-                </Box>
-              ))}
-            </Box>
-            <RangeSelector
-              direction="horizontal"
-              invert={false}
-              min={YEAR_MIN}
-              max={YEAR_MAX}
-              size="full"
-              round="small"
-              values={[Math.min(...params.years), Math.max(...params.years)]}
-              onChange={(values) => updateYears(values)}
-            />
-          </Stack>
-        </Label>
+        <RangeInput
+          label="Years"
+          min={YEAR_MIN}
+          max={YEAR_MAX}
+          value={params.years}
+          onChange={updateYears}
+        />
         <Label label="Colors">
           <TagSelect
-            onChange={updateColors}
+            onChange={colors => updateParams({colors})}
             value={params.colors}
             options={COLORS}
+          />
+        </Label>
+        <Label label="Climate Region">
+          <TagSelect
+            onChange={climateRegion => updateParams({climateRegion})}
+            value={params.climateRegion}
+            options={CLIMATE_REGION}
+          />
+        </Label>
+        <Label label="Sample Source">
+          <TagSelect
+            onChange={sampleSource => updateParams({sampleSource})}
+            value={params.sampleSource}
+            options={SAMPLE_SOURCE}
+          />
+        </Label>
+        <RangeInput
+          label="Sweetness Score"
+          min={1}
+          max={10}
+          value={params.sweetnessScore}
+          onChange={updateSweetnessScore}
+        />
+        <RangeInput
+          label="Flavor Score"
+          min={1}
+          max={10}
+          value={params.flavorScore}
+          onChange={updateFlavorScore}
+        />
+        <RangeInput
+          label="Taste Score"
+          min={1}
+          max={10}
+          value={params.tasteScore}
+          onChange={updateTasteScore}
+        />
+        <Label label="Farm Practices">
+          <TagSelect
+            onChange={farmPractices => updateParams({farmPractices})}
+            value={params.farmPractices}
+            options={FARM_PRACTICES}
+          />
+        </Label>
+        <Label label="Amendments">
+          <TagSelect
+            onChange={amendments => updateParams({amendments})}
+            value={params.amendments}
+            options={AMENDMENTS}
+          />
+        </Label>
+        <Label label="Land Preparation">
+          <TagSelect
+            onChange={landPreparation => updateParams({landPreparation})}
+            value={params.landPreparation}
+            options={LAND_PREPARATION}
           />
         </Label>
         <GButton label="Update" onClick={handleClose} />
