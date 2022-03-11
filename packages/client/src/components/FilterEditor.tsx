@@ -58,7 +58,7 @@ export const Label = ({
 );
 
 const Header = withTheme(styled.div<{ color: string }>`
-  background-color: ${(p) => p.color};
+  // background-color: ${(p) => p.color};
   display: flex;
   font-family: ${(p) => p.theme.font};
   font-size: 19px;
