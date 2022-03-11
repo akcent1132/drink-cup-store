@@ -32,6 +32,7 @@ const Root = withTheme(styled.div<{ color: string; isHighlighted: boolean }>`
       ? `calc(100% + ${p.theme.eventsCard.hoverExtraWidth}px)`
       : "100%"};
   transition: all 0.1s ease-out;
+  margin-bottom: 20px;
 `);
 
 const Head = withTheme(styled.div`

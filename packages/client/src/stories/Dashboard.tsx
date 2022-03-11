@@ -37,6 +37,7 @@ import {
 import { ROWS } from "../contexts/rows";
 import { Button } from "../components/Button";
 import { FarmerProfile } from "../components/FarmerProfile";
+import { PlantingCardList } from "../components/PlantingCardList";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -100,15 +101,6 @@ const RightFlipContainer = styled.div`
   top: 0;
   left: 0;
   width: 100%;
-`;
-
-const Events = styled.div`
-  display: flex;
-  padding: 0px 33px 50px 0px;
-  backdrop-filter: blur(12px);
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: 20px;
 `;
 
 const COLORS = schemeTableau10.slice(0, 9); //[
@@ -219,14 +211,6 @@ export const createFakePlantingCardData = memoize(
   }
 );
 
-const legendEntries = [
-  { color: "red", name: "tillage" },
-  { color: "blue", name: "irigation" },
-  { color: "green", name: "harvest" },
-  { color: "orange", name: "amendments" },
-  { color: "violet", name: "seeding" },
-  { color: "yellow", name: "weed contor" },
-];
 interface Props {
   /**
    * URL for the Hylo iframe box
@@ -282,16 +266,6 @@ export const Dashboard = ({ iframeSrc }: Props) => {
     },
   ];
 
-  const visibleStyles = {
-    opacity: 1,
-    transform: "translateX(0%);",
-  };
-
-  const hiddenStyles = {
-    opacity: 0,
-    transform: "translateX(-2%);",
-  };
-
   const [SideContent, sideContentKey] =
     selectedFilterId !== null
       ? [<FilterEditor selectedFilterId={selectedFilterId} />, "FilterEditor"]
@@ -301,16 +275,10 @@ export const Dashboard = ({ iframeSrc }: Props) => {
           `FarmerProfile-${selectedFarmerId}`,
         ]
       : [
-          <Events>
-            {/* <Legend entries={legendEntries} /> */}
-            {plantingCards.map((props) => (
-              <EventsCard
-                {...props}
-                key={props.id}
-                onClose={() => handleCloseCard(props.id)}
-              />
-            ))}
-          </Events>,
+          <PlantingCardList
+            plantingCards={plantingCards}
+            onCloseCard={handleCloseCard}
+          />,
           `Events`,
         ];
 
