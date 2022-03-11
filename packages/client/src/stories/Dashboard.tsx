@@ -9,6 +9,8 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
+import { ClassNames } from "@emotion/core";
 import styled from "@emotion/styled";
 import "../index.css";
 import bgCorn from "../assets/images/Background-corngrains.jpg";
@@ -90,6 +92,14 @@ const RowContainer = styled.div`
 
 const RightSide = styled.div`
   grid-area: events;
+  position: relative;
+`;
+
+const RightFlipContainer = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
 `;
 
 const Events = styled.div`
@@ -188,24 +198,26 @@ const RandomContent = ({
   );
 };
 
-export const createFakePlantingCardData = memoize((id: string, color: string) => {
-  let texture = [Math.random(), Math.random()];
-  texture = texture.map((t) => Math.round((t / sum(texture)) * 100));
-  const zone = randomZone();
-  return {
-    id,
-    title: "Corn " + (2017 + Math.floor(Math.random() * 6)),
-    name: `${faker.name.firstName()} ${faker.name.lastName()}`,
-    color,
-    params: {
-      zone: zone.name,
-      temperature: zone.temp.toString(),
-      precipitation: `${32 + Math.floor(32 * Math.random())} in`,
-      texture: `Sand: ${texture[0]}% | Clay ${texture[1]}%`,
-    },
-    events: range(6 + 6 * Math.random()).map(() => getFarmEvent()),
-  };
-});
+export const createFakePlantingCardData = memoize(
+  (id: string, color: string) => {
+    let texture = [Math.random(), Math.random()];
+    texture = texture.map((t) => Math.round((t / sum(texture)) * 100));
+    const zone = randomZone();
+    return {
+      id,
+      title: "Corn " + (2017 + Math.floor(Math.random() * 6)),
+      name: `${faker.name.firstName()} ${faker.name.lastName()}`,
+      color,
+      params: {
+        zone: zone.name,
+        temperature: zone.temp.toString(),
+        precipitation: `${32 + Math.floor(32 * Math.random())} in`,
+        texture: `Sand: ${texture[0]}% | Clay ${texture[1]}%`,
+      },
+      events: range(6 + 6 * Math.random()).map(() => getFarmEvent()),
+    };
+  }
+);
 
 const legendEntries = [
   { color: "red", name: "tillage" },
@@ -228,7 +240,8 @@ export const Dashboard = ({ iframeSrc }: Props) => {
     createFakePlantingCardData("72", schemeTableau10[4]),
     createFakePlantingCardData("67", schemeTableau10[0]),
   ]);
-  const [{ selectedFilterId, selectedFarmerId }, dispatchFilters] = useFiltersContext();
+  const [{ selectedFilterId, selectedFarmerId }, dispatchFilters] =
+    useFiltersContext();
   const rightSide = useRef<HTMLDivElement>(null);
   const windowWidth = useWindowWidth();
   const scrollY = useScrollPosition();
@@ -245,8 +258,8 @@ export const Dashboard = ({ iframeSrc }: Props) => {
       setPlantingCards(
         uniq([createFakePlantingCardData(data.id, color), ...plantingCards])
       );
-      dispatchFilters({type: "select", filterId: null})
-      dispatchFilters({type: "selectFarmer", farmerId: null})
+      dispatchFilters({ type: "select", filterId: null });
+      dispatchFilters({ type: "selectFarmer", farmerId: null });
     },
     [plantingCards]
   );
@@ -268,6 +281,38 @@ export const Dashboard = ({ iframeSrc }: Props) => {
       renderPanel: () => <RandomContent onClickData={handleClickRowData} />,
     },
   ];
+
+  const visibleStyles = {
+    opacity: 1,
+    transform: "translateX(0%);",
+  };
+
+  const hiddenStyles = {
+    opacity: 0,
+    transform: "translateX(-2%);",
+  };
+
+  const [SideContent, sideContentKey] =
+    selectedFilterId !== null
+      ? [<FilterEditor selectedFilterId={selectedFilterId} />, "FilterEditor"]
+      : selectedFarmerId !== null
+      ? [
+          <FarmerProfile name={selectedFarmerId} />,
+          `FarmerProfile-${selectedFarmerId}`,
+        ]
+      : [
+          <Events>
+            {/* <Legend entries={legendEntries} /> */}
+            {plantingCards.map((props) => (
+              <EventsCard
+                {...props}
+                key={props.id}
+                onClose={() => handleCloseCard(props.id)}
+              />
+            ))}
+          </Events>,
+          `Events`,
+        ];
 
   return (
     <Root>
@@ -293,22 +338,36 @@ export const Dashboard = ({ iframeSrc }: Props) => {
         onChange={setTabIndex}
       />
       <RightSide ref={rightSide}>
-        {selectedFilterId !== null ? (
-          <FilterEditor />
-        ) : selectedFarmerId !== null ? (
-          <FarmerProfile name={selectedFarmerId}/>
-        ) : (
-          <Events>
-            {/* <Legend entries={legendEntries} /> */}
-            {plantingCards.map((props) => (
-              <EventsCard
-                {...props}
-                key={props.id}
-                onClose={() => handleCloseCard(props.id)}
-              />
-            ))}
-          </Events>
-        )}
+        <ClassNames>
+          {({ css, cx }) => (
+            <TransitionGroup>
+              <CSSTransition
+                in
+                key={sideContentKey}
+                classNames={{
+                  enter: css({
+                    zIndex: 2,
+                    opacity: 0,
+                    transform: "translateX(-2%);",
+                  }),
+                  enterActive: css({
+                    opacity: 1,
+                    transform: "translateX(0%);",
+                    transition: "all 300ms ease-out",
+                  }),
+                  exit: css({ zIndex: 1 }),
+                  exitActive: css({
+                    opacity: 0,
+                    transition: "all 300ms  ease-in",
+                  }),
+                }}
+                timeout={600}
+              >
+                <RightFlipContainer>{SideContent}</RightFlipContainer>
+              </CSSTransition>
+            </TransitionGroup>
+          )}
+        </ClassNames>
 
         {rightRect ? <HyloBox rect={rightRect} src={iframeSrc} /> : null}
       </RightSide>

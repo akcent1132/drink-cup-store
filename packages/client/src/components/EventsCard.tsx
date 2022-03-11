@@ -2,7 +2,7 @@
 
 import React, { useCallback } from "react";
 import styled from "@emotion/styled";
-import { css, withTheme } from "@emotion/react";
+import { withTheme } from "@emotion/react";
 import "../index.css";
 import { IconEventsBar, FarmEvent } from "./IconEventsBar";
 import CloseIcon from "@mui/icons-material/Close";

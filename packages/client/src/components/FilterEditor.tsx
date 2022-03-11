@@ -82,7 +82,7 @@ export const IconButton = styled.div`
   align-content: center;
 `;
 
-interface Props {}
+interface Props {selectedFilterId: string}
 const YEAR_MIN = 2017;
 const YEAR_MAX = 2022;
 
@@ -125,10 +125,10 @@ const RangeInput = ({
 /**
  * Primary UI component for user interaction
  */
-export const FilterEditor = ({}: Props) => {
+export const FilterEditor = ({selectedFilterId}: Props) => {
   const [crop, setCrop] = useState(CROPS[0]);
 
-  const [{ filters, selectedFilterId }, dispatchFilters] = useFiltersContext();
+  const [{ filters }, dispatchFilters] = useFiltersContext();
   const filter = useMemo(
     () => filters.find((f) => f.id === selectedFilterId),
     [filters, selectedFilterId]
