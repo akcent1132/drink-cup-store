@@ -20,6 +20,7 @@ import { forceCollide, forceSimulation, forceY } from "d3-force";
 import { getFarmEvent } from "../utils/random";
 import { useXOverlap } from "../utils/useOverlap";
 import { uniqBy } from "lodash";
+import { ValuePopup } from "./ValuePopup";
 
 export const defaultTheme = {
   iconSize: 26,
@@ -67,10 +68,10 @@ const IconContainer = withTheme(styled.div`
 
 const DateContainer = withTheme(styled.div`
   height: ${(p) => p.theme.iconEventsBar.dateFontSize}px;
-  position: relative;  
+  position: relative;
   font-size: ${(p) => p.theme.iconEventsBar.dateFontSize}px;
   color: white;
-  font-family: ${(p) => p.theme.font};  
+  font-family: ${(p) => p.theme.font};
   display: flex;
   justify-content: space-between;
   padding: 0 3px;
@@ -192,7 +193,7 @@ export const IconEventsBar = (props: Props) => {
   const hideStartDate = useXOverlap(refDate, refDateStart, [hoveredEvent]);
   const hideEndDate = useXOverlap(refDate, refDateEnd, [hoveredEvent]);
   const [width, height] = useSize(ref);
-  const {iconEventsBar: theme, colors} = useTheme();
+  const { iconEventsBar: theme, colors } = useTheme();
   const dateForce = useMemo(() => createDateForce(), []);
   const simulation = useMemo(
     () =>
@@ -274,7 +275,7 @@ export const IconEventsBar = (props: Props) => {
             // fill: "white",
             title: event.type,
             onMouseEnter: () => setHoveredEventType(event.type),
-            onMouseLeave: () => setHoveredEventType(null),
+            // onMouseLeave: () => setHoveredEventType(null),
             onClick: () =>
               setSelectedEventType(
                 selectedEventType === event.type ? null : event.type
@@ -286,23 +287,37 @@ export const IconEventsBar = (props: Props) => {
         })}
       </IconContainer>
       <DateContainer>
-        {hoveredEvent ? (
+        {/* {hoveredEvent ? (
           <DateText left={scale(hoveredEvent.date)}>
             <div ref={refDate}>{timeFormat("%b %-d")(hoveredEvent.date)}</div>
           </DateText>
-        ) : null}
- 
-          <div ref={refDateStart} css={css`
-            opacity: ${hideStartDate ? 0 : 1};
-          `}>
-            {timeFormat("%b %-d")(scale.domain()[0])}
-          </div>
+        ) : null} */}
 
-          <div ref={refDateEnd} css={css`
+        <div
+          ref={refDateStart}
+          css={css`
+            opacity: ${hideStartDate ? 0 : 1};
+          `}
+        >
+          {timeFormat("%b %-d")(scale.domain()[0])}
+        </div>
+
+        <div
+          ref={refDateEnd}
+          css={css`
             opacity: ${hideEndDate ? 0 : 1};
-          `}>
-            {timeFormat("%b %-d")(new Date(scale.domain()[1].getTime() - 1))}
-          </div>
+          `}
+        >
+          {timeFormat("%b %-d")(new Date(scale.domain()[1].getTime() - 1))}
+        </div>
+
+        {hoveredEvent ? (
+          <ValuePopup
+            value={`${timeFormat("%b %-d")(hoveredEvent.date)}`}
+            x={scale(hoveredEvent.date) - theme.tickWidth / 2}
+            y={12}
+          />
+        ) : null}
       </DateContainer>
       <TimelineRoot
         onClick={addClick}
