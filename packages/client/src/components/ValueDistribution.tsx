@@ -173,7 +173,6 @@ export const ValueDistribution = ({
   );
   const theme = useTheme();
   const canvas = useCanvas();
-  useEffectDebugger(() => {}, [filters, highlightedFiltering, valueNames])
   const values = useMemo(() => {
     const average = {
       plantings: averageValues,

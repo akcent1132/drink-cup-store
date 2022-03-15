@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useReducer,
   useRef,
   useState,
@@ -24,8 +25,6 @@ import faker from "faker";
 import { memoize, range, sample, sum, uniq, uniqueId, without } from "lodash";
 import { HyloBox } from "./HyloBox";
 import { FilterEditor } from "../components/FilterEditor";
-import useScrollPosition from "@react-hook/window-scroll";
-import { useWindowWidth } from "@react-hook/window-size";
 import { NestedRows, PlantingData } from "./NestedRows";
 import { schemeTableau10 } from "d3-scale-chromatic";
 import { HoveredPlantingProvider } from "../contexts/HoveredPlantingContext";
@@ -38,6 +37,7 @@ import { ROWS } from "../contexts/rows";
 import { Button } from "../components/Button";
 import { FarmerProfile } from "../components/FarmerProfile";
 import { PlantingCardList } from "../components/PlantingCardList";
+import { useEffectDebugger } from "../utils/useEffectDebugger";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -137,7 +137,10 @@ const RandomContent = ({
   const { colors } = useTheme();
   const [hoverState, hoverDispatch] = useReducer(hoverReducer, null);
   const [{ filters }, dispatchFiltering] = useFiltersContext();
-  const averageValues = createFilteringData("average", 36, 5, 2);
+  const averageValues = useMemo(
+    () => createFilteringData("average", 36, 5, 2),
+    []
+  );
   const addFilter = useCallback(
     (name?: string, color?: string) => {
       const freeColors = without(COLORS, ...filters.map((g) => g.color));
@@ -227,15 +230,6 @@ export const Dashboard = ({ iframeSrc }: Props) => {
   const [{ selectedFilterId, selectedFarmerId }, dispatchFilters] =
     useFiltersContext();
   const rightSide = useRef<HTMLDivElement>(null);
-  const windowWidth = useWindowWidth();
-  const scrollY = useScrollPosition();
-
-  const [rightRect, setRightRect] = useState<DOMRect | null>(null);
-  useLayoutEffect(() => {
-    if (rightSide.current) {
-      setRightRect(rightSide.current.getBoundingClientRect());
-    }
-  }, [rightSide.current, windowWidth, scrollY]);
 
   const handleClickRowData = useCallback(
     (data: PlantingData, color: string) => {
@@ -255,32 +249,48 @@ export const Dashboard = ({ iframeSrc }: Props) => {
     [plantingCards]
   );
 
-  const pages = [
-    {
-      label: "Compare",
-      renderPanel: () => <RandomContent onClickData={handleClickRowData} />,
-    },
-    {
-      label: "My Data",
-      renderPanel: () => <RandomContent onClickData={handleClickRowData} />,
-    },
-  ];
+  const pages = useMemo(
+    () => [
+      {
+        label: "Compare",
+        renderPanel: () => <RandomContent onClickData={handleClickRowData} />,
+      },
+      {
+        label: "My Data",
+        renderPanel: () => <RandomContent onClickData={handleClickRowData} />,
+      },
+    ],
+    []
+  );
 
-  const [SideContent, sideContentKey] =
-    selectedFilterId !== null
-      ? [<FilterEditor selectedFilterId={selectedFilterId} />, "FilterEditor"]
-      : selectedFarmerId !== null
-      ? [
-          <FarmerProfile name={selectedFarmerId} />,
-          `FarmerProfile-${selectedFarmerId}`,
-        ]
-      : [
-          <PlantingCardList
-            plantingCards={plantingCards}
-            onCloseCard={handleCloseCard}
-          />,
-          `Events`,
-        ];
+  const [SideContent, sideContentKey] = useMemo(
+    () =>
+      selectedFilterId !== null
+        ? [<FilterEditor selectedFilterId={selectedFilterId} />, "FilterEditor"]
+        : selectedFarmerId !== null
+        ? [
+            <FarmerProfile name={selectedFarmerId} />,
+            `FarmerProfile-${selectedFarmerId}`,
+          ]
+        : [
+            <PlantingCardList
+              plantingCards={plantingCards}
+              onCloseCard={handleCloseCard}
+            />,
+            `Events`,
+          ],
+    [selectedFilterId, selectedFarmerId]
+  );
+  useEffectDebugger(() => {}, [
+    SideContent,
+    sideContentKey,
+    plantingCards,
+    rightSide.current,
+    rightSide,
+    selectedFilterId,
+    selectedFarmerId,
+    tabIndex,
+  ]);
 
   return (
     <Root>
@@ -337,7 +347,7 @@ export const Dashboard = ({ iframeSrc }: Props) => {
           )}
         </ClassNames>
 
-        {rightRect ? <HyloBox rect={rightRect} src={iframeSrc} /> : null}
+        <HyloBox container={rightSide} src={iframeSrc} />
       </RightSide>
     </Root>
   );
