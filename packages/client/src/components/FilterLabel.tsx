@@ -116,7 +116,7 @@ export const FilterLabel = ({
     onMouseEnter && onMouseEnter();
   }, [onMouseEnter]);
   const handleLeave = useCallback(() => {
-    setIsHovered(false), onMouseLeave && onMouseLeave();
+    setIsHovered(false); onMouseLeave && onMouseLeave();
   }, [onMouseLeave]);
   const handleDelete = useCallback(
     () => dispatch({ type: "delete", filterId }),

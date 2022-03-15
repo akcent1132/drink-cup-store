@@ -275,7 +275,7 @@ export const IconEventsBar = (props: Props) => {
             // fill: "white",
             title: event.type,
             onMouseEnter: () => setHoveredEventType(event.type),
-            // onMouseLeave: () => setHoveredEventType(null),
+            onMouseLeave: () => setHoveredEventType(null),
             onClick: () =>
               setSelectedEventType(
                 selectedEventType === event.type ? null : event.type
