@@ -20,7 +20,6 @@ import { Tabs } from "../components/Tabs";
 import { css, useTheme, withTheme } from "@emotion/react";
 import { getFarmEvent, randomZone } from "../utils/random";
 import { FilterLabel } from "../components/FilterLabel";
-import { EventsCard } from "../components/EventsCard";
 import faker from "faker";
 import { memoize, range, sample, sum, uniq, uniqueId, without } from "lodash";
 import { HyloBox } from "./HyloBox";
@@ -281,16 +280,6 @@ export const Dashboard = ({ iframeSrc }: Props) => {
           ],
     [selectedFilterId, selectedFarmerId]
   );
-  useEffectDebugger(() => {}, [
-    SideContent,
-    sideContentKey,
-    plantingCards,
-    rightSide.current,
-    rightSide,
-    selectedFilterId,
-    selectedFarmerId,
-    tabIndex,
-  ]);
 
   return (
     <Root>

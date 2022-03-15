@@ -111,27 +111,40 @@ export const FilterLabel = ({
 }: Props) => {
   const [isHovered, setIsHovered] = useState(false);
   const [_, dispatch] = useFiltersContext();
-  const handleHover = useCallback(() => setIsHovered(true), []);
-  const handleLeave = useCallback(() => setIsHovered(false), []);
-  const handleDelete = useCallback(() => dispatch({type: 'delete', filterId}), []);
-  const handleSelect = useCallback(() => dispatch({type: 'select', filterId}), []);
+  const handleHover = useCallback(() => {
+    setIsHovered(true);
+    onMouseEnter && onMouseEnter();
+  }, [onMouseEnter]);
+  const handleLeave = useCallback(() => {
+    setIsHovered(false), onMouseLeave && onMouseLeave();
+  }, [onMouseLeave]);
+  const handleDelete = useCallback(
+    () => dispatch({ type: "delete", filterId }),
+    []
+  );
+  const handleSelect = useCallback(
+    () => dispatch({ type: "select", filterId }),
+    []
+  );
   return (
     <Root
-      {...{ color, onClick, onMouseEnter, onMouseLeave, className }}
+      {...{ color, onClick, className }}
       onMouseEnter={handleHover}
       onMouseLeave={handleLeave}
     >
       <Padding isWide={isWide} />
       <Caption>{label}</Caption>
       <Padding isWide={isWide} />
-      {showActions ? <Actions isVisible={isHovered} color={color}>
-        <ActionButton onClick={handleSelect}>
-          <EditIcon fontSize="inherit" />
-        </ActionButton>
-        <ActionButton onClick={handleDelete}>
-          <DeleteIcon fontSize="inherit" />
-        </ActionButton>
-      </Actions> : null}
+      {showActions ? (
+        <Actions isVisible={isHovered} color={color}>
+          <ActionButton onClick={handleSelect}>
+            <EditIcon fontSize="inherit" />
+          </ActionButton>
+          <ActionButton onClick={handleDelete}>
+            <DeleteIcon fontSize="inherit" />
+          </ActionButton>
+        </Actions>
+      ) : null}
     </Root>
   );
 };
