@@ -252,7 +252,6 @@ export const ValueDistribution = ({
       const color = values.find((v) =>
         v.values.some((v) => v.id === localHoveredValue.id)
       )?.color;
-      console.log({ color });
       if (color) {
         onClickData(localHoveredValue, color);
       }

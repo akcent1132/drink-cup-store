@@ -278,7 +278,7 @@ export const Dashboard = ({ iframeSrc }: Props) => {
             />,
             `Events`,
           ],
-    [selectedFilterId, selectedFarmerId]
+    [selectedFilterId, selectedFarmerId, plantingCards, handleCloseCard]
   );
 
   return (
