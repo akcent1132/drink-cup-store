@@ -161,9 +161,11 @@ export const EventsCard = ({
         >
           {name}
         </Name>
-        <IconButton onClick={onClose}>
-          <CloseIcon fontSize="inherit" onClick={onClose} color="inherit" />
-        </IconButton>
+        {onClose ? (
+          <IconButton onClick={onClose}>
+            <CloseIcon fontSize="inherit" onClick={onClose} color="inherit" />
+          </IconButton>
+        ) : null}
       </Head>
       <Params>
         <MiniInfo>
