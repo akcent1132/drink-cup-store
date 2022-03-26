@@ -62,7 +62,7 @@ const Bar = styled.div`
 `;
 
 const IconContainer = withTheme(styled.div`
-  height: ${(p) => p.theme.iconEventsBar.iconSize * 2}px;
+  padding: 3px 10px;
   position: relative;
 `);
 
@@ -253,9 +253,6 @@ export const IconEventsBar = (props: Props) => {
             key: event.id,
             css: [
               css`
-                left: ${(theme.iconSize / 2) * (i + 1)}px;
-                top: ${i % 2 === 1 ? theme.iconSize * (11 / 13) : 0}px;
-                position: absolute;
                 :hover {
                   opacity: 1;
                 }
