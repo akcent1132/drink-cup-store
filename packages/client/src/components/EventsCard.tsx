@@ -9,6 +9,9 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useHoveredPlantingContext } from "../contexts/HoveredPlantingContext";
 import tinycolor from "tinycolor2";
 import { useFiltersContext } from "../contexts/FiltersContext";
+import InvertColorsIcon from "@mui/icons-material/InvertColors";
+import ThermostatIcon from "@mui/icons-material/Thermostat";
+import PublicIcon from "@mui/icons-material/Public";
 
 export const defaultTheme = {
   sidePad: 10,
@@ -59,11 +62,8 @@ const Name = withTheme(styled.div`
 `);
 
 const Params = withTheme(styled.div`
-  display: grid;
-  grid-template-columns: auto auto auto auto;
-  column-gap: 10px;
-  row-gap: 11px;
-  padding: 11px ${(p) => p.theme.eventsCard.sidePad}px;
+  display: flex;
+  padding: 1px 10px;
   font-size: 11.4px;
 `);
 const ParamName = withTheme(styled.div`
@@ -77,7 +77,6 @@ const ParamValue = withTheme(styled.div`
   font-family: ${(p) => p.theme.font};
   font-weight: 600;
   color: ${(p) => p.theme.colors.secondary};
-  justify-self: start;
 `);
 export const Spacer = withTheme(styled.div`
   flex-grow: 1;
@@ -93,11 +92,23 @@ const IconButton = styled.div`
   margin-left: 10px;
 `;
 
+const MiniInfo = styled.div`
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+`;
+
+type Parameters = {
+  zone: string;
+  temperature: string;
+  precipitation: string;
+  texture: string;
+};
 interface Props {
   id: string;
   color?: string;
   events?: FarmEvent[];
-  params: { [index: string]: string };
+  params: Parameters;
   title?: string;
   name?: string;
   onClose?: () => void;
@@ -107,7 +118,7 @@ export const EventsCard = ({
   id,
   color = "white",
   events = [],
-  params = {},
+  params,
   title = "2020 Corn",
   name = "My Farm",
   onClose,
@@ -133,16 +144,32 @@ export const EventsCard = ({
       <Head>
         <Title>{title}</Title>
         <Spacer />
-        <Name onClick={() => dispatchFilters({type: "selectFarmer", farmerId: name})}>{name}</Name>
+        <Name
+          onClick={() =>
+            dispatchFilters({ type: "selectFarmer", farmerId: name })
+          }
+        >
+          {name}
+        </Name>
         <IconButton onClick={onClose}>
           <CloseIcon fontSize="inherit" onClick={onClose} color="inherit" />
         </IconButton>
       </Head>
       <Params>
-        {Object.entries(params).map(([key, value]) => [
-          <ParamName key={`name-${key}`}>{key}</ParamName>,
-          <ParamValue key={`value-${key}`}>{value}</ParamValue>,
-        ])}
+        <MiniInfo>
+          <ThermostatIcon fontSize="inherit" />
+          <ParamValue>{params.temperature}</ParamValue>
+        </MiniInfo>
+        <MiniInfo>
+          <InvertColorsIcon fontSize="inherit" />
+          <ParamValue>{params.precipitation}</ParamValue>
+        </MiniInfo>
+        <MiniInfo>
+          <PublicIcon fontSize="inherit" />
+          <ParamValue>{params.zone}</ParamValue>
+        </MiniInfo>
+        <Spacer />
+        <ParamValue>{params.texture}</ParamValue>
       </Params>
       <IconEventsBar events={events} />
     </Root>
