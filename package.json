@@ -4,7 +4,6 @@
   "license": "GPL-3.0-only",
   "private": true,
   "devDependencies": {
-    "@types/styled-components": "^5.1.24",
     "cross-env": "^7.0.3",
     "lerna": "^4.0.0"
   },
@@ -13,7 +12,5 @@
     "chromatic": "cross-env FORCE_COLOR=1 lerna --scope client run chromatic --no-prefix --stream",
     "server:start": "cross-env FORCE_COLOR=1 lerna --scope server run start --no-prefix --stream"
   },
-  "dependencies": {
-    "styled-components": "^5.3.5"
-  }
+  "dependencies": {}
 }
