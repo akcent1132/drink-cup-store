@@ -36,7 +36,6 @@ import { ROWS } from "../contexts/rows";
 import { Button } from "../components/Button";
 import { FarmerProfile } from "../components/FarmerProfile";
 import { PlantingCardList } from "../components/PlantingCardList";
-import { useEffectDebugger } from "../utils/useEffectDebugger";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -200,7 +199,7 @@ export const createFakePlantingCardData = memoize(
     return {
       id,
       title: "Corn " + (2017 + Math.floor(Math.random() * 6)),
-      name: `${faker.name.firstName()} ${faker.name.lastName()}`,
+      name: Math.random().toString(32).slice(-7),//`${faker.name.firstName()} ${faker.name.lastName()}`,
       color,
       params: {
         zone: zone.name,

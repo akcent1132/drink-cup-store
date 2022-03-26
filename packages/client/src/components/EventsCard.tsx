@@ -20,12 +20,19 @@ export const defaultTheme = {
   hoverExtraWidth: 0,
 };
 
-const Root = withTheme(styled.div<{ color: string; isHighlighted: boolean }>`
-  border-right: ${(p) =>
-      p.isHighlighted
-        ? p.theme.eventsCard.colorBorderHighlightWidth
-        : p.theme.eventsCard.colorBorderWidth}px
-    solid ${(p) => (p.isHighlighted ? "white" : p.theme.color(p.color))};
+const Root = withTheme(styled.div<{
+  color: string;
+  isHighlighted: boolean;
+  hideColorBorder: boolean;
+}>`
+  ${(p) =>
+    p.hideColorBorder
+      ? ""
+      : `border-right: ${
+          p.isHighlighted
+            ? p.theme.eventsCard.colorBorderHighlightWidth
+            : p.theme.eventsCard.colorBorderWidth
+        }px solid ${p.isHighlighted ? "white" : p.theme.color(p.color)};`}
   background-color: ${(p) =>
     p.isHighlighted
       ? tinycolor(p.theme.colors.bgSidePanel).lighten(10).toString()
@@ -112,6 +119,7 @@ interface Props {
   title?: string;
   name?: string;
   onClose?: () => void;
+  hideColorBorder?: boolean;
 }
 
 export const EventsCard = ({
@@ -121,6 +129,7 @@ export const EventsCard = ({
   params,
   title = "2020 Corn",
   name = "My Farm",
+  hideColorBorder = false,
   onClose,
 }: Props) => {
   const [hoveredPlanting, setHoveredPlanting] = useHoveredPlantingContext();
@@ -140,6 +149,7 @@ export const EventsCard = ({
       isHighlighted={isHighlighted}
       onMouseEnter={onHoverData}
       onMouseLeave={onLeaveData}
+      hideColorBorder={hideColorBorder}
     >
       <Head>
         <Title>{title}</Title>
