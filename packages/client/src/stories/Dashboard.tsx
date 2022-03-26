@@ -199,7 +199,7 @@ export const createFakePlantingCardData = memoize(
     return {
       id,
       title: "Corn " + (2017 + Math.floor(Math.random() * 6)),
-      name: Math.random().toString(32).slice(-7),//`${faker.name.firstName()} ${faker.name.lastName()}`,
+      name: Math.random().toString(32).slice(-7), //`${faker.name.firstName()} ${faker.name.lastName()}`,
       color,
       params: {
         zone: zone.name,
@@ -228,7 +228,6 @@ export const Dashboard = ({ iframeSrc }: Props) => {
   const [{ selectedFilterId, selectedFarmerId }, dispatchFilters] =
     useFiltersContext();
   const rightSide = useRef<HTMLDivElement>(null);
-
   const handleClickRowData = useCallback(
     (data: PlantingData, color: string) => {
       setPlantingCards(
@@ -258,7 +257,7 @@ export const Dashboard = ({ iframeSrc }: Props) => {
         renderPanel: () => <RandomContent onClickData={handleClickRowData} />,
       },
     ],
-    []
+    [handleClickRowData]
   );
 
   const [SideContent, sideContentKey] = useMemo(
