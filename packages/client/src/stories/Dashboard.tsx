@@ -36,6 +36,8 @@ import { ROWS } from "../contexts/rows";
 import { Button } from "../components/Button";
 import { FarmerProfile } from "../components/FarmerProfile";
 import { PlantingCardList } from "../components/PlantingCardList";
+import { CropSelector } from "./CropSelector";
+import { Spacer } from "../components/EventsCard";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -159,6 +161,8 @@ const RandomContent = ({
   return (
     <RowContainer>
       <PaneHead>
+        <CropSelector />
+        <Spacer />
         {[...filters].reverse().map((filter, i) => (
           <FilterLabel
             key={filter.id}

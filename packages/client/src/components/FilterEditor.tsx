@@ -126,7 +126,6 @@ const RangeInput = ({
  * Primary UI component for user interaction
  */
 export const FilterEditor = ({selectedFilterId}: Props) => {
-  const [crop, setCrop] = useState(CROPS[0]);
 
   const [{ filters }, dispatchFilters] = useFiltersContext();
   const filter = useMemo(
@@ -217,15 +216,6 @@ export const FilterEditor = ({selectedFilterId}: Props) => {
             placeholder="Filter name"
             value={filter.name}
             onChange={updateName}
-          />
-        </Label>
-        <Label label="Crop type">
-          <Select
-            placeholder="Select a crop"
-            value={crop}
-            options={CROPS}
-            onChange={({ value }) => setCrop(value)}
-            clear
           />
         </Label>
         <RangeInput
