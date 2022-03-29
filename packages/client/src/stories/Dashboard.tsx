@@ -207,8 +207,8 @@ export const createFakePlantingCardData = memoize(
       color,
       params: {
         zone: zone.name,
-        temperature: zone.temp.toString(),
-        precipitation: `${32 + Math.floor(32 * Math.random())} in`,
+        temperature: zone.temp.toString() + '°',
+        precipitation: `${32 + Math.floor(32 * Math.random())}″`,
         texture: `Sand: ${texture[0]}% | Clay ${texture[1]}%`,
       },
       events: range(6 + 6 * Math.random()).map(() => getFarmEvent()),
