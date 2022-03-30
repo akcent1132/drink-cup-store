@@ -21,6 +21,7 @@ import { getFarmEvent } from "../utils/random";
 import { useXOverlap } from "../utils/useOverlap";
 import { uniqBy } from "lodash";
 import { ValuePopup } from "./ValuePopup";
+import { EventDetailsPopup } from "./EventDetailsPopup";
 
 export const defaultTheme = {
   iconSize: 26,
@@ -309,7 +310,7 @@ export const IconEventsBar = (props: Props) => {
         </div>
 
         {hoveredEvent ? (
-          <ValuePopup
+          <EventDetailsPopup
             value={`${timeFormat("%b %-d")(hoveredEvent.date)}`}
             x={scale(hoveredEvent.date) - theme.tickWidth / 2}
             y={12}
