@@ -19,7 +19,7 @@ import useSize from "@react-hook/size";
 import { forceCollide, forceSimulation, forceY } from "d3-force";
 import { getFarmEvent } from "../utils/random";
 import { useXOverlap } from "../utils/useOverlap";
-import { uniqBy } from "lodash";
+import { capitalize, uniqBy } from "lodash";
 import { ValuePopup } from "./ValuePopup";
 import { EventDetailsPopup } from "./EventDetailsPopup";
 
@@ -311,7 +311,8 @@ export const IconEventsBar = (props: Props) => {
 
         {hoveredEvent ? (
           <EventDetailsPopup
-            value={`${timeFormat("%b %-d")(hoveredEvent.date)}`}
+            date={`${timeFormat("%b %-d, %Y")(hoveredEvent.date)}`}
+            title={capitalize(hoveredEvent.type)}
             x={scale(hoveredEvent.date) - theme.tickWidth / 2}
             y={12}
           />

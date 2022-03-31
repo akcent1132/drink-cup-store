@@ -167,6 +167,7 @@ export const EventsCard = ({
           </IconButton>
         ) : null}
       </Head>
+      
       <Params>
         <MiniInfo>
           <ThermostatIcon fontSize="inherit" />
