@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import styled from "@emotion/styled";
-import { withTheme } from "@emotion/react";
+import { css, withTheme } from "@emotion/react";
 import "../index.css";
 import {
   Box,
@@ -12,6 +12,7 @@ import {
   NameValuePair,
   Text,
 } from "grommet";
+import { getEventIcon } from "./IconEventsBar";
 
 export const defaultTheme = {
   borderColor: "rgba(255,255,255,.4)",
@@ -33,10 +34,8 @@ const Container = styled.div<{ x: number; y: number }>`
   pointer-events: none;
 `;
 
-
-
 interface Props {
-    title: string;
+  title: string;
   date: string;
   x: number;
   y: number;
@@ -57,6 +56,8 @@ export const EventDetailsPopup = ({ title, date, x, y }: Props) => {
     }),
     []
   );
+
+  const Icon = getEventIcon(title.toLowerCase());
   return (
     <>
       <Container ref={ref} {...{ x, y }}></Container>
@@ -72,14 +73,18 @@ export const EventDetailsPopup = ({ title, date, x, y }: Props) => {
             <Box
               pad="small"
               background="light-2"
-              direction="column"
-              align="flex-start"
-              gap="none"
+              direction="row"
+              align="center"
             >
-              <Heading level={3} margin="none">
-                {title}
-              </Heading>
-              <Text>{date}</Text>
+              <Box direction="column" align="flex-start" gap="none" flex="grow">
+                <Heading level={3} margin="none">
+                  {title}
+                </Heading>
+
+                <Text>{date}</Text>
+              </Box>
+
+              <Icon width="42px" height="42px" css={css`margin-left: 6px`}/>
             </Box>
             <Box pad="small" background="light-1">
               <NameValueList>

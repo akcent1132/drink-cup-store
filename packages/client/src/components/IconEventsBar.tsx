@@ -34,7 +34,7 @@ export const defaultTheme = {
   timelineMouseMaxDistance: 6,
 };
 
-const getEventIcon = (type: string) => {
+export const getEventIcon = (type: string) => {
   switch (type) {
     case "amendments":
       return IconAmendments;
