@@ -13,7 +13,7 @@ import {
 import "../index.css";
 import { css, withTheme } from "@emotion/react";
 import React, { useCallback, useMemo, useState } from "react";
-import { CROPS, COLORS, useFiltersContext, AMENDMENTS, CLIMATE_REGION, FARM_PRACTICES, LAND_PREPARATION, SAMPLE_SOURCE } from "../contexts/FiltersContext";
+import { CROPS, COLORS, useFiltersContext, AMENDMENTS, CLIMATE_REGION, FARM_PRACTICES, LAND_PREPARATION, SAMPLE_SOURCE, GROUPS } from "../contexts/FiltersContext";
 import { range } from "lodash";
 import { TagSelect } from "./TagSelect";
 import CloseIcon from "@mui/icons-material/Close";
@@ -225,6 +225,14 @@ export const FilterEditor = ({selectedFilterId}: Props) => {
           value={params.years}
           onChange={updateYears}
         />
+        <Label label="Groups">
+          <TagSelect
+            onChange={groups => updateParams({groups})}
+            value={params.groups}
+            options={GROUPS}
+            allowSearch
+          />
+        </Label>
         <Label label="Colors">
           <TagSelect
             onChange={colors => updateParams({colors})}

@@ -40,6 +40,7 @@ export const createFilteringData = (
 const createFilterParams = () => {
   return {
     cropType: sample(CROPS),
+    groups: sampleSize(GROUPS, Math.random() * 3 + 1),
     colors: sampleSize(COLORS, Math.random() * 3 + 1),
     years: [2018, 2019, 2020],
     sweetnessScore: range(1, 11).splice(
@@ -62,6 +63,7 @@ const createFilter = (color: string, name: string) => {
   return {
     id,
     name,
+    groups: sampleSize(GROUPS, Math.random() * 3 + 1),
     color,
     cropType: sample(CROPS),
     colors: sampleSize(COLORS, Math.random() * 3 + 1),
@@ -87,7 +89,7 @@ type Action =
       filterId: string;
       params: Partial<FilterParams>;
     }
-  | { type: "selectFarmer"; farmerId: string | null};
+  | { type: "selectFarmer"; farmerId: string | null };
 
 const defaultState = Object.freeze({
   filters: [] as Filter[],
@@ -289,4 +291,66 @@ export const LAND_PREPARATION = [
   "Solarization",
   "Broadforking",
   "Sheet Mulching",
+];
+
+export const GROUPS = [
+  "ANEI",
+  "Bay Area Urban Farmers Association",
+  "BeneficialBIO",
+  "Bionutrient Institute",
+  "BOTL Farm",
+  "Carbofarm",
+  "CCRP Soils Cross Cutting",
+  "CEE",
+  "CEPAGRO",
+  "CFDN",
+  "Cool Farm Tool",
+  "corn growers association",
+  "CRARS RAD-Lab, Chico State",
+  "Demo",
+  "farmOS",
+  "Flavor",
+  "General Mills Regen Ag",
+  "GOSH",
+  "Grupo chicas",
+  "Honey Rock Landing",
+  "Intecons Software",
+  "landPKS",
+  "Landscape Interactions",
+  "LiteFarm - SPG project",
+  "LiteFarm",
+  "mdc-farmos2",
+  "Million Acre Challenge",
+  "MVP-Certifiers",
+  "My Coffee Shop Group",
+  "NACD Locally Led Conservation",
+  "nexus",
+  "NOFAMass ",
+  "nx",
+  "OMAFRA Topsoil",
+  "OpenTEAM Equity",
+  "OpenTEAM",
+  "Our-Sci LLC",
+  "Paicines Ranch",
+  "Pasa",
+  "Real Food Campaign (old)",
+  "Reforestamos Mexico",
+  "Regen Farmers Mutual",
+  "Regen Future Capital",
+  "Regen Network Development",
+  "Regen1",
+  "Rothamsted",
+  "SHP",
+  "Snapp Lab",
+  "SOC Pilot",
+  "Soil sensing and monitoring",
+  "soilstack",
+  "SRUC",
+  "Stone Barns Center",
+  "Stonyfield",
+  "Svensk Kolinlagring",
+  "Tech Matters",
+  "TNPU",
+  "Trial",
+  "We Are For The Land",
 ];
