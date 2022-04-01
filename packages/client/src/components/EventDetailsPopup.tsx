@@ -69,15 +69,15 @@ export const EventDetailsPopup = ({ title, date, x, y }: Props) => {
           style={{ pointerEvents: "auto" }}
           align={{ bottom: "top" }}
         >
-          <Card background="light-1">
+          <Card>
             <Box
+              background="light-4"
               pad="small"
-              background="light-2"
               direction="row"
               align="center"
             >
               <Box direction="column" align="flex-start" gap="none" flex="grow">
-                <Heading level={3} margin="none">
+                <Heading level={2} margin="none">
                   {title}
                 </Heading>
 
@@ -86,7 +86,7 @@ export const EventDetailsPopup = ({ title, date, x, y }: Props) => {
 
               <Icon width="42px" height="42px" css={css`margin-left: 6px`}/>
             </Box>
-            <Box pad="small" background="light-1">
+            <Box pad="small" background="light-3">
               <NameValueList>
                 {Object.entries(data).map(([key, value]) => (
                   <NameValuePair name={key} key={key}>
