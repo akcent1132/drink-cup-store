@@ -18,6 +18,7 @@ export const defaultTheme = {
   colorBorderWidth: 15,
   colorBorderHighlightWidth: 20,
   hoverExtraWidth: 0,
+  parametersFontSize: 12,
 };
 
 const Root = withTheme(styled.div<{
@@ -71,14 +72,7 @@ const Name = withTheme(styled.div`
 const Params = withTheme(styled.div`
   display: flex;
   padding: 1px 10px;
-  font-size: 11.4px;
-`);
-const ParamName = withTheme(styled.div`
-  font-family: ${(p) => p.theme.font};
-  font-weight: 600;
-  color: white;
-  text-transform: uppercase;
-  justify-self: end;
+  font-size: ${p => p.theme.eventsCard.parametersFontSize}px;
 `);
 const ParamValue = withTheme(styled.div`
   font-family: ${(p) => p.theme.font};
