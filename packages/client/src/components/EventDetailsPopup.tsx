@@ -44,9 +44,11 @@ interface Props {
   date: string;
   x: number;
   y: number;
+  onClose?: () => void;
+  isFixed?: boolean;
 }
 
-export const EventDetailsPopup = ({ title, date, x, y }: Props) => {
+export const EventDetailsPopup = ({ title, date, x, y, onClose, isFixed }: Props) => {
   const [target, setTarget] = useState(null);
   const ref = useCallback((node) => setTarget(node), []);
   const data = useMemo(
@@ -82,6 +84,9 @@ export const EventDetailsPopup = ({ title, date, x, y }: Props) => {
           responsive
           style={{ pointerEvents: "auto" }}
           align={{ bottom: "top" }}
+          onClickOutside={onClose}
+          onEsc={onClose}
+          background="neutral-1"
         >
           <Card>
             <Box

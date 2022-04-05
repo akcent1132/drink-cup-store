@@ -187,6 +187,7 @@ export const IconEventsBar = (props: Props) => {
     null
   );
   const [hoveredEvent, setHoveredEvent] = useState<FarmEvent | null>(null);
+  const [fixedEvent, setFixedEvent] = useState<FarmEvent | null>(null);
   const ref = useRef<HTMLDivElement>(null);
   const refDate = useRef<HTMLDivElement>(null);
   const refDateStart = useRef<HTMLDivElement>(null);
@@ -216,34 +217,37 @@ export const IconEventsBar = (props: Props) => {
     simulation.alpha(1).tick(500).restart();
     return scale;
   }, [width, theme.middleLineMargin]);
-  const addClick = useCallback(
-    (e: React.MouseEvent) => {
-      if (hoveredEvent) {
-        setEvents(events.filter(({ id }) => id !== hoveredEvent.id));
-      } else {
-        const event = getFarmEvent();
-        event.date = scale.invert(e.nativeEvent.offsetX);
-        setEvents([...events, event]);
-      }
-    },
-    [scale, events, hoveredEvent]
-  );
-  const eventHover = useCallback(
-    (e: React.MouseEvent) => {
-      const mouseX = e.nativeEvent.offsetX;
+
+  const closestEventToMouse = useCallback(
+    (mouseEvent: React.MouseEvent) => {
+      const mouseX = mouseEvent.nativeEvent.offsetX;
       const closestEventIndex = minIndex(events, (event) => {
         const diff = Math.abs(scale(event.date) - mouseX);
         return diff <= theme.timelineMouseMaxDistance ? diff : null;
       });
-      if (closestEventIndex >= 0) {
-        setHoveredEvent(events[closestEventIndex]);
-      } else {
-        setHoveredEvent(null);
-      }
+      return closestEventIndex >= 0 ? events[closestEventIndex] : null;
     },
-    [theme.timelineMouseMaxDistance, events, scale]
+    [events, theme.timelineMouseMaxDistance, scale]
   );
-  const eventLeave = useCallback(() => setHoveredEvent(null), []);
+  const eventClickOut = useCallback(() => {
+    setFixedEvent(null);
+    setHoveredEvent(null);
+  }, []);
+  const eventHover = useCallback(
+    (e: React.MouseEvent) => {
+      setHoveredEvent(closestEventToMouse(e));
+    },
+    [closestEventToMouse]
+  );
+  const eventClick = useCallback(
+    (e: React.MouseEvent) => {
+      setFixedEvent(closestEventToMouse(e));
+    },
+    [closestEventToMouse]
+  );
+  const eventLeave = useCallback(() => {
+    setHoveredEvent(null);
+  }, []);
 
   return (
     <Bar ref={ref}>
@@ -309,8 +313,20 @@ export const IconEventsBar = (props: Props) => {
           {timeFormat("%b %-d")(new Date(scale.domain()[1].getTime() - 1))}
         </div>
 
-        {hoveredEvent ? (
+        {fixedEvent ? (
           <EventDetailsPopup
+            key={fixedEvent.id}
+            date={`${timeFormat("%b %-d, %Y")(fixedEvent.date)}`}
+            title={capitalize(fixedEvent.type)}
+            x={scale(fixedEvent.date) - theme.tickWidth / 2}
+            y={12}
+            onClose={eventClickOut}
+            isFixed
+          />
+        ) : null}
+        {hoveredEvent && hoveredEvent !== fixedEvent ? (
+          <EventDetailsPopup
+            key={hoveredEvent.id}
             date={`${timeFormat("%b %-d, %Y")(hoveredEvent.date)}`}
             title={capitalize(hoveredEvent.type)}
             x={scale(hoveredEvent.date) - theme.tickWidth / 2}
@@ -319,9 +335,9 @@ export const IconEventsBar = (props: Props) => {
         ) : null}
       </DateContainer>
       <TimelineRoot
-        onClick={addClick}
+        onClick={eventClick}
         onMouseMove={(e) => eventHover(e)}
-        // onMouseLeave={() => eventLeave()}
+        onMouseLeave={() => eventLeave()}
       >
         <TimelineLine />
         {events.map((event) => (

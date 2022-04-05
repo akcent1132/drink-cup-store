@@ -22,6 +22,8 @@ export const GrommetConfig = ({ children }: PropsWithChildren<{}>) => {
         border: {
           radius: "12px",
         },
+        //@ts-ignore remove default enter animation
+        extend: "animation: none; opacity: 1;"
       },
       elevation: {
         dark: {
