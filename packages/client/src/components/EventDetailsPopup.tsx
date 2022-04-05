@@ -48,7 +48,14 @@ interface Props {
   isFixed?: boolean;
 }
 
-export const EventDetailsPopup = ({ title, date, x, y, onClose, isFixed }: Props) => {
+export const EventDetailsPopup = ({
+  title,
+  date,
+  x,
+  y,
+  onClose,
+  isFixed,
+}: Props) => {
   const [target, setTarget] = useState(null);
   const ref = useCallback((node) => setTarget(node), []);
   const data = useMemo(
@@ -83,7 +90,7 @@ export const EventDetailsPopup = ({ title, date, x, y, onClose, isFixed }: Props
           margin="small"
           responsive
           style={{ pointerEvents: "auto" }}
-          align={{ bottom: "top" }}
+          align={{ top: "bottom" }}
           onClickOutside={onClose}
           onEsc={onClose}
           background="neutral-1"
@@ -96,11 +103,11 @@ export const EventDetailsPopup = ({ title, date, x, y, onClose, isFixed }: Props
               align="center"
             >
               <Box direction="column" align="flex-start" gap="none" flex="grow">
-                <Heading level={2} margin="none">
+                <Heading level={3} margin="none">
                   {title}
                 </Heading>
 
-                <Text>{date}</Text>
+                <Text size="small">{date}</Text>
               </Box>
 
               <Icon
@@ -111,18 +118,26 @@ export const EventDetailsPopup = ({ title, date, x, y, onClose, isFixed }: Props
                 `}
               />
             </Box>
-            <Box pad="small" background="light-3" css={css`padding-bottom: 4px;`}>
+            <Box
+              pad="small"
+              background="light-3"
+              css={css`
+                padding-bottom: 4px;
+              `}
+            >
               <NameValueList>
                 {Object.entries(data).map(([key, value]) => (
                   <NameValuePair name={key} key={key}>
                     {Array.isArray(value) ? (
                       <Box direction="row" gap="2px">
                         {value.map((v, i) => (
-                          <Tag size="small" value={v} key={i} />
+                          <Tag size="xsmall" value={v} key={i} />
                         ))}
                       </Box>
                     ) : typeof value === "string" ? (
-                      <Text color="text-strong">{value}</Text>
+                      <Text size="xsmall" color="text-strong">
+                        {value}
+                      </Text>
                     ) : (
                       value
                     )}
@@ -130,17 +145,30 @@ export const EventDetailsPopup = ({ title, date, x, y, onClose, isFixed }: Props
                 ))}
               </NameValueList>
             </Box>
-            <Box background="light-1" pad="small" direction="row">
+            <Box background="light-4" pad="none" direction="row">
               <Spacer />
-              {copied ? (
-                <Button icon={<CheckIcon />} hoverIndicator color="brand"/>
-              ) : (
-                <Button
-                  icon={<CopyAllIcon />}
-                  onClick={copyData}
-                  hoverIndicator
-                />
-              )}
+              <Button
+                icon={copied ? <CheckIcon /> : <CopyAllIcon />}
+                onClick={copyData}
+                
+                tip={{
+                  plain: true,
+                  content: (
+                    <Box
+                      background="background-contrast"
+                      elevation="small"
+                      margin="xsmall"
+                      pad={{ vertical: "xsmall", horizontal: "small" }}
+                      round="small"
+                      align="center"
+                    >
+                      {copied ? "Copied!" : "Copy data"}
+                    </Box>
+                  ),
+                }}
+                color={copied ? "brand" : undefined}
+                size="small"
+              />
             </Box>
           </Card>
         </Drop>
