@@ -11,8 +11,13 @@ import {
   NameValueList,
   NameValuePair,
   Text,
+  Button,
 } from "grommet";
 import { getEventIcon } from "./IconEventsBar";
+import CopyAllIcon from "@mui/icons-material/CopyAll";
+import CheckIcon from "@mui/icons-material/Check";
+import { Spacer } from "./EventsCard";
+import useCopy from "use-copy";
 
 export const defaultTheme = {
   borderColor: "rgba(255,255,255,.4)",
@@ -56,6 +61,15 @@ export const EventDetailsPopup = ({ title, date, x, y }: Props) => {
     }),
     []
   );
+  const [copied, copy, setCopied] = useCopy(JSON.stringify(data, null, 2));
+
+  const copyData = useCallback(() => {
+    copy();
+
+    setTimeout(() => {
+      setCopied(false);
+    }, 3000);
+  }, [copy, setCopied]);
 
   const Icon = getEventIcon(title.toLowerCase());
   return (
@@ -84,9 +98,15 @@ export const EventDetailsPopup = ({ title, date, x, y }: Props) => {
                 <Text>{date}</Text>
               </Box>
 
-              <Icon width="42px" height="42px" css={css`margin-left: 6px`}/>
+              <Icon
+                width="42px"
+                height="42px"
+                css={css`
+                  margin-left: 6px;
+                `}
+              />
             </Box>
-            <Box pad="small" background="light-3">
+            <Box pad="small" background="light-3" css={css`padding-bottom: 4px;`}>
               <NameValueList>
                 {Object.entries(data).map(([key, value]) => (
                   <NameValuePair name={key} key={key}>
@@ -104,6 +124,18 @@ export const EventDetailsPopup = ({ title, date, x, y }: Props) => {
                   </NameValuePair>
                 ))}
               </NameValueList>
+            </Box>
+            <Box background="light-1" pad="small" direction="row">
+              <Spacer />
+              {copied ? (
+                <Button icon={<CheckIcon />} hoverIndicator color="brand"/>
+              ) : (
+                <Button
+                  icon={<CopyAllIcon />}
+                  onClick={copyData}
+                  hoverIndicator
+                />
+              )}
             </Box>
           </Card>
         </Drop>

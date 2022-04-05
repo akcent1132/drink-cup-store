@@ -321,7 +321,7 @@ export const IconEventsBar = (props: Props) => {
       <TimelineRoot
         onClick={addClick}
         onMouseMove={(e) => eventHover(e)}
-        onMouseLeave={() => eventLeave()}
+        // onMouseLeave={() => eventLeave()}
       >
         <TimelineLine />
         {events.map((event) => (
