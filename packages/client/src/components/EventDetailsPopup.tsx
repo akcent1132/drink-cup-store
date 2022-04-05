@@ -16,6 +16,7 @@ import {
 import { getEventIcon } from "./IconEventsBar";
 import CopyAllIcon from "@mui/icons-material/CopyAll";
 import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from '@mui/icons-material/Close';
 import { Spacer } from "./EventsCard";
 import useCopy from "use-copy";
 
@@ -150,12 +151,11 @@ export const EventDetailsPopup = ({
               <Button
                 icon={copied ? <CheckIcon /> : <CopyAllIcon />}
                 onClick={copyData}
-                
                 tip={{
                   plain: true,
                   content: (
                     <Box
-                      background="background-contrast"
+                      background="light-1"
                       elevation="small"
                       margin="xsmall"
                       pad={{ vertical: "xsmall", horizontal: "small" }}
@@ -167,7 +167,26 @@ export const EventDetailsPopup = ({
                   ),
                 }}
                 color={copied ? "brand" : undefined}
-                size="small"
+              />
+              <Button
+                style={{paddingLeft: 0}}
+                icon={<CloseIcon />}
+                onClick={onClose}
+                tip={{
+                  plain: true,
+                  content: (
+                    <Box
+                      background="light-1"
+                      elevation="small"
+                      margin="xsmall"
+                      pad={{ vertical: "xsmall", horizontal: "small" }}
+                      round="small"
+                      align="center"
+                    >
+                      Close
+                    </Box>
+                  ),
+                }}
               />
             </Box>
           </Card>
