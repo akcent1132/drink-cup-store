@@ -16,7 +16,7 @@ import {
 import { getEventIcon } from "./IconEventsBar";
 import CopyAllIcon from "@mui/icons-material/CopyAll";
 import CheckIcon from "@mui/icons-material/Check";
-import CloseIcon from '@mui/icons-material/Close';
+import CloseIcon from "@mui/icons-material/Close";
 import { Spacer } from "./EventsCard";
 import useCopy from "use-copy";
 
@@ -46,7 +46,8 @@ interface Props {
   x: number;
   y: number;
   onClose?: () => void;
-  isFixed?: boolean;
+  onMouseEnter?: (e: React.MouseEvent) => void;
+  onMouseLeave?: (e: React.MouseEvent) => void;
 }
 
 export const EventDetailsPopup = ({
@@ -55,7 +56,8 @@ export const EventDetailsPopup = ({
   x,
   y,
   onClose,
-  isFixed,
+  onMouseEnter,
+  onMouseLeave,
 }: Props) => {
   const [target, setTarget] = useState(null);
   const ref = useCallback((node) => setTarget(node), []);
@@ -81,6 +83,8 @@ export const EventDetailsPopup = ({
     }, 3000);
   }, [copy, setCopied]);
 
+  const dropAlign = useMemo(() => ({ top: "bottom" as "bottom" }), []);
+
   const Icon = getEventIcon(title.toLowerCase());
   return (
     <>
@@ -90,13 +94,16 @@ export const EventDetailsPopup = ({
           target={target}
           margin="small"
           responsive
-          style={{ pointerEvents: "auto" }}
-          align={{ top: "bottom" }}
+          align={dropAlign}
           onClickOutside={onClose}
           onEsc={onClose}
-          background="neutral-1"
+          plain
         >
-          <Card>
+          <Card
+            style={{ margin: "0 23px", width: "400px" }}
+            onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
+          >
             <Box
               background="light-4"
               pad="small"
@@ -169,7 +176,7 @@ export const EventDetailsPopup = ({
                 color={copied ? "brand" : undefined}
               />
               <Button
-                style={{paddingLeft: 0}}
+                style={{ paddingLeft: 0 }}
                 icon={<CloseIcon />}
                 onClick={onClose}
                 tip={{

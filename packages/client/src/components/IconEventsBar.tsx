@@ -32,6 +32,7 @@ export const defaultTheme = {
   timelineHeight: 2,
   timelineColor: "rgba(255, 255, 255, 0.5)",
   timelineMouseMaxDistance: 6,
+  timelineTopMargin: 4,
 };
 
 export const getEventIcon = (type: string) => {
@@ -124,7 +125,7 @@ const getHighlightStyle = (
 };
 
 const TimelineRoot = withTheme(styled.div`
-  margin-top: 4px;
+  margin-top: ${(p) => p.theme.iconEventsBar.timelineTopMargin}px;
   margin-bottom: 11px;
   position: relative;
   width: 100%;
@@ -177,6 +178,31 @@ const createDateForce = () => {
   return force;
 };
 
+const useStateLater = <T,>(initialValue: T) => {
+  const [value, setValue] = useState(initialValue);
+  const timeoutId = useRef<null | NodeJS.Timeout>(null);
+  const setLater = useCallback((value, time: number | null = null) => {
+    if (timeoutId.current !== null) {
+      clearTimeout(timeoutId.current);
+      timeoutId.current = null;
+    }
+    if (time === null) {
+      setValue(value);
+    } else {
+      timeoutId.current = setTimeout(() => setValue(value), time);
+    }
+  }, []);
+  return [value, setLater] as [T, typeof setLater];
+};
+
+const useLastNonNull = <T,>(value: T) => {
+  const last = useRef<T | null>(null);
+  if (value) {
+    last.current = value;
+  }
+  return last.current;
+};
+
 /**
  * Primary UI component for user interaction
  */
@@ -186,7 +212,14 @@ export const IconEventsBar = (props: Props) => {
   const [selectedEventType, setSelectedEventType] = useState<string | null>(
     null
   );
-  const [hoveredEvent, setHoveredEvent] = useState<FarmEvent | null>(null);
+  // ugly hacks to test event details card behaviors
+  const [hoveredEventPoint, setHoveredEvent] = useStateLater<FarmEvent | null>(
+    null
+  );
+  const prevHoveredPoint = useLastNonNull(hoveredEventPoint);
+  const [hoveredCard, setHoveredCard] = useState<FarmEvent | null>(null);
+  const hoveredEvent = hoveredEventPoint || hoveredCard;
+  // console.log({hoveredEventPoint, hoveredCard, prevHoveredPoint, hoveredEvent})
   const [fixedEvent, setFixedEvent] = useState<FarmEvent | null>(null);
   const ref = useRef<HTMLDivElement>(null);
   const refDate = useRef<HTMLDivElement>(null);
@@ -235,7 +268,8 @@ export const IconEventsBar = (props: Props) => {
   }, []);
   const eventHover = useCallback(
     (e: React.MouseEvent) => {
-      setHoveredEvent(closestEventToMouse(e));
+      const event = closestEventToMouse(e);
+      setHoveredEvent(event, event ? null : 500);
     },
     [closestEventToMouse]
   );
@@ -246,7 +280,7 @@ export const IconEventsBar = (props: Props) => {
     [closestEventToMouse]
   );
   const eventLeave = useCallback(() => {
-    setHoveredEvent(null);
+    setHoveredEvent(null, 500);
   }, []);
 
   return (
@@ -312,16 +346,16 @@ export const IconEventsBar = (props: Props) => {
         >
           {timeFormat("%b %-d")(new Date(scale.domain()[1].getTime() - 1))}
         </div>
-
+      </DateContainer>
+      <div css={css`position: relative;`}>
         {fixedEvent ? (
           <EventDetailsPopup
             key={fixedEvent.id}
             date={`${timeFormat("%b %-d, %Y")(fixedEvent.date)}`}
             title={capitalize(fixedEvent.type)}
-            x={scale(fixedEvent.date) - theme.tickWidth / 2}
-            y={12}
+            x={scale(fixedEvent.date)}
+            y={theme.tickHeight / 2 + theme.timelineTopMargin}
             onClose={eventClickOut}
-            isFixed
           />
         ) : null}
         {hoveredEvent && hoveredEvent !== fixedEvent ? (
@@ -329,11 +363,15 @@ export const IconEventsBar = (props: Props) => {
             key={hoveredEvent.id}
             date={`${timeFormat("%b %-d, %Y")(hoveredEvent.date)}`}
             title={capitalize(hoveredEvent.type)}
-            x={scale(hoveredEvent.date) - theme.tickWidth / 2}
-            y={12}
+            x={scale(hoveredEvent.date)}
+            y={theme.tickHeight / 2 + theme.timelineTopMargin}
+            onMouseEnter={(e) =>
+              prevHoveredPoint && setHoveredCard(prevHoveredPoint)
+            }
+            onMouseLeave={(e) => setHoveredCard(null)}
           />
         ) : null}
-      </DateContainer>
+      </div>
       <TimelineRoot
         onClick={eventClick}
         onMouseMove={(e) => eventHover(e)}
