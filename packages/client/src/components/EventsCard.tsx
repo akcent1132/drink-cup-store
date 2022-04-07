@@ -13,6 +13,7 @@ import InvertColorsIcon from "@mui/icons-material/InvertColors";
 import ThermostatIcon from "@mui/icons-material/Thermostat";
 import PublicIcon from "@mui/icons-material/Public";
 import { Tip } from "grommet";
+import ContactPageIcon from "@mui/icons-material/ContactPage";
 
 export const defaultTheme = {
   sidePad: 10,
@@ -61,6 +62,9 @@ const Title = withTheme(styled.div`
 `);
 
 const Name = withTheme(styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1px;
   font-family: ${(p) => p.theme.font};
   font-weight: 600;
   color: white;
@@ -155,6 +159,7 @@ export const EventsCard = ({
               dispatchFilters({ type: "selectFarmer", farmerId: name })
             }
           >
+            <ContactPageIcon fontSize="inherit" />
             {name}
           </Name>
         </Tip>
