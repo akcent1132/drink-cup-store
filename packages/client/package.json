@@ -8,6 +8,7 @@
     "@apollo/client": "^3.5.10",
     "@emotion/react": "11.8.1",
     "@emotion/styled": "11.8.1",
+    "@graphql-codegen/cli": "^2.6.2",
     "@mui/icons-material": "^5.3.1",
     "@mui/material": "^5.3.1",
     "@react-hook/intersection-observer": "^3.1.1",
@@ -54,7 +55,8 @@
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public",
-    "chromatic": "npx chromatic --auto-accept-changes --project-token=e536d82ec42f"
+    "chromatic": "npx chromatic --auto-accept-changes --project-token=e536d82ec42f",
+    "codegen": "graphql-codegen --config codegen.yml"
   },
   "eslintConfig": {
     "extends": [
@@ -110,6 +112,14 @@
     "@types/styled-components": "^5.1.24",
     "@types/tinycolor2": "^1.4.3",
     "chromatic": "^6.3.3",
-    "webpack": "^5.65.0"
+    "webpack": "^5.65.0",
+    "@graphql-codegen/fragment-matcher": "3.2.1",
+    "@graphql-codegen/typescript-react-apollo": "3.2.11",
+    "@graphql-codegen/typescript-document-nodes": "2.2.8",
+    "@graphql-codegen/typescript-graphql-files-modules": "2.1.1",
+    "@graphql-codegen/typescript": "2.4.8",
+    "@graphql-codegen/typescript-operations": "2.3.5",
+    "@graphql-codegen/introspection": "2.1.1",
+    "@graphql-codegen/cli": "2.6.2"
   }
 }

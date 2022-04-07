@@ -7,14 +7,14 @@ import {
 } from "@apollo/client";
 import { MockedProvider } from "@apollo/client/testing";
 import { range } from "lodash";
-import seedrandom from "seedrandom";
 import { createFilteringData } from "../contexts/FiltersContext";
 import { PlantingData } from "../stories/NestedRows";
-import { loader } from 'graphql.macro';
+import { loader } from "graphql.macro";
+import { Planting } from "../generated/graphql";
 
-const typeDefs = loader('./local.graphql')
+const typeDefs = loader("./local.graphql");
 
-const plantingsCache: {[key: string]: PlantingData[][]} = {};
+const plantingsCache: { [key: string]: Planting[] } = {};
 
 const cache = new InMemoryCache({
   typePolicies: {
@@ -26,32 +26,19 @@ const cache = new InMemoryCache({
           },
         },
         plantings: {
-          // @ts-ignore
-          read(_, variables) {
+          read(_, variables): Planting[] {
             // @ts-ignore
             const cropType: string = variables.cropType;
-            const rnd = seedrandom(cropType);
 
-            // @ts-ignore
             if (!plantingsCache[cropType]) {
-              // @ts-ignore
-              plantingsCache[cropType] = [];
+              plantingsCache[cropType] = createFilteringData(
+                cropType,
+                45,
+                3,
+                2
+              ).map(values => ({values}));
             }
-            return range(30 + 30 * rnd()).map((i) => {
-              // @ts-ignore
-              if (!plantingsCache[cropType][i]) {
-                // @ts-ignore
-                plantingsCache[cropType][i] = createFilteringData(
-                  `${cropType}-${i}`,
-                  12,
-                  3,
-                  2
-                );
-              }
-
-              // @ts-ignore
-              return plantingsCache[cropType][i];
-            });
+            return plantingsCache[cropType]
           },
         },
       },
@@ -77,4 +64,3 @@ client
   })
 
   .then((result) => console.log(result));
-
