@@ -347,7 +347,11 @@ export const IconEventsBar = (props: Props) => {
           {timeFormat("%b %-d")(new Date(scale.domain()[1].getTime() - 1))}
         </div>
       </DateContainer>
-      <div css={css`position: relative;`}>
+      <div
+        css={css`
+          position: relative;
+        `}
+      >
         {fixedEvent ? (
           <EventDetailsPopup
             key={fixedEvent.id}

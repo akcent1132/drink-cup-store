@@ -38,6 +38,8 @@ import { FarmerProfile } from "../components/FarmerProfile";
 import { PlantingCardList } from "../components/PlantingCardList";
 import { CropSelector } from "./CropSelector";
 import { Spacer } from "../components/EventsCard";
+import { client } from "../graphql/client";
+import { ApolloProvider } from "@apollo/client";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -207,7 +209,7 @@ export const createFakePlantingCardData = memoize(
       color,
       params: {
         zone: zone.name,
-        temperature: zone.temp.toString() + '°',
+        temperature: zone.temp.toString() + "°",
         precipitation: `${32 + Math.floor(32 * Math.random())}″`,
         texture: `Sand: ${texture[0]}% | Clay ${texture[1]}%`,
       },
@@ -345,9 +347,11 @@ export const Dashboard = ({ iframeSrc }: Props) => {
 };
 
 export const App = (props: ComponentProps<typeof Dashboard>) => (
-  <FiltersProvider>
-    <HoveredPlantingProvider>
-      <Dashboard {...props} />
-    </HoveredPlantingProvider>
-  </FiltersProvider>
+  <ApolloProvider client={client}>
+    <FiltersProvider>
+      <HoveredPlantingProvider>
+        <Dashboard {...props} />
+      </HoveredPlantingProvider>
+    </FiltersProvider>
+  </ApolloProvider>
 );
