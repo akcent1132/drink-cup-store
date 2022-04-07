@@ -10,6 +10,7 @@ export const GrommetConfig = ({ children }: PropsWithChildren<{}>) => {
     global: {
       colors: {
         brand: theme.colors.primary,
+        // TODO find out why is this needed
         background: theme.colors.darkTransparent,
         "accent-1": theme.colors.secondary,
       },
@@ -23,7 +24,7 @@ export const GrommetConfig = ({ children }: PropsWithChildren<{}>) => {
           radius: "12px",
         },
         //@ts-ignore remove default enter animation
-        extend: "animation: none; opacity: 1;"
+        extend: "animation: none; opacity: 1;",
       },
       elevation: {
         dark: {
@@ -46,6 +47,11 @@ export const GrommetConfig = ({ children }: PropsWithChildren<{}>) => {
         },
       },
     },
+    tip: {
+      content: {
+        background: "light-1",
+      },
+    },
     nameValueList: {
       gap: { column: "0px", row: "3px" },
       pair: {
@@ -61,7 +67,7 @@ export const GrommetConfig = ({ children }: PropsWithChildren<{}>) => {
       },
     },
     nameValuePair: {
-      name: { size: 'xsmall'}
+      name: { size: "xsmall" },
     },
   };
 

@@ -12,6 +12,7 @@ import { useFiltersContext } from "../contexts/FiltersContext";
 import InvertColorsIcon from "@mui/icons-material/InvertColors";
 import ThermostatIcon from "@mui/icons-material/Thermostat";
 import PublicIcon from "@mui/icons-material/Public";
+import { Tip } from "grommet";
 
 export const defaultTheme = {
   sidePad: 10,
@@ -72,7 +73,7 @@ const Name = withTheme(styled.div`
 const Params = withTheme(styled.div`
   display: flex;
   padding: 1px 10px;
-  font-size: ${p => p.theme.eventsCard.parametersFontSize}px;
+  font-size: ${(p) => p.theme.eventsCard.parametersFontSize}px;
 `);
 const ParamValue = withTheme(styled.div`
   font-family: ${(p) => p.theme.font};
@@ -148,20 +149,23 @@ export const EventsCard = ({
       <Head>
         <Title>{title}</Title>
         <Spacer />
-        <Name
-          onClick={() =>
-            dispatchFilters({ type: "selectFarmer", farmerId: name })
-          }
-        >
-          {name}
-        </Name>
+        <Tip content="Producer profile">
+          <Name
+            onClick={() =>
+              dispatchFilters({ type: "selectFarmer", farmerId: name })
+            }
+          >
+            {name}
+          </Name>
+        </Tip>
+
         {onClose ? (
           <IconButton onClick={onClose}>
             <CloseIcon fontSize="inherit" onClick={onClose} color="inherit" />
           </IconButton>
         ) : null}
       </Head>
-      
+
       <Params>
         <MiniInfo>
           <ThermostatIcon fontSize="inherit" />
