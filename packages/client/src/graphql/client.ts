@@ -9,33 +9,12 @@ import { MockedProvider } from "@apollo/client/testing";
 import { range } from "lodash";
 import seedrandom from "seedrandom";
 import { createFilteringData } from "../contexts/FiltersContext";
+import { PlantingData } from "../stories/NestedRows";
+import { loader } from 'graphql.macro';
 
-const typeDefs = gql`
-  extend type Query {
-    plantings(cropType: String): [Planting]
-    test: Boolean!
+const typeDefs = loader('./local.graphql')
 
-    # cartItems: [Launch]!
-  }
-  type Planting {
-    values: [PlantingValue]
-  }
-  type PlantingValues {
-    name: String
-    value: Number
-    id: String
-  }
-
-  # extend type Launch {
-  #   isInCart: Boolean!
-  # }
-
-  # extend type Mutation {
-  #   addOrRemoveFromCart(id: ID!): [Launch]
-  # }
-`;
-
-const plantingsCache = {};
+const plantingsCache: {[key: string]: PlantingData[][]} = {};
 
 const cache = new InMemoryCache({
   typePolicies: {
