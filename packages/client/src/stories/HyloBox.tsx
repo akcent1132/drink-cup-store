@@ -68,13 +68,12 @@ const CloseEarContent = styled.div<{ open: boolean }>`
   transition: all 0.3s cubic-bezier(0.14, -0.03, 0.49, 1.02);
   box-shadow: inset rgba(0, 0, 0, 0.15) -7px 0 8px -7px;
   color: rgba(44, 64, 89, 0.6);
-  
-  svg {
 
-  transition: all 0.1s ease;//cubic-bezier(0.14, -0.03, 0.49, 1.02);
+  svg {
+    transition: all 0.1s ease; //cubic-bezier(0.14, -0.03, 0.49, 1.02);
   }
   :hover {
-    color: rgba(44, 64, 89, 1.0);
+    color: rgba(44, 64, 89, 1);
     svg {
       transform: translateY(2px);
     }
@@ -100,10 +99,13 @@ export const HyloBox = ({
       setRect(container?.current.getBoundingClientRect());
     }
   }, [container?.current, windowWidth, scrollY]);
-  
-  const height = useMemo(() => rect ? window.innerHeight - Math.max(0, rect.top) : 0, [rect?.top]);
+
+  const height = useMemo(
+    () => (rect ? window.innerHeight - Math.max(0, rect.top) : 0),
+    [rect?.top]
+  );
   if (!rect) {
-    return null
+    return null;
   }
   return (
     <HyloDragger
@@ -124,10 +126,9 @@ export const HyloBox = ({
       />
       <CloseEar headerHeight={56} onClick={() => setOpen(false)}>
         <CloseEarContent open={open}>
-          <ExpandMoreIcon fontSize="large" color="inherit"/>
+          <ExpandMoreIcon fontSize="large" color="inherit" />
         </CloseEarContent>
       </CloseEar>
     </HyloDragger>
   );
 };
-

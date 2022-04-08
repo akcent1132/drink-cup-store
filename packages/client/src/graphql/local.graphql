@@ -1,16 +1,18 @@
   extend type Query {
     plantings(cropType: String): [Planting]
+    filter(cropType: String, filter: String): [Planting]
     test: Boolean!
 
     # cartItems: [Launch]!
   }
   type Planting {
+    id: String
     values: [PlantingValue]
   }
   type PlantingValue {
+    id: String
     name: String
     value: Float
-    id: String
   }
 
   # extend type Launch {

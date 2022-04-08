@@ -11,10 +11,20 @@ import { createFilteringData } from "../contexts/FiltersContext";
 import { PlantingData } from "../stories/NestedRows";
 import { loader } from "graphql.macro";
 import { Planting } from "../generated/graphql";
+import { shuffler } from "d3-array";
+import seedrandom from "seedrandom";
 
 const typeDefs = loader("./local.graphql");
 
 const plantingsCache: { [key: string]: Planting[] } = {};
+const getPlantings = (cropType: string) => {
+  if (!plantingsCache[cropType]) {
+    plantingsCache[cropType] = createFilteringData(cropType, 67, 3, 2).map(
+      (values, i) => ({ id: `${cropType}-${i}`, values })
+    );
+  }
+  return plantingsCache[cropType];
+};
 
 const cache = new InMemoryCache({
   typePolicies: {
@@ -28,17 +38,26 @@ const cache = new InMemoryCache({
         plantings: {
           read(_, variables): Planting[] {
             // @ts-ignore
-            const cropType: string = variables.cropType;
+            const cropType: string = variables.args.cropType;
+            return getPlantings(cropType);
+          },
+        },
 
-            if (!plantingsCache[cropType]) {
-              plantingsCache[cropType] = createFilteringData(
-                cropType,
-                45,
-                3,
-                2
-              ).map(values => ({values}));
-            }
-            return plantingsCache[cropType]
+        filter: {
+          read(_, variables): Planting[] {
+            // @ts-ignore
+            const cropType: string = variables.args.cropType;
+            // @ts-ignore
+            const filter: string = variables.args.filter;
+
+            const plantings = getPlantings(cropType);
+            const rnd = seedrandom(filter);
+            const shuffle = shuffler(rnd);
+            const filteredPlantings = shuffle([...plantings]).slice(
+              0,
+              6 + 8 * rnd()
+            );
+            return filteredPlantings;
           },
         },
       },
@@ -62,5 +81,5 @@ client
       }
     `,
   })
+  .then((result) => console.log("plantings", result));
 
-  .then((result) => console.log(result));
