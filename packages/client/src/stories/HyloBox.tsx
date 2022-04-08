@@ -18,6 +18,7 @@ const HyloDragger = styled.div<{
   width: ${(p) => p.width}px;
   height: ${(p) => p.height}px;
   left: ${(p) => p.left}px;
+  z-index: 1000;
   position: fixed;
   right: 40px;
   top: ${(p) =>
