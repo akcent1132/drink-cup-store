@@ -1,6 +1,7 @@
   extend type Query {
     plantings(cropType: String): [Planting]
     filter(cropType: String, filter: String): [Planting]
+    selectedCropType: String!,
     test: Boolean!
 
     # cartItems: [Launch]!

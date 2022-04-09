@@ -7,7 +7,7 @@ import {
 } from "@apollo/client";
 import { MockedProvider } from "@apollo/client/testing";
 import { range } from "lodash";
-import { createFilteringData } from "../contexts/FiltersContext";
+import { createFilteringData, selectedCropType } from "../contexts/FiltersContext";
 import { PlantingData } from "../stories/NestedRows";
 import { loader } from "graphql.macro";
 import { Planting } from "../generated/graphql";
@@ -33,6 +33,11 @@ const cache = new InMemoryCache({
         test: {
           read() {
             return true;
+          },
+        },
+        selectedCropType: {
+          read(): string {
+            return selectedCropType();
           },
         },
         plantings: {
@@ -77,6 +82,7 @@ client
     query: gql`
       query Test {
         test
+        cropType
         plantings(cropType: "corn")
       }
     `,
