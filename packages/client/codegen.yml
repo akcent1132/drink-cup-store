@@ -1,15 +1,21 @@
 overwrite: true
 schema: "src/graphql/local.graphql"
-documents: "src/**/!(*.generated).{graphql,tsx}"
 generates:
-  src/generated/graphql.generated.tsx:
+  # generate the types for the server+local graphql API
+  src/graphql.generated.tsx:
     plugins:
       - "typescript"
-      - "typescript-operations"
-      - "typescript-react-apollo"
-      # - "typescript-graphql-files-modules"
-      # - "typescript-document-nodes"
-      # - "fragment-matcher"
+  # generate the types for the React component queries
+  src/:
+    documents: 
+     - "src/{stories,components}/**/!(*.generated).{tsx,graphql}"
+    preset: near-operation-file
+    presetConfig:
+      extension: .generated.tsx
+      baseTypesPath: graphql.generated.tsx
+    plugins:
+      - typescript-operations
+      - typescript-react-apollo
   ./graphql.schema.json:
     plugins:
       - "introspection"

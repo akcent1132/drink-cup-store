@@ -8,6 +8,7 @@
     "lerna": "^4.0.0"
   },
   "scripts": {
+    "codegen": "cross-env FORCE_COLOR=1 lerna run codegen --no-prefix --stream",
     "storybook": "cross-env FORCE_COLOR=1 lerna --scope client run storybook --no-prefix --stream",
     "chromatic": "cross-env FORCE_COLOR=1 lerna --scope client run chromatic --no-prefix --stream",
     "server:start": "cross-env FORCE_COLOR=1 lerna --scope server run start --no-prefix --stream"

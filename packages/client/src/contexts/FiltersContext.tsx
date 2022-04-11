@@ -4,6 +4,13 @@ import React, { useContext, useReducer } from "react";
 import seedrandom from "seedrandom";
 import { PlantingData } from "../stories/NestedRows";
 import { RowData, ROWS } from "./rows";
+import { makeVar } from "@apollo/client";
+import { CROPS, GROUPS, COLORS, CLIMATE_REGION, SAMPLE_SOURCE, FARM_PRACTICES, AMENDMENTS, LAND_PREPARATION } from "./lists";
+
+export const filters = makeVar<ReturnType<typeof createFilter>[]>([]);
+export const selectedFilter = makeVar<string | null>(null);
+export const selectedProducer = makeVar<string | null>(null);
+export const selectedCropType = makeVar(CROPS[5]);
 
 let plantingDataId = 0;
 export const createFilteringData = (
@@ -99,6 +106,48 @@ const defaultState = Object.freeze({
 
 type State = typeof defaultState;
 
+export const addFilter = (color: string, name: string) => {
+  const filter = createFilter(color, name);
+  filters([...filters(), filter]);
+};
+
+export const selectFilter = (filterId: string | null) =>
+  selectedFilter(filterId);
+
+export const selectProducer = (producerId: string | null) =>
+  selectedProducer(producerId);
+
+export const applyDraftFilter = (filterId: string) =>
+  filters(
+    filters().map((f) =>
+      f.id === filterId ? { ...f, activeParams: f.draftParams } : f
+    )
+  );
+
+export const updateFilterName = (filterId: string, name: string) =>
+  filters(filters().map((f) => (f.id === filterId ? { ...f, name } : f)));
+
+export const removeFilter = (filterId: string) => {
+  filters(filters().filter((f) => f.id !== filterId));
+  selectedFilter(selectedFilter() === filterId ? null : selectedFilter());
+};
+
+export const editFilter = (filterId: string, params: Partial<FilterParams>) =>
+  filters(
+    filters().map((f) =>
+      f.id === filterId
+        ? {
+            ...f,
+            draftParams: {
+              ...f.activeParams!,
+              ...f.draftParams,
+              ...params,
+            },
+          }
+        : f
+    )
+  );
+
 const filtersReducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "new": {
@@ -178,179 +227,3 @@ export const FiltersProvider = ({ children }: React.PropsWithChildren<{}>) => {
 };
 
 export const useFiltersContext = () => useContext(FiltersContext);
-
-export const CROPS = [
-  "Apple: 48",
-  "Beet: 244",
-  "Blueberry: 36",
-  "Bok Choi: 99",
-  "Carrot: 122",
-  "Grapes: 64",
-  "Kale: 118",
-  "Leeks: 61",
-  "Lettuce: 96",
-  "Mizuna: 10",
-  "Mustard Greens: 30",
-  "Oats: 234",
-  "Peppers: 167",
-  "Potato: 450",
-  "Spinach: 60",
-  "Butternut Squash : 9",
-  "Swiss Chard: 96",
-  "Tomato: 66",
-  "Wheat: 187",
-  "Zucchini: 259",
-  "All Crops: 2459",
-];
-
-export const COLORS = [
-  "Beige",
-  "Brown",
-  "Green",
-  "Orange",
-  "Red",
-  "Purple",
-  "Brownpurple",
-  "Brownred",
-  "Yellow",
-  "Orangered",
-];
-
-export const CROP_VARIETY = [
-  "Austrian Crescent",
-  "Bonita",
-  "Carola",
-  "Laratte",
-  "Loowit",
-  "Phureja-- Andean",
-  "Satina",
-  "Adirondack Red",
-  "Amarosa",
-  "Bannock",
-  "Caribe",
-  "Carola",
-  "Cheiftain",
-  "Chioggia Guardsmark",
-  "Dark Red Norland",
-  "Ditta",
-  "Elba",
-  "Fingerling",
-  "French Fingerling",
-  "German Butterball",
-  "Huckleberry",
-  "Jester",
-];
-
-export const CLIMATE_REGION = [
-  "Central",
-  "East North Central",
-  "Northeast",
-  "Northwest",
-  "Other",
-  "South",
-  "Southeast",
-  "Southwest",
-  "West",
-  "West North Central",
-];
-
-export const SAMPLE_SOURCE = [
-  "Farm",
-  "Farm Market",
-  "Farm Retail",
-  "Garden",
-  "Research Plots",
-  "Store",
-];
-
-export const FARM_PRACTICES = [
-  "Sheet Mulching",
-  "None",
-  "Covercrops",
-  "Organic",
-  "Regenerative",
-  "Transitioning",
-  "Biodynamic",
-  "Biological",
-  "Nospray",
-  "Certified Organic",
-  "Irrigation",
-];
-
-export const AMENDMENTS = [
-  "Mulch",
-  "Lime",
-  "None",
-  "Synth Fertilizer",
-  "Organic Amendment",
-];
-
-export const LAND_PREPARATION = [
-  "None",
-  "Tillage",
-  "Solarization",
-  "Broadforking",
-  "Sheet Mulching",
-];
-
-export const GROUPS = [
-  "ANEI",
-  "Bay Area Urban Farmers Association",
-  "BeneficialBIO",
-  "Bionutrient Institute",
-  "BOTL Farm",
-  "Carbofarm",
-  "CCRP Soils Cross Cutting",
-  "CEE",
-  "CEPAGRO",
-  "CFDN",
-  "Cool Farm Tool",
-  "corn growers association",
-  "CRARS RAD-Lab, Chico State",
-  "Demo",
-  "farmOS",
-  "Flavor",
-  "General Mills Regen Ag",
-  "GOSH",
-  "Grupo chicas",
-  "Honey Rock Landing",
-  "Intecons Software",
-  "landPKS",
-  "Landscape Interactions",
-  "LiteFarm - SPG project",
-  "LiteFarm",
-  "mdc-farmos2",
-  "Million Acre Challenge",
-  "MVP-Certifiers",
-  "My Coffee Shop Group",
-  "NACD Locally Led Conservation",
-  "nexus",
-  "NOFAMass ",
-  "nx",
-  "OMAFRA Topsoil",
-  "OpenTEAM Equity",
-  "OpenTEAM",
-  "Our-Sci LLC",
-  "Paicines Ranch",
-  "Pasa",
-  "Real Food Campaign (old)",
-  "Reforestamos Mexico",
-  "Regen Farmers Mutual",
-  "Regen Future Capital",
-  "Regen Network Development",
-  "Regen1",
-  "Rothamsted",
-  "SHP",
-  "Snapp Lab",
-  "SOC Pilot",
-  "Soil sensing and monitoring",
-  "soilstack",
-  "SRUC",
-  "Stone Barns Center",
-  "Stonyfield",
-  "Svensk Kolinlagring",
-  "Tech Matters",
-  "TNPU",
-  "Trial",
-  "We Are For The Land",
-];

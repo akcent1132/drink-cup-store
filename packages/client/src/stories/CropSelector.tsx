@@ -1,21 +1,26 @@
 /** @jsxImportSource @emotion/react */
 
 import React, { useState } from "react";
-import { CROPS } from "../contexts/FiltersContext";
+import { CROPS } from "../contexts/lists";
 import { Select } from "grommet";
 import { css } from "@emotion/react";
+import { selectedCropType } from "../contexts/FiltersContext";
+import { useCropSelectorQuery } from "./CropSelector.generated";
+
 
 export const CropSelector = () => {
-  const [crop, setCrop] = useState(CROPS[0]);
+  const { data } = useCropSelectorQuery();
   return (
     <Select
       // size="small"
-      css={css`height: 30px;`}
+      css={css`
+        height: 30px;
+      `}
       dropHeight="small"
       placeholder="Select a crop"
-      value={crop}
+      value={data?.selectedCropType}
       options={CROPS}
-      onChange={({ value }) => setCrop(value)}
+      onChange={({ value }) => selectedCropType(value)}
     />
   );
 };

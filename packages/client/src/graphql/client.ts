@@ -10,7 +10,7 @@ import { range } from "lodash";
 import { createFilteringData, selectedCropType } from "../contexts/FiltersContext";
 import { PlantingData } from "../stories/NestedRows";
 import { loader } from "graphql.macro";
-import { Planting } from "../generated/graphql";
+import { Planting } from "../graphql.generated";
 import { shuffler } from "d3-array";
 import seedrandom from "seedrandom";
 
@@ -80,10 +80,10 @@ export const client = new ApolloClient({
 client
   .query({
     query: gql`
-      query Test {
+      query Test23 {
         test
-        cropType
-        plantings(cropType: "corn")
+        selectedCropType
+        plantings(cropType: "corn") {id}
       }
     `,
   })

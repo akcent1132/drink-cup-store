@@ -13,11 +13,12 @@ import {
 import "../index.css";
 import { css, withTheme } from "@emotion/react";
 import React, { useCallback, useMemo, useState } from "react";
-import { CROPS, COLORS, useFiltersContext, AMENDMENTS, CLIMATE_REGION, FARM_PRACTICES, LAND_PREPARATION, SAMPLE_SOURCE, GROUPS } from "../contexts/FiltersContext";
+import { CROPS, COLORS, AMENDMENTS, CLIMATE_REGION, FARM_PRACTICES, LAND_PREPARATION, SAMPLE_SOURCE, GROUPS } from "../contexts/lists";
 import { range } from "lodash";
 import { TagSelect } from "./TagSelect";
 import CloseIcon from "@mui/icons-material/Close";
 import { Spacer } from "./EventsCard";
+import { useFiltersContext } from "../contexts/FiltersContext";
 
 const Root = withTheme(styled.div`
   background-color: ${(p) => p.theme.colors.bgSidePanel};
