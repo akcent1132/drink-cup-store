@@ -5,10 +5,11 @@ generates:
   src/graphql.generated.tsx:
     plugins:
       - "typescript"
+      - "typescript-apollo-client-helpers"
   # generate the types for the React component queries
   src/:
     documents: 
-     - "src/{stories,components}/**/!(*.generated).{tsx,graphql}"
+     - "src/{stories,components}/**/!(*.generated).graphql"
     preset: near-operation-file
     presetConfig:
       extension: .generated.tsx

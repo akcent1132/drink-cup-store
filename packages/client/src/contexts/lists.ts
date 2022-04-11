@@ -1,27 +1,27 @@
 
 export const CROPS = [
-    "Apple: 48",
-    "Beet: 244",
-    "Blueberry: 36",
-    "Bok Choi: 99",
-    "Carrot: 122",
-    "Corn 342",
-    "Grapes: 64",
-    "Kale: 118",
-    "Leeks: 61",
-    "Lettuce: 96",
-    "Mizuna: 10",
-    "Mustard Greens: 30",
-    "Oats: 234",
-    "Peppers: 167",
-    "Potato: 450",
-    "Spinach: 60",
-    "Butternut Squash : 9",
-    "Swiss Chard: 96",
-    "Tomato: 66",
-    "Wheat: 187",
-    "Zucchini: 259",
-    "All Crops: 2459",
+    "apple",//48
+    "beet",//244
+    "blueberry",//36
+    "bok choi",//99
+    "carrot",//122
+    "corn",//342
+    "grapes",//64
+    "kale",//118
+    "leeks",//61
+    "lettuce",//96
+    "mizuna",//10
+    "mustard greens",//30
+    "oats",//234
+    "peppers",//167
+    "potato",//450
+    "spinach",//60
+    "butternut squash ",//9
+    "swiss chard",//96
+    "tomato",//66
+    "wheat",//187
+    "zucchini",//259
+    "all crops",//2459
   ];
   
   export const COLORS = [

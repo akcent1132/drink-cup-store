@@ -6,26 +6,68 @@ import { PlantingData } from "../stories/NestedRows";
 import { RowData, ROWS } from "./rows";
 import { makeVar } from "@apollo/client";
 import { CROPS, GROUPS, COLORS, CLIMATE_REGION, SAMPLE_SOURCE, FARM_PRACTICES, AMENDMENTS, LAND_PREPARATION } from "./lists";
+import { Planting, PlantingValue } from "../graphql.generated";
+import { schemeTableau10 } from "d3-scale-chromatic";
 
-export const filters = makeVar<ReturnType<typeof createFilter>[]>([]);
-export const selectedFilter = makeVar<string | null>(null);
-export const selectedProducer = makeVar<string | null>(null);
-export const selectedCropType = makeVar(CROPS[5]);
+
+
+const addFakePlantings = (cropType: string) => {
+  console.log('addFakePlantings', cropType)
+  const newPlantings = createPlantings(cropType);
+  console.log({newPlantings}, plantings())
+  plantings(newPlantings)
+  console.log('updated plantings')
+  console.log("P", plantings())
+}
+
+
+let plantingId = 0;
+export const createPlantings = (
+  cropType: string,
+  stdMax = 2,
+  meanMax = 5
+): Planting[] => {
+  const rnd = seedrandom(cropType + 'create planting data');
+  return range(32 + 64 * rnd()).map((i) => {
+    const id = (plantingId++).toString();
+    const values: PlantingValue[] = [];
+    const walk = (rows: RowData[]) => {
+      for (const row of rows) {
+        // use the same distribution on the same rows
+        const rndValue = seedrandom(cropType + row.name);
+        const mean = (rndValue() - 0.5) * meanMax;
+        const std = rndValue() * stdMax;
+        // TODO add multilpe measurements to some value types
+        // const count = countMax * rndValue();
+        const norm = randomNormal.source(rnd)(mean, std);
+        if (row.type === "value") {
+          values.push({ name: row.name, value: norm() });
+        }
+        if (row.children) {
+          walk(row.children);
+        }
+      }
+    };
+    walk(ROWS);
+    return {id, cropType, values};
+  })
+};
+
 
 let plantingDataId = 0;
 export const createFilteringData = (
-  filteringName: string,
+  seed: string,
   countMax = 12,
   stdMax = 2,
   meanMax = 5
 ): PlantingData[][] => {
-  const rnd = seedrandom(filteringName);
+  const rnd = seedrandom(seed);
   return range(rnd() * countMax).map(() => {
     const values: { name: string; value: number; id: string }[] = [];
     const id = (plantingDataId++).toString();
     const walk = (rows: RowData[]) => {
       for (const row of rows) {
-        const rndValue = seedrandom(filteringName + row.name);
+        const rndValue = seedrandom(seed + row.name);
         // TODO add multilpe measurements to some value types
         // const count = countMax * rndValue();
         const mean = (rndValue() - 0.5) * meanMax;
@@ -65,14 +107,14 @@ const createFilterParams = () => {
 };
 
 let filterId = 0;
-const createFilter = (color: string, name: string) => {
+const createFilter = (color: string, name: string, cropType?: string) => {
   const id = (++filterId).toString();
   return {
     id,
     name,
+    cropType,
     groups: sampleSize(GROUPS, Math.random() * 3 + 1),
     color,
-    cropType: sample(CROPS),
     colors: sampleSize(COLORS, Math.random() * 3 + 1),
     plantings: createFilteringData(name, 12, 3, 2),
     draftParams: createFilterParams() as FilterParams | null,
@@ -82,6 +124,15 @@ const createFilter = (color: string, name: string) => {
 
 export type FilterParams = ReturnType<typeof createFilterParams>;
 export type Filter = ReturnType<typeof createFilter>;
+
+export const filters = makeVar<ReturnType<typeof createFilter>[]>([
+  createFilter("Produce Corn, Beef", schemeTableau10[4], 'corn'),
+  createFilter("General Mills - KS", schemeTableau10[0], 'corn'),
+]);
+export const selectedFilter = makeVar<string | null>(null);
+export const selectedProducer = makeVar<string | null>(null);
+export const selectedCropType = makeVar(CROPS[5]);
+export const plantings = makeVar<Planting[]>(CROPS.map(cropType => createPlantings(cropType)).flat());
 
 type Action =
   | { type: "new"; color: string; name: string }
@@ -106,8 +157,8 @@ const defaultState = Object.freeze({
 
 type State = typeof defaultState;
 
-export const addFilter = (color: string, name: string) => {
-  const filter = createFilter(color, name);
+export const addFilter = (color: string, name: string, cropType: string) => {
+  const filter = createFilter(color, name, cropType);
   filters([...filters(), filter]);
 };
 
@@ -151,7 +202,7 @@ export const editFilter = (filterId: string, params: Partial<FilterParams>) =>
 const filtersReducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "new": {
-      const filter = createFilter(action.color, action.name);
+      const filter = createFilter(action.color, action.name, 'corn');
       return {
         ...state,
         filters: [...state.filters, filter],

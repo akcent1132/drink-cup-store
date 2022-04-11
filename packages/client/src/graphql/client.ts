@@ -1,16 +1,19 @@
-import {
-  ApolloClient,
-  InMemoryCache,
-  ApolloProvider,
-  useQuery,
-  gql,
-} from "@apollo/client";
+import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 import { MockedProvider } from "@apollo/client/testing";
 import { range } from "lodash";
-import { createFilteringData, selectedCropType } from "../contexts/FiltersContext";
+import {
+  // addFakePlantings,
+  createFilteringData,
+  filters,
+  plantings,
+  selectedCropType,
+} from "../contexts/FiltersContext";
 import { PlantingData } from "../stories/NestedRows";
 import { loader } from "graphql.macro";
-import { Planting } from "../graphql.generated";
+import {
+  Planting,
+  StrictTypedTypePolicies,
+} from "../graphql.generated";
 import { shuffler } from "d3-array";
 import seedrandom from "seedrandom";
 
@@ -18,74 +21,85 @@ const typeDefs = loader("./local.graphql");
 
 const plantingsCache: { [key: string]: Planting[] } = {};
 const getPlantings = (cropType: string) => {
-  if (!plantingsCache[cropType]) {
-    plantingsCache[cropType] = createFilteringData(cropType, 67, 3, 2).map(
-      (values, i) => ({ id: `${cropType}-${i}`, values })
-    );
-  }
-  return plantingsCache[cropType];
+  // if (!plantings().some((planting) => planting.cropType === cropType)) {
+  //   addFakePlantings(cropType);
+  // }
+
+  return plantings().filter((planting) => planting.cropType === cropType);
 };
 
-const cache = new InMemoryCache({
-  typePolicies: {
-    Query: {
-      fields: {
-        test: {
-          read() {
-            return true;
-          },
+const typePolicies: StrictTypedTypePolicies = {
+  Query: {
+    fields: {
+      test: {
+        read() {
+          return true;
         },
-        selectedCropType: {
-          read(): string {
-            return selectedCropType();
-          },
+      },
+      selectedCropType: {
+        read(): string {
+          return selectedCropType();
         },
-        plantings: {
-          read(_, variables): Planting[] {
-            // @ts-ignore
-            const cropType: string = variables.args.cropType;
-            return getPlantings(cropType);
-          },
+      },
+      plantings: {
+        read(_, variables) {
+          // @ts-ignore
+          const cropType: string = variables.args.cropType;
+          console.log("read plantings", cropType, plantings())
+          return getPlantings(cropType);
         },
+      },
 
-        filter: {
-          read(_, variables): Planting[] {
-            // @ts-ignore
-            const cropType: string = variables.args.cropType;
-            // @ts-ignore
-            const filter: string = variables.args.filter;
+      filters: {
+        read(_, variables) {
+          // @ts-ignore
+          const cropType: string = variables.args.cropType;
 
-            const plantings = getPlantings(cropType);
-            const rnd = seedrandom(filter);
-            const shuffle = shuffler(rnd);
-            const filteredPlantings = shuffle([...plantings]).slice(
-              0,
-              6 + 8 * rnd()
-            );
-            return filteredPlantings;
-          },
+          console.log("read filters", cropType)
+          return filters().filter((f) => f.cropType === cropType);
         },
       },
     },
   },
+  Filter: {
+    fields: {
+      plantings: {
+        read(existing, options) {
+          console.log({existing, options})
+          return []
+        }
+      }
+    }
+  }
+};
+
+const cache = new InMemoryCache({
+  typePolicies,
 });
 export const client = new ApolloClient({
   cache,
   connectToDevTools: true,
   uri: "http://localhost:4000/graphql",
-
   typeDefs,
 });
 
-client
-  .query({
-    query: gql`
-      query Test23 {
-        test
-        selectedCropType
-        plantings(cropType: "corn") {id}
+setTimeout(() => client
+.query({
+  query: gql`
+    query Test23 {
+      test
+      selectedCropType
+      plantings(cropType: "corn") {
+        id
+        values
       }
-    `,
-  })
-  .then((result) => console.log("plantings", result));
-
+      filters(cropType: "corn") {
+        id
+        plantings {
+          id
+        }
+      }
+    }
+  `,
+})
+.then((result) => console.log("plantings", result)), 100)
