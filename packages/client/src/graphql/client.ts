@@ -38,7 +38,7 @@ const typePolicies: StrictTypedTypePolicies = {
       },
       selectedCropType: {
         read(): string {
-          return selectedCropType();
+          return selectedCropType().name;
         },
       },
       plantings: {

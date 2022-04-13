@@ -1,27 +1,27 @@
 
 export const CROPS = [
-    "apple",//48
-    "beet",//244
-    "blueberry",//36
-    "bok choi",//99
-    "carrot",//122
-    "corn",//342
-    "grapes",//64
-    "kale",//118
-    "leeks",//61
-    "lettuce",//96
-    "mizuna",//10
-    "mustard greens",//30
-    "oats",//234
-    "peppers",//167
-    "potato",//450
-    "spinach",//60
-    "butternut squash ",//9
-    "swiss chard",//96
-    "tomato",//66
-    "wheat",//187
-    "zucchini",//259
-    "all crops",//2459
+    {name: "apple", plantingCount: 48},
+    {name: "beet", plantingCount: 244},
+    {name: "blueberry", plantingCount: 36},
+    {name: "bok choi", plantingCount: 99},
+    {name: "carrot", plantingCount: 122},
+    {name: "corn", plantingCount: 342},
+    {name: "grapes", plantingCount: 64},
+    {name: "kale", plantingCount: 118},
+    {name: "leeks", plantingCount: 61},
+    {name: "lettuce", plantingCount: 96},
+    {name: "mizuna", plantingCount: 10},
+    {name: "mustard greens", plantingCount: 30},
+    {name: "oats", plantingCount: 234},
+    {name: "peppers", plantingCount: 167},
+    {name: "potato", plantingCount: 450},
+    {name: "spinach", plantingCount: 60},
+    {name: "butternut squash ", plantingCount: 9},
+    {name: "swiss chard", plantingCount: 96},
+    {name: "tomato", plantingCount: 66},
+    {name: "wheat", plantingCount: 187},
+    {name: "zucchini", plantingCount: 259},
+    {name: "all crops", plantingCount: 2459},
   ];
   
   export const COLORS = [

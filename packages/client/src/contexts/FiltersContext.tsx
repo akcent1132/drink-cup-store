@@ -5,29 +5,27 @@ import seedrandom from "seedrandom";
 import { PlantingData } from "../stories/NestedRows";
 import { RowData, ROWS } from "./rows";
 import { makeVar } from "@apollo/client";
-import { CROPS, GROUPS, COLORS, CLIMATE_REGION, SAMPLE_SOURCE, FARM_PRACTICES, AMENDMENTS, LAND_PREPARATION } from "./lists";
+import {
+  CROPS,
+  GROUPS,
+  COLORS,
+  CLIMATE_REGION,
+  SAMPLE_SOURCE,
+  FARM_PRACTICES,
+  AMENDMENTS,
+  LAND_PREPARATION,
+} from "./lists";
 import { Planting, PlantingValue } from "../graphql.generated";
 import { schemeTableau10 } from "d3-scale-chromatic";
 
-
-
-const addFakePlantings = (cropType: string) => {
-  console.log('addFakePlantings', cropType)
-  const newPlantings = createPlantings(cropType);
-  console.log({newPlantings}, plantings())
-  plantings(newPlantings)
-  console.log('updated plantings')
-  console.log("P", plantings())
-}
-
-
 let plantingId = 0;
-export const createPlantings = (
+const createPlantings = (
   cropType: string,
+  count: number,
   stdMax = 2,
   meanMax = 5
 ): Planting[] => {
-  const rnd = seedrandom(cropType + 'create planting data');
+  const rnd = seedrandom(cropType + "create planting data");
   return range(32 + 64 * rnd()).map((i) => {
     const id = (plantingId++).toString();
     const values: PlantingValue[] = [];
@@ -49,10 +47,9 @@ export const createPlantings = (
       }
     };
     walk(ROWS);
-    return {id, cropType, values};
-  })
+    return { id, cropType, values };
+  });
 };
-
 
 let plantingDataId = 0;
 export const createFilteringData = (
@@ -126,13 +123,17 @@ export type FilterParams = ReturnType<typeof createFilterParams>;
 export type Filter = ReturnType<typeof createFilter>;
 
 export const filters = makeVar<ReturnType<typeof createFilter>[]>([
-  createFilter("Produce Corn, Beef", schemeTableau10[4], 'corn'),
-  createFilter("General Mills - KS", schemeTableau10[0], 'corn'),
+  createFilter("Produce Corn, Beef", schemeTableau10[4], "corn"),
+  createFilter("General Mills - KS", schemeTableau10[0], "corn"),
 ]);
 export const selectedFilter = makeVar<string | null>(null);
 export const selectedProducer = makeVar<string | null>(null);
-export const selectedCropType = makeVar(CROPS[5]);
-export const plantings = makeVar<Planting[]>(CROPS.map(cropType => createPlantings(cropType)).flat());
+export const selectedCropType = makeVar(CROPS[5].name);
+export const plantings = makeVar<Planting[]>(
+  CROPS.map((cropType) =>
+    createPlantings(cropType.name, cropType.plantingCount)
+  ).flat()
+);
 
 type Action =
   | { type: "new"; color: string; name: string }
@@ -202,7 +203,7 @@ export const editFilter = (filterId: string, params: Partial<FilterParams>) =>
 const filtersReducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "new": {
-      const filter = createFilter(action.color, action.name, 'corn');
+      const filter = createFilter(action.color, action.name, "corn");
       return {
         ...state,
         filters: [...state.filters, filter],
