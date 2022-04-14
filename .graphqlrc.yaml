@@ -1,0 +1,6 @@
+schema: 'packages/client/graphql.schema.json'
+documents: 'packages/client/src/components/**/*.graphql'
+extensions:
+  customDirectives:
+   - "directive @client on FIELD"
+   - "directive @export(as: String!) on FIELD"
