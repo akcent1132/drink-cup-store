@@ -14,6 +14,7 @@ import ThermostatIcon from "@mui/icons-material/Thermostat";
 import PublicIcon from "@mui/icons-material/Public";
 import { Tip } from "grommet";
 import ContactPageIcon from "@mui/icons-material/ContactPage";
+import { useEventsCardQuery } from "./EventsCard.generated";
 
 export const defaultTheme = {
   sidePad: 10,
@@ -111,56 +112,66 @@ type Parameters = {
   texture: string;
 };
 interface Props {
-  id: string;
-  color?: string;
-  events?: FarmEvent[];
-  params: Parameters;
-  title?: string;
-  name?: string;
+  plantingId: string;
+  // color?: string;
+  // events?: FarmEvent[];
+  // params: Parameters;
+  // title?: string;
+  // name?: string;
   onClose?: () => void;
   hideColorBorder?: boolean;
 }
 
 export const EventsCard = ({
-  id,
-  color = "white",
-  events = [],
-  params,
-  title = "2020 Corn",
-  name = "My Farm",
+  plantingId,
+  // color = "white",
+  // events = [],
+  // params,
+  // title = "2020 Corn",
+  // name = "My Farm",
   hideColorBorder = false,
   onClose,
 }: Props) => {
+  const { data: { planting } = {} } = useEventsCardQuery({
+    variables: { plantingId },
+  });
+  console.log({planting})
+  if (!planting) {
+    return null;
+  }
   const [hoveredPlanting, setHoveredPlanting] = useHoveredPlantingContext();
   const [_, dispatchFilters] = useFiltersContext();
   const onHoverData = useCallback(
-    () => setHoveredPlanting({ type: "hover", planting: id }),
-    []
+    () => setHoveredPlanting({ type: "hover", planting: planting.id }),
+    [planting.id]
   );
   const onLeaveData = useCallback(
-    () => setHoveredPlanting({ type: "leave", planting: id }),
-    []
+    () => setHoveredPlanting({ type: "leave", planting: planting.id }),
+    [planting.id]
   );
-  const isHighlighted = hoveredPlanting === id;
+  const isHighlighted = hoveredPlanting === planting.id;
   return (
     <Root
-      color={color}
+      color={"grey"} //TODO read color from matching filters
       isHighlighted={isHighlighted}
       onMouseEnter={onHoverData}
       onMouseLeave={onLeaveData}
       hideColorBorder={hideColorBorder}
     >
       <Head>
-        <Title>{title}</Title>
+        <Title>{planting.title}</Title>
         <Spacer />
         <Tip content="Producer profile">
           <Name
             onClick={() =>
-              dispatchFilters({ type: "selectFarmer", farmerId: name })
+              dispatchFilters({
+                type: "selectFarmer",
+                farmerId: planting.producerName,
+              })
             }
           >
             <ContactPageIcon fontSize="inherit" />
-            {name}
+            {planting.producerName}
           </Name>
         </Tip>
 
@@ -174,20 +185,25 @@ export const EventsCard = ({
       <Params>
         <MiniInfo>
           <ThermostatIcon fontSize="inherit" />
-          <ParamValue>{params.temperature}</ParamValue>
+          <ParamValue>{planting.params.temperature}</ParamValue>
         </MiniInfo>
         <MiniInfo>
           <InvertColorsIcon fontSize="inherit" />
-          <ParamValue>{params.precipitation}</ParamValue>
+          <ParamValue>{planting.params.precipitation}</ParamValue>
         </MiniInfo>
         <MiniInfo>
           <PublicIcon fontSize="inherit" />
-          <ParamValue>{params.zone}</ParamValue>
+          <ParamValue>{planting.params.zone}</ParamValue>
         </MiniInfo>
         <Spacer />
-        <ParamValue>{params.texture}</ParamValue>
+        <ParamValue>{planting.params.texture}</ParamValue>
       </Params>
-      <IconEventsBar events={events} />
+      <IconEventsBar
+        events={planting.events.map(({ date, ...e }) => ({
+          ...e,
+          date: new Date(date),
+        }))}
+      />
     </Root>
   );
 };

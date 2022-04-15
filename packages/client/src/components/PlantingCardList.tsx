@@ -7,6 +7,7 @@ import { CSSTransition, TransitionGroup } from "react-transition-group";
 import React from "react";
 import { EventsCard, Spacer } from "./EventsCard";
 import { createFakePlantingCardData } from "../stories/Dashboard";
+import { usePlantingCardListQuery } from "./PlantingCardList.generated";
 
 type Props = {
   plantingCards: ReturnType<typeof createFakePlantingCardData>[];
@@ -40,14 +41,19 @@ const hiddenStyles = {
 };
 
 export const PlantingCardList = ({ plantingCards, onCloseCard }: Props) => {
+  const {data: { openEventCards } = {}} = usePlantingCardListQuery();
+  if (!openEventCards) {
+    return null;
+  }
+  console.log({openEventCards})
   return (
     <Events>
       <ClassNames>
-        {({ css, cx }) => (
+        {({ css }) => (
           <TransitionGroup>
-            {plantingCards.map((props) => (
+            {openEventCards.map(({id: plantingId}) => (
               <CSSTransition
-                key={props.id}
+                key={plantingId}
                 classNames={{
                   enter: css({
                     zIndex: 3,
@@ -67,9 +73,9 @@ export const PlantingCardList = ({ plantingCards, onCloseCard }: Props) => {
               >
                 <CardWrapper>
                   <EventsCard
-                    {...props}
-                    key={props.id}
-                    onClose={() => onCloseCard(props.id)}
+                    key={plantingId}
+                    plantingId={plantingId}
+                    onClose={() => onCloseCard(plantingId)}
                   />
                 </CardWrapper>
               </CSSTransition>

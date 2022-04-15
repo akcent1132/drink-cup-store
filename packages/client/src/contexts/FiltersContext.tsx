@@ -1,5 +1,5 @@
 import { randomNormal } from "d3-random";
-import { range, sample, sampleSize } from "lodash";
+import { range, sample, sampleSize, startCase, sum } from "lodash";
 import React, { useContext, useReducer } from "react";
 import seedrandom from "seedrandom";
 import { PlantingData } from "../stories/NestedRows";
@@ -17,6 +17,7 @@ import {
 } from "./lists";
 import { Planting, PlantingValue } from "../graphql.generated";
 import { schemeTableau10 } from "d3-scale-chromatic";
+import { getFarmEvent, randomZone } from "../utils/random";
 
 let plantingId = 0;
 const createPlantings = (
@@ -47,7 +48,24 @@ const createPlantings = (
       }
     };
     walk(ROWS);
-    return { id, cropType, values };
+    const zone = randomZone();
+    let texture = [Math.random(), Math.random()];
+    texture = texture.map((t) => Math.round((t / sum(texture)) * 100));
+    return {
+      id,
+      cropType,
+      values,
+      title: `${startCase(cropType)} ${2017 + Math.floor(Math.random() * 6)}`,
+      producerName: Math.random().toString(32).slice(-7),
+      params: {
+        zone: zone.name,
+        temperature: zone.temp.toString() + "°",
+        precipitation: `${32 + Math.floor(32 * Math.random())}″`,
+        texture: `Sand: ${texture[0]}% | Clay ${texture[1]}%`,
+      },
+      events: range(6 + 6 * Math.random()).map(() => getFarmEvent()),
+      matchingFilters: [],
+    };
   });
 };
 
@@ -113,7 +131,7 @@ const createFilter = (color: string, name: string, cropType?: string) => {
     groups: sampleSize(GROUPS, Math.random() * 3 + 1),
     color,
     colors: sampleSize(COLORS, Math.random() * 3 + 1),
-    plantings: createFilteringData(name, 12, 3, 2),
+    plantings: [],
     draftParams: createFilterParams() as FilterParams | null,
     activeParams: null as FilterParams | null,
   };
@@ -133,6 +151,11 @@ export const plantings = makeVar<Planting[]>(
   CROPS.map((cropType) =>
     createPlantings(cropType.name, cropType.plantingCount)
   ).flat()
+);
+export const openEventCards = makeVar<Planting[]>(
+  plantings()
+    .filter((p) => p.cropType === selectedCropType())
+    .slice(0, 2)
 );
 
 type Action =

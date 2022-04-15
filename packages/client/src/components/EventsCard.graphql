@@ -1,0 +1,18 @@
+query EventsCard($plantingId: String!) {
+    planting(id: $plantingId) {
+        id
+        producerName
+        title
+        params {
+            precipitation
+            temperature
+            texture
+            zone
+        }
+        events {
+            id
+            date
+            type
+        }
+    }
+}

@@ -1,43 +1,62 @@
-  extend type Query {
-    plantings(cropType: String!): [Planting]
-    filters(cropType: String!): [Filter]
-    selectedCropType: String!
-    test: Boolean!
+extend type Query {
+  plantings(cropType: String!): [Planting!]!
+  planting(id: String!): Planting
+  filters(cropType: String!): [Filter!]!
+  selectedCropType: String!
+  test: Boolean!
+  openEventCards(cropType: String!): [Planting!]!
 
-    # cartItems: [Launch]!
-  }
-  type Planting {
-    id: String!
-    cropType: String!
-    values: [PlantingValue]!
-  }
-  type PlantingValue {
-    name: String!
-    value: Float!
-  }
+  # cartItems: [Launch]!
+}
+type Planting {
+  id: String!
+  cropType: String!
+  values: [PlantingValue]!
+  title: String!
+  producerName: String!
+  params: PlantingParams!
+  events: [PlantingEvent!]!
+  matchingFilters: [Filter!]!
+}
+type PlantingValue {
+  name: String!
+  value: Float!
+}
+type PlantingParams {
+  zone: String!
+  temperature: String!
+  precipitation: String!
+  texture: String!
+}
 
-  type FilterParams {
-    groups: [String]!
-    colors: [String]!
-    years: [String]!
-    sweetnessScore: [Int]!
-    flavorScore: [Int]!
-    tasteScore: [Int]!
-    climateRegion: [String]!
-    sampleSource: [String]!
-    farmPractices: [String]!
-    amendments: [String]!
-    landPreparation: [String]!
-  }
+type PlantingEvent {
+  id: String!
+  type: String!
+  date: String!
+}
 
-  type Filter {
-    id: String!
-    name: String!
-    groups: [String]!
-    color: String!
-    cropType: String!
-    colors: [String]!
-    plantings: [Planting]!
-    draftParams: FilterParams
-    activeParams: FilterParams
-  }
+type FilterParams {
+  groups: [String]!
+  colors: [String]!
+  years: [String]!
+  sweetnessScore: [Int]!
+  flavorScore: [Int]!
+  tasteScore: [Int]!
+  climateRegion: [String]!
+  sampleSource: [String]!
+  farmPractices: [String]!
+  amendments: [String]!
+  landPreparation: [String]!
+}
+
+type Filter {
+  id: String!
+  name: String!
+  groups: [String]!
+  color: String!
+  cropType: String!
+  colors: [String]!
+  plantings: [Planting]!
+  draftParams: FilterParams
+  activeParams: FilterParams
+}

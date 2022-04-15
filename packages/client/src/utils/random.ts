@@ -71,7 +71,7 @@ export const getFarmEvent = (seed?: string) => {
   const date = new Date("2022");
   
   date.setDate(365 * randomBates.source(rnd)(2)());
-  return { type, date, id: uniqueId() };
+  return { type, date: date.toString(), id: uniqueId() };
 };
 
 const ZONES = [

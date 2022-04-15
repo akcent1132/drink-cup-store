@@ -5,6 +5,7 @@ import {
   // addFakePlantings,
   createFilteringData,
   filters,
+  openEventCards,
   plantings,
   selectedCropType,
 } from "../contexts/FiltersContext";
@@ -19,13 +20,12 @@ import seedrandom from "seedrandom";
 
 const typeDefs = loader("./local.graphql");
 
-const plantingsCache: { [key: string]: Planting[] } = {};
-const getPlantings = (cropType: string) => {
+const getPlantings = (cropType?: string) => {
   // if (!plantings().some((planting) => planting.cropType === cropType)) {
   //   addFakePlantings(cropType);
   // }
 
-  return plantings().filter((planting) => planting.cropType === cropType);
+  return plantings().filter((planting) => !cropType || planting.cropType === cropType);
 };
 
 const typePolicies: StrictTypedTypePolicies = {
@@ -45,8 +45,21 @@ const typePolicies: StrictTypedTypePolicies = {
         read(_, variables) {
           // @ts-ignore
           const cropType: string = variables.args.cropType;
-          console.log("read plantings", cropType, plantings())
           return getPlantings(cropType);
+        },
+      },
+      planting: {
+        read(_, variables) {
+          // @ts-ignore
+          const id: string = variables.args.id;
+          return getPlantings().find(planting => planting.id === id);
+        },
+      },
+      openEventCards: {
+        read(_, variables) {
+          // @ts-ignore
+          const cropType: string = variables.args.cropType;
+          return openEventCards().filter(planting => planting.cropType === cropType);
         },
       },
 
@@ -55,7 +68,7 @@ const typePolicies: StrictTypedTypePolicies = {
           // @ts-ignore
           const cropType: string = variables.args.cropType;
 
-          console.log("read filters", cropType)
+          console.log("read filters", cropType, filters().filter((f) => f.cropType === cropType))
           return filters().filter((f) => f.cropType === cropType);
         },
       },
@@ -65,8 +78,18 @@ const typePolicies: StrictTypedTypePolicies = {
     fields: {
       plantings: {
         read(existing, options) {
-          console.log({existing, options})
-          return []
+          console.log("read Filter.plantings", {existing, options})
+          return [{id: "-1"}]
+        }
+      }
+    }
+  },
+  Planting: {
+    fields: {
+      matchingFilters: {
+        read(existing, options) {
+          console.log("read matchingFilters", {existing, options})
+          return [{id: "-1"}]
         }
       }
     }
@@ -79,7 +102,7 @@ const cache = new InMemoryCache({
 export const client = new ApolloClient({
   cache,
   connectToDevTools: true,
-  uri: "http://localhost:4000/graphql",
+  // uri: "http://localhost:4000/graphql",
   typeDefs,
 });
 
@@ -91,11 +114,13 @@ setTimeout(() => client
       selectedCropType
       plantings(cropType: "corn") {
         id
-        values
+        # matchingFilters {
+        #   id
+        # }
       }
-      filters(cropType: "corn") {
+      filters(cropType: "corn") @client {
         id
-        plantings {
+        plantings @client {
           id
         }
       }
