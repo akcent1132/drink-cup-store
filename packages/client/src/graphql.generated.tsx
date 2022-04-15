@@ -14,7 +14,7 @@ export type Scalars = {
 };
 
 export type Filter = {
-  __typename?: 'Filter';
+  __typename: 'Filter';
   activeParams?: Maybe<FilterParams>;
   color: Scalars['String'];
   colors: Array<Maybe<Scalars['String']>>;
@@ -27,7 +27,7 @@ export type Filter = {
 };
 
 export type FilterParams = {
-  __typename?: 'FilterParams';
+  __typename: 'FilterParams';
   amendments: Array<Maybe<Scalars['String']>>;
   climateRegion: Array<Maybe<Scalars['String']>>;
   colors: Array<Maybe<Scalars['String']>>;
@@ -42,7 +42,7 @@ export type FilterParams = {
 };
 
 export type Planting = {
-  __typename?: 'Planting';
+  __typename: 'Planting';
   cropType: Scalars['String'];
   events: Array<PlantingEvent>;
   id: Scalars['String'];
@@ -54,14 +54,14 @@ export type Planting = {
 };
 
 export type PlantingEvent = {
-  __typename?: 'PlantingEvent';
+  __typename: 'PlantingEvent';
   date: Scalars['String'];
   id: Scalars['String'];
   type: Scalars['String'];
 };
 
 export type PlantingParams = {
-  __typename?: 'PlantingParams';
+  __typename: 'PlantingParams';
   precipitation: Scalars['String'];
   temperature: Scalars['String'];
   texture: Scalars['String'];
@@ -69,13 +69,13 @@ export type PlantingParams = {
 };
 
 export type PlantingValue = {
-  __typename?: 'PlantingValue';
+  __typename: 'PlantingValue';
   name: Scalars['String'];
   value: Scalars['Float'];
 };
 
 export type Query = {
-  __typename?: 'Query';
+  __typename: 'Query';
   filters: Array<Filter>;
   openEventCards: Array<Planting>;
   planting?: Maybe<Planting>;

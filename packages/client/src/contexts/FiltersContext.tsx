@@ -40,7 +40,7 @@ const createPlantings = (
         // const count = countMax * rndValue();
         const norm = randomNormal.source(rnd)(mean, std);
         if (row.type === "value") {
-          values.push({ name: row.name, value: norm() });
+          values.push({ __typename: "PlantingValue", name: row.name, value: norm() });
         }
         if (row.children) {
           walk(row.children);
@@ -52,12 +52,14 @@ const createPlantings = (
     let texture = [Math.random(), Math.random()];
     texture = texture.map((t) => Math.round((t / sum(texture)) * 100));
     return {
+      __typename: 'Planting',
       id,
       cropType,
       values,
       title: `${startCase(cropType)} ${2017 + Math.floor(Math.random() * 6)}`,
       producerName: Math.random().toString(32).slice(-7),
       params: {
+        __typename: "PlantingParams",
         zone: zone.name,
         temperature: zone.temp.toString() + "°",
         precipitation: `${32 + Math.floor(32 * Math.random())}″`,
@@ -125,12 +127,11 @@ let filterId = 0;
 const createFilter = (color: string, name: string, cropType?: string) => {
   const id = (++filterId).toString();
   return {
+    __typename: 'Filter',
     id,
     name,
     cropType,
-    groups: sampleSize(GROUPS, Math.random() * 3 + 1),
     color,
-    colors: sampleSize(COLORS, Math.random() * 3 + 1),
     plantings: [],
     draftParams: createFilterParams() as FilterParams | null,
     activeParams: null as FilterParams | null,
@@ -140,7 +141,7 @@ const createFilter = (color: string, name: string, cropType?: string) => {
 export type FilterParams = ReturnType<typeof createFilterParams>;
 export type Filter = ReturnType<typeof createFilter>;
 
-export const filters = makeVar<ReturnType<typeof createFilter>[]>([
+export const filters = makeVar<Filter[]>([
   createFilter("Produce Corn, Beef", schemeTableau10[4], "corn"),
   createFilter("General Mills - KS", schemeTableau10[0], "corn"),
 ]);
