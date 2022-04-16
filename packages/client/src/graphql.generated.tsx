@@ -15,12 +15,10 @@ export type Scalars = {
 
 export type Filter = {
   __typename: 'Filter';
-  activeParams?: Maybe<FilterParams>;
+  activeParams: Maybe<FilterParams>;
   color: Scalars['String'];
-  colors: Array<Maybe<Scalars['String']>>;
   cropType: Scalars['String'];
-  draftParams?: Maybe<FilterParams>;
-  groups: Array<Maybe<Scalars['String']>>;
+  draftParams: Maybe<FilterParams>;
   id: Scalars['String'];
   name: Scalars['String'];
   plantings: Array<Maybe<Planting>>;
@@ -28,17 +26,17 @@ export type Filter = {
 
 export type FilterParams = {
   __typename: 'FilterParams';
-  amendments: Array<Maybe<Scalars['String']>>;
-  climateRegion: Array<Maybe<Scalars['String']>>;
-  colors: Array<Maybe<Scalars['String']>>;
-  farmPractices: Array<Maybe<Scalars['String']>>;
-  flavorScore: Array<Maybe<Scalars['Int']>>;
-  groups: Array<Maybe<Scalars['String']>>;
-  landPreparation: Array<Maybe<Scalars['String']>>;
-  sampleSource: Array<Maybe<Scalars['String']>>;
-  sweetnessScore: Array<Maybe<Scalars['Int']>>;
-  tasteScore: Array<Maybe<Scalars['Int']>>;
-  years: Array<Maybe<Scalars['String']>>;
+  amendments: Array<Scalars['String']>;
+  climateRegion: Array<Scalars['String']>;
+  colors: Array<Scalars['String']>;
+  farmPractices: Array<Scalars['String']>;
+  flavorScore: Array<Scalars['Int']>;
+  groups: Array<Scalars['String']>;
+  landPreparation: Array<Scalars['String']>;
+  sampleSource: Array<Scalars['String']>;
+  sweetnessScore: Array<Scalars['Int']>;
+  tasteScore: Array<Scalars['Int']>;
+  years: Array<Scalars['Int']>;
 };
 
 export type Planting = {
@@ -78,7 +76,7 @@ export type Query = {
   __typename: 'Query';
   filters: Array<Filter>;
   openEventCards: Array<Planting>;
-  planting?: Maybe<Planting>;
+  planting: Maybe<Planting>;
   plantings: Array<Planting>;
   selectedCropType: Scalars['String'];
   test: Scalars['Boolean'];
@@ -104,14 +102,12 @@ export type QueryPlantingsArgs = {
   cropType: Scalars['String'];
 };
 
-export type FilterKeySpecifier = ('activeParams' | 'color' | 'colors' | 'cropType' | 'draftParams' | 'groups' | 'id' | 'name' | 'plantings' | FilterKeySpecifier)[];
+export type FilterKeySpecifier = ('activeParams' | 'color' | 'cropType' | 'draftParams' | 'id' | 'name' | 'plantings' | FilterKeySpecifier)[];
 export type FilterFieldPolicy = {
 	activeParams?: FieldPolicy<any> | FieldReadFunction<any>,
 	color?: FieldPolicy<any> | FieldReadFunction<any>,
-	colors?: FieldPolicy<any> | FieldReadFunction<any>,
 	cropType?: FieldPolicy<any> | FieldReadFunction<any>,
 	draftParams?: FieldPolicy<any> | FieldReadFunction<any>,
-	groups?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>

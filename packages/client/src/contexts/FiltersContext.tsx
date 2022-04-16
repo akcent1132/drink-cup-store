@@ -15,7 +15,7 @@ import {
   AMENDMENTS,
   LAND_PREPARATION,
 } from "./lists";
-import { Planting, PlantingValue } from "../graphql.generated";
+import { Filter, FilterParams, Planting, PlantingValue } from "../graphql.generated";
 import { schemeTableau10 } from "d3-scale-chromatic";
 import { getFarmEvent, randomZone } from "../utils/random";
 
@@ -103,9 +103,9 @@ export const createFilteringData = (
   });
 };
 
-const createFilterParams = () => {
+const createFilterParams = (): FilterParams => {
   return {
-    cropType: sample(CROPS),
+    __typename: "FilterParams",
     groups: sampleSize(GROUPS, Math.random() * 3 + 1),
     colors: sampleSize(COLORS, Math.random() * 3 + 1),
     years: [2018, 2019, 2020],
@@ -124,7 +124,7 @@ const createFilterParams = () => {
 };
 
 let filterId = 0;
-const createFilter = (color: string, name: string, cropType?: string) => {
+const createFilter = (color: string, name: string, cropType: string): Filter => {
   const id = (++filterId).toString();
   return {
     __typename: 'Filter',
@@ -133,13 +133,10 @@ const createFilter = (color: string, name: string, cropType?: string) => {
     cropType,
     color,
     plantings: [],
-    draftParams: createFilterParams() as FilterParams | null,
-    activeParams: null as FilterParams | null,
+    draftParams: createFilterParams(),
+    activeParams: null,
   };
 };
-
-export type FilterParams = ReturnType<typeof createFilterParams>;
-export type Filter = ReturnType<typeof createFilter>;
 
 export const filters = makeVar<Filter[]>([
   createFilter("Produce Corn, Beef", schemeTableau10[4], "corn"),

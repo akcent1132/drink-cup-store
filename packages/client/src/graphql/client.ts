@@ -32,14 +32,29 @@ const getPlantings = (cropType?: string) => {
   );
 };
 
+const plantingsOfFilterCache: {
+  [key: string]: { hash: string; plantings: Planting[] };
+} = {};
+
 const getPlantingsOfFilter = (
-  cropType?: string,
-  activeParams?: FilterParams
+  id: string,
+  cropType: string,
+  activeParams: FilterParams | null
 ) => {
   const plantings = getPlantings(cropType);
-  const rnd = seedrandom(cropType + JSON.stringify(activeParams));
-  const portion = 0.12 + 0.34 * rnd();
-  return plantings.filter(() => rnd() < portion);
+  const hash = `${cropType}-${JSON.stringify(activeParams)}-${
+    plantings.length
+  }`;
+  if (plantingsOfFilterCache[id]?.hash !== hash) {
+    const rnd = seedrandom(hash);
+    const portion = 0.12 + 0.34 * rnd();
+    plantingsOfFilterCache[id] = {
+      hash,
+      plantings: plantings.filter(() => rnd() < portion),
+    };
+  }
+
+  return plantingsOfFilterCache[id].plantings;
 };
 
 const typePolicies: StrictTypedTypePolicies = {
@@ -92,9 +107,10 @@ const typePolicies: StrictTypedTypePolicies = {
     fields: {
       plantings: {
         read(_, { readField }) {
-          const cropType = readField<string>("cropType");
-          const activeParams = readField<FilterParams>("activeParams");
-          return getPlantingsOfFilter(cropType, activeParams);
+          const id = readField<string>("id") || '';
+          const cropType = readField<string>("cropType") || '';
+          const activeParams = readField<FilterParams>("activeParams") || null;
+          return getPlantingsOfFilter(id, cropType, activeParams);
         },
       },
     },
@@ -102,8 +118,9 @@ const typePolicies: StrictTypedTypePolicies = {
   Planting: {
     fields: {
       matchingFilters: {
-        read(existing, options) {
-          return [{ id: "-1" }];
+        read(_, {readField}) {
+          const id = readField<string>("id")
+          filters().filter(filter => getPlantingsOfFilter(filter.id, filter.cropType, filter.activeParams).some(planting => planting.id === id))
         },
       },
     },
@@ -116,7 +133,7 @@ const cache = new InMemoryCache({
 export const client = new ApolloClient({
   cache,
   connectToDevTools: true,
-  uri: "http://localhost:4000/graphql",
+  // uri: "http://localhost:4000/graphql",
   typeDefs,
 });
 

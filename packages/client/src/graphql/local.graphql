@@ -36,26 +36,24 @@ type PlantingEvent {
 }
 
 type FilterParams {
-  groups: [String]!
-  colors: [String]!
-  years: [String]!
-  sweetnessScore: [Int]!
-  flavorScore: [Int]!
-  tasteScore: [Int]!
-  climateRegion: [String]!
-  sampleSource: [String]!
-  farmPractices: [String]!
-  amendments: [String]!
-  landPreparation: [String]!
+  groups: [String!]!
+  colors: [String!]!
+  years: [Int!]!
+  sweetnessScore: [Int!]!
+  flavorScore: [Int!]!
+  tasteScore: [Int!]!
+  climateRegion: [String!]!
+  sampleSource: [String!]!
+  farmPractices: [String!]!
+  amendments: [String!]!
+  landPreparation: [String!]!
 }
 
 type Filter {
   id: String!
   name: String!
-  groups: [String]!
   color: String!
   cropType: String!
-  colors: [String]!
   plantings: [Planting]!
   draftParams: FilterParams
   activeParams: FilterParams

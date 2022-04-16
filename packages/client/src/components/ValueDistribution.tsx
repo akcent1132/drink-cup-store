@@ -184,7 +184,7 @@ export const ValueDistribution = ({
         color,
         values: plantings
           .map(
-            (p) => p.filter((v) => valueNames.includes(v.name)) //.map((v) => v.value)
+            (p) => p.values.filter((v) => valueNames.includes(v.name)) //.map((v) => v.value)
           )
           .flat(),
         showVariance: filterName !== "average",
