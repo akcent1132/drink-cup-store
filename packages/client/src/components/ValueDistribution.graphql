@@ -1,0 +1,15 @@
+query ValueDistribution($cropType: String! = "") {
+  selectedCropType @client @export(as: "cropType")
+  plantings(cropType: $cropType) {
+    id
+    values {
+      name
+      value
+      plantingId
+    }
+    matchingFilters {
+      id
+      color
+    }
+  }
+}

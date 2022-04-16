@@ -2,7 +2,6 @@ import { randomNormal } from "d3-random";
 import { range, sample, sampleSize, startCase, sum } from "lodash";
 import React, { useContext, useReducer } from "react";
 import seedrandom from "seedrandom";
-import { PlantingData } from "../stories/NestedRows";
 import { RowData, ROWS } from "./rows";
 import { makeVar } from "@apollo/client";
 import {
@@ -40,7 +39,7 @@ const createPlantings = (
         // const count = countMax * rndValue();
         const norm = randomNormal.source(rnd)(mean, std);
         if (row.type === "value") {
-          values.push({ __typename: "PlantingValue", name: row.name, value: norm() });
+          values.push({ __typename: "PlantingValue", name: row.name, value: norm(), plantingId: id });
         }
         if (row.children) {
           walk(row.children);
@@ -68,38 +67,6 @@ const createPlantings = (
       events: range(6 + 6 * Math.random()).map(() => getFarmEvent()),
       matchingFilters: [],
     };
-  });
-};
-
-let plantingDataId = 0;
-export const createFilteringData = (
-  seed: string,
-  countMax = 12,
-  stdMax = 2,
-  meanMax = 5
-): PlantingData[][] => {
-  const rnd = seedrandom(seed);
-  return range(rnd() * countMax).map(() => {
-    const values: { name: string; value: number; id: string }[] = [];
-    const id = (plantingDataId++).toString();
-    const walk = (rows: RowData[]) => {
-      for (const row of rows) {
-        const rndValue = seedrandom(seed + row.name);
-        // TODO add multilpe measurements to some value types
-        // const count = countMax * rndValue();
-        const mean = (rndValue() - 0.5) * meanMax;
-        const std = rndValue() * stdMax;
-        const norm = randomNormal.source(rnd)(mean, std);
-        if (row.type === "value") {
-          values.push({ name: row.name, value: norm(), id });
-        }
-        if (row.children) {
-          walk(row.children);
-        }
-      }
-    };
-    walk(ROWS);
-    return values;
   });
 };
 
@@ -139,8 +106,8 @@ const createFilter = (color: string, name: string, cropType: string): Filter => 
 };
 
 export const filters = makeVar<Filter[]>([
-  createFilter("Produce Corn, Beef", schemeTableau10[4], "corn"),
-  createFilter("General Mills - KS", schemeTableau10[0], "corn"),
+  createFilter(schemeTableau10[4], "Produce Corn, Beef", "corn"),
+  createFilter(schemeTableau10[0], "General Mills - KS", "corn"),
 ]);
 export const selectedFilter = makeVar<string | null>(null);
 export const selectedProducer = makeVar<string | null>(null);

@@ -68,7 +68,7 @@ export const getFarmEvent = (seed?: string): PlantingEvent => {
     "tillage",
     "irrigation",
   ];
-  const type = eventTypes[Math.floor(eventTypes.length * rnd())];
+  const type = eventTypes[Math.floor(eventTypes.length * rnd())]!;
   const date = new Date("2022");
   
   date.setDate(365 * randomBates.source(rnd)(2)());

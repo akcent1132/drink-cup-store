@@ -48,7 +48,7 @@ export type Planting = {
   params: PlantingParams;
   producerName: Scalars['String'];
   title: Scalars['String'];
-  values: Array<Maybe<PlantingValue>>;
+  values: Array<PlantingValue>;
 };
 
 export type PlantingEvent = {
@@ -69,6 +69,7 @@ export type PlantingParams = {
 export type PlantingValue = {
   __typename: 'PlantingValue';
   name: Scalars['String'];
+  plantingId: Scalars['String'];
   value: Scalars['Float'];
 };
 
@@ -150,9 +151,10 @@ export type PlantingParamsFieldPolicy = {
 	texture?: FieldPolicy<any> | FieldReadFunction<any>,
 	zone?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type PlantingValueKeySpecifier = ('name' | 'value' | PlantingValueKeySpecifier)[];
+export type PlantingValueKeySpecifier = ('name' | 'plantingId' | 'value' | PlantingValueKeySpecifier)[];
 export type PlantingValueFieldPolicy = {
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
+	plantingId?: FieldPolicy<any> | FieldReadFunction<any>,
 	value?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type QueryKeySpecifier = ('filters' | 'openEventCards' | 'planting' | 'plantings' | 'selectedCropType' | 'test' | QueryKeySpecifier)[];

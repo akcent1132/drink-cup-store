@@ -133,7 +133,7 @@ export const FarmerProfile = ({ name }: Props) => {
             renderPanel: () => (
               <CardContainer>
                 {plantings.map((p) => (
-                  <EventsCard key={p.id} {...p} name="" hideColorBorder />
+                  <EventsCard key={p.id} plantingId={p.id} hideName hideColorBorder />
                 ))}
               </CardContainer>
             ),
@@ -143,7 +143,7 @@ export const FarmerProfile = ({ name }: Props) => {
             renderPanel: () => (
               <CardContainer>
                 {fields.map((p) => (
-                  <EventsCard key={p.id} {...p} name="" hideColorBorder />
+                  <EventsCard key={p.id} plantingId={p.id} hideName hideColorBorder />
                 ))}
               </CardContainer>
             ),

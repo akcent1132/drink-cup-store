@@ -2,14 +2,11 @@ import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 import { MockedProvider } from "@apollo/client/testing";
 import { range } from "lodash";
 import {
-  // addFakePlantings,
-  createFilteringData,
   filters,
   openEventCards,
   plantings,
   selectedCropType,
 } from "../contexts/FiltersContext";
-import { PlantingData } from "../stories/NestedRows";
 import { loader } from "graphql.macro";
 import {
   Filter,
@@ -22,14 +19,12 @@ import seedrandom from "seedrandom";
 
 const typeDefs = loader("./local.graphql");
 
-const getPlantings = (cropType?: string) => {
+const getPlantings = (cropType: string) => {
   // if (!plantings().some((planting) => planting.cropType === cropType)) {
   //   addFakePlantings(cropType);
   // }
 
-  return plantings().filter(
-    (planting) => !cropType || planting.cropType === cropType
-  );
+  return plantings().filter((planting) => planting.cropType === cropType);
 };
 
 const plantingsOfFilterCache: {
@@ -37,14 +32,14 @@ const plantingsOfFilterCache: {
 } = {};
 
 const getPlantingsOfFilter = (
-  id: string,
+id: string,
   cropType: string,
   activeParams: FilterParams | null
 ) => {
   const plantings = getPlantings(cropType);
   const hash = `${cropType}-${JSON.stringify(activeParams)}-${
     plantings.length
-  }`;
+  }-${id}`;
   if (plantingsOfFilterCache[id]?.hash !== hash) {
     const rnd = seedrandom(hash);
     const portion = 0.12 + 0.34 * rnd();
@@ -81,7 +76,7 @@ const typePolicies: StrictTypedTypePolicies = {
         read(_, variables) {
           // @ts-ignore
           const id: string = variables.args.id;
-          return getPlantings().find((planting) => planting.id === id);
+          return plantings().find((planting) => planting.id === id);
         },
       },
       openEventCards: {
@@ -107,8 +102,8 @@ const typePolicies: StrictTypedTypePolicies = {
     fields: {
       plantings: {
         read(_, { readField }) {
-          const id = readField<string>("id") || '';
-          const cropType = readField<string>("cropType") || '';
+          const id = readField<string>("id") || "";
+          const cropType = readField<string>("cropType") || "";
           const activeParams = readField<FilterParams>("activeParams") || null;
           return getPlantingsOfFilter(id, cropType, activeParams);
         },
@@ -118,9 +113,15 @@ const typePolicies: StrictTypedTypePolicies = {
   Planting: {
     fields: {
       matchingFilters: {
-        read(_, {readField}) {
-          const id = readField<string>("id")
-          filters().filter(filter => getPlantingsOfFilter(filter.id, filter.cropType, filter.activeParams).some(planting => planting.id === id))
+        read(_, { readField }) {
+          const id = readField<string>("id");
+          return filters().filter((filter) =>
+            getPlantingsOfFilter(
+              filter.id,
+              filter.cropType,
+              filter.activeParams
+            ).some((planting) => planting.id === id)
+          );
         },
       },
     },

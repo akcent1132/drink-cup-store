@@ -11,7 +11,7 @@ extend type Query {
 type Planting {
   id: String!
   cropType: String!
-  values: [PlantingValue]!
+  values: [PlantingValue!]!
   title: String!
   producerName: String!
   params: PlantingParams!
@@ -21,6 +21,7 @@ type Planting {
 type PlantingValue {
   name: String!
   value: Float!
+  plantingId: String!
 }
 type PlantingParams {
   zone: String!

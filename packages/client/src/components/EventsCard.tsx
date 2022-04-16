@@ -113,22 +113,14 @@ type Parameters = {
 };
 interface Props {
   plantingId: string;
-  // color?: string;
-  // events?: FarmEvent[];
-  // params: Parameters;
-  // title?: string;
-  // name?: string;
   onClose?: () => void;
+  hideName?: boolean;
   hideColorBorder?: boolean;
 }
 
 export const EventsCard = ({
   plantingId,
-  // color = "white",
-  // events = [],
-  // params,
-  // title = "2020 Corn",
-  // name = "My Farm",
+  hideName = false,
   hideColorBorder = false,
   onClose,
 }: Props) => {
@@ -161,7 +153,7 @@ export const EventsCard = ({
       <Head>
         <Title>{planting.title}</Title>
         <Spacer />
-        <Tip content="Producer profile">
+        {!hideName ? <Tip content="Producer profile">
           <Name
             onClick={() =>
               dispatchFilters({
@@ -173,7 +165,7 @@ export const EventsCard = ({
             <ContactPageIcon fontSize="inherit" />
             {planting.producerName}
           </Name>
-        </Tip>
+        </Tip> : null}
 
         {onClose ? (
           <IconButton onClick={onClose}>

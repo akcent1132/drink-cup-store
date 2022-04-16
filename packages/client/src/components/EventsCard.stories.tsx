@@ -13,14 +13,13 @@ export default {
 
 const Template: ComponentStory<typeof EventsCard> = (args) => <EventsCard {...args} />;
 
-export const Default = Template.bind({});
-Default.args = {
-  color: "teal",
-  params: {
-    zone: "8b",
-    temperature: "65",
-    precipitation: "47 in",
-    texture: "Sand: 38% | Slit 41% | Clay 21%",
-  },
-  events: getFarmEvents(),
-};
+// export const Default = Template.bind({});
+// Default.args = {
+//   params: {
+//     zone: "8b",
+//     temperature: "65",
+//     precipitation: "47 in",
+//     texture: "Sand: 38% | Slit 41% | Clay 21%",
+//   },
+//   events: getFarmEvents(),
+// };

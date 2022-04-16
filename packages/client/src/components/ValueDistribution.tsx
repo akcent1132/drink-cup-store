@@ -5,16 +5,16 @@ import { useCanvas } from "../utils/useCanvas";
 import { useTheme, withTheme } from "@emotion/react";
 import { scaleLinear } from "d3-scale";
 import { extent, mean, minIndex, quantile } from "d3-array";
-import { range, sortBy } from "lodash";
+import { groupBy, range, sortBy } from "lodash";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import tinycolor from "tinycolor2";
-import { PlantingData } from "../stories/NestedRows";
 import { useHoveredPlantingContext } from "../contexts/HoveredPlantingContext";
 import { ValuePopup } from "./ValuePopup";
 import { format } from "d3-format"
 import { useFiltersContext } from "../contexts/FiltersContext";
 import { useEffectDebugger } from "../utils/useEffectDebugger";
+import { useValueDistributionQuery, ValueDistributionQuery } from "./ValueDistribution.generated";
 
 // TODO read height from props
 
@@ -26,6 +26,7 @@ export const defaultTheme = {
   tickWidth: 2,
   meanTickWidth: 6,
   varianceLineHeight: 8,
+  averageColor: tinycolor("white").setAlpha(0.1).toString(),
 };
 
 type OpenState = "open" | "closed" | "parentClosed";
@@ -134,7 +135,6 @@ type Props = {
    * Data name
    */
   label: string;
-  averageValues: PlantingData[][];
   valueNames: string[] | string;
   highlightedFiltering?: string | null;
   className?: string;
@@ -144,7 +144,7 @@ type Props = {
   hideBranches: number;
   onToggleChildren: () => void;
   openState: "open" | "closed" | "parentClosed";
-  onClickData: (value: PlantingData, color: string) => void;
+  onClickData: (plantingId: string, color: string) => void;
 };
 
 /**
@@ -152,15 +152,14 @@ type Props = {
  */
 export const ValueDistribution = ({
   label,
-  averageValues,
   highlightedFiltering,
   valueNames,
   onClickData,
   ...props
 }: Props) => {
   valueNames = useMemo(() => Array.isArray(valueNames) ? valueNames : [valueNames], [valueNames]);
+  const { data: { plantings } = {}} = useValueDistributionQuery();
   const { colors } = useTheme();
-  const [{ filters }] = useFiltersContext()
   const [isHovering, setIsHovering] = useState(false);
   const [hoveredData, setHoveredData] = useHoveredPlantingContext();
   const onHoverData = useCallback(
@@ -174,25 +173,24 @@ export const ValueDistribution = ({
   const theme = useTheme();
   const canvas = useCanvas();
   const values = useMemo(() => {
-    const average = {
-      plantings: averageValues,
-      color: tinycolor("white").setAlpha(0.1).toString(),
-      name: "average",
-    };
-    return [average, ...filters].map(
-      ({ plantings, color, name: filterName }) => ({
-        color,
-        values: plantings
-          .map(
-            (p) => p.values.filter((v) => valueNames.includes(v.name)) //.map((v) => v.value)
-          )
-          .flat(),
-        showVariance: filterName !== "average",
-        isSelectable: filterName !== "average",
-        isHighlighted: highlightedFiltering === filterName,
-      })
+    return Object.values(groupBy(plantings, p => p.matchingFilters[0]?.id)).map(
+      (plantings) => {
+        const filter = plantings[0].matchingFilters[0];
+        return {
+          color: filter?.color || theme.valueDistribution.averageColor,
+          values: plantings
+            .map(
+              (planting) => planting.values.filter((v) => valueNames.includes(v.name)) //.map((v) => v.value)
+            )
+            .flat(),
+          showVariance: !!filter,
+          isSelectable: !!filter,
+          isHighlighted: highlightedFiltering === filter?.id,
+        }
+      }
     );
-  }, [filters, highlightedFiltering, valueNames]);
+  }, [plantings, highlightedFiltering, valueNames]);
+  console.log({values, valueNames})
   const allData = useMemo(() => values.map((v) => v.values).flat(), [values]);
   const allValues = useMemo(() => allData.map((d) => d.value), [allData]);
   const scale = useMemo(() => {
@@ -206,7 +204,7 @@ export const ValueDistribution = ({
   }, [allValues, canvas.width]);
   const allMean = useMemo(() => mean(allValues) || 0, [allValues]);
   const [localHoveredValue, setLocalHoveredValue] =
-    useState<PlantingData | null>(null);
+    useState<ValueDistributionQuery['plantings'][number]['values'][number] | null>(null);
   const handlePlotMouseMove = useCallback(
     (e: React.MouseEvent) => {
       const allSelectableData = values
@@ -219,7 +217,7 @@ export const ValueDistribution = ({
       }
       if (e.nativeEvent.offsetY < theme.valueDistribution.varianceLineHeight) {
         if (localHoveredValue) {
-          onLeaveData(localHoveredValue.id);
+          onLeaveData(localHoveredValue.plantingId);
         }
         return;
       }
@@ -233,9 +231,9 @@ export const ValueDistribution = ({
       const newLocalHoveredValue =
         Math.abs(closestValueX - mouseX) < 3 ? closestData : null;
       if (newLocalHoveredValue) {
-        onHoverData(newLocalHoveredValue.id);
+        onHoverData(newLocalHoveredValue.plantingId);
       } else if (localHoveredValue) {
-        onLeaveData(localHoveredValue.id);
+        onLeaveData(localHoveredValue.plantingId);
       }
       setLocalHoveredValue(newLocalHoveredValue);
     },
@@ -243,17 +241,17 @@ export const ValueDistribution = ({
   );
   const handlePlotMouseLeave = useCallback(() => {
     if (localHoveredValue) {
-      onLeaveData(localHoveredValue.id);
+      onLeaveData(localHoveredValue.plantingId);
     }
     setLocalHoveredValue(null);
   }, [localHoveredValue]);
   const handlePlotMouseClick = useCallback(() => {
     if (localHoveredValue) {
       const color = values.find((v) =>
-        v.values.some((v) => v.id === localHoveredValue.id)
+        v.values.some((v) => v.plantingId === localHoveredValue.plantingId)
       )?.color;
       if (color) {
-        onClickData(localHoveredValue, color);
+        onClickData(localHoveredValue.plantingId, color);
       }
     }
   }, [localHoveredValue, values]);
@@ -355,7 +353,7 @@ export const ValueDistribution = ({
       ctx.beginPath();
       ctx.fillStyle = theme.color("white");
       allData.map((data) => {
-        if (data.id === hoveredData) {
+        if (data.plantingId === hoveredData) {
           ctx.rect(
             scale(data.value) - theme.valueDistribution.tickWidth / 2,
             theme.valueDistribution.varianceLineHeight,

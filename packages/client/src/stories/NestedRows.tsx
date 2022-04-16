@@ -4,13 +4,6 @@ import { ValueDistribution } from "../components/ValueDistribution";
 import { RowData } from "../contexts/rows";
 
 
-export type PlantingData = { name: string; value: number; id: string };
-export type Filtering = {
-  color: string;
-  name: string;
-  plantings: PlantingData[][];
-};
-
 const flattenRows = (
   rows: RowData[],
   nesting = 0
@@ -46,13 +39,11 @@ const flattenRows = (
 export const NestedRows = ({
   rows,
   hoverState,
-  averageValues,
   onClickData,
 }: {
   rows: RowData[];
   hoverState: string | null;
-  averageValues: PlantingData[][];
-  onClickData: (value: PlantingData, color: string) => void;
+  onClickData: (plantingId: string, color: string) => void;
 }) => {
   const flatRows = useMemo(() => flattenRows(rows), [rows]);
   const [isClosed, setIsClosed] = useState<boolean[]>(
@@ -107,7 +98,6 @@ export const NestedRows = ({
           <ValueDistribution
             key={`${name}-${i}`}
             label={name}
-            averageValues={averageValues}
             valueNames={showAggregation ? childRowNames : name}
             highlightedFiltering={hoverState}
             nesting={nesting}
@@ -115,7 +105,7 @@ export const NestedRows = ({
             isLastChild={isLastChild}
             hideBranches={hideBranches}
             onToggleChildren={() => toggleOpen(i)}
-            openState={openStates[i]}
+            openState={openStates[i]!}
             onClickData={onClickData}
           />
         )

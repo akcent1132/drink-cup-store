@@ -24,11 +24,10 @@ import faker from "faker";
 import { memoize, range, sample, sum, uniq, uniqueId, without } from "lodash";
 import { HyloBox } from "./HyloBox";
 import { FilterEditor } from "../components/FilterEditor";
-import { NestedRows, PlantingData } from "./NestedRows";
+import { NestedRows } from "./NestedRows";
 import { schemeTableau10 } from "d3-scale-chromatic";
 import { HoveredPlantingProvider } from "../contexts/HoveredPlantingContext";
 import {
-  createFilteringData,
   FiltersProvider,
   useFiltersContext,
 } from "../contexts/FiltersContext";
@@ -134,15 +133,11 @@ function hoverReducer(
 const RandomContent = ({
   onClickData,
 }: {
-  onClickData: (data: PlantingData, color: string) => void;
+  onClickData: (plantingId: string, color: string) => void;
 }) => {
   const { colors } = useTheme();
   const [hoverState, hoverDispatch] = useReducer(hoverReducer, null);
   const [{ filters }, dispatchFiltering] = useFiltersContext();
-  const averageValues = useMemo(
-    () => createFilteringData("average", 36, 5, 2),
-    []
-  );
   const addFilter = useCallback(
     (name?: string, color?: string) => {
       const freeColors = without(COLORS, ...filters.map((g) => g.color));
@@ -190,7 +185,6 @@ const RandomContent = ({
       <NestedRows
         rows={ROWS}
         hoverState={hoverState}
-        averageValues={averageValues}
         onClickData={onClickData}
       />
     </RowContainer>
@@ -228,16 +222,16 @@ interface Props {
 export const Dashboard = ({ iframeSrc }: Props) => {
   const [tabIndex, setTabIndex] = useState(0);
   const [plantingCards, setPlantingCards] = useState([
-    createFakePlantingCardData("72", schemeTableau10[4]),
-    createFakePlantingCardData("67", schemeTableau10[0]),
+    createFakePlantingCardData("72", schemeTableau10[4]!),
+    createFakePlantingCardData("67", schemeTableau10[0]!),
   ]);
   const [{ selectedFilterId, selectedFarmerId }, dispatchFilters] =
     useFiltersContext();
   const rightSide = useRef<HTMLDivElement>(null);
   const handleClickRowData = useCallback(
-    (data: PlantingData, color: string) => {
+    (plantingId: string, color: string) => {
       setPlantingCards(
-        uniq([createFakePlantingCardData(data.id, color), ...plantingCards])
+        uniq([createFakePlantingCardData(plantingId, color), ...plantingCards])
       );
       dispatchFilters({ type: "select", filterId: null });
       dispatchFilters({ type: "selectFarmer", farmerId: null });
