@@ -39,6 +39,13 @@ export type FilterParams = {
   years: Array<Scalars['Int']>;
 };
 
+export type GroupedValues = {
+  __typename: 'GroupedValues';
+  filter: Maybe<Filter>;
+  id: Scalars['String'];
+  values: Array<PlantingValue>;
+};
+
 export type Planting = {
   __typename: 'Planting';
   cropType: Scalars['String'];
@@ -76,6 +83,7 @@ export type PlantingValue = {
 export type Query = {
   __typename: 'Query';
   filters: Array<Filter>;
+  groupedValues: Array<GroupedValues>;
   openEventCards: Array<Planting>;
   planting: Maybe<Planting>;
   plantings: Array<Planting>;
@@ -85,6 +93,11 @@ export type Query = {
 
 
 export type QueryFiltersArgs = {
+  cropType: Scalars['String'];
+};
+
+
+export type QueryGroupedValuesArgs = {
   cropType: Scalars['String'];
 };
 
@@ -127,6 +140,12 @@ export type FilterParamsFieldPolicy = {
 	tasteScore?: FieldPolicy<any> | FieldReadFunction<any>,
 	years?: FieldPolicy<any> | FieldReadFunction<any>
 };
+export type GroupedValuesKeySpecifier = ('filter' | 'id' | 'values' | GroupedValuesKeySpecifier)[];
+export type GroupedValuesFieldPolicy = {
+	filter?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	values?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type PlantingKeySpecifier = ('cropType' | 'events' | 'id' | 'matchingFilters' | 'params' | 'producerName' | 'title' | 'values' | PlantingKeySpecifier)[];
 export type PlantingFieldPolicy = {
 	cropType?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -157,9 +176,10 @@ export type PlantingValueFieldPolicy = {
 	plantingId?: FieldPolicy<any> | FieldReadFunction<any>,
 	value?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('filters' | 'openEventCards' | 'planting' | 'plantings' | 'selectedCropType' | 'test' | QueryKeySpecifier)[];
+export type QueryKeySpecifier = ('filters' | 'groupedValues' | 'openEventCards' | 'planting' | 'plantings' | 'selectedCropType' | 'test' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
 	filters?: FieldPolicy<any> | FieldReadFunction<any>,
+	groupedValues?: FieldPolicy<any> | FieldReadFunction<any>,
 	openEventCards?: FieldPolicy<any> | FieldReadFunction<any>,
 	planting?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -174,6 +194,10 @@ export type StrictTypedTypePolicies = {
 	FilterParams?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | FilterParamsKeySpecifier | (() => undefined | FilterParamsKeySpecifier),
 		fields?: FilterParamsFieldPolicy,
+	},
+	GroupedValues?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | GroupedValuesKeySpecifier | (() => undefined | GroupedValuesKeySpecifier),
+		fields?: GroupedValuesFieldPolicy,
 	},
 	Planting?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | PlantingKeySpecifier | (() => undefined | PlantingKeySpecifier),

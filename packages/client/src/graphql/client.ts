@@ -1,6 +1,6 @@
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 import { MockedProvider } from "@apollo/client/testing";
-import { range } from "lodash";
+import { groupBy, range } from "lodash";
 import {
   filters,
   openEventCards,
@@ -88,7 +88,6 @@ const typePolicies: StrictTypedTypePolicies = {
           );
         },
       },
-
       filters: {
         read(_, variables) {
           // @ts-ignore
@@ -96,6 +95,13 @@ const typePolicies: StrictTypedTypePolicies = {
           return filters().filter((f) => f.cropType === cropType);
         },
       },
+      groupedValues(_, variables) {
+        // @ts-ignore
+        const cropType: string = variables.args.cropType;
+        const cropPlantings = getPlantings(cropType);
+        const cropFilters = filters().filter((f) => f.cropType === cropType).map(filter => ({...filter, plantings: getPlantingsOfFilter(filter.id, filter.cropType, filter.activeParams)}));
+        const groupedPlantings = groupBy(cropPlantings, planting => cropFilters.find(filter => filter.plantings.some(p => p.id === planting.id))?.id || 'unmatched')
+      }
     },
   },
   Filter: {
