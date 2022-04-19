@@ -26,11 +26,7 @@ import { HyloBox } from "./HyloBox";
 import { FilterEditor } from "../components/FilterEditor";
 import { NestedRows } from "./NestedRows";
 import { schemeTableau10 } from "d3-scale-chromatic";
-import { HoveredPlantingProvider } from "../contexts/HoveredPlantingContext";
-import {
-  FiltersProvider,
-  useFiltersContext,
-} from "../contexts/FiltersContext";
+import { FiltersProvider, useFiltersContext } from "../contexts/FiltersContext";
 import { ROWS } from "../contexts/rows";
 import { Button } from "../components/Button";
 import { FarmerProfile } from "../components/FarmerProfile";
@@ -343,9 +339,7 @@ export const Dashboard = ({ iframeSrc }: Props) => {
 export const App = (props: ComponentProps<typeof Dashboard>) => (
   <ApolloProvider client={client}>
     <FiltersProvider>
-      <HoveredPlantingProvider>
-        <Dashboard {...props} />
-      </HoveredPlantingProvider>
+      <Dashboard {...props} />
     </FiltersProvider>
   </ApolloProvider>
 );

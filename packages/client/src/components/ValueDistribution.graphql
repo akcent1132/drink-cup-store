@@ -12,4 +12,7 @@ query ValueDistribution($cropType: String! = "") {
       color
     }
   }
+  highlightedPlanting {
+    id
+  }
 }

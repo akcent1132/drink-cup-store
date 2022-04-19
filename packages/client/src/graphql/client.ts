@@ -3,6 +3,7 @@ import { MockedProvider } from "@apollo/client/testing";
 import { groupBy, range } from "lodash";
 import {
   filters,
+  highlightedPlantingId,
   openEventCards,
   plantings,
   selectedCropType,
@@ -79,6 +80,12 @@ const typePolicies: StrictTypedTypePolicies = {
           return plantings().find((planting) => planting.id === id);
         },
       },
+      highlightedPlanting: {
+        read() {
+          const id = highlightedPlantingId();
+          return plantings().find((planting) => planting.id === id);
+        },
+      },
       openEventCards: {
         read(_, variables) {
           // @ts-ignore
@@ -130,6 +137,12 @@ const typePolicies: StrictTypedTypePolicies = {
           );
         },
       },
+      isHighlighted: {
+        read(_, { readField }) {
+          const id = readField<string>("id");
+          return id === highlightedPlantingId();
+        }
+      }
     },
   },
 };

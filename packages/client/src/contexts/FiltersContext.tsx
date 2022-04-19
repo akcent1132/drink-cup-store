@@ -14,7 +14,12 @@ import {
   AMENDMENTS,
   LAND_PREPARATION,
 } from "./lists";
-import { Filter, FilterParams, Planting, PlantingValue } from "../graphql.generated";
+import {
+  Filter,
+  FilterParams,
+  Planting,
+  PlantingValue,
+} from "../graphql.generated";
 import { schemeTableau10 } from "d3-scale-chromatic";
 import { getFarmEvent, randomZone } from "../utils/random";
 
@@ -39,7 +44,12 @@ const createPlantings = (
         // const count = countMax * rndValue();
         const norm = randomNormal.source(rnd)(mean, std);
         if (row.type === "value") {
-          values.push({ __typename: "PlantingValue", name: row.name, value: norm(), plantingId: id });
+          values.push({
+            __typename: "PlantingValue",
+            name: row.name,
+            value: norm(),
+            plantingId: id,
+          });
         }
         if (row.children) {
           walk(row.children);
@@ -51,7 +61,8 @@ const createPlantings = (
     let texture = [Math.random(), Math.random()];
     texture = texture.map((t) => Math.round((t / sum(texture)) * 100));
     return {
-      __typename: 'Planting',
+      __typename: "Planting",
+      isHighlighted: false,
       id,
       cropType,
       values,
@@ -91,10 +102,14 @@ const createFilterParams = (): FilterParams => {
 };
 
 let filterId = 0;
-const createFilter = (color: string, name: string, cropType: string): Filter => {
+const createFilter = (
+  color: string,
+  name: string,
+  cropType: string
+): Filter => {
   const id = (++filterId).toString();
   return {
-    __typename: 'Filter',
+    __typename: "Filter",
     id,
     name,
     cropType,
@@ -122,6 +137,14 @@ export const openEventCards = makeVar<Planting[]>(
     .filter((p) => p.cropType === selectedCropType())
     .slice(0, 2)
 );
+export const highlightedPlantingId = makeVar<string | null>(null);
+
+export const hightlightPlanting = (plantingId: string) => {
+  highlightedPlantingId(plantingId);
+};
+export const unhightlightPlanting = (plantingId: string) => {
+  if (plantingId === highlightedPlantingId()) highlightedPlantingId(null);
+};
 
 type Action =
   | { type: "new"; color: string; name: string }

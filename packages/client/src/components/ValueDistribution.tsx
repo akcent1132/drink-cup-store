@@ -9,12 +9,18 @@ import { groupBy, range, sortBy } from "lodash";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import tinycolor from "tinycolor2";
-import { useHoveredPlantingContext } from "../contexts/HoveredPlantingContext";
 import { ValuePopup } from "./ValuePopup";
-import { format } from "d3-format"
-import { useFiltersContext } from "../contexts/FiltersContext";
+import { format } from "d3-format";
+import {
+  hightlightPlanting,
+  unhightlightPlanting,
+  useFiltersContext,
+} from "../contexts/FiltersContext";
 import { useEffectDebugger } from "../utils/useEffectDebugger";
-import { useValueDistributionQuery, ValueDistributionQuery } from "./ValueDistribution.generated";
+import {
+  useValueDistributionQuery,
+  ValueDistributionQuery,
+} from "./ValueDistribution.generated";
 
 // TODO read height from props
 
@@ -157,40 +163,44 @@ export const ValueDistribution = ({
   onClickData,
   ...props
 }: Props) => {
-  valueNames = useMemo(() => Array.isArray(valueNames) ? valueNames : [valueNames], [valueNames]);
-  const { data: { plantings } = {}} = useValueDistributionQuery();
+  valueNames = useMemo(
+    () => (Array.isArray(valueNames) ? valueNames : [valueNames]),
+    [valueNames]
+  );
+  const { data: { plantings, highlightedPlanting } = {} } =
+    useValueDistributionQuery();
   const { colors } = useTheme();
   const [isHovering, setIsHovering] = useState(false);
-  const [hoveredData, setHoveredData] = useHoveredPlantingContext();
   const onHoverData = useCallback(
-    (planting: string) => setHoveredData({ type: "hover", planting }),
+    (planting: string) => hightlightPlanting(planting),
     []
   );
   const onLeaveData = useCallback(
-    (planting: string) => setHoveredData({ type: "leave", planting }),
+    (planting: string) => unhightlightPlanting(planting),
     []
   );
   const theme = useTheme();
   const canvas = useCanvas();
   const values = useMemo(() => {
-    return Object.values(groupBy(plantings, p => p.matchingFilters[0]?.id)).map(
-      (plantings) => {
-        const filter = plantings[0].matchingFilters[0];
-        return {
-          color: filter?.color || theme.valueDistribution.averageColor,
-          values: plantings
-            .map(
-              (planting) => planting.values.filter((v) => valueNames.includes(v.name)) //.map((v) => v.value)
-            )
-            .flat(),
-          showVariance: !!filter,
-          isSelectable: !!filter,
-          isHighlighted: highlightedFiltering === filter?.id,
-        }
-      }
-    );
+    return Object.values(
+      groupBy(plantings, (p) => p.matchingFilters[0]?.id)
+    ).map((plantings) => {
+      const filter = plantings[0].matchingFilters[0];
+      return {
+        color: filter?.color || theme.valueDistribution.averageColor,
+        values: plantings
+          .map(
+            (planting) =>
+              planting.values.filter((v) => valueNames.includes(v.name)) //.map((v) => v.value)
+          )
+          .flat(),
+        showVariance: !!filter,
+        isSelectable: !!filter,
+        isHighlighted: highlightedFiltering === filter?.id,
+      };
+    });
   }, [plantings, highlightedFiltering, valueNames]);
-  console.log({values, valueNames})
+  console.log({ plantings, highlightedPlanting, values, valueNames });
   const allData = useMemo(() => values.map((v) => v.values).flat(), [values]);
   const allValues = useMemo(() => allData.map((d) => d.value), [allData]);
   const scale = useMemo(() => {
@@ -203,8 +213,9 @@ export const ValueDistribution = ({
       ]);
   }, [allValues, canvas.width]);
   const allMean = useMemo(() => mean(allValues) || 0, [allValues]);
-  const [localHoveredValue, setLocalHoveredValue] =
-    useState<ValueDistributionQuery['plantings'][number]['values'][number] | null>(null);
+  const [localHoveredValue, setLocalHoveredValue] = useState<
+    ValueDistributionQuery["plantings"][number]["values"][number] | null
+  >(null);
   const handlePlotMouseMove = useCallback(
     (e: React.MouseEvent) => {
       const allSelectableData = values
@@ -349,11 +360,11 @@ export const ValueDistribution = ({
     }
 
     // Draw hover
-    if (hoveredData) {
+    if (highlightedPlanting) {
       ctx.beginPath();
       ctx.fillStyle = theme.color("white");
       allData.map((data) => {
-        if (data.plantingId === hoveredData) {
+        if (data.plantingId === highlightedPlanting.id) {
           ctx.rect(
             scale(data.value) - theme.valueDistribution.tickWidth / 2,
             theme.valueDistribution.varianceLineHeight,
@@ -364,7 +375,7 @@ export const ValueDistribution = ({
       });
       ctx.fill();
     }
-  }, [values, canvas.width, canvas.height, scale, allMean, hoveredData]);
+  }, [values, canvas.width, canvas.height, scale, allMean, highlightedPlanting?.id]);
 
   const leftBranches = props.nesting - props.hideBranches;
 

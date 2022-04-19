@@ -8,7 +8,7 @@ export type ValueDistributionQueryVariables = Types.Exact<{
 }>;
 
 
-export type ValueDistributionQuery = { __typename?: 'Query', selectedCropType: string, plantings: Array<{ __typename?: 'Planting', id: string, values: Array<{ __typename?: 'PlantingValue', name: string, value: number, plantingId: string }>, matchingFilters: Array<{ __typename?: 'Filter', id: string, color: string }> }> };
+export type ValueDistributionQuery = { __typename?: 'Query', selectedCropType: string, plantings: Array<{ __typename?: 'Planting', id: string, values: Array<{ __typename?: 'PlantingValue', name: string, value: number, plantingId: string }>, matchingFilters: Array<{ __typename?: 'Filter', id: string, color: string }> }>, highlightedPlanting?: { __typename?: 'Planting', id: string } | null };
 
 
 export const ValueDistributionDocument = gql`
@@ -25,6 +25,9 @@ export const ValueDistributionDocument = gql`
       id
       color
     }
+  }
+  highlightedPlanting {
+    id
   }
 }
     `;

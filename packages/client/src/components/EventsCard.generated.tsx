@@ -8,13 +8,14 @@ export type EventsCardQueryVariables = Types.Exact<{
 }>;
 
 
-export type EventsCardQuery = { __typename?: 'Query', planting?: { __typename?: 'Planting', id: string, producerName: string, title: string, params: { __typename?: 'PlantingParams', precipitation: string, temperature: string, texture: string, zone: string }, events: Array<{ __typename?: 'PlantingEvent', id: string, date: string, type: string }> } | null };
+export type EventsCardQuery = { __typename?: 'Query', planting?: { __typename?: 'Planting', id: string, isHighlighted: boolean, producerName: string, title: string, params: { __typename?: 'PlantingParams', precipitation: string, temperature: string, texture: string, zone: string }, events: Array<{ __typename?: 'PlantingEvent', id: string, date: string, type: string }> } | null };
 
 
 export const EventsCardDocument = gql`
     query EventsCard($plantingId: String!) {
   planting(id: $plantingId) {
     id
+    isHighlighted
     producerName
     title
     params {

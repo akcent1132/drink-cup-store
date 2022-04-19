@@ -6,9 +6,8 @@ import { withTheme } from "@emotion/react";
 import "../index.css";
 import { IconEventsBar, FarmEvent } from "./IconEventsBar";
 import CloseIcon from "@mui/icons-material/Close";
-import { useHoveredPlantingContext } from "../contexts/HoveredPlantingContext";
 import tinycolor from "tinycolor2";
-import { useFiltersContext } from "../contexts/FiltersContext";
+import { hightlightPlanting, selectProducer, unhightlightPlanting, useFiltersContext } from "../contexts/FiltersContext";
 import InvertColorsIcon from "@mui/icons-material/InvertColors";
 import ThermostatIcon from "@mui/icons-material/Thermostat";
 import PublicIcon from "@mui/icons-material/Public";
@@ -128,24 +127,21 @@ export const EventsCard = ({
     variables: { plantingId },
   });
   console.log({planting})
+  const onHoverData = useCallback(
+    () => planting && hightlightPlanting(planting.id),
+    [planting?.id]
+  );
+  const onLeaveData = useCallback(
+    () => planting && unhightlightPlanting(planting.id),
+    [planting?.id]
+  );
   if (!planting) {
     return null;
   }
-  const [hoveredPlanting, setHoveredPlanting] = useHoveredPlantingContext();
-  const [_, dispatchFilters] = useFiltersContext();
-  const onHoverData = useCallback(
-    () => setHoveredPlanting({ type: "hover", planting: planting.id }),
-    [planting.id]
-  );
-  const onLeaveData = useCallback(
-    () => setHoveredPlanting({ type: "leave", planting: planting.id }),
-    [planting.id]
-  );
-  const isHighlighted = hoveredPlanting === planting.id;
   return (
     <Root
       color={"grey"} //TODO read color from matching filters
-      isHighlighted={isHighlighted}
+      isHighlighted={planting.isHighlighted}
       onMouseEnter={onHoverData}
       onMouseLeave={onLeaveData}
       hideColorBorder={hideColorBorder}
@@ -155,12 +151,7 @@ export const EventsCard = ({
         <Spacer />
         {!hideName ? <Tip content="Producer profile">
           <Name
-            onClick={() =>
-              dispatchFilters({
-                type: "selectFarmer",
-                farmerId: planting.producerName,
-              })
-            }
+            onClick={() => selectProducer(planting.producerName)}
           >
             <ContactPageIcon fontSize="inherit" />
             {planting.producerName}
