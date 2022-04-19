@@ -117,6 +117,7 @@ const createFilter = (
     plantings: [],
     draftParams: createFilterParams(),
     activeParams: null,
+    isHighlighted: false,
   };
 };
 
@@ -138,12 +139,19 @@ export const openEventCards = makeVar<Planting[]>(
     .slice(0, 2)
 );
 export const highlightedPlantingId = makeVar<string | null>(null);
-
 export const hightlightPlanting = (plantingId: string) => {
   highlightedPlantingId(plantingId);
 };
 export const unhightlightPlanting = (plantingId: string) => {
   if (plantingId === highlightedPlantingId()) highlightedPlantingId(null);
+};
+
+export const highlightedFilterId = makeVar<string | null>(null);
+export const hightlightFilter = (filterId: string) => {
+  highlightedFilterId(filterId);
+};
+export const unhightlightFilter = (filterId: string) => {
+  if (filterId === highlightedPlantingId()) highlightedPlantingId(null);
 };
 
 type Action =

@@ -7,8 +7,6 @@ extend type Query {
   selectedCropType: String!
   test: Boolean!
   openEventCards(cropType: String!): [Planting!]!
-
-  # cartItems: [Launch]!
 }
 type Planting {
   id: String!
@@ -61,6 +59,7 @@ type Filter {
   plantings: [Planting]!
   draftParams: FilterParams
   activeParams: FilterParams
+  isHighlighted: Boolean!
 }
 
 type GroupedValues {

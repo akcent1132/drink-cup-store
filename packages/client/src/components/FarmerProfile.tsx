@@ -8,7 +8,7 @@ import { EventsCard, Spacer } from "./EventsCard";
 import CloseIcon from "@mui/icons-material/Close";
 import { IconButton, Label } from "./FilterEditor";
 import { useCallback, useMemo, useState } from "react";
-import { useFiltersContext } from "../contexts/FiltersContext";
+import { selectProducer, useFiltersContext } from "../contexts/FiltersContext";
 import { range } from "lodash";
 import { createFakePlantingCardData } from "../stories/Dashboard";
 import { IconEventsBar } from "./IconEventsBar";
@@ -59,7 +59,7 @@ export const FarmerProfile = ({ name }: Props) => {
   const [_, dispatchFilters] = useFiltersContext();
 
   const handleClose = useCallback(
-    () => dispatchFilters({ type: "selectFarmer", farmerId: null }),
+    () => selectProducer(null),
     []
   );
 

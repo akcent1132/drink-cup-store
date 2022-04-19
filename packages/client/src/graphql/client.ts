@@ -1,8 +1,9 @@
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 import { MockedProvider } from "@apollo/client/testing";
-import { groupBy, range } from "lodash";
+import { groupBy, range, remove } from "lodash";
 import {
   filters,
+  highlightedFilterId,
   highlightedPlantingId,
   openEventCards,
   plantings,
@@ -33,7 +34,7 @@ const plantingsOfFilterCache: {
 } = {};
 
 const getPlantingsOfFilter = (
-id: string,
+  id: string,
   cropType: string,
   activeParams: FilterParams | null
 ) => {
@@ -77,13 +78,13 @@ const typePolicies: StrictTypedTypePolicies = {
         read(_, variables) {
           // @ts-ignore
           const id: string = variables.args.id;
-          return plantings().find((planting) => planting.id === id);
+          return plantings().find((planting) => planting.id === id) || null;
         },
       },
       highlightedPlanting: {
         read() {
           const id = highlightedPlantingId();
-          return plantings().find((planting) => planting.id === id);
+          return plantings().find((planting) => planting.id === id) || null;
         },
       },
       openEventCards: {
@@ -105,10 +106,33 @@ const typePolicies: StrictTypedTypePolicies = {
       groupedValues(_, variables) {
         // @ts-ignore
         const cropType: string = variables.args.cropType;
-        const cropPlantings = getPlantings(cropType);
-        const cropFilters = filters().filter((f) => f.cropType === cropType).map(filter => ({...filter, plantings: getPlantingsOfFilter(filter.id, filter.cropType, filter.activeParams)}));
-        const groupedPlantings = groupBy(cropPlantings, planting => cropFilters.find(filter => filter.plantings.some(p => p.id === planting.id))?.id || 'unmatched')
-      }
+        const unmatchedPlantings = getPlantings(cropType);
+        const cropFilters = filters()
+          .filter((f) => f.cropType === cropType)
+          .map((filter) => {
+            const matchingPlantingIds = getPlantingsOfFilter(
+              filter.id,
+              filter.cropType,
+              filter.activeParams
+            ).map((p) => p.id);
+            const matchingPlantings = remove(unmatchedPlantings, (p) =>
+              matchingPlantingIds.includes(p.id)
+            );
+            return {
+              filter,
+              plantings: matchingPlantings,
+            };
+          });
+        const groupedValues = [
+          { filter: null, plantings: unmatchedPlantings },
+          ...cropFilters,
+        ].map(({ filter, plantings }) => ({
+          id: filter?.id || 'unmatched_values',
+          filter,
+          values: plantings.map((planting) => planting.values).flat(),
+        }));
+        return groupedValues
+      },
     },
   },
   Filter: {
@@ -119,6 +143,12 @@ const typePolicies: StrictTypedTypePolicies = {
           const cropType = readField<string>("cropType") || "";
           const activeParams = readField<FilterParams>("activeParams") || null;
           return getPlantingsOfFilter(id, cropType, activeParams);
+        },
+      },
+      isHighlighted: {
+        read(_, { readField }) {
+          const id = readField<string>("id");
+          return id === highlightedFilterId();
         },
       },
     },
@@ -141,8 +171,8 @@ const typePolicies: StrictTypedTypePolicies = {
         read(_, { readField }) {
           const id = readField<string>("id");
           return id === highlightedPlantingId();
-        }
-      }
+        },
+      },
     },
   },
 };
@@ -183,3 +213,4 @@ setTimeout(
       .then((result) => console.log("plantings", result)),
   100
 );
+

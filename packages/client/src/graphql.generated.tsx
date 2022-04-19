@@ -20,6 +20,7 @@ export type Filter = {
   cropType: Scalars['String'];
   draftParams: Maybe<FilterParams>;
   id: Scalars['String'];
+  isHighlighted: Scalars['Boolean'];
   name: Scalars['String'];
   plantings: Array<Maybe<Planting>>;
 };
@@ -118,13 +119,14 @@ export type QueryPlantingsArgs = {
   cropType: Scalars['String'];
 };
 
-export type FilterKeySpecifier = ('activeParams' | 'color' | 'cropType' | 'draftParams' | 'id' | 'name' | 'plantings' | FilterKeySpecifier)[];
+export type FilterKeySpecifier = ('activeParams' | 'color' | 'cropType' | 'draftParams' | 'id' | 'isHighlighted' | 'name' | 'plantings' | FilterKeySpecifier)[];
 export type FilterFieldPolicy = {
 	activeParams?: FieldPolicy<any> | FieldReadFunction<any>,
 	color?: FieldPolicy<any> | FieldReadFunction<any>,
 	cropType?: FieldPolicy<any> | FieldReadFunction<any>,
 	draftParams?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	isHighlighted?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>
 };

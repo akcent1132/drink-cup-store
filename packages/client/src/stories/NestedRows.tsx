@@ -38,11 +38,9 @@ const flattenRows = (
 
 export const NestedRows = ({
   rows,
-  hoverState,
   onClickData,
 }: {
   rows: RowData[];
-  hoverState: string | null;
   onClickData: (plantingId: string, color: string) => void;
 }) => {
   const flatRows = useMemo(() => flattenRows(rows), [rows]);
@@ -99,7 +97,6 @@ export const NestedRows = ({
             key={`${name}-${i}`}
             label={name}
             valueNames={showAggregation ? childRowNames : name}
-            highlightedFiltering={hoverState}
             nesting={nesting}
             childCount={childCount}
             isLastChild={isLastChild}

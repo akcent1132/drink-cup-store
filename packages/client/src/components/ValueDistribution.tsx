@@ -5,7 +5,7 @@ import { useCanvas } from "../utils/useCanvas";
 import { useTheme, withTheme } from "@emotion/react";
 import { scaleLinear } from "d3-scale";
 import { extent, mean, minIndex, quantile } from "d3-array";
-import { groupBy, range, sortBy } from "lodash";
+import { filter, groupBy, range, sortBy } from "lodash";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import tinycolor from "tinycolor2";
@@ -14,7 +14,6 @@ import { format } from "d3-format";
 import {
   hightlightPlanting,
   unhightlightPlanting,
-  useFiltersContext,
 } from "../contexts/FiltersContext";
 import { useEffectDebugger } from "../utils/useEffectDebugger";
 import {
@@ -167,7 +166,7 @@ export const ValueDistribution = ({
     () => (Array.isArray(valueNames) ? valueNames : [valueNames]),
     [valueNames]
   );
-  const { data: { plantings, highlightedPlanting } = {} } =
+  const { data: { groupedValues = [], highlightedPlanting, selectedCropType } = {}, loading, error } =
     useValueDistributionQuery();
   const { colors } = useTheme();
   const [isHovering, setIsHovering] = useState(false);
@@ -181,27 +180,10 @@ export const ValueDistribution = ({
   );
   const theme = useTheme();
   const canvas = useCanvas();
-  const values = useMemo(() => {
-    return Object.values(
-      groupBy(plantings, (p) => p.matchingFilters[0]?.id)
-    ).map((plantings) => {
-      const filter = plantings[0].matchingFilters[0];
-      return {
-        color: filter?.color || theme.valueDistribution.averageColor,
-        values: plantings
-          .map(
-            (planting) =>
-              planting.values.filter((v) => valueNames.includes(v.name)) //.map((v) => v.value)
-          )
-          .flat(),
-        showVariance: !!filter,
-        isSelectable: !!filter,
-        isHighlighted: highlightedFiltering === filter?.id,
-      };
-    });
-  }, [plantings, highlightedFiltering, valueNames]);
-  console.log({ plantings, highlightedPlanting, values, valueNames });
-  const allData = useMemo(() => values.map((v) => v.values).flat(), [values]);
+  const allData = useMemo(
+    () => groupedValues.map((v) => v.values.filter(v => valueNames.includes(v.name))).flat(),
+    [groupedValues, valueNames]
+  );
   const allValues = useMemo(() => allData.map((d) => d.value), [allData]);
   const scale = useMemo(() => {
     const [min, max] = extent(allValues);
@@ -214,12 +196,13 @@ export const ValueDistribution = ({
   }, [allValues, canvas.width]);
   const allMean = useMemo(() => mean(allValues) || 0, [allValues]);
   const [localHoveredValue, setLocalHoveredValue] = useState<
-    ValueDistributionQuery["plantings"][number]["values"][number] | null
+    ValueDistributionQuery["groupedValues"][number]["values"][number] | null
   >(null);
   const handlePlotMouseMove = useCallback(
     (e: React.MouseEvent) => {
-      const allSelectableData = values
-        .filter((v) => v.isSelectable)
+      //TODO memo
+      const allSelectableData = groupedValues
+        .filter((v) => !!v.filter)
         .map((v) => v.values)
         .flat();
       const allSelectableValues = allSelectableData.map((d) => d.value);
@@ -248,7 +231,7 @@ export const ValueDistribution = ({
       }
       setLocalHoveredValue(newLocalHoveredValue);
     },
-    [scale, values, localHoveredValue]
+    [scale, groupedValues, localHoveredValue]
   );
   const handlePlotMouseLeave = useCallback(() => {
     if (localHoveredValue) {
@@ -258,14 +241,14 @@ export const ValueDistribution = ({
   }, [localHoveredValue]);
   const handlePlotMouseClick = useCallback(() => {
     if (localHoveredValue) {
-      const color = values.find((v) =>
+      const color = groupedValues.find((v) =>
         v.values.some((v) => v.plantingId === localHoveredValue.plantingId)
-      )?.color;
+      )?.filter?.color;
       if (color) {
         onClickData(localHoveredValue.plantingId, color);
       }
     }
-  }, [localHoveredValue, values]);
+  }, [localHoveredValue, groupedValues]);
 
   useEffect(() => {
     const ctx = canvas.resize();
@@ -283,13 +266,17 @@ export const ValueDistribution = ({
     );
     ctx.fill();
 
-    const thereAreHighlighteds = values.some((v) => v.isHighlighted);
-    for (const valueSet of sortBy(values, "isHighlighted")) {
+    const thereAreHighlighteds = groupedValues.some(
+      (v) => v.filter?.isHighlighted
+    );
+    for (const valueSet of sortBy(groupedValues, "filter.isHighlighted")) {
       ctx.beginPath();
-      const color = tinycolor(valueSet.color);
+      const color = tinycolor(
+        valueSet.filter?.color || theme.valueDistribution.averageColor
+      );
       ctx.fillStyle = !thereAreHighlighteds
-        ? valueSet.color
-        : valueSet.isHighlighted
+        ? color.toString()
+        : valueSet.filter?.isHighlighted
         ? color.saturate(2).toString()
         : color
             .desaturate(12)
@@ -300,7 +287,8 @@ export const ValueDistribution = ({
       //   .toString();
       // ctx.shadowBlur = valueSet.isHighlighted ? 4 : 0;
 
-      if (valueSet.showVariance) {
+      // draw variance line
+      if (!!valueSet.filter) {
         const values = valueSet.values.map((v) => v.value);
         const q1 = quantile(values, 0.25);
         const q3 = quantile(values, 0.75);
@@ -375,7 +363,14 @@ export const ValueDistribution = ({
       });
       ctx.fill();
     }
-  }, [values, canvas.width, canvas.height, scale, allMean, highlightedPlanting?.id]);
+  }, [
+    groupedValues,
+    canvas.width,
+    canvas.height,
+    scale,
+    allMean,
+    highlightedPlanting?.id,
+  ]);
 
   const leftBranches = props.nesting - props.hideBranches;
 

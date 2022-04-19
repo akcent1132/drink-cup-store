@@ -8,22 +8,23 @@ export type ValueDistributionQueryVariables = Types.Exact<{
 }>;
 
 
-export type ValueDistributionQuery = { __typename?: 'Query', selectedCropType: string, plantings: Array<{ __typename?: 'Planting', id: string, values: Array<{ __typename?: 'PlantingValue', name: string, value: number, plantingId: string }>, matchingFilters: Array<{ __typename?: 'Filter', id: string, color: string }> }>, highlightedPlanting?: { __typename?: 'Planting', id: string } | null };
+export type ValueDistributionQuery = { __typename?: 'Query', selectedCropType: string, groupedValues: Array<{ __typename?: 'GroupedValues', id: string, filter?: { __typename?: 'Filter', id: string, color: string, isHighlighted: boolean } | null, values: Array<{ __typename?: 'PlantingValue', name: string, value: number, plantingId: string }> }>, highlightedPlanting?: { __typename?: 'Planting', id: string } | null };
 
 
 export const ValueDistributionDocument = gql`
     query ValueDistribution($cropType: String! = "") {
   selectedCropType @client @export(as: "cropType")
-  plantings(cropType: $cropType) {
+  groupedValues(cropType: $cropType) {
     id
+    filter {
+      id
+      color
+      isHighlighted
+    }
     values {
       name
       value
       plantingId
-    }
-    matchingFilters {
-      id
-      color
     }
   }
   highlightedPlanting {

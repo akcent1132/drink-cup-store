@@ -26,7 +26,13 @@ import { HyloBox } from "./HyloBox";
 import { FilterEditor } from "../components/FilterEditor";
 import { NestedRows } from "./NestedRows";
 import { schemeTableau10 } from "d3-scale-chromatic";
-import { FiltersProvider, useFiltersContext } from "../contexts/FiltersContext";
+import {
+  FiltersProvider,
+  selectFilter,
+  selectProducer,
+  unhightlightFilter,
+  useFiltersContext,
+} from "../contexts/FiltersContext";
 import { ROWS } from "../contexts/rows";
 import { Button } from "../components/Button";
 import { FarmerProfile } from "../components/FarmerProfile";
@@ -100,31 +106,8 @@ const RightFlipContainer = styled.div`
   width: 100%;
 `;
 
-const COLORS = schemeTableau10.slice(0, 9); //[
-//   "purple",
-//   "blue",
-//   "teal",
-//   "green",
-//   "olive",
-//   "yellow",
-//   "orange",
-//   // "red",
-//   "violet",
-// ];
+const COLORS = schemeTableau10.slice(0, 9); 
 
-function hoverReducer(
-  state: string | null,
-  action: { type: "enter" | "leave"; name: string }
-) {
-  switch (action.type) {
-    case "enter":
-      return action.name;
-    case "leave":
-      return state === action.name ? null : state;
-    default:
-      throw new Error();
-  }
-}
 
 const RandomContent = ({
   onClickData,
@@ -132,7 +115,6 @@ const RandomContent = ({
   onClickData: (plantingId: string, color: string) => void;
 }) => {
   const { colors } = useTheme();
-  const [hoverState, hoverDispatch] = useReducer(hoverReducer, null);
   const [{ filters }, dispatchFiltering] = useFiltersContext();
   const addFilter = useCallback(
     (name?: string, color?: string) => {
@@ -162,12 +144,8 @@ const RandomContent = ({
             filterId={filter.id}
             label={filter.name}
             color={filter.color}
-            onMouseEnter={() =>
-              hoverDispatch({ type: "enter", name: filter.name })
-            }
-            onMouseLeave={() =>
-              hoverDispatch({ type: "leave", name: filter.name })
-            }
+            onMouseEnter={() => highlightFilter(filter.id)}
+            onMouseLeave={() => unhightlightFilter(filter.id)}
             isWide
             showActions
           />
@@ -180,7 +158,6 @@ const RandomContent = ({
       </PaneHead>
       <NestedRows
         rows={ROWS}
-        hoverState={hoverState}
         onClickData={onClickData}
       />
     </RowContainer>
@@ -229,8 +206,8 @@ export const Dashboard = ({ iframeSrc }: Props) => {
       setPlantingCards(
         uniq([createFakePlantingCardData(plantingId, color), ...plantingCards])
       );
-      dispatchFilters({ type: "select", filterId: null });
-      dispatchFilters({ type: "selectFarmer", farmerId: null });
+      selectFilter(null);
+      selectProducer(null);
     },
     [plantingCards]
   );
@@ -343,3 +320,7 @@ export const App = (props: ComponentProps<typeof Dashboard>) => (
     </FiltersProvider>
   </ApolloProvider>
 );
+function highlightFilter(id: string): void {
+  throw new Error("Function not implemented.");
+}
+
