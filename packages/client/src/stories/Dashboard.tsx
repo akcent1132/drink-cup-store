@@ -27,10 +27,13 @@ import { FilterEditor } from "../components/FilterEditor";
 import { NestedRows } from "./NestedRows";
 import { schemeTableau10 } from "d3-scale-chromatic";
 import {
+  addFilter,
   FiltersProvider,
+  removeAllFilters,
   selectFilter,
   selectProducer,
-  unhightlightFilter,
+  highlightFilter,
+  unhighlightFilter,
   useFiltersContext,
 } from "../contexts/FiltersContext";
 import { ROWS } from "../contexts/rows";
@@ -41,6 +44,7 @@ import { CropSelector } from "./CropSelector";
 import { Spacer } from "../components/EventsCard";
 import { client } from "../graphql/client";
 import { ApolloProvider } from "@apollo/client";
+import { useRandomContentQuery } from "./Dashboard.generated";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -106,31 +110,31 @@ const RightFlipContainer = styled.div`
   width: 100%;
 `;
 
-const COLORS = schemeTableau10.slice(0, 9); 
-
+const COLORS = schemeTableau10.slice(0, 9);
 
 const RandomContent = ({
   onClickData,
 }: {
   onClickData: (plantingId: string, color: string) => void;
 }) => {
+  const { data: { filters = [], selectedCropType } = {} } =
+    useRandomContentQuery();
   const { colors } = useTheme();
-  const [{ filters }, dispatchFiltering] = useFiltersContext();
-  const addFilter = useCallback(
+  const handleAddFilter = useCallback(
     (name?: string, color?: string) => {
       const freeColors = without(COLORS, ...filters.map((g) => g.color));
       name = name || faker.company.companyName();
       const _color =
         color || sample(freeColors.length > 0 ? freeColors : COLORS)!;
-      dispatchFiltering({ type: "new", name, color: _color });
+      addFilter(_color, name, selectedCropType || "corn");
     },
     [filters]
   );
 
   useEffect(() => {
-    addFilter("Produce Corn, Beef", schemeTableau10[4]);
-    addFilter("General Mills - KS", schemeTableau10[0]);
-    dispatchFiltering({ type: "select", filterId: null });
+    removeAllFilters();
+    addFilter(schemeTableau10[4], "Produce Corn, Beef", "corn");
+    addFilter(schemeTableau10[0], "General Mills - KS", "corn");
   }, []);
 
   return (
@@ -145,7 +149,7 @@ const RandomContent = ({
             label={filter.name}
             color={filter.color}
             onMouseEnter={() => highlightFilter(filter.id)}
-            onMouseLeave={() => unhightlightFilter(filter.id)}
+            onMouseLeave={() => unhighlightFilter(filter.id)}
             isWide
             showActions
           />
@@ -153,13 +157,10 @@ const RandomContent = ({
         <Button
           label="+ Add"
           color={colors.bgSidePanel}
-          onClick={() => addFilter()}
+          onClick={() => handleAddFilter()}
         />
       </PaneHead>
-      <NestedRows
-        rows={ROWS}
-        onClickData={onClickData}
-      />
+      <NestedRows rows={ROWS} onClickData={onClickData} />
     </RowContainer>
   );
 };
@@ -320,7 +321,3 @@ export const App = (props: ComponentProps<typeof Dashboard>) => (
     </FiltersProvider>
   </ApolloProvider>
 );
-function highlightFilter(id: string): void {
-  throw new Error("Function not implemented.");
-}
-

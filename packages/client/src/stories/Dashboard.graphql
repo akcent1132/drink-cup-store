@@ -1,0 +1,8 @@
+query RandomContent($cropType: String! = "") {
+  selectedCropType @client @export(as: "cropType")
+  filters(cropType: $cropType) {
+    id
+    name
+    color
+  }
+}

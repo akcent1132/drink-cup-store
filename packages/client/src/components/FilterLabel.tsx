@@ -5,7 +5,10 @@ import "../index.css";
 import tinycolor from "tinycolor2";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { useFiltersContext } from "../contexts/FiltersContext";
+import {
+  removeFilter,
+  selectFilter,
+} from "../contexts/FiltersContext";
 
 export const defaultTheme = {
   height: 30,
@@ -110,22 +113,16 @@ export const FilterLabel = ({
   showActions,
 }: Props) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [_, dispatch] = useFiltersContext();
   const handleHover = useCallback(() => {
     setIsHovered(true);
     onMouseEnter && onMouseEnter();
   }, [onMouseEnter]);
   const handleLeave = useCallback(() => {
-    setIsHovered(false); onMouseLeave && onMouseLeave();
+    setIsHovered(false);
+    onMouseLeave && onMouseLeave();
   }, [onMouseLeave]);
-  const handleDelete = useCallback(
-    () => dispatch({ type: "delete", filterId }),
-    []
-  );
-  const handleSelect = useCallback(
-    () => dispatch({ type: "select", filterId }),
-    []
-  );
+  const handleDelete = useCallback(() => removeFilter(filterId), []);
+  const handleSelect = useCallback(() => selectFilter(filterId), []);
   return (
     <Root
       {...{ color, onClick, className }}

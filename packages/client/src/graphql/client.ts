@@ -44,7 +44,7 @@ const getPlantingsOfFilter = (
   }-${id}`;
   if (plantingsOfFilterCache[id]?.hash !== hash) {
     const rnd = seedrandom(hash);
-    const portion = 0.12 + 0.34 * rnd();
+    const portion = 0.03 + 0.07 * rnd();
     plantingsOfFilterCache[id] = {
       hash,
       plantings: plantings.filter(() => rnd() < portion),
@@ -104,6 +104,7 @@ const typePolicies: StrictTypedTypePolicies = {
         },
       },
       groupedValues(_, variables) {
+        console.log("get gouped values")
         // @ts-ignore
         const cropType: string = variables.args.cropType;
         const unmatchedPlantings = getPlantings(cropType);
@@ -195,10 +196,14 @@ setTimeout(
           query Test23 {
             test
             selectedCropType
-            plantings(cropType: "corn") {
+            groupedValues(cropType: "corn") {
               id
-              matchingFilters {
-                id
+              filter {
+                name
+              }
+              values {
+                name
+                plantingId
               }
             }
             filters(cropType: "corn") @client {

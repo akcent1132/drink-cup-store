@@ -31,7 +31,7 @@ const createPlantings = (
   meanMax = 5
 ): Planting[] => {
   const rnd = seedrandom(cropType + "create planting data");
-  return range(32 + 64 * rnd()).map((i) => {
+  return range(count).map((i) => {
     const id = (plantingId++).toString();
     const values: PlantingValue[] = [];
     const walk = (rows: RowData[]) => {
@@ -147,10 +147,10 @@ export const unhightlightPlanting = (plantingId: string) => {
 };
 
 export const highlightedFilterId = makeVar<string | null>(null);
-export const hightlightFilter = (filterId: string) => {
+export const highlightFilter = (filterId: string) => {
   highlightedFilterId(filterId);
 };
-export const unhightlightFilter = (filterId: string) => {
+export const unhighlightFilter = (filterId: string) => {
   if (filterId === highlightedPlantingId()) highlightedPlantingId(null);
 };
 
@@ -201,6 +201,11 @@ export const updateFilterName = (filterId: string, name: string) =>
 export const removeFilter = (filterId: string) => {
   filters(filters().filter((f) => f.id !== filterId));
   selectedFilter(selectedFilter() === filterId ? null : selectedFilter());
+};
+
+export const removeAllFilters = () => {
+  filters([]);
+  selectedFilter(null);
 };
 
 export const editFilter = (filterId: string, params: Partial<FilterParams>) =>
