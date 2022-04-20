@@ -11,7 +11,7 @@ const usePrevious = (value: any, initialValue: any) => {
 export const useEffectDebugger = (
   effectHook: any,
   dependencies: any,
-  dependencyNames = []
+  dependencyNames = [] as string[]
 ) => {
   const previousDeps = usePrevious(dependencies, []);
 

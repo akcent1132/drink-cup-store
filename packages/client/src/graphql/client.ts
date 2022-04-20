@@ -1,6 +1,6 @@
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 import { MockedProvider } from "@apollo/client/testing";
-import { groupBy, range, remove } from "lodash";
+import { groupBy, memoize, range, remove } from "lodash";
 import {
   filters,
   highlightedFilterId,
@@ -54,6 +54,35 @@ const getPlantingsOfFilter = (
   return plantingsOfFilterCache[id].plantings;
 };
 
+const getGroupedValues = memoize((cropType) => {
+  const unmatchedPlantings = getPlantings(cropType);
+  const cropFilters = filters()
+    .filter((f) => f.cropType === cropType)
+    .map((filter) => {
+      const matchingPlantingIds = getPlantingsOfFilter(
+        filter.id,
+        filter.cropType,
+        filter.activeParams
+      ).map((p) => p.id);
+      const matchingPlantings = remove(unmatchedPlantings, (p) =>
+        matchingPlantingIds.includes(p.id)
+      );
+      return {
+        filter,
+        plantings: matchingPlantings,
+      };
+    });
+  const groupedValues = [
+    { filter: null, plantings: unmatchedPlantings },
+    ...cropFilters,
+  ].map(({ filter, plantings }) => ({
+    id: filter?.id || 'unmatched_values',
+    filter,
+    values: plantings.map((planting) => planting.values).flat(),
+  }));
+  return groupedValues
+})
+
 const typePolicies: StrictTypedTypePolicies = {
   Query: {
     fields: {
@@ -87,6 +116,12 @@ const typePolicies: StrictTypedTypePolicies = {
           return plantings().find((planting) => planting.id === id) || null;
         },
       },
+      highlightedFilter: {
+        read() {
+          const id = highlightedFilterId();
+          return filters().find((filter) => filter.id === id) || null;
+        },
+      },
       openEventCards: {
         read(_, variables) {
           // @ts-ignore
@@ -104,35 +139,11 @@ const typePolicies: StrictTypedTypePolicies = {
         },
       },
       groupedValues(_, variables) {
-        console.log("get gouped values")
+        console.log("get grouped values")
         // @ts-ignore
         const cropType: string = variables.args.cropType;
-        const unmatchedPlantings = getPlantings(cropType);
-        const cropFilters = filters()
-          .filter((f) => f.cropType === cropType)
-          .map((filter) => {
-            const matchingPlantingIds = getPlantingsOfFilter(
-              filter.id,
-              filter.cropType,
-              filter.activeParams
-            ).map((p) => p.id);
-            const matchingPlantings = remove(unmatchedPlantings, (p) =>
-              matchingPlantingIds.includes(p.id)
-            );
-            return {
-              filter,
-              plantings: matchingPlantings,
-            };
-          });
-        const groupedValues = [
-          { filter: null, plantings: unmatchedPlantings },
-          ...cropFilters,
-        ].map(({ filter, plantings }) => ({
-          id: filter?.id || 'unmatched_values',
-          filter,
-          values: plantings.map((planting) => planting.values).flat(),
-        }));
-        return groupedValues
+        return getGroupedValues(cropType)
+        
       },
     },
   },

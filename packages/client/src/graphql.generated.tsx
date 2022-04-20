@@ -86,6 +86,7 @@ export type Query = {
   __typename: 'Query';
   filters: Array<Filter>;
   groupedValues: Array<GroupedValues>;
+  highlightedFilter: Maybe<Filter>;
   highlightedPlanting: Maybe<Planting>;
   openEventCards: Array<Planting>;
   planting: Maybe<Planting>;
@@ -181,10 +182,11 @@ export type PlantingValueFieldPolicy = {
 	plantingId?: FieldPolicy<any> | FieldReadFunction<any>,
 	value?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('filters' | 'groupedValues' | 'highlightedPlanting' | 'openEventCards' | 'planting' | 'plantings' | 'selectedCropType' | 'test' | QueryKeySpecifier)[];
+export type QueryKeySpecifier = ('filters' | 'groupedValues' | 'highlightedFilter' | 'highlightedPlanting' | 'openEventCards' | 'planting' | 'plantings' | 'selectedCropType' | 'test' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
 	filters?: FieldPolicy<any> | FieldReadFunction<any>,
 	groupedValues?: FieldPolicy<any> | FieldReadFunction<any>,
+	highlightedFilter?: FieldPolicy<any> | FieldReadFunction<any>,
 	highlightedPlanting?: FieldPolicy<any> | FieldReadFunction<any>,
 	openEventCards?: FieldPolicy<any> | FieldReadFunction<any>,
 	planting?: FieldPolicy<any> | FieldReadFunction<any>,

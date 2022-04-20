@@ -142,7 +142,7 @@ const RandomContent = ({
       <PaneHead>
         <CropSelector />
         <Spacer />
-        {[...filters].reverse().map((filter, i) => (
+        {[...filters].reverse().map((filter) => (
           <FilterLabel
             key={filter.id}
             filterId={filter.id}

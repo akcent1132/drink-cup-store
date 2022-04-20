@@ -2,6 +2,7 @@ extend type Query {
   plantings(cropType: String!): [Planting!]!
   planting(id: String!): Planting
   highlightedPlanting: Planting
+  highlightedFilter: Filter
   groupedValues(cropType: String!): [GroupedValues!]!
   filters(cropType: String!): [Filter!]!
   selectedCropType: String!

@@ -1,6 +1,7 @@
 import { findLastIndex, last } from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
 import { ValueDistribution } from "../components/ValueDistribution";
+import { useValueDistributionQuery } from "../components/ValueDistribution.generated";
 import { RowData } from "../contexts/rows";
 
 
@@ -43,6 +44,7 @@ export const NestedRows = ({
   rows: RowData[];
   onClickData: (plantingId: string, color: string) => void;
 }) => {
+  const query = useValueDistributionQuery();
   const flatRows = useMemo(() => flattenRows(rows), [rows]);
   const [isClosed, setIsClosed] = useState<boolean[]>(
     new Array(rows.length).fill(false)
@@ -81,7 +83,7 @@ export const NestedRows = ({
 
   return (
     <React.Fragment>
-      {flatRows.map(
+      {[flatRows[3]].map(
         (
           {
             row: { name, showAggregation },
@@ -104,6 +106,7 @@ export const NestedRows = ({
             onToggleChildren={() => toggleOpen(i)}
             openState={openStates[i]!}
             onClickData={onClickData}
+            queryResult={query}
           />
         )
       )}

@@ -12,6 +12,7 @@ import tinycolor from "tinycolor2";
 import { ValuePopup } from "./ValuePopup";
 import { format } from "d3-format";
 import {
+  highlightedPlantingId,
   hightlightPlanting,
   unhightlightPlanting,
 } from "../contexts/FiltersContext";
@@ -20,6 +21,7 @@ import {
   useValueDistributionQuery,
   ValueDistributionQuery,
 } from "./ValueDistribution.generated";
+import { useReactiveVar } from "@apollo/client";
 
 // TODO read height from props
 
@@ -150,6 +152,7 @@ type Props = {
   onToggleChildren: () => void;
   openState: "open" | "closed" | "parentClosed";
   onClickData: (plantingId: string, color: string) => void;
+  queryResult: ReturnType<typeof useValueDistributionQuery>;
 };
 
 /**
@@ -160,14 +163,20 @@ export const ValueDistribution = ({
   highlightedFiltering,
   valueNames,
   onClickData,
+  queryResult,
   ...props
 }: Props) => {
   valueNames = useMemo(
     () => (Array.isArray(valueNames) ? valueNames : [valueNames]),
     [valueNames]
   );
-  const { data: { groupedValues = [], highlightedPlanting, selectedCropType } = {}, loading, error } =
-    useValueDistributionQuery();
+  const {
+    data: { groupedValues = [], highlightedFilter, highlightedPlanting } = {},
+  } = queryResult;
+  // const _higlightedPlantingId = useReactiveVar(highlightedPlantingId)
+  // const highlightedPlanting = useMemo(() => _higlightedPlantingId && {
+  //   id: _higlightedPlantingId,
+  // } || null, [_higlightedPlantingId]);
   const { colors } = useTheme();
   const [isHovering, setIsHovering] = useState(false);
   const onHoverData = useCallback(
@@ -181,7 +190,12 @@ export const ValueDistribution = ({
   const theme = useTheme();
   const canvas = useCanvas();
   const allData = useMemo(
-    () => groupedValues.map((v) => v.values.filter(v => valueNames.includes(v.name))).flat(),
+    () =>
+      groupedValues
+        .map((v) => {
+          return v.values.filter((v) => valueNames.includes(v.name)).map(data => ({...data, filter: v.filter}))
+        })
+        .flat(),
     [groupedValues, valueNames]
   );
   const allValues = useMemo(() => allData.map((d) => d.value), [allData]);
@@ -201,10 +215,8 @@ export const ValueDistribution = ({
   const handlePlotMouseMove = useCallback(
     (e: React.MouseEvent) => {
       //TODO memo
-      const allSelectableData = groupedValues
-        .filter((v) => !!v.filter)
-        .map((v) => v.values)
-        .flat();
+      const allSelectableData = allData
+        .filter((v) => !!v.filter);
       const allSelectableValues = allSelectableData.map((d) => d.value);
       if (allSelectableValues.length === 0) {
         return;
@@ -231,7 +243,7 @@ export const ValueDistribution = ({
       }
       setLocalHoveredValue(newLocalHoveredValue);
     },
-    [scale, groupedValues, localHoveredValue]
+    [scale, allData, localHoveredValue]
   );
   const handlePlotMouseLeave = useCallback(() => {
     if (localHoveredValue) {
@@ -250,6 +262,19 @@ export const ValueDistribution = ({
     }
   }, [localHoveredValue, groupedValues]);
 
+
+  useEffectDebugger(() => {}, [
+    groupedValues,
+    highlightedPlanting,
+    localHoveredValue,
+    highlightedFilter,
+  ],[
+    'groupedValues',
+    'highlightedPlanting',
+    'localHoveredValue',
+    'highlightedFilter',
+  ]);
+
   useEffect(() => {
     const ctx = canvas.resize();
     if (!ctx) {
@@ -266,17 +291,17 @@ export const ValueDistribution = ({
     );
     ctx.fill();
 
-    const thereAreHighlighteds = groupedValues.some(
-      (v) => v.filter?.isHighlighted
-    );
-    for (const valueSet of sortBy(groupedValues, "filter.isHighlighted")) {
+    for (const valueSet of sortBy(
+      groupedValues,
+      ({ filter }) => highlightedFilter && highlightedFilter.id === filter?.id
+    )) {
       ctx.beginPath();
       const color = tinycolor(
         valueSet.filter?.color || theme.valueDistribution.averageColor
       );
-      ctx.fillStyle = !thereAreHighlighteds
+      ctx.fillStyle = !highlightedFilter
         ? color.toString()
-        : valueSet.filter?.isHighlighted
+        : highlightedFilter && highlightedFilter.id === valueSet.filter?.id
         ? color.saturate(2).toString()
         : color
             .desaturate(12)
@@ -349,6 +374,7 @@ export const ValueDistribution = ({
 
     // Draw hover
     if (highlightedPlanting) {
+      console.log("highlightedPlanting.id", highlightedPlanting.id)
       ctx.beginPath();
       ctx.fillStyle = theme.color("white");
       allData.map((data) => {
@@ -370,6 +396,7 @@ export const ValueDistribution = ({
     scale,
     allMean,
     highlightedPlanting?.id,
+    highlightedFilter?.id,
   ]);
 
   const leftBranches = props.nesting - props.hideBranches;

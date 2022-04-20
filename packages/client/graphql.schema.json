@@ -969,6 +969,18 @@
             "deprecationReason": null
           },
           {
+            "name": "highlightedFilter",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "Filter",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "highlightedPlanting",
             "description": null,
             "args": [],

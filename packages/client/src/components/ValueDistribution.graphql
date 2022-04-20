@@ -1,11 +1,10 @@
 query ValueDistribution($cropType: String! = "") {
   selectedCropType @client @export(as: "cropType")
-  groupedValues(cropType: $cropType) {
+  groupedValues(cropType: $cropType) @client {
     id
     filter {
       id
       color
-      isHighlighted
     }
     values {
       name
@@ -14,6 +13,9 @@ query ValueDistribution($cropType: String! = "") {
     }
   }
   highlightedPlanting {
+    id
+  }
+  highlightedFilter {
     id
   }
 }

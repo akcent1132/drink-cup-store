@@ -151,9 +151,7 @@ export const highlightFilter = (filterId: string) => {
   highlightedFilterId(filterId);
 };
 export const unhighlightFilter = (filterId: string) => {
-  if (filterId === highlightedFilterId()) {
-    highlightedFilterId(null)
-  };
+  if (filterId === highlightedPlantingId()) highlightedPlantingId(null);
 };
 
 type Action =
@@ -226,7 +224,7 @@ export const editFilter = (filterId: string, params: Partial<FilterParams>) =>
     )
   );
 
-const filtersReducer = (state: State, action: Action): State => {
+const uiReducer = (state: State, action: Action): State => {
   switch (action.type) {
     case "new": {
       const filter = createFilter(action.color, action.name, "corn");
@@ -292,16 +290,16 @@ const filtersReducer = (state: State, action: Action): State => {
   }
 };
 
-const FiltersContext = React.createContext<[State, (action: Action) => void]>([
+const UiContext = React.createContext<[State, (action: Action) => void]>([
   defaultState,
   () => {},
 ]);
 
-export const FiltersProvider = ({ children }: React.PropsWithChildren<{}>) => {
-  const state = useReducer(filtersReducer, defaultState);
+export const UiProvider = ({ children }: React.PropsWithChildren<{}>) => {
+  const state = useReducer(uiReducer, defaultState);
   return (
-    <FiltersContext.Provider value={state}>{children}</FiltersContext.Provider>
+    <UiContext.Provider value={state}>{children}</UiContext.Provider>
   );
 };
 
-export const useFiltersContext = () => useContext(FiltersContext);
+export const useUiContext = () => useContext(UiContext);
