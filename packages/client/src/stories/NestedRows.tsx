@@ -83,7 +83,7 @@ export const NestedRows = ({
 
   return (
     <React.Fragment>
-      {[flatRows[3]].map(
+      {flatRows.map(
         (
           {
             row: { name, showAggregation },

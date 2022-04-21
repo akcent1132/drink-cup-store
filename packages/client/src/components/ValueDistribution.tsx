@@ -193,7 +193,9 @@ export const ValueDistribution = ({
     () =>
       groupedValues
         .map((v) => {
-          return v.values.filter((v) => valueNames.includes(v.name)).map(data => ({...data, filter: v.filter}))
+          return v.values
+            .filter((v) => valueNames.includes(v.name))
+            .map((data) => ({ ...data, filter: v.filter }));
         })
         .flat(),
     [groupedValues, valueNames]
@@ -210,13 +212,12 @@ export const ValueDistribution = ({
   }, [allValues, canvas.width]);
   const allMean = useMemo(() => mean(allValues) || 0, [allValues]);
   const [localHoveredValue, setLocalHoveredValue] = useState<
-    ValueDistributionQuery["groupedValues"][number]["values"][number] | null
+    typeof allData[number] | null
   >(null);
   const handlePlotMouseMove = useCallback(
     (e: React.MouseEvent) => {
       //TODO memo
-      const allSelectableData = allData
-        .filter((v) => !!v.filter);
+      const allSelectableData = allData.filter((v) => !!v.filter);
       const allSelectableValues = allSelectableData.map((d) => d.value);
       if (allSelectableValues.length === 0) {
         return;
@@ -252,28 +253,21 @@ export const ValueDistribution = ({
     setLocalHoveredValue(null);
   }, [localHoveredValue]);
   const handlePlotMouseClick = useCallback(() => {
-    if (localHoveredValue) {
-      const color = groupedValues.find((v) =>
-        v.values.some((v) => v.plantingId === localHoveredValue.plantingId)
-      )?.filter?.color;
-      if (color) {
-        onClickData(localHoveredValue.plantingId, color);
-      }
+    if (localHoveredValue && localHoveredValue.filter) {
+      onClickData(localHoveredValue.plantingId, localHoveredValue.filter.color);
     }
-  }, [localHoveredValue, groupedValues]);
+  }, [localHoveredValue]);
 
-
-  useEffectDebugger(() => {}, [
-    groupedValues,
-    highlightedPlanting,
-    localHoveredValue,
-    highlightedFilter,
-  ],[
-    'groupedValues',
-    'highlightedPlanting',
-    'localHoveredValue',
-    'highlightedFilter',
-  ]);
+  // useEffectDebugger(
+  //   () => {},
+  //   [groupedValues, highlightedPlanting, localHoveredValue, highlightedFilter],
+  //   [
+  //     "groupedValues",
+  //     "highlightedPlanting",
+  //     "localHoveredValue",
+  //     "highlightedFilter",
+  //   ]
+  // );
 
   useEffect(() => {
     const ctx = canvas.resize();
@@ -292,29 +286,26 @@ export const ValueDistribution = ({
     ctx.fill();
 
     for (const valueSet of sortBy(
-      groupedValues,
-      ({ filter }) => highlightedFilter && highlightedFilter.id === filter?.id
+      Object.values(groupBy(allData, 'filter.id')),
+      valueSet => highlightedFilter && highlightedFilter.id === valueSet[0].filter?.id
     )) {
+      const filter = valueSet[0].filter;
       ctx.beginPath();
       const color = tinycolor(
-        valueSet.filter?.color || theme.valueDistribution.averageColor
+        filter?.color || theme.valueDistribution.averageColor
       );
       ctx.fillStyle = !highlightedFilter
         ? color.toString()
-        : highlightedFilter && highlightedFilter.id === valueSet.filter?.id
+        : highlightedFilter && highlightedFilter.id === filter?.id
         ? color.saturate(2).toString()
         : color
             .desaturate(12)
             .setAlpha(color.getAlpha() / 2)
             .toString();
-      // ctx.shadowColor = tinycolor(theme.color(valueSet.color))
-      //   .brighten(12)
-      //   .toString();
-      // ctx.shadowBlur = valueSet.isHighlighted ? 4 : 0;
 
       // draw variance line
-      if (!!valueSet.filter) {
-        const values = valueSet.values.map((v) => v.value);
+      if (!!filter) {
+        const values = valueSet.map((v) => v.value);
         const q1 = quantile(values, 0.25);
         const q3 = quantile(values, 0.75);
         if (q1 && q3) {
@@ -347,7 +338,7 @@ export const ValueDistribution = ({
       }
 
       // draw ticks
-      valueSet.values.map((value) => {
+      valueSet.map((value) => {
         ctx.rect(
           scale(value.value) - theme.valueDistribution.tickWidth / 2,
           theme.valueDistribution.varianceLineHeight,
@@ -374,7 +365,6 @@ export const ValueDistribution = ({
 
     // Draw hover
     if (highlightedPlanting) {
-      console.log("highlightedPlanting.id", highlightedPlanting.id)
       ctx.beginPath();
       ctx.fillStyle = theme.color("white");
       allData.map((data) => {

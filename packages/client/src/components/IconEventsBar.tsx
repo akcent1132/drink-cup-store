@@ -203,44 +203,199 @@ const useLastNonNull = <T,>(value: T) => {
   return last.current;
 };
 
-import { useReducer } from "react";
-import { makeVar, useReactiveVar } from "@apollo/client";
-
-const reactiveVar = makeVar(performance.now());
-
-
 /**
  * Primary UI component for user interaction
  */
 export const IconEventsBar = (props: Props) => {
-  const [reducerState, dispatch] = useReducer(
-    (_: number, time: number) => time,
-    performance.now()
+  const [events, setEvents] = useState(props.events || []);
+  const [hoveredEventType, setHoveredEventType] = useState<string | null>(null);
+  const [selectedEventType, setSelectedEventType] = useState<string | null>(
+    null
   );
-  const reactiveState = useReactiveVar(reactiveVar);
+  // ugly hacks to test event details card behaviors
+  const [hoveredEventPoint, setHoveredEvent] = useStateLater<FarmEvent | null>(
+    null
+  );
+  const prevHoveredPoint = useLastNonNull(hoveredEventPoint);
+  const [hoveredCard, setHoveredCard] = useState<FarmEvent | null>(null);
+  const hoveredEvent = hoveredEventPoint || hoveredCard;
+  // console.log({hoveredEventPoint, hoveredCard, prevHoveredPoint, hoveredEvent})
+  const [fixedEvent, setFixedEvent] = useState<FarmEvent | null>(null);
+  const ref = useRef<HTMLDivElement>(null);
+  const refDate = useRef<HTMLDivElement>(null);
+  const refDateStart = useRef<HTMLDivElement>(null);
+  const refDateEnd = useRef<HTMLDivElement>(null);
+  const hideStartDate = useXOverlap(refDate, refDateStart, [hoveredEvent]);
+  const hideEndDate = useXOverlap(refDate, refDateEnd, [hoveredEvent]);
+  const [width, height] = useSize(ref);
+  const { iconEventsBar: theme, colors } = useTheme();
+  const dateForce = useMemo(() => createDateForce(), []);
+  const simulation = useMemo(
+    () =>
+      forceSimulation<IconNode>([])
+        .force("y", forceY(30).strength(0.6))
+        .force("date", dateForce)
+        .force("radius", forceCollide(theme.iconSize * 0.55)),
+    []
+  );
+  const scale = useMemo(() => {
+    const [first, last] = extent(events.map((e) => e.date));
+    const start = timeYear.floor(first || new Date());
+    const end = timeYear.ceil(last || new Date());
 
-  const reducerUpdateTime = useMemo(() => performance.now() - reducerState, [
-    reducerState
-  ]);
-  const reactiveUpdateTime = useMemo(() => performance.now() - reactiveState, [
-    reactiveState
-  ]);
+    const xStart = theme.middleLineMargin + theme.iconSize / 2;
+    const xEnd = (width || 100) - theme.middleLineMargin - theme.iconSize / 2;
+    const scale = scaleTime().domain([start, end]).range([xStart, xEnd]);
+    dateForce.setScale(scale);
+    simulation.alpha(1).tick(500).restart();
+    return scale;
+  }, [width, theme.middleLineMargin]);
+
+  const closestEventToMouse = useCallback(
+    (mouseEvent: React.MouseEvent) => {
+      const mouseX = mouseEvent.nativeEvent.offsetX;
+      const closestEventIndex = minIndex(events, (event) => {
+        const diff = Math.abs(scale(event.date) - mouseX);
+        return diff <= theme.timelineMouseMaxDistance ? diff : null;
+      });
+      return closestEventIndex >= 0 ? events[closestEventIndex] : null;
+    },
+    [events, theme.timelineMouseMaxDistance, scale]
+  );
+  const eventClickOut = useCallback(() => {
+    setFixedEvent(null);
+    setHoveredEvent(null);
+  }, []);
+  const eventHover = useCallback(
+    (e: React.MouseEvent) => {
+      const event = closestEventToMouse(e);
+      setHoveredEvent(event, event ? null : 500);
+    },
+    [closestEventToMouse]
+  );
+  const eventClick = useCallback(
+    (e: React.MouseEvent) => {
+      setFixedEvent(closestEventToMouse(e));
+    },
+    [closestEventToMouse]
+  );
+  const eventLeave = useCallback(() => {
+    setHoveredEvent(null, 500);
+  }, []);
+
   return (
-    <div className="App">
-      <button onClick={() => dispatch(performance.now())}>
-        update reducer
-      </button>
-      <h2>
-        reducer update time: {reducerUpdateTime} (clicked at: {reducerState})
-      </h2>
+    <Bar ref={ref}>
+      <IconContainer>
+        {uniqBy(events, (e) => e.type).map((event, i) => {
+          const iconProps = {
+            id: `icon-${event.id}`,
+            key: event.id,
+            css: [
+              css`
+                :hover {
+                  opacity: 1;
+                }
+                transition: opacity 0.4s ease-out;
+                opacity: 0.7;
+              `,
+              getHighlightStyle(
+                hoveredEventType || hoveredEvent?.type || null,
+                selectedEventType,
+                event.type,
+                colors.secondary,
+                "icon"
+              ),
+            ],
+            width: theme.iconSize,
+            height: theme.iconSize,
+            // fill: "white",
+            title: event.type,
+            onMouseEnter: () => setHoveredEventType(event.type),
+            onMouseLeave: () => setHoveredEventType(null),
+            onClick: () =>
+              setSelectedEventType(
+                selectedEventType === event.type ? null : event.type
+              ),
+          };
 
-      <button onClick={() => reactiveVar(performance.now())}>
-        update reactive var
-      </button>
-      <h2>
-        reactive var update time: {reactiveUpdateTime} (clicked at:{" "}
-        {reactiveState})
-      </h2>
-    </div>
+          const Icon = getEventIcon(event.type);
+          return <Icon {...iconProps} />;
+        })}
+      </IconContainer>
+      <DateContainer>
+        {/* {hoveredEvent ? (
+          <DateText left={scale(hoveredEvent.date)}>
+            <div ref={refDate}>{timeFormat("%b %-d")(hoveredEvent.date)}</div>
+          </DateText>
+        ) : null} */}
+
+        <div
+          ref={refDateStart}
+          css={css`
+            opacity: ${hideStartDate ? 0 : 1};
+          `}
+        >
+          {timeFormat("%b %-d")(scale.domain()[0])}
+        </div>
+
+        <div
+          ref={refDateEnd}
+          css={css`
+            opacity: ${hideEndDate ? 0 : 1};
+          `}
+        >
+          {timeFormat("%b %-d")(new Date(scale.domain()[1].getTime() - 1))}
+        </div>
+      </DateContainer>
+      <div
+        css={css`
+          position: relative;
+        `}
+      >
+        {fixedEvent ? (
+          <EventDetailsPopup
+            key={fixedEvent.id}
+            date={`${timeFormat("%b %-d, %Y")(fixedEvent.date)}`}
+            title={capitalize(fixedEvent.type)}
+            x={scale(fixedEvent.date)}
+            y={theme.tickHeight / 2 + theme.timelineTopMargin}
+            onClose={eventClickOut}
+          />
+        ) : null}
+        {hoveredEvent && hoveredEvent !== fixedEvent ? (
+          <EventDetailsPopup
+            key={hoveredEvent.id}
+            date={`${timeFormat("%b %-d, %Y")(hoveredEvent.date)}`}
+            title={capitalize(hoveredEvent.type)}
+            x={scale(hoveredEvent.date)}
+            y={theme.tickHeight / 2 + theme.timelineTopMargin}
+            onMouseEnter={(e) =>
+              prevHoveredPoint && setHoveredCard(prevHoveredPoint)
+            }
+            onMouseLeave={(e) => setHoveredCard(null)}
+          />
+        ) : null}
+      </div>
+      <TimelineRoot
+        onClick={eventClick}
+        onMouseMove={(e) => eventHover(e)}
+        onMouseLeave={() => eventLeave()}
+      >
+        <TimelineLine />
+        {events.map((event) => (
+          <Tick
+            x={scale(event.date)}
+            css={getHighlightStyle(
+              hoveredEventType || hoveredEvent?.type || null,
+              selectedEventType,
+              event.type,
+              colors.secondary,
+              "tick"
+            )}
+            key={`tick-${event.id}`}
+          />
+        ))}
+      </TimelineRoot>
+    </Bar>
   );
 };

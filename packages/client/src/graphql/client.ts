@@ -207,6 +207,9 @@ setTimeout(
           query Test23 {
             test
             selectedCropType
+            plantings(cropType: "corn") {
+              id
+            }
             groupedValues(cropType: "corn") {
               id
               filter {
