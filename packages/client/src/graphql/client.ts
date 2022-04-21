@@ -1,17 +1,15 @@
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
-import { MockedProvider } from "@apollo/client/testing";
-import { groupBy, memoize, range, remove } from "lodash";
+import { memoize, remove } from "lodash";
 import {
   filters,
   highlightedFilterId,
   highlightedPlantingId,
-  openEventCards,
+  openEventCardIds,
   plantings,
   selectedCropType,
 } from "../contexts/FiltersContext";
 import { loader } from "graphql.macro";
 import {
-  Filter,
   FilterParams,
   Planting,
   StrictTypedTypePolicies,
@@ -76,12 +74,12 @@ const getGroupedValues = memoize((cropType) => {
     { filter: null, plantings: unmatchedPlantings },
     ...cropFilters,
   ].map(({ filter, plantings }) => ({
-    id: filter?.id || 'unmatched_values',
+    id: filter?.id || "unmatched_values",
     filter,
     values: plantings.map((planting) => planting.values).flat(),
   }));
-  return groupedValues
-})
+  return groupedValues;
+});
 
 const typePolicies: StrictTypedTypePolicies = {
   Query: {
@@ -126,9 +124,12 @@ const typePolicies: StrictTypedTypePolicies = {
         read(_, variables) {
           // @ts-ignore
           const cropType: string = variables.args.cropType;
-          return openEventCards().filter(
+          const cropPlantings = plantings().filter(
             (planting) => planting.cropType === cropType
           );
+          return openEventCardIds()
+            .map((id) => cropPlantings.find((p) => p.id === id))
+            .filter(Boolean);
         },
       },
       filters: {
@@ -139,11 +140,10 @@ const typePolicies: StrictTypedTypePolicies = {
         },
       },
       groupedValues(_, variables) {
-        console.log("get grouped values")
+        console.log("get grouped values");
         // @ts-ignore
         const cropType: string = variables.args.cropType;
-        return getGroupedValues(cropType)
-        
+        return getGroupedValues(cropType);
       },
     },
   },
@@ -229,7 +229,6 @@ setTimeout(
           }
         `,
       })
-      .then((result) => console.log("plantings", result)),
+      .then((result: any) => console.log("plantings", result)),
   100
 );
-

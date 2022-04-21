@@ -7,7 +7,12 @@ import "../index.css";
 import { IconEventsBar, FarmEvent } from "./IconEventsBar";
 import CloseIcon from "@mui/icons-material/Close";
 import tinycolor from "tinycolor2";
-import { hightlightPlanting, selectProducer, unhightlightPlanting, useFiltersContext } from "../contexts/FiltersContext";
+import {
+  closeEventCard,
+  hightlightPlanting,
+  selectProducer,
+  unhightlightPlanting,
+} from "../contexts/FiltersContext";
 import InvertColorsIcon from "@mui/icons-material/InvertColors";
 import ThermostatIcon from "@mui/icons-material/Thermostat";
 import PublicIcon from "@mui/icons-material/Public";
@@ -104,15 +109,8 @@ const MiniInfo = styled.div`
   margin-right: 8px;
 `;
 
-type Parameters = {
-  zone: string;
-  temperature: string;
-  precipitation: string;
-  texture: string;
-};
 interface Props {
   plantingId: string;
-  onClose?: () => void;
   hideName?: boolean;
   hideColorBorder?: boolean;
 }
@@ -121,12 +119,14 @@ export const EventsCard = ({
   plantingId,
   hideName = false,
   hideColorBorder = false,
-  onClose,
 }: Props) => {
   const { data: { planting } = {} } = useEventsCardQuery({
     variables: { plantingId },
   });
-  console.log({planting})
+  const onClose = useCallback(
+    () => planting && closeEventCard(planting.id),
+    [planting?.id]
+  );
   const onHoverData = useCallback(
     () => planting && hightlightPlanting(planting.id),
     [planting?.id]
@@ -140,7 +140,7 @@ export const EventsCard = ({
   }
   return (
     <Root
-      color={"grey"} //TODO read color from matching filters
+      color={planting.matchingFilters[0]?.color || "grey"}
       isHighlighted={planting.isHighlighted}
       onMouseEnter={onHoverData}
       onMouseLeave={onLeaveData}
@@ -149,14 +149,14 @@ export const EventsCard = ({
       <Head>
         <Title>{planting.title}</Title>
         <Spacer />
-        {!hideName ? <Tip content="Producer profile">
-          <Name
-            onClick={() => selectProducer(planting.producerName)}
-          >
-            <ContactPageIcon fontSize="inherit" />
-            {planting.producerName}
-          </Name>
-        </Tip> : null}
+        {!hideName ? (
+          <Tip content="Producer profile">
+            <Name onClick={() => selectProducer(planting.producerName)}>
+              <ContactPageIcon fontSize="inherit" />
+              {planting.producerName}
+            </Name>
+          </Tip>
+        ) : null}
 
         {onClose ? (
           <IconButton onClick={onClose}>

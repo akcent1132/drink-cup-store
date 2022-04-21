@@ -133,11 +133,21 @@ export const plantings = makeVar<Planting[]>(
     createPlantings(cropType.name, cropType.plantingCount)
   ).flat()
 );
-export const openEventCards = makeVar<Planting[]>(
+export const openEventCardIds = makeVar<string[]>(
   plantings()
     .filter((p) => p.cropType === selectedCropType())
+    .map(p => p.id)
     .slice(0, 2)
 );
+export const openEventCard = (plantingId: string) => {
+  if (!openEventCardIds().includes(plantingId)) {
+    openEventCardIds([plantingId, ...openEventCardIds()])
+  }
+}
+export const closeEventCard = (plantingId: string) => {
+  openEventCardIds(openEventCardIds().filter(id => id !== plantingId))
+}
+
 export const highlightedPlantingId = makeVar<string | null>(null);
 export const hightlightPlanting = (plantingId: string) => {
   highlightedPlantingId(plantingId);

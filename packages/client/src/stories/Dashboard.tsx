@@ -112,11 +112,7 @@ const RightFlipContainer = styled.div`
 
 const COLORS = schemeTableau10.slice(0, 9);
 
-const RandomContent = ({
-  onClickData,
-}: {
-  onClickData: (plantingId: string, color: string) => void;
-}) => {
+const RandomContent = () => {
   const { data: { filters = [], selectedCropType } = {} } =
     useRandomContentQuery();
   const { colors } = useTheme();
@@ -160,7 +156,7 @@ const RandomContent = ({
           onClick={() => handleAddFilter()}
         />
       </PaneHead>
-      <NestedRows rows={ROWS} onClickData={onClickData} />
+      <NestedRows rows={ROWS}/>
     </RowContainer>
   );
 };
@@ -195,43 +191,21 @@ interface Props {
 
 export const Dashboard = ({ iframeSrc }: Props) => {
   const [tabIndex, setTabIndex] = useState(0);
-  const [plantingCards, setPlantingCards] = useState([
-    createFakePlantingCardData("72", schemeTableau10[4]!),
-    createFakePlantingCardData("67", schemeTableau10[0]!),
-  ]);
   const [{ selectedFilterId, selectedFarmerId }, dispatchFilters] =
     useFiltersContext();
   const rightSide = useRef<HTMLDivElement>(null);
-  const handleClickRowData = useCallback(
-    (plantingId: string, color: string) => {
-      setPlantingCards(
-        uniq([createFakePlantingCardData(plantingId, color), ...plantingCards])
-      );
-      selectFilter(null);
-      selectProducer(null);
-    },
-    [plantingCards]
-  );
-
-  const handleCloseCard = useCallback(
-    (cardId: string) => {
-      setPlantingCards(plantingCards.filter((card) => card.id !== cardId));
-    },
-    [plantingCards]
-  );
-
   const pages = useMemo(
     () => [
       {
         label: "Compare",
-        renderPanel: () => <RandomContent onClickData={handleClickRowData} />,
+        renderPanel: () => <RandomContent/>,
       },
       {
         label: "My Data",
-        renderPanel: () => <RandomContent onClickData={handleClickRowData} />,
+        renderPanel: () => <RandomContent/>,
       },
     ],
-    [handleClickRowData]
+    []
   );
 
   const [SideContent, sideContentKey] = useMemo(
@@ -243,14 +217,8 @@ export const Dashboard = ({ iframeSrc }: Props) => {
             <FarmerProfile name={selectedFarmerId} />,
             `FarmerProfile-${selectedFarmerId}`,
           ]
-        : [
-            <PlantingCardList
-              plantingCards={plantingCards}
-              onCloseCard={handleCloseCard}
-            />,
-            `Events`,
-          ],
-    [selectedFilterId, selectedFarmerId, plantingCards, handleCloseCard]
+        : [<PlantingCardList />, `Events`],
+    [selectedFilterId, selectedFarmerId]
   );
 
   return (

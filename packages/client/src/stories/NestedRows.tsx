@@ -39,10 +39,8 @@ const flattenRows = (
 
 export const NestedRows = ({
   rows,
-  onClickData,
 }: {
   rows: RowData[];
-  onClickData: (plantingId: string, color: string) => void;
 }) => {
   const query = useValueDistributionQuery();
   const flatRows = useMemo(() => flattenRows(rows), [rows]);
@@ -105,7 +103,6 @@ export const NestedRows = ({
             hideBranches={hideBranches}
             onToggleChildren={() => toggleOpen(i)}
             openState={openStates[i]!}
-            onClickData={onClickData}
             queryResult={query}
           />
         )

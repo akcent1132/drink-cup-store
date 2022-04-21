@@ -6,13 +6,7 @@ import { ClassNames } from "@emotion/react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import React from "react";
 import { EventsCard, Spacer } from "./EventsCard";
-import { createFakePlantingCardData } from "../stories/Dashboard";
 import { usePlantingCardListQuery } from "./PlantingCardList.generated";
-
-type Props = {
-  plantingCards: ReturnType<typeof createFakePlantingCardData>[];
-  onCloseCard: (id: string) => void;
-};
 
 const Events = styled.div`
   display: flex;
@@ -40,12 +34,11 @@ const hiddenStyles = {
   maxHeight: "0px",
 };
 
-export const PlantingCardList = ({ plantingCards, onCloseCard }: Props) => {
+export const PlantingCardList = () => {
   const {data: { openEventCards } = {}} = usePlantingCardListQuery();
   if (!openEventCards) {
     return null;
   }
-  console.log({openEventCards})
   return (
     <Events>
       <ClassNames>
@@ -75,7 +68,6 @@ export const PlantingCardList = ({ plantingCards, onCloseCard }: Props) => {
                   <EventsCard
                     key={plantingId}
                     plantingId={plantingId}
-                    onClose={() => onCloseCard(plantingId)}
                   />
                 </CardWrapper>
               </CSSTransition>

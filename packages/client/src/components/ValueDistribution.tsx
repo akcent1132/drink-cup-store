@@ -14,6 +14,7 @@ import { format } from "d3-format";
 import {
   highlightedPlantingId,
   hightlightPlanting,
+  openEventCard,
   unhightlightPlanting,
 } from "../contexts/FiltersContext";
 import { useEffectDebugger } from "../utils/useEffectDebugger";
@@ -151,7 +152,6 @@ type Props = {
   hideBranches: number;
   onToggleChildren: () => void;
   openState: "open" | "closed" | "parentClosed";
-  onClickData: (plantingId: string, color: string) => void;
   queryResult: ReturnType<typeof useValueDistributionQuery>;
 };
 
@@ -162,7 +162,6 @@ export const ValueDistribution = ({
   label,
   highlightedFiltering,
   valueNames,
-  onClickData,
   queryResult,
   ...props
 }: Props) => {
@@ -254,7 +253,7 @@ export const ValueDistribution = ({
   }, [localHoveredValue]);
   const handlePlotMouseClick = useCallback(() => {
     if (localHoveredValue && localHoveredValue.filter) {
-      onClickData(localHoveredValue.plantingId, localHoveredValue.filter.color);
+      openEventCard(localHoveredValue.plantingId);
     }
   }, [localHoveredValue]);
 
