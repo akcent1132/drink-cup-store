@@ -1,5 +1,5 @@
 import { randomNormal } from "d3-random";
-import { range, sample, sampleSize, startCase, sum } from "lodash";
+import { range, sample, sampleSize, startCase, sum, uniqueId } from "lodash";
 import React, { useContext, useReducer } from "react";
 import seedrandom from "seedrandom";
 import { RowData, ROWS } from "./rows";
@@ -19,6 +19,7 @@ import {
   FilterParams,
   Planting,
   PlantingValue,
+  Producer,
 } from "../graphql.generated";
 import { schemeTableau10 } from "d3-scale-chromatic";
 import { getFarmEvent, randomZone } from "../utils/random";
@@ -67,7 +68,7 @@ const createPlantings = (
       cropType,
       values,
       title: `${startCase(cropType)} ${2017 + Math.floor(Math.random() * 6)}`,
-      producerName: Math.random().toString(32).slice(-7),
+      producer: sample(producers())!,
       params: {
         __typename: "PlantingParams",
         zone: zone.name,
@@ -125,8 +126,15 @@ export const filters = makeVar<Filter[]>([
   createFilter(schemeTableau10[4], "Produce Corn, Beef", "corn"),
   createFilter(schemeTableau10[0], "General Mills - KS", "corn"),
 ]);
-export const selectedFilter = makeVar<string | null>(null);
-export const selectedProducer = makeVar<string | null>(null);
+export const producers = makeVar<Producer[]>(
+  range(128).map(() => ({
+    __typename: "Producer",
+    id: uniqueId(),
+    code: Math.random().toString(32).slice(-7),
+  }))
+);
+export const selectedFilterId = makeVar<string | null>(null);
+export const selectedProducerId = makeVar<string | null>(null);
 export const selectedCropType = makeVar(CROPS[5].name);
 export const plantings = makeVar<Planting[]>(
   CROPS.map((cropType) =>
@@ -136,17 +144,17 @@ export const plantings = makeVar<Planting[]>(
 export const openEventCardIds = makeVar<string[]>(
   plantings()
     .filter((p) => p.cropType === selectedCropType())
-    .map(p => p.id)
+    .map((p) => p.id)
     .slice(0, 2)
 );
 export const openEventCard = (plantingId: string) => {
   if (!openEventCardIds().includes(plantingId)) {
-    openEventCardIds([plantingId, ...openEventCardIds()])
+    openEventCardIds([plantingId, ...openEventCardIds()]);
   }
-}
+};
 export const closeEventCard = (plantingId: string) => {
-  openEventCardIds(openEventCardIds().filter(id => id !== plantingId))
-}
+  openEventCardIds(openEventCardIds().filter((id) => id !== plantingId));
+};
 
 export const highlightedPlantingId = makeVar<string | null>(null);
 export const hightlightPlanting = (plantingId: string) => {
@@ -162,8 +170,8 @@ export const highlightFilter = (filterId: string) => {
 };
 export const unhighlightFilter = (filterId: string) => {
   if (filterId === highlightedFilterId()) {
-    highlightedFilterId(null)
-  };
+    highlightedFilterId(null);
+  }
 };
 
 type Action =
@@ -194,11 +202,17 @@ export const addFilter = (color: string, name: string, cropType: string) => {
   filters([...filters(), filter]);
 };
 
-export const selectFilter = (filterId: string | null) =>
-  selectedFilter(filterId);
+// TODO combine right panel content type into one state
+export const selectFilter = (filterId: string | null) => {
+  selectedFilterId(filterId);
+  selectedProducerId(null);
+};
 
-export const selectProducer = (producerId: string | null) =>
-  selectedProducer(producerId);
+export const selectProducer = (producerId: string | null) => {
+  console.log("selectProducer", producerId)
+  selectedProducerId(producerId);
+  selectedFilterId(null);
+};
 
 export const applyDraftFilter = (filterId: string) =>
   filters(
@@ -212,12 +226,12 @@ export const updateFilterName = (filterId: string, name: string) =>
 
 export const removeFilter = (filterId: string) => {
   filters(filters().filter((f) => f.id !== filterId));
-  selectedFilter(selectedFilter() === filterId ? null : selectedFilter());
+  selectedFilterId(selectedFilterId() === filterId ? null : selectedFilterId());
 };
 
 export const removeAllFilters = () => {
   filters([]);
-  selectedFilter(null);
+  selectedFilterId(null);
 };
 
 export const editFilter = (filterId: string, params: Partial<FilterParams>) =>

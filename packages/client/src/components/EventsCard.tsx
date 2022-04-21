@@ -151,9 +151,9 @@ export const EventsCard = ({
         <Spacer />
         {!hideName ? (
           <Tip content="Producer profile">
-            <Name onClick={() => selectProducer(planting.producerName)}>
+            <Name onClick={() => selectProducer(planting.producer.id)}>
               <ContactPageIcon fontSize="inherit" />
-              {planting.producerName}
+              {planting.producer.code}
             </Name>
           </Tip>
         ) : null}

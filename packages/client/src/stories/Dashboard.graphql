@@ -6,3 +6,12 @@ query RandomContent($cropType: String! = "") {
     color
   }
 }
+
+query Dashboard {
+  selectedFilter {
+    id
+  }
+  selectedProducer {
+    id
+  }
+}

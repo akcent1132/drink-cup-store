@@ -2,7 +2,10 @@ query EventsCard($plantingId: String!) {
     planting(id: $plantingId) {
         id
         isHighlighted
-        producerName
+        producer {
+            id
+            code
+        }
         title
         params {
             precipitation

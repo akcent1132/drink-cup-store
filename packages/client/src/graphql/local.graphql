@@ -8,13 +8,15 @@ extend type Query {
   selectedCropType: String!
   test: Boolean!
   openEventCards(cropType: String!): [Planting!]!
+  selectedFilter: Filter
+  selectedProducer: Producer
 }
 type Planting {
   id: String!
   cropType: String!
   values: [PlantingValue!]!
   title: String!
-  producerName: String!
+  producer: Producer!
   params: PlantingParams!
   events: [PlantingEvent!]!
   matchingFilters: [Filter!]!
@@ -67,4 +69,9 @@ type GroupedValues {
   id: String!
   filter: Filter
   values: [PlantingValue!]!
+}
+
+type Producer {
+  id: String!
+  code: String!
 }

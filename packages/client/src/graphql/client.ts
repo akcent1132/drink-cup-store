@@ -6,12 +6,17 @@ import {
   highlightedPlantingId,
   openEventCardIds,
   plantings,
+  producers,
   selectedCropType,
+  selectedFilterId,
+  selectedProducerId,
 } from "../contexts/FiltersContext";
 import { loader } from "graphql.macro";
 import {
+  Filter,
   FilterParams,
   Planting,
+  Producer,
   StrictTypedTypePolicies,
 } from "../graphql.generated";
 import { shuffler } from "d3-array";
@@ -145,6 +150,14 @@ const typePolicies: StrictTypedTypePolicies = {
         const cropType: string = variables.args.cropType;
         return getGroupedValues(cropType);
       },
+      selectedFilter() {
+        const id = selectedFilterId();
+        return filters().find((f) => f.id === id) || null;
+      },
+      selectedProducer() {
+        const id = selectedProducerId();
+        return producers().find((p) => p.id === id) || null;
+      },
     },
   },
   Filter: {
@@ -207,7 +220,10 @@ setTimeout(
           query Test23 {
             test
             selectedCropType
-            plantings(cropType: "corn") {
+            # selectedFilter {
+            #   id
+            # }
+            selectedProducer {
               id
             }
             groupedValues(cropType: "corn") {
@@ -229,6 +245,7 @@ setTimeout(
           }
         `,
       })
-      .then((result: any) => console.log("plantings", result)),
+      .then((result: any) => console.log("plantings", result))
+      .catch((e: any) => console.error(":(((", e)),
   100
 );

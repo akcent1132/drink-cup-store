@@ -55,7 +55,7 @@ export type Planting = {
   isHighlighted: Scalars['Boolean'];
   matchingFilters: Array<Filter>;
   params: PlantingParams;
-  producerName: Scalars['String'];
+  producer: Producer;
   title: Scalars['String'];
   values: Array<PlantingValue>;
 };
@@ -82,6 +82,12 @@ export type PlantingValue = {
   value: Scalars['Float'];
 };
 
+export type Producer = {
+  __typename: 'Producer';
+  code: Scalars['String'];
+  id: Scalars['String'];
+};
+
 export type Query = {
   __typename: 'Query';
   filters: Array<Filter>;
@@ -92,6 +98,8 @@ export type Query = {
   planting: Maybe<Planting>;
   plantings: Array<Planting>;
   selectedCropType: Scalars['String'];
+  selectedFilter: Maybe<Filter>;
+  selectedProducer: Maybe<Producer>;
   test: Scalars['Boolean'];
 };
 
@@ -151,7 +159,7 @@ export type GroupedValuesFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	values?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type PlantingKeySpecifier = ('cropType' | 'events' | 'id' | 'isHighlighted' | 'matchingFilters' | 'params' | 'producerName' | 'title' | 'values' | PlantingKeySpecifier)[];
+export type PlantingKeySpecifier = ('cropType' | 'events' | 'id' | 'isHighlighted' | 'matchingFilters' | 'params' | 'producer' | 'title' | 'values' | PlantingKeySpecifier)[];
 export type PlantingFieldPolicy = {
 	cropType?: FieldPolicy<any> | FieldReadFunction<any>,
 	events?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -159,7 +167,7 @@ export type PlantingFieldPolicy = {
 	isHighlighted?: FieldPolicy<any> | FieldReadFunction<any>,
 	matchingFilters?: FieldPolicy<any> | FieldReadFunction<any>,
 	params?: FieldPolicy<any> | FieldReadFunction<any>,
-	producerName?: FieldPolicy<any> | FieldReadFunction<any>,
+	producer?: FieldPolicy<any> | FieldReadFunction<any>,
 	title?: FieldPolicy<any> | FieldReadFunction<any>,
 	values?: FieldPolicy<any> | FieldReadFunction<any>
 };
@@ -182,7 +190,12 @@ export type PlantingValueFieldPolicy = {
 	plantingId?: FieldPolicy<any> | FieldReadFunction<any>,
 	value?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('filters' | 'groupedValues' | 'highlightedFilter' | 'highlightedPlanting' | 'openEventCards' | 'planting' | 'plantings' | 'selectedCropType' | 'test' | QueryKeySpecifier)[];
+export type ProducerKeySpecifier = ('code' | 'id' | ProducerKeySpecifier)[];
+export type ProducerFieldPolicy = {
+	code?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type QueryKeySpecifier = ('filters' | 'groupedValues' | 'highlightedFilter' | 'highlightedPlanting' | 'openEventCards' | 'planting' | 'plantings' | 'selectedCropType' | 'selectedFilter' | 'selectedProducer' | 'test' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
 	filters?: FieldPolicy<any> | FieldReadFunction<any>,
 	groupedValues?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -192,6 +205,8 @@ export type QueryFieldPolicy = {
 	planting?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>,
 	selectedCropType?: FieldPolicy<any> | FieldReadFunction<any>,
+	selectedFilter?: FieldPolicy<any> | FieldReadFunction<any>,
+	selectedProducer?: FieldPolicy<any> | FieldReadFunction<any>,
 	test?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type StrictTypedTypePolicies = {
@@ -222,6 +237,10 @@ export type StrictTypedTypePolicies = {
 	PlantingValue?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | PlantingValueKeySpecifier | (() => undefined | PlantingValueKeySpecifier),
 		fields?: PlantingValueFieldPolicy,
+	},
+	Producer?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | ProducerKeySpecifier | (() => undefined | ProducerKeySpecifier),
+		fields?: ProducerFieldPolicy,
 	},
 	Query?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | QueryKeySpecifier | (() => undefined | QueryKeySpecifier),

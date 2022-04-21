@@ -44,7 +44,10 @@ import { CropSelector } from "./CropSelector";
 import { Spacer } from "../components/EventsCard";
 import { client } from "../graphql/client";
 import { ApolloProvider } from "@apollo/client";
-import { useRandomContentQuery } from "./Dashboard.generated";
+import {
+  useDashboardQuery,
+  useRandomContentQuery,
+} from "./Dashboard.generated";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -156,7 +159,7 @@ const RandomContent = () => {
           onClick={() => handleAddFilter()}
         />
       </PaneHead>
-      <NestedRows rows={ROWS}/>
+      <NestedRows rows={ROWS} />
     </RowContainer>
   );
 };
@@ -190,19 +193,20 @@ interface Props {
 }
 
 export const Dashboard = ({ iframeSrc }: Props) => {
+  const { data: { selectedFilter, selectedProducer } = {} } =
+    useDashboardQuery();
+  console.log({selectedFilter, selectedProducer})
   const [tabIndex, setTabIndex] = useState(0);
-  const [{ selectedFilterId, selectedFarmerId }, dispatchFilters] =
-    useFiltersContext();
   const rightSide = useRef<HTMLDivElement>(null);
   const pages = useMemo(
     () => [
       {
         label: "Compare",
-        renderPanel: () => <RandomContent/>,
+        renderPanel: () => <RandomContent />,
       },
       {
         label: "My Data",
-        renderPanel: () => <RandomContent/>,
+        renderPanel: () => <RandomContent />,
       },
     ],
     []
@@ -210,17 +214,20 @@ export const Dashboard = ({ iframeSrc }: Props) => {
 
   const [SideContent, sideContentKey] = useMemo(
     () =>
-      selectedFilterId !== null
-        ? [<FilterEditor selectedFilterId={selectedFilterId} />, "FilterEditor"]
-        : selectedFarmerId !== null
+      selectedFilter
         ? [
-            <FarmerProfile name={selectedFarmerId} />,
-            `FarmerProfile-${selectedFarmerId}`,
+            <FilterEditor selectedFilterId={selectedFilter.id} />,
+            "FilterEditor",
+          ]
+        : selectedProducer
+        ? [
+            <FarmerProfile name={selectedProducer.id} />,
+            `FarmerProfile-${selectedProducer.id}`,
           ]
         : [<PlantingCardList />, `Events`],
-    [selectedFilterId, selectedFarmerId]
+    [selectedFilter?.id, selectedProducer?.id]
   );
-
+  console.log("selectedFilter?.id, selectedProducer?.id", selectedFilter?.id, selectedProducer?.id)
   return (
     <Root>
       <Header>
@@ -284,8 +291,6 @@ export const Dashboard = ({ iframeSrc }: Props) => {
 
 export const App = (props: ComponentProps<typeof Dashboard>) => (
   <ApolloProvider client={client}>
-    <FiltersProvider>
-      <Dashboard {...props} />
-    </FiltersProvider>
+    <Dashboard {...props} />
   </ApolloProvider>
 );

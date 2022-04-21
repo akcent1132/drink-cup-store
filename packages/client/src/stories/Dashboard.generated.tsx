@@ -10,6 +10,11 @@ export type RandomContentQueryVariables = Types.Exact<{
 
 export type RandomContentQuery = { __typename?: 'Query', selectedCropType: string, filters: Array<{ __typename?: 'Filter', id: string, name: string, color: string }> };
 
+export type DashboardQueryVariables = Types.Exact<{ [key: string]: never; }>;
+
+
+export type DashboardQuery = { __typename?: 'Query', selectedFilter?: { __typename?: 'Filter', id: string } | null, selectedProducer?: { __typename?: 'Producer', id: string } | null };
+
 
 export const RandomContentDocument = gql`
     query RandomContent($cropType: String! = "") {
@@ -49,3 +54,40 @@ export function useRandomContentLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type RandomContentQueryHookResult = ReturnType<typeof useRandomContentQuery>;
 export type RandomContentLazyQueryHookResult = ReturnType<typeof useRandomContentLazyQuery>;
 export type RandomContentQueryResult = Apollo.QueryResult<RandomContentQuery, RandomContentQueryVariables>;
+export const DashboardDocument = gql`
+    query Dashboard {
+  selectedFilter {
+    id
+  }
+  selectedProducer {
+    id
+  }
+}
+    `;
+
+/**
+ * __useDashboardQuery__
+ *
+ * To run a query within a React component, call `useDashboardQuery` and pass it any options that fit your needs.
+ * When your component renders, `useDashboardQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useDashboardQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useDashboardQuery(baseOptions?: Apollo.QueryHookOptions<DashboardQuery, DashboardQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<DashboardQuery, DashboardQueryVariables>(DashboardDocument, options);
+      }
+export function useDashboardLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<DashboardQuery, DashboardQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<DashboardQuery, DashboardQueryVariables>(DashboardDocument, options);
+        }
+export type DashboardQueryHookResult = ReturnType<typeof useDashboardQuery>;
+export type DashboardLazyQueryHookResult = ReturnType<typeof useDashboardLazyQuery>;
+export type DashboardQueryResult = Apollo.QueryResult<DashboardQuery, DashboardQueryVariables>;
