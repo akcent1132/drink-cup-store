@@ -129,6 +129,9 @@ const typePolicies: StrictTypedTypePolicies = {
         read(_, options) {
           // @ts-ignore
           const cropType: string = options.args.cropType;
+          if (!cropType) {
+            return null;
+          }
           const cropPlantings = plantings().filter(
             (planting) => planting.cropType === cropType
           );
