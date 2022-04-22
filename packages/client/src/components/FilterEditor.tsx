@@ -145,7 +145,11 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
   const { data: { filter } = {} } = useFilterEditorQuery({
     variables: { filterId: selectedFilterId },
   });
-  const handleClose = useCallback(() => filter && applyDraftFilter(filter.id), [filter?.id]);
+  const handleApply = useCallback(
+    () => filter && applyDraftFilter(filter.id),
+    [filter?.id]
+  );
+  const handleClose = useCallback(() => filter && selectFilter(null), []);
   const updateName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) =>
       filter && updateFilterName(filter.id, event.target.value),
@@ -275,7 +279,7 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
             options={LAND_PREPARATION}
           />
         </Label>
-        <GButton label="Update" onClick={handleClose} />
+        <GButton label="Update" onClick={handleApply} />
       </Body>
     </Root>
   );
