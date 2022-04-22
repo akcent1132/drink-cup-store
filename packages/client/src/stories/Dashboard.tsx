@@ -227,7 +227,6 @@ export const Dashboard = ({ iframeSrc }: Props) => {
         : [<PlantingCardList />, `Events`],
     [selectedFilter?.id, selectedProducer?.id]
   );
-  console.log("selectedFilter?.id, selectedProducer?.id", selectedFilter?.id, selectedProducer?.id)
   return (
     <Root>
       <Header>

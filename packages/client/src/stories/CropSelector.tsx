@@ -24,7 +24,6 @@ export const CropSelector = () => {
     //   </Box>
     // )
   })), [])
-  console.log("data?.selectedCropType", data?.selectedCropType)
   return (
     <Select
       css={css`

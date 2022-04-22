@@ -109,6 +109,7 @@ const createFilter = (
   cropType: string
 ): Filter => {
   const id = (++filterId).toString();
+  const params = createFilterParams();
   return {
     __typename: "Filter",
     id,
@@ -116,8 +117,8 @@ const createFilter = (
     cropType,
     color,
     plantings: [],
-    draftParams: createFilterParams(),
-    activeParams: null,
+    draftParams: params,
+    activeParams: params,
     isHighlighted: false,
   };
 };
@@ -209,7 +210,6 @@ export const selectFilter = (filterId: string | null) => {
 };
 
 export const selectProducer = (producerId: string | null) => {
-  console.log("selectProducer", producerId)
   selectedProducerId(producerId);
   selectedFilterId(null);
 };

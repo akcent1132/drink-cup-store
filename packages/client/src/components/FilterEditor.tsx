@@ -26,6 +26,7 @@ import { TagSelect } from "./TagSelect";
 import CloseIcon from "@mui/icons-material/Close";
 import { Spacer } from "./EventsCard";
 import {
+  applyDraftFilter,
   editFilter,
   selectFilter,
   updateFilterName,
@@ -144,35 +145,35 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
   const { data: { filter } = {} } = useFilterEditorQuery({
     variables: { filterId: selectedFilterId },
   });
-  const handleClose = useCallback(() => selectFilter(null), []);
+  const handleClose = useCallback(() => filter && applyDraftFilter(filter.id), [filter?.id]);
   const updateName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) =>
       filter && updateFilterName(filter.id, event.target.value),
-    [!filter]
+    [filter?.id]
   );
   const updateYears = useCallback(
     ([from, to]) =>
       filter && editFilter(filter.id, { years: range(from, to + 1) }),
-    [!filter]
+    [filter?.id]
   );
   const updateSweetnessScore = useCallback(
     ([from, to]) =>
       filter && editFilter(filter.id, { sweetnessScore: range(from, to + 1) }),
-    [!filter]
+    [filter?.id]
   );
   const updateFlavorScore = useCallback(
     ([from, to]) =>
       filter && editFilter(filter.id, { flavorScore: range(from, to + 1) }),
-    [!filter]
+    [filter?.id]
   );
   const updateTasteScore = useCallback(
     ([from, to]) =>
       filter && editFilter(filter.id, { tasteScore: range(from, to + 1) }),
-    [!filter]
+    [filter?.id]
   );
   const updateParams = useCallback(
     (params) => filter && editFilter(filter.id, params),
-    [!filter]
+    [filter?.id]
   );
   const params = filter?.draftParams || filter?.activeParams;
   if (!params) {

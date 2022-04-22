@@ -57,7 +57,7 @@ const getPlantingsOfFilter = (
   return plantingsOfFilterCache[id].plantings;
 };
 
-const getGroupedValues = memoize((cropType) => {
+const getGroupedValues = (cropType: string) => {
   const unmatchedPlantings = getPlantings(cropType);
   const cropFilters = filters()
     .filter((f) => f.cropType === cropType)
@@ -84,7 +84,7 @@ const getGroupedValues = memoize((cropType) => {
     values: plantings.map((planting) => planting.values).flat(),
   }));
   return groupedValues;
-});
+};
 
 const typePolicies: StrictTypedTypePolicies = {
   Query: {
@@ -100,16 +100,16 @@ const typePolicies: StrictTypedTypePolicies = {
         },
       },
       plantings: {
-        read(_, variables) {
+        read(_, options) {
           // @ts-ignore
-          const cropType: string = variables.args.cropType;
+          const cropType: string = options.args.cropType;
           return getPlantings(cropType);
         },
       },
       planting: {
-        read(_, variables) {
+        read(_, options) {
           // @ts-ignore
-          const id: string = variables.args.id;
+          const id: string = options.args.id;
           return plantings().find((planting) => planting.id === id) || null;
         },
       },
@@ -126,9 +126,9 @@ const typePolicies: StrictTypedTypePolicies = {
         },
       },
       openEventCards: {
-        read(_, variables) {
+        read(_, options) {
           // @ts-ignore
-          const cropType: string = variables.args.cropType;
+          const cropType: string = options.args.cropType;
           const cropPlantings = plantings().filter(
             (planting) => planting.cropType === cropType
           );
@@ -138,24 +138,36 @@ const typePolicies: StrictTypedTypePolicies = {
         },
       },
       filters: {
-        read(_, variables) {
+        read(_, options) {
           // @ts-ignore
-          const cropType: string = variables.args.cropType;
+          const cropType: string = options.args.cropType;
           return filters().filter((f) => f.cropType === cropType);
         },
       },
       filter: {
-        read(_, variables) {
+        read(_, options) {
           // @ts-ignore
-          const id: string = variables.args.id;
+          const id: string = options.args.id;
           return filters().find((filter) => filter.id === id) || null;
         },
       },
-      groupedValues(_, variables) {
-        console.log("get grouped values");
+      groupedValues(_, options) {
         // @ts-ignore
-        const cropType: string = variables.args.cropType;
-        return getGroupedValues(cropType);
+        const cropType: string = options.args.cropType;
+        const hash =
+          filters()
+            .filter((f) => f.cropType === cropType)
+            .map((filter) => JSON.stringify(filter.activeParams))
+            .join() + plantings().length;
+
+        const [cacheHash, cacheGroupedValues] = options.storage[cropType] || [];
+        if (cacheHash === hash) {
+          return cacheGroupedValues;
+        } else {
+          const groupedValues = getGroupedValues(cropType);
+          options.storage[cropType] = [hash, groupedValues];
+          return groupedValues;
+        }
       },
       selectedFilter() {
         const id = selectedFilterId();
