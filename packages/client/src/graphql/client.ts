@@ -144,6 +144,13 @@ const typePolicies: StrictTypedTypePolicies = {
           return filters().filter((f) => f.cropType === cropType);
         },
       },
+      filter: {
+        read(_, variables) {
+          // @ts-ignore
+          const id: string = variables.args.id;
+          return filters().find((filter) => filter.id === id) || null;
+        },
+      },
       groupedValues(_, variables) {
         console.log("get grouped values");
         // @ts-ignore

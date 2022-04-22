@@ -90,6 +90,7 @@ export type Producer = {
 
 export type Query = {
   __typename: 'Query';
+  filter: Maybe<Filter>;
   filters: Array<Filter>;
   groupedValues: Array<GroupedValues>;
   highlightedFilter: Maybe<Filter>;
@@ -101,6 +102,11 @@ export type Query = {
   selectedFilter: Maybe<Filter>;
   selectedProducer: Maybe<Producer>;
   test: Scalars['Boolean'];
+};
+
+
+export type QueryFilterArgs = {
+  id: Scalars['String'];
 };
 
 
@@ -195,8 +201,9 @@ export type ProducerFieldPolicy = {
 	code?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('filters' | 'groupedValues' | 'highlightedFilter' | 'highlightedPlanting' | 'openEventCards' | 'planting' | 'plantings' | 'selectedCropType' | 'selectedFilter' | 'selectedProducer' | 'test' | QueryKeySpecifier)[];
+export type QueryKeySpecifier = ('filter' | 'filters' | 'groupedValues' | 'highlightedFilter' | 'highlightedPlanting' | 'openEventCards' | 'planting' | 'plantings' | 'selectedCropType' | 'selectedFilter' | 'selectedProducer' | 'test' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
+	filter?: FieldPolicy<any> | FieldReadFunction<any>,
 	filters?: FieldPolicy<any> | FieldReadFunction<any>,
 	groupedValues?: FieldPolicy<any> | FieldReadFunction<any>,
 	highlightedFilter?: FieldPolicy<any> | FieldReadFunction<any>,

@@ -5,20 +5,32 @@ import {
   Box,
   Button as GButton,
   RangeSelector,
-  Select,
   Stack,
   TextInput,
   Text,
 } from "grommet";
 import "../index.css";
 import { css, withTheme } from "@emotion/react";
-import React, { useCallback, useMemo, useState } from "react";
-import { CROPS, COLORS, AMENDMENTS, CLIMATE_REGION, FARM_PRACTICES, LAND_PREPARATION, SAMPLE_SOURCE, GROUPS } from "../contexts/lists";
+import React, { useCallback } from "react";
+import {
+  COLORS,
+  AMENDMENTS,
+  CLIMATE_REGION,
+  FARM_PRACTICES,
+  LAND_PREPARATION,
+  SAMPLE_SOURCE,
+  GROUPS,
+} from "../contexts/lists";
 import { range } from "lodash";
 import { TagSelect } from "./TagSelect";
 import CloseIcon from "@mui/icons-material/Close";
 import { Spacer } from "./EventsCard";
-import { useFiltersContext } from "../contexts/FiltersContext";
+import {
+  editFilter,
+  selectFilter,
+  updateFilterName,
+} from "../contexts/FiltersContext";
+import { useFilterEditorQuery } from "./FilterEditor.generated";
 
 const Root = withTheme(styled.div`
   background-color: ${(p) => p.theme.colors.bgSidePanel};
@@ -83,7 +95,9 @@ export const IconButton = styled.div`
   align-content: center;
 `;
 
-interface Props {selectedFilterId: string}
+interface Props {
+  selectedFilterId: string;
+}
 const YEAR_MIN = 2017;
 const YEAR_MAX = 2022;
 
@@ -126,75 +140,38 @@ const RangeInput = ({
 /**
  * Primary UI component for user interaction
  */
-export const FilterEditor = ({selectedFilterId}: Props) => {
-
-  const [{ filters }, dispatchFilters] = useFiltersContext();
-  const filter = useMemo(
-    () => filters.find((f) => f.id === selectedFilterId),
-    [filters, selectedFilterId]
-  );
-  const handleClose = useCallback(
-    () => dispatchFilters({ type: "select", filterId: null }),
-    []
-  );
+export const FilterEditor = ({ selectedFilterId }: Props) => {
+  const { data: { filter } = {} } = useFilterEditorQuery({
+    variables: { filterId: selectedFilterId },
+  });
+  const handleClose = useCallback(() => selectFilter(null), []);
   const updateName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) =>
-      filter &&
-      dispatchFilters({
-        type: "updateName",
-        filterId: filter.id,
-        name: event.target.value,
-      }),
+      filter && updateFilterName(filter.id, event.target.value),
     [!filter]
   );
   const updateYears = useCallback(
     ([from, to]) =>
-      filter &&
-      dispatchFilters({
-        type: "edit",
-        filterId: filter.id,
-        params: { years: range(from, to + 1) },
-      }),
+      filter && editFilter(filter.id, { years: range(from, to + 1) }),
     [!filter]
   );
   const updateSweetnessScore = useCallback(
     ([from, to]) =>
-      filter &&
-      dispatchFilters({
-        type: "edit",
-        filterId: filter.id,
-        params: { sweetnessScore: range(from, to + 1) },
-      }),
+      filter && editFilter(filter.id, { sweetnessScore: range(from, to + 1) }),
     [!filter]
   );
   const updateFlavorScore = useCallback(
     ([from, to]) =>
-      filter &&
-      dispatchFilters({
-        type: "edit",
-        filterId: filter.id,
-        params: { flavorScore: range(from, to + 1) },
-      }),
+      filter && editFilter(filter.id, { flavorScore: range(from, to + 1) }),
     [!filter]
   );
   const updateTasteScore = useCallback(
     ([from, to]) =>
-      filter &&
-      dispatchFilters({
-        type: "edit",
-        filterId: filter.id,
-        params: { tasteScore: range(from, to + 1) },
-      }),
+      filter && editFilter(filter.id, { tasteScore: range(from, to + 1) }),
     [!filter]
   );
   const updateParams = useCallback(
-    (params) =>
-      filter &&
-      dispatchFilters({
-        type: "edit",
-        filterId: filter.id,
-        params,
-      }),
+    (params) => filter && editFilter(filter.id, params),
     [!filter]
   );
   const params = filter?.draftParams || filter?.activeParams;
@@ -228,7 +205,7 @@ export const FilterEditor = ({selectedFilterId}: Props) => {
         />
         <Label label="Groups">
           <TagSelect
-            onChange={groups => updateParams({groups})}
+            onChange={(groups) => updateParams({ groups })}
             value={params.groups}
             options={GROUPS}
             allowSearch
@@ -236,21 +213,21 @@ export const FilterEditor = ({selectedFilterId}: Props) => {
         </Label>
         <Label label="Colors">
           <TagSelect
-            onChange={colors => updateParams({colors})}
+            onChange={(colors) => updateParams({ colors })}
             value={params.colors}
             options={COLORS}
           />
         </Label>
         <Label label="Climate Region">
           <TagSelect
-            onChange={climateRegion => updateParams({climateRegion})}
+            onChange={(climateRegion) => updateParams({ climateRegion })}
             value={params.climateRegion}
             options={CLIMATE_REGION}
           />
         </Label>
         <Label label="Sample Source">
           <TagSelect
-            onChange={sampleSource => updateParams({sampleSource})}
+            onChange={(sampleSource) => updateParams({ sampleSource })}
             value={params.sampleSource}
             options={SAMPLE_SOURCE}
           />
@@ -278,21 +255,21 @@ export const FilterEditor = ({selectedFilterId}: Props) => {
         />
         <Label label="Farm Practices">
           <TagSelect
-            onChange={farmPractices => updateParams({farmPractices})}
+            onChange={(farmPractices) => updateParams({ farmPractices })}
             value={params.farmPractices}
             options={FARM_PRACTICES}
           />
         </Label>
         <Label label="Amendments">
           <TagSelect
-            onChange={amendments => updateParams({amendments})}
+            onChange={(amendments) => updateParams({ amendments })}
             value={params.amendments}
             options={AMENDMENTS}
           />
         </Label>
         <Label label="Land Preparation">
           <TagSelect
-            onChange={landPreparation => updateParams({landPreparation})}
+            onChange={(landPreparation) => updateParams({ landPreparation })}
             value={params.landPreparation}
             options={LAND_PREPARATION}
           />

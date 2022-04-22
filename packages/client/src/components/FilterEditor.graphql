@@ -1,0 +1,33 @@
+query FilterEditor($filterId: String!) {
+  filter(id: $filterId) {
+    id
+    color
+    name
+    activeParams {
+      groups
+      colors
+      years
+      sweetnessScore
+      flavorScore
+      tasteScore
+      climateRegion
+      sampleSource
+      farmPractices
+      amendments
+      landPreparation
+    }
+    draftParams {
+      groups
+      colors
+      years
+      sweetnessScore
+      flavorScore
+      tasteScore
+      climateRegion
+      sampleSource
+      farmPractices
+      amendments
+      landPreparation
+    }
+  }
+}

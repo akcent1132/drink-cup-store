@@ -5,6 +5,7 @@ extend type Query {
   highlightedFilter: Filter
   groupedValues(cropType: String!): [GroupedValues!]!
   filters(cropType: String!): [Filter!]!
+  filter(id: String!): Filter
   selectedCropType: String!
   test: Boolean!
   openEventCards(cropType: String!): [Planting!]!
