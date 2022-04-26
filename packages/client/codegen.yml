@@ -6,9 +6,6 @@ generates:
     plugins:
       - "typescript"
       - "typescript-apollo-client-helpers"
-    config:
-      nonOptionalTypename: true
-      avoidOptionals: true
   # generate the types for the React component queries
   src/:
     documents: 

@@ -2,6 +2,7 @@ import { gql } from "apollo-server-express";
 import { randomBates, randomNormal } from "d3-random";
 import { range, sample, startCase, sum, uniqueId } from "lodash-es";
 import seedrandom from "seedrandom";
+import { Resolvers } from "../../resolvers.generated";
 
 export const typeDefs = gql`
   extend type Query {
@@ -16,7 +17,7 @@ export const typeDefs = gql`
     params: PlantingParams!
     events: [PlantingEvent!]!
     # matchingFilters: [Filter!]!
-    isHighlighted: Boolean!
+    # isHighlighted: Boolean!
   }
   type PlantingValue {
     name: String!
@@ -42,12 +43,13 @@ export const typeDefs = gql`
   }
 `;
 
-export const resolvers = {
+export const resolvers: Partial<Resolvers> = {
   Query: {
-    plantings: async (_: any, args: any) => {
+    // plantings
+    plantings: async (_, args) => {
       const cropType: string = args.cropType;
       return createPlantings(cropType, 3);
-    },
+    } ,
   },
 };
 
@@ -74,7 +76,6 @@ const createPlantings = (
         const norm = randomNormal.source(rnd)(mean, std);
         if (row.type === "value") {
           values.push({
-            __typename: "PlantingValue",
             name: row.name,
             value: norm(),
             plantingId: id,
@@ -90,19 +91,15 @@ const createPlantings = (
     let texture = [Math.random(), Math.random()];
     texture = texture.map((t) => Math.round((t / sum(texture)) * 100));
     return {
-      __typename: "Planting",
-      isHighlighted: false,
       id,
       cropType,
       values,
       title: `${startCase(cropType)} ${2017 + Math.floor(Math.random() * 6)}`,
       producer: {
-        __typename: "Producer",
         id: uniqueId(),
         code: Math.random().toString(32).slice(-7),
       },
       params: {
-        __typename: "PlantingParams",
         zone: zone.name,
         temperature: zone.temp.toString() + "°",
         precipitation: `${32 + Math.floor(32 * Math.random())}″`,
@@ -268,7 +265,6 @@ export const getFarmEvent = (seed?: string) => {
 
   date.setDate(365 * randomBates.source(rnd)(2)());
   return {
-    __typename: "PlantingEvent",
     type,
     date: date.toString(),
     id: uniqueId(),
