@@ -4,14 +4,24 @@
   "license": "GPL-3.0-only",
   "private": true,
   "devDependencies": {
+    "@graphql-codegen/cli": "2.6.2",
+    "@graphql-codegen/introspection": "2.1.1",
+    "@graphql-codegen/near-operation-file-preset": "^2.2.9",
+    "@graphql-codegen/typescript": "2.4.8",
+    "@graphql-codegen/typescript-apollo-client-helpers": "^2.1.15",
+    "@graphql-codegen/typescript-operations": "2.3.5",
+    "@graphql-codegen/typescript-react-apollo": "3.2.11",
+    "@graphql-codegen/typescript-resolvers": "2.6.1",
     "cross-env": "^7.0.3",
+    "graphql": "^16.4.0",
     "lerna": "^4.0.0"
   },
   "scripts": {
     "codegen": "cross-env FORCE_COLOR=1 lerna run codegen --no-prefix --stream -- --watch",
     "storybook": "cross-env FORCE_COLOR=1 lerna --scope client run storybook --no-prefix --stream",
     "chromatic": "cross-env FORCE_COLOR=1 lerna --scope client run chromatic --no-prefix --stream",
-    "server:start": "cross-env FORCE_COLOR=1 lerna --scope server run start --no-prefix --stream"
+    "server:start": "cross-env FORCE_COLOR=1 lerna --scope server run start --no-prefix --stream",
+    "codegen2": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {}
 }

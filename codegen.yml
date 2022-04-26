@@ -1,0 +1,40 @@
+# overwrite: true
+# schema: "packages/client/src/graphql/local.graphql"
+# documents: "packages/client/src/{stories,components}/**/!(*.generated).graphql"
+# generates:
+#   src/generated/graphql.tsx:
+#     plugins:
+#       - "typescript"
+#       - "typescript-operations"
+#       - "typescript-resolvers"
+#       - "typescript-react-apollo"
+#   ./graphql.schema.json:
+#     plugins:
+#       - "introspection"
+
+overwrite: true
+schema: "packages/client/src/graphql/local.graphql"
+generates:
+  # generate the types for the server+local graphql API
+  packages/client/src/graphql.generated.tsx:
+    plugins:
+      - "typescript"
+      - "typescript-apollo-client-helpers"
+    config:
+      nonOptionalTypename: true
+      avoidOptionals: true
+  # generate the types for the React component queries
+  packages/client/src/:
+    documents: 
+     - "packages/client/src/{stories,components}/**/!(*.generated).graphql"
+    preset: near-operation-file
+    presetConfig:
+      extension: .generated.tsx
+      baseTypesPath: graphql.generated.tsx
+    plugins:
+      - typescript-operations
+      - typescript-react-apollo
+  ./graphql.schema.json:
+    plugins:
+      - "introspection"
+
