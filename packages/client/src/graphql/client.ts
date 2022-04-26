@@ -13,13 +13,10 @@ import {
 } from "../contexts/FiltersContext";
 import { loader } from "graphql.macro";
 import {
-  Filter,
   FilterParams,
   Planting,
-  Producer,
   StrictTypedTypePolicies,
 } from "../graphql.generated";
-import { shuffler } from "d3-array";
 import seedrandom from "seedrandom";
 
 const typeDefs = loader("./local.graphql");
