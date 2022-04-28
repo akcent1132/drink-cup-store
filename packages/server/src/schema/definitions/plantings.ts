@@ -22,7 +22,7 @@ export const typeDefs = gql`
   type PlantingValue {
     name: String!
     value: Float!
-    plantingId: String!
+    # plantingId: String!
   }
   type PlantingParams {
     zone: String!
@@ -120,12 +120,12 @@ export type RowData = {
 
 export const ROWS: RowData[] = [
   {
-    name: "Indicators	",
+    name: "Indicators",
     type: "group",
     showAggregation: true,
     children: [
       {
-        name: "Profitability	",
+        name: "Profitability",
         type: "sub-group",
         showAggregation: true,
         children: [
@@ -136,7 +136,7 @@ export const ROWS: RowData[] = [
         ],
       },
       {
-        name: "Risk Reduction	",
+        name: "Risk Reduction",
         type: "sub-group",
         showAggregation: true,
         children: [
@@ -150,7 +150,7 @@ export const ROWS: RowData[] = [
         ],
       },
       {
-        name: "Product Quality	",
+        name: "Product Quality",
         type: "sub-group",
         showAggregation: true,
         children: [
@@ -164,19 +164,19 @@ export const ROWS: RowData[] = [
           // { name: "Minerals", type: "value" },
           // { name: "Minerals", type: "value" },
           // { name: "Minerals", type: "value" },
-          { name: "Density	", type: "value" },
+          { name: "Density", type: "value" },
         ],
       },
     ],
   },
-  // { name: "Animal Health	", type: "group", children: [] },
-  // { name: "Soil Structure	", type: "group", children: [] },
-  // { name: "Soil Fertility	", type: "group", children: [] },
-  // { name: "Soil Biology	", type: "group", children: [] },
-  // { name: "Environment	", type: "group", children: [] },
+  // { name: "Animal Health", type: "group", children: [] },
+  // { name: "Soil Structure", type: "group", children: [] },
+  // { name: "Soil Fertility", type: "group", children: [] },
+  // { name: "Soil Biology", type: "group", children: [] },
+  // { name: "Environment", type: "group", children: [] },
 
   {
-    name: "Weather	",
+    name: "Weather",
     type: "group",
     children: [
       { name: "Growing Degree Days", type: "value" },
@@ -188,7 +188,7 @@ export const ROWS: RowData[] = [
   },
 
   {
-    name: "Soil	",
+    name: "Soil",
     type: "group",
     children: [
       { name: "% clay", type: "value" },
@@ -199,7 +199,7 @@ export const ROWS: RowData[] = [
   },
 
   {
-    name: "Management	",
+    name: "Management",
     type: "group",
     children: [
       { name: "Tillage", type: "value" },

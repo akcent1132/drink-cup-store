@@ -154,7 +154,6 @@ export type PlantingParams = {
 export type PlantingValue = {
   __typename?: 'PlantingValue';
   name: Scalars['String'];
-  plantingId: Scalars['String'];
   value: Scalars['Float'];
 };
 
@@ -468,7 +467,6 @@ export type PlantingParamsResolvers<ContextType = any, ParentType extends Resolv
 
 export type PlantingValueResolvers<ContextType = any, ParentType extends ResolversParentTypes['PlantingValue'] = ResolversParentTypes['PlantingValue']> = ResolversObject<{
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  plantingId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   value?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
