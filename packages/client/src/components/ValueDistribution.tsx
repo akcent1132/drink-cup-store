@@ -285,8 +285,9 @@ export const ValueDistribution = ({
     ctx.fill();
 
     for (const valueSet of sortBy(
-      Object.values(groupBy(allData, 'filter.id')),
-      valueSet => highlightedFilter && highlightedFilter.id === valueSet[0].filter?.id
+      Object.values(groupBy(allData, "filter.id")),
+      (valueSet) =>
+        highlightedFilter && highlightedFilter.id === valueSet[0].filter?.id
     )) {
       const filter = valueSet[0].filter;
       ctx.beginPath();
@@ -318,16 +319,17 @@ export const ValueDistribution = ({
 
           // Draw horns
           [q1, q3].forEach((value, i) => {
-            const hFr2 = theme.valueDistribution.varianceLineHeight;
+            const hFr2 = theme.valueDistribution.varianceLineHeight / 2;
             const xValue = scale(value);
             ctx.moveTo(xValue, 0);
             ctx.lineTo(xValue, hFr2);
-            if (i === 0) { // left horn
+            if (i === 0) {
+              // left horn
               ctx.lineTo(xValue + hFr2, hFr2);
-            } else { // right horn
+            } else {
+              // right horn
               ctx.lineTo(xValue - hFr2, hFr2);
             }
-            
           });
           ctx.fill();
         }
