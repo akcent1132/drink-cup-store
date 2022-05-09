@@ -5,7 +5,7 @@ import { useCanvas } from "../utils/useCanvas";
 import { useTheme, withTheme } from "@emotion/react";
 import { scaleLinear } from "d3-scale";
 import { extent, mean, minIndex, quantile } from "d3-array";
-import { filter, groupBy, range, sortBy } from "lodash";
+import { groupBy, range, sortBy } from "lodash";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import tinycolor from "tinycolor2";
@@ -303,7 +303,7 @@ export const ValueDistribution = ({
             .toString();
 
       // draw variance line
-      if (!!filter) {
+      if (filter) {
         const values = valueSet.map((v) => v.value);
         const q1 = quantile(values, 0.25);
         const q3 = quantile(values, 0.75);
@@ -315,24 +315,21 @@ export const ValueDistribution = ({
             scale(q3) - scale(q1),
             theme.valueDistribution.varianceLineHeight / 2
           );
-          ctx.fill();
 
           // Draw horns
           [q1, q3].forEach((value, i) => {
-            const hFr2 =
-              Math.ceil(theme.valueDistribution.varianceLineHeight / 2) + 1;
+            const hFr2 = theme.valueDistribution.varianceLineHeight;
             const xValue = scale(value);
-            ctx.beginPath();
             ctx.moveTo(xValue, 0);
             ctx.lineTo(xValue, hFr2);
-            if (i === 0) {
+            if (i === 0) { // left horn
               ctx.lineTo(xValue + hFr2, hFr2);
-            } else {
+            } else { // right horn
               ctx.lineTo(xValue - hFr2, hFr2);
             }
-            ctx.closePath();
-            ctx.fill();
+            
           });
+          ctx.fill();
         }
       }
 
