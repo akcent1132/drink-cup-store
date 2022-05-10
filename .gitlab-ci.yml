@@ -22,5 +22,5 @@ before_script:
 chromatic_publish:
   stage: test
   script:
-  - cd ./packages/client
+    - cd ./packages/client
     - yarn chromatic --project-token=$CHROMATIC_PROJECT_TOKEN
