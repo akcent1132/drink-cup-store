@@ -15,10 +15,12 @@ cache:
 
 # Installs the dependencies
 before_script:
-  - yarn --cwd ./packages/client chromatic install --frozen-lockfile --prefer-offline --cache-folder .yarn
+  - cd ./packages/client
+  - yarn chromatic install --frozen-lockfile --prefer-offline --cache-folder .yarn
 
 #👇Adds Chromatic as a job
 chromatic_publish:
   stage: test
   script:
-    - yarn --cwd ./packages/client chromatic --project-token=$CHROMATIC_PROJECT_TOKEN
+  - cd ./packages/client
+    - yarn chromatic --project-token=$CHROMATIC_PROJECT_TOKEN
