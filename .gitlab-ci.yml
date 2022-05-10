@@ -11,13 +11,14 @@ stages:
 cache:
   key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
   paths:
-    - /packages/client/.yarn
+    - ./packages/client/.yarn
 
 # Installs the dependencies
 before_script:
-  - cd /packages/client
   - ls -la 
-  - ls -la /packages/client/.yarn
+  - cd ./packages/client
+  - ls -la 
+  - ls -la .yarn
   - yarn chromatic install --frozen-lockfile --prefer-offline --cache-folder .yarn
 
 #👇Adds Chromatic as a job
