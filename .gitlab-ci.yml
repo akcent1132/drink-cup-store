@@ -14,6 +14,7 @@ cache:
     - ./packages/client/.yarn
 
 # Installs the dependencies
+# TODO find out why it's not working
 # before_script:
 #   - cd ./packages/client
 #   - yarn chromatic install --frozen-lockfile --prefer-offline --cache-folder .yarn
@@ -24,6 +25,5 @@ chromatic_publish:
   script:
     - cd ./packages/client
     - ls -la 
-    # - ls -la .yarn
     - yarn
     - yarn chromatic --debug --project-token=$CHROMATIC_PROJECT_TOKEN --exit-zero-on-changes
