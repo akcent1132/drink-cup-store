@@ -14,13 +14,13 @@ cache:
     - ./packages/client/.yarn
 
 # Installs the dependencies
-before_script:
-  - ls -la 
-  - cd ./packages/client
-  - ls -la 
-  - yarn chromatic install --frozen-lockfile --prefer-offline --cache-folder .yarn
-  - ls -la 
-  - ls -la .yarn
+# before_script:
+#   - ls -la 
+#   - cd ./packages/client
+#   - ls -la 
+#   - yarn chromatic install --frozen-lockfile --prefer-offline --cache-folder .yarn
+#   - ls -la 
+#   - ls -la .yarn
 
 #👇Adds Chromatic as a job
 chromatic_publish:
@@ -28,6 +28,6 @@ chromatic_publish:
   script:
     - cd /packages/client
     - ls -la 
-    - ls -la .yarn
+    # - ls -la .yarn
     - yarn
     - yarn chromatic --debug --project-token=$CHROMATIC_PROJECT_TOKEN --exit-zero-on-changes
