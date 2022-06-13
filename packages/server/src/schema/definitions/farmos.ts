@@ -1,5 +1,5 @@
 import { gql } from "apollo-server-express";
-import { get } from "lodash-es";
+import { get } from "lodash";
 import farmOS from "farmos";
 
 const test_farms = [

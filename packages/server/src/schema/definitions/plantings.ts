@@ -1,6 +1,6 @@
 import { gql } from "apollo-server-express";
-import { randomBates, randomNormal } from "d3-random";
-import { range, sample, startCase, sum, uniqueId } from "lodash-es";
+import random from 'random'
+import { range, sample, startCase, sum, uniqueId } from "lodash";
 import seedrandom from "seedrandom";
 import { Resolvers } from "../../resolvers.generated";
 
@@ -73,7 +73,7 @@ const createPlantings = (
         const std = rndValue() * stdMax;
         // TODO add multilpe measurements to some value types
         // const count = countMax * rndValue();
-        const norm = randomNormal.source(rnd)(mean, std);
+        const norm = random.clone(rnd).normal(mean, std);
         if (row.type === "value") {
           values.push({
             name: row.name,
@@ -263,7 +263,7 @@ export const getFarmEvent = (seed?: string) => {
   const type = eventTypes[Math.floor(eventTypes.length * rnd())]!;
   const date = new Date("2022");
 
-  date.setDate(365 * randomBates.source(rnd)(2)());
+  date.setDate(365 * random.clone(rnd).bates(2)());
   return {
     type,
     date: date.toString(),
