@@ -50,8 +50,9 @@ pages:
     - yarn install
     - yarn lerna bootstrap --scope client
     - CI=false yarn client:build # accept warning with CI=false
+    - mv packages/client/build public
   artifacts:
     paths:
-      - packages/client/build
+      - public
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
