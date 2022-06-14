@@ -90,6 +90,7 @@ export type Producer = {
 
 export type Query = {
   __typename: 'Query';
+  allPlantings: Array<Planting>;
   filter: Maybe<Filter>;
   filters: Array<Filter>;
   groupedValues: Array<GroupedValues>;
@@ -201,8 +202,9 @@ export type ProducerFieldPolicy = {
 	code?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('filter' | 'filters' | 'groupedValues' | 'highlightedFilter' | 'highlightedPlanting' | 'openEventCards' | 'planting' | 'plantings' | 'selectedCropType' | 'selectedFilter' | 'selectedProducer' | 'test' | QueryKeySpecifier)[];
+export type QueryKeySpecifier = ('allPlantings' | 'filter' | 'filters' | 'groupedValues' | 'highlightedFilter' | 'highlightedPlanting' | 'openEventCards' | 'planting' | 'plantings' | 'selectedCropType' | 'selectedFilter' | 'selectedProducer' | 'test' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
+	allPlantings?: FieldPolicy<any> | FieldReadFunction<any>,
 	filter?: FieldPolicy<any> | FieldReadFunction<any>,
 	filters?: FieldPolicy<any> | FieldReadFunction<any>,
 	groupedValues?: FieldPolicy<any> | FieldReadFunction<any>,

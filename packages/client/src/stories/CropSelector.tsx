@@ -6,24 +6,40 @@ import { Box, Select, Text } from "grommet";
 import { css } from "@emotion/react";
 import { selectedCropType } from "../contexts/FiltersContext";
 import { useCropSelectorQuery } from "./CropSelector.generated";
-import { capitalize, find, startCase } from "lodash";
+import { capitalize, find, groupBy, map, sortBy, startCase } from "lodash";
 import Badge from "@mui/material/Badge";
 
 export const CropSelector = () => {
   const { data } = useCropSelectorQuery();
-  const options = useMemo(() => CROPS.map(({name, plantingCount}) => ({
-    value: name, 
-    label: `${startCase(name)}: ${plantingCount}`
-    // TODO find out why how to have nice labels in the selected field as well
-    // label: (
-    //   <Box direction="row" gap="5px" align="center">
-    //     {startCase(name)}
-    //     <Box background="accent-1" pad="xxsmall" round="xxsmall">
-    //       <Text size="10px" weight="bold">{plantingCount}</Text>
-    //     </Box>
-    //   </Box>
-    // )
-  })), [])
+
+  const crops = useMemo(
+    () =>
+      sortBy(
+        map(groupBy(data?.allPlantings, "cropType"), (plantings, cropType) => ({
+          name: cropType,
+          plantingCount: plantings.length,
+        })),
+        "cropType"
+      ),
+    [data]
+  );
+  const options = useMemo(
+    () =>
+      crops.map(({ name, plantingCount }) => ({
+        value: name,
+        label: `${startCase(name)}: ${plantingCount}`,
+        // TODO find out why how to have nice labels in the selected field as well
+        // label: (
+        //   <Box direction="row" gap="5px" align="center">
+        //     {startCase(name)}
+        //     <Box background="accent-1" pad="xxsmall" round="xxsmall">
+        //       <Text size="10px" weight="bold">{plantingCount}</Text>
+        //     </Box>
+        //   </Box>
+        // )
+      })),
+    []
+  );
   return (
     <Select
       css={css`
@@ -32,10 +48,13 @@ export const CropSelector = () => {
       dropHeight="small"
       placeholder="Select a crop"
       value={data?.selectedCropType}
-      valueKey={{ key: 'value', reduce: true }}
+      valueKey={{ key: "value", reduce: true }}
       labelKey="label"
       options={options}
-      onChange={({ value }) => {console.log("selectedCropType(value)", value);selectedCropType(value)}}
+      onChange={({ value }) => {
+        console.log("selectedCropType(value)", value);
+        selectedCropType(value);
+      }}
     />
   );
 };

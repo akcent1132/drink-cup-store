@@ -6,12 +6,16 @@ const defaultOptions = {} as const;
 export type CropSelectorQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type CropSelectorQuery = { __typename?: 'Query', selectedCropType: string };
+export type CropSelectorQuery = { __typename?: 'Query', selectedCropType: string, allPlantings: Array<{ __typename?: 'Planting', id: string, cropType: string }> };
 
 
 export const CropSelectorDocument = gql`
     query CropSelector {
   selectedCropType
+  allPlantings {
+    id
+    cropType
+  }
 }
     `;
 

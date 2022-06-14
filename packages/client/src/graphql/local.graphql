@@ -1,5 +1,6 @@
 extend type Query {
   plantings(cropType: String!): [Planting!]!
+  allPlantings: [Planting!]!
   planting(id: String!): Planting
   highlightedPlanting: Planting
   highlightedFilter: Filter
