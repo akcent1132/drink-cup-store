@@ -1,26 +1,26 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { App } from "./stories/Dashboard";
+import { ThemeProvider, Global, css } from "@emotion/react";
+import { theme } from "./theme/theme";
+import { GrommetConfig } from "./theme/GrommetConfig";
 
-function App() {
+function Main() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Global
+        styles={css`
+          body {
+            padding: 0 !important;
+          }
+        `}
+      />
+      <ThemeProvider theme={theme}>
+        <GrommetConfig>
+          <App iframeSrc="https://www.hylo.com/all" />
+        </GrommetConfig>
+      </ThemeProvider>
     </div>
   );
 }
 
-export default App;
+export default Main;
