@@ -22,10 +22,6 @@ import seedrandom from "seedrandom";
 const typeDefs = loader("./local.graphql");
 
 const getPlantings = (cropType: string) => {
-  // if (!plantings().some((planting) => planting.cropType === cropType)) {
-  //   addFakePlantings(cropType);
-  // }
-
   return plantings().filter((planting) => planting.cropType === cropType);
 };
 
@@ -101,6 +97,11 @@ const typePolicies: StrictTypedTypePolicies = {
           // @ts-ignore
           const cropType: string = options.args.cropType;
           return getPlantings(cropType);
+        },
+      },
+      allPlantings: {
+        read() {
+          return plantings();
         },
       },
       planting: {

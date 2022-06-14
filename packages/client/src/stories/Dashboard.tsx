@@ -26,13 +26,9 @@ import { NestedRows } from "./NestedRows";
 import { schemeTableau10 } from "d3-scale-chromatic";
 import {
   addFilter,
-  FiltersProvider,
   removeAllFilters,
-  selectFilter,
-  selectProducer,
   highlightFilter,
   unhighlightFilter,
-  useFiltersContext,
 } from "../contexts/FiltersContext";
 import { ROWS } from "../contexts/rows";
 import { Button } from "../components/Button";

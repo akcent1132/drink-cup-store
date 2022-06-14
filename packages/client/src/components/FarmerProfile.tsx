@@ -6,12 +6,11 @@ import { css, withTheme } from "@emotion/react";
 import { Box, Button } from "grommet";
 import { EventsCard, Spacer } from "./EventsCard";
 import CloseIcon from "@mui/icons-material/Close";
-import { IconButton, Label } from "./FilterEditor";
+import { IconButton } from "./FilterEditor";
 import { useCallback, useMemo, useState } from "react";
-import { selectProducer, useFiltersContext } from "../contexts/FiltersContext";
+import { selectProducer } from "../contexts/FiltersContext";
 import { range } from "lodash";
 import { createFakePlantingCardData } from "../stories/Dashboard";
-import { IconEventsBar } from "./IconEventsBar";
 import { Tabs } from "./Tabs";
 
 const Root = withTheme(styled.div`
@@ -56,7 +55,6 @@ const LOREM =
 type Props = { name: string };
 export const FarmerProfile = ({ name }: Props) => {
   const [tabIndex, setTabIndex] = useState(0);
-  const [_, dispatchFilters] = useFiltersContext();
 
   const handleClose = useCallback(
     () => selectProducer(null),
