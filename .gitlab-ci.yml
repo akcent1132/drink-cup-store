@@ -49,7 +49,7 @@ pages:
   script:
     - yarn install
     - yarn lerna bootstrap --scope client
-    - yarn client:build
+    - CI=false yarn client:build # accept warning with CI=false
   artifacts:
     paths:
       - packages/client/build
