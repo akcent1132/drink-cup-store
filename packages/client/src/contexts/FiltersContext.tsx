@@ -8,7 +8,7 @@ import {
   uniqBy,
   uniqueId,
 } from "lodash";
-import React, { useContext, useReducer } from "react";
+import React from "react";
 import seedrandom from "seedrandom";
 import { RowData, ROWS } from "./rows";
 import { makeVar } from "@apollo/client";
@@ -117,53 +117,76 @@ declare module externalData {
 }
 
 const loadPlantings = async () => {
+  const LS_KEY = "data.plantings";
+
+  const updateVars = (externalPlantings: externalData.Planting[]) => {
+    const clientPlantings: Planting[] = externalPlantings.map((planting) => {
+      const zone = randomZone();
+      let texture = [Math.random(), Math.random()];
+      texture = texture.map((t) => Math.round((t / sum(texture)) * 100));
+      return {
+        ...planting,
+        __typename: "Planting",
+        isHighlighted: false,
+        id: planting._id,
+        values: planting.values.map((v) => ({
+          ...v,
+          __typename: "PlantingValue",
+          plantingId: planting._id,
+        })),
+        params: {
+          __typename: "PlantingParams",
+          zone: zone.name,
+          temperature: zone.temp.toString() + "°",
+          precipitation: `${32 + Math.floor(32 * Math.random())}″`,
+          texture: `Sand: ${texture[0]}% | Clay ${texture[1]}%`,
+        },
+        producer: {
+          ...planting.producer,
+          __typename: "Producer",
+          code: Math.random().toString(32).slice(-7),
+        },
+        events: planting.events.map((e) => ({
+          ...e,
+          id: e.id.toString(),
+          __typename: "PlantingEvent",
+        })),
+        matchingFilters: [],
+      };
+    });
+    plantings(clientPlantings);
+    producers(
+      uniqBy(
+        clientPlantings.map((p) => p.producer),
+        "id"
+      )
+    );
+  };
+
+  if (localStorage[LS_KEY]) {
+    console.log("loading plantings from local storage...");
+    try {
+      updateVars(JSON.parse(localStorage[LS_KEY]));
+    } catch (e) {
+      console.error(
+        `Failed to update plantings from localStorage["${LS_KEY}"]\n${e}`
+      );
+    }
+  }
+
   console.log("load data...");
 
   const externalPlantings: externalData.Planting[] = await (
     await fetch("https://app.surveystack.io/static/coffeeshop/plantings")
   ).json();
   console.log("Got data");
-  const clientPlantings: Planting[] = externalPlantings.map((planting) => {
-    const zone = randomZone();
-    let texture = [Math.random(), Math.random()];
-    texture = texture.map((t) => Math.round((t / sum(texture)) * 100));
-    return {
-      ...planting,
-      __typename: "Planting",
-      isHighlighted: false,
-      id: planting._id,
-      values: planting.values.map((v) => ({
-        ...v,
-        __typename: "PlantingValue",
-        plantingId: planting._id,
-      })),
-      params: {
-        __typename: "PlantingParams",
-        zone: zone.name,
-        temperature: zone.temp.toString() + "°",
-        precipitation: `${32 + Math.floor(32 * Math.random())}″`,
-        texture: `Sand: ${texture[0]}% | Clay ${texture[1]}%`,
-      },
-      producer: {
-        ...planting.producer,
-        __typename: "Producer",
-        code: Math.random().toString(32).slice(-7),
-      },
-      events: planting.events.map((e) => ({
-        ...e,
-        id: e.id.toString(),
-        __typename: "PlantingEvent",
-      })),
-      matchingFilters: [],
-    };
-  });
-  plantings(clientPlantings);
-  producers(
-    uniqBy(
-      clientPlantings.map((p) => p.producer),
-      "id"
-    )
-  );
+  try {
+    updateVars(externalPlantings);
+    localStorage[LS_KEY] = JSON.stringify(externalPlantings);
+  } catch (e) {
+    console.error(`Failed to update plantings from fresh data\n${e}`);
+  }
+
   console.log("finised loading data");
 };
 
@@ -208,10 +231,10 @@ const createFilter = (
   };
 };
 
-export const filters = makeVar<Filter[]>([
+export const filters = makeVar<Filter[]>(isDemo() ? [
   createFilter(schemeTableau10[4], "Produce Corn, Beef", "corn"),
   createFilter(schemeTableau10[0], "General Mills - KS", "corn"),
-]);
+] : []);
 export const producers = makeVar<Producer[]>(
   isDemo()
     ? range(128).map(() => ({
@@ -223,7 +246,7 @@ export const producers = makeVar<Producer[]>(
 );
 export const selectedFilterId = makeVar<string | null>(null);
 export const selectedProducerId = makeVar<string | null>(null);
-export const selectedCropType = makeVar("corn");
+export const selectedCropType = makeVar(isDemo() ? "corn" : "beet");
 
 export const plantings = makeVar<Planting[]>(
   isDemo()
@@ -269,29 +292,6 @@ console.log("is demo:", isDemo());
 if (!isDemo()) {
   loadPlantings();
 }
-
-// type Action =
-//   | { type: "new"; color: string; name: string }
-//   | { type: "select"; filterId: string | null }
-//   | { type: "updateName"; filterId: string; name: string }
-//   | {
-//       type: "apply" | "delete";
-//       filterId: string;
-//     }
-//   | {
-//       type: "edit";
-//       filterId: string;
-//       params: Partial<FilterParams>;
-//     }
-//   | { type: "selectFarmer"; farmerId: string | null };
-
-// const defaultState = Object.freeze({
-//   filters: [] as Filter[],
-//   selectedFilterId: null as string | null,
-//   selectedFarmerId: null as string | null,
-// });
-
-// type State = typeof defaultState;
 
 export const addFilter = (color: string, name: string, cropType: string) => {
   const filter = createFilter(color, name, cropType);
@@ -344,83 +344,3 @@ export const editFilter = (filterId: string, params: Partial<FilterParams>) =>
         : f
     )
   );
-
-// const filtersReducer = (state: State, action: Action): State => {
-//   switch (action.type) {
-//     case "new": {
-//       const filter = createFilter(action.color, action.name, "corn");
-//       return {
-//         ...state,
-//         filters: [...state.filters, filter],
-//         selectedFilterId: filter.id,
-//       };
-//     }
-//     case "select": {
-//       return {
-//         ...state,
-//         selectedFilterId: action.filterId,
-//         selectedFarmerId: null,
-//       };
-//     }
-//     case "selectFarmer": {
-//       return {
-//         ...state,
-//         selectedFilterId: null,
-//         selectedFarmerId: action.farmerId,
-//       };
-//     }
-//     case "apply":
-//       return {
-//         ...state,
-//         filters: state.filters.map((f) =>
-//           f.id === action.filterId ? { ...f, activeParams: f.draftParams } : f
-//         ),
-//       };
-//     case "updateName":
-//       return {
-//         ...state,
-//         filters: state.filters.map((f) =>
-//           f.id === action.filterId ? { ...f, name: action.name } : f
-//         ),
-//       };
-//     case "delete":
-//       return {
-//         ...state,
-//         selectedFilterId:
-//           state.selectedFilterId === action.filterId
-//             ? null
-//             : state.selectedFilterId,
-//         filters: state.filters.filter((f) => f.id !== action.filterId),
-//       };
-//     case "edit":
-//       return {
-//         ...state,
-//         filters: state.filters.map((f) =>
-//           f.id === action.filterId
-//             ? {
-//                 ...f,
-//                 draftParams: {
-//                   ...f.activeParams!,
-//                   ...f.draftParams,
-//                   ...action.params,
-//                 },
-//               }
-//             : f
-//         ),
-//       };
-//   }
-// };
-
-// const FiltersContext = React.createContext<[State, (action: Action) => void]>([
-//   defaultState,
-//   () => {},
-// ]);
-
-// export const FiltersProvider = ({ children }: React.PropsWithChildren<{}>) => {
-//   const state = useReducer(filtersReducer, defaultState);
-//   return (
-//     <FiltersContext.Provider value={state}>{children}</FiltersContext.Provider>
-//   );
-// };
-
-// export const useFiltersContext = () => useContext(FiltersContext);

@@ -19,7 +19,7 @@ import { css, useTheme, withTheme } from "@emotion/react";
 import { getFarmEvent, randomZone } from "../utils/random";
 import { FilterLabel } from "../components/FilterLabel";
 import faker from "faker";
-import { memoize, range, sample, sum, uniq, uniqueId, without } from "lodash";
+import { memoize, range, sample, sum, without } from "lodash";
 import { HyloBox } from "./HyloBox";
 import { FilterEditor } from "../components/FilterEditor";
 import { NestedRows } from "./NestedRows";
@@ -42,6 +42,7 @@ import {
   useDashboardQuery,
   useRandomContentQuery,
 } from "./Dashboard.generated";
+import { Box, Layer, Spinner } from "grommet";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -187,9 +188,9 @@ interface Props {
 }
 
 export const Dashboard = ({ iframeSrc }: Props) => {
-  const { data: { selectedFilter, selectedProducer } = {} } =
+  const { data: { selectedFilter, selectedProducer, allPlantings } = {} } =
     useDashboardQuery();
-  console.log({selectedFilter, selectedProducer})
+  console.log({ selectedFilter, selectedProducer });
   const [tabIndex, setTabIndex] = useState(0);
   const rightSide = useRef<HTMLDivElement>(null);
   const pages = useMemo(
@@ -221,8 +222,16 @@ export const Dashboard = ({ iframeSrc }: Props) => {
         : [<PlantingCardList />, `Events`],
     [selectedFilter?.id, selectedProducer?.id]
   );
+
   return (
     <Root>
+      {!allPlantings || allPlantings?.length === 0 ? (
+        <Layer full background="rgba(255,255,255,0.3)" animate={false}>
+          <Box fill align="center" justify="center">
+            <Spinner />
+          </Box>
+        </Layer>
+      ) : null}
       <Header>
         <img
           css={css`

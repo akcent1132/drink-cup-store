@@ -14,4 +14,7 @@ query Dashboard {
   selectedProducer {
     id
   }
+  allPlantings {
+    id
+  }
 }
