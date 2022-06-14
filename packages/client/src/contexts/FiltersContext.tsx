@@ -122,7 +122,7 @@ const loadPlantings = async () => {
   const externalPlantings: externalData.Planting[] = await (
     await fetch("https://app.surveystack.io/static/coffeeshop/plantings")
   ).json();
-  console.log("Got data")
+  console.log("Got data");
   const clientPlantings: Planting[] = externalPlantings.map((planting) => {
     const zone = randomZone();
     let texture = [Math.random(), Math.random()];
@@ -164,7 +164,7 @@ const loadPlantings = async () => {
       "id"
     )
   );
-  console.log("finised loading data")
+  console.log("finised loading data");
 };
 
 const createFilterParams = (): FilterParams => {
@@ -214,25 +214,24 @@ export const filters = makeVar<Filter[]>([
 ]);
 export const producers = makeVar<Producer[]>(
   isDemo()
-    ? []
-    : range(128).map(() => ({
+    ? range(128).map(() => ({
         __typename: "Producer",
         id: uniqueId(),
         code: Math.random().toString(32).slice(-7),
       }))
+    : []
 );
 export const selectedFilterId = makeVar<string | null>(null);
 export const selectedProducerId = makeVar<string | null>(null);
-export const selectedCropType = makeVar(CROPS[5].name);
+export const selectedCropType = makeVar("corn");
 
 export const plantings = makeVar<Planting[]>(
   isDemo()
-    ? []
-    : CROPS.map((cropType) =>
+    ? CROPS.map((cropType) =>
         createPlantings(cropType.name, cropType.plantingCount)
       ).flat()
+    : []
 );
-
 export const openEventCardIds = makeVar<string[]>(
   plantings()
     .filter((p) => p.cropType === selectedCropType())
@@ -266,7 +265,7 @@ export const unhighlightFilter = (filterId: string) => {
   }
 };
 
-console.log("is demo:", isDemo())
+console.log("is demo:", isDemo());
 if (!isDemo()) {
   loadPlantings();
 }
