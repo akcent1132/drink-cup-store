@@ -21,6 +21,7 @@
     "chromatic": "cross-env FORCE_COLOR=1 lerna --scope client run chromatic --no-prefix --stream",
     "server": "cross-env FORCE_COLOR=1 lerna --scope server run start --no-prefix --stream",
     "client": "cross-env FORCE_COLOR=1 lerna --scope client run start --no-prefix --stream",
+    "client:build": "cross-env FORCE_COLOR=1 lerna --scope client run build --no-prefix --stream",
     "codegen": "graphql-codegen --config codegen.yml --watch"
   },
   "dependencies": {}
