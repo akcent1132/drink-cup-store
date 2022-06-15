@@ -120,40 +120,42 @@ const loadPlantings = async () => {
   const LS_KEY = "data.plantings";
 
   const updateVars = (externalPlantings: externalData.Planting[]) => {
-    const clientPlantings: Planting[] = externalPlantings.map((planting) => {
-      const zone = randomZone();
-      let texture = [Math.random(), Math.random()];
-      texture = texture.map((t) => Math.round((t / sum(texture)) * 100));
-      return {
-        ...planting,
-        __typename: "Planting",
-        isHighlighted: false,
-        id: planting._id,
-        values: planting.values.map((v) => ({
-          ...v,
-          __typename: "PlantingValue",
-          plantingId: planting._id,
-        })),
-        params: {
-          __typename: "PlantingParams",
-          zone: zone.name,
-          temperature: zone.temp.toString() + "°",
-          precipitation: `${32 + Math.floor(32 * Math.random())}″`,
-          texture: `Sand: ${texture[0]}% | Clay ${texture[1]}%`,
-        },
-        producer: {
-          ...planting.producer,
-          __typename: "Producer",
-          code: Math.random().toString(32).slice(-7),
-        },
-        events: planting.events.map((e) => ({
-          ...e,
-          id: e.id.toString(),
-          __typename: "PlantingEvent",
-        })),
-        matchingFilters: [],
-      };
-    });
+    const clientPlantings: Planting[] = externalPlantings
+      .filter((p) => p.cropType !== null)
+      .map((planting) => {
+        const zone = randomZone();
+        let texture = [Math.random(), Math.random()];
+        texture = texture.map((t) => Math.round((t / sum(texture)) * 100));
+        return {
+          ...planting,
+          __typename: "Planting",
+          isHighlighted: false,
+          id: planting._id,
+          values: planting.values.map((v) => ({
+            ...v,
+            __typename: "PlantingValue",
+            plantingId: planting._id,
+          })),
+          params: {
+            __typename: "PlantingParams",
+            zone: zone.name,
+            temperature: zone.temp.toString() + "°",
+            precipitation: `${32 + Math.floor(32 * Math.random())}″`,
+            texture: `Sand: ${texture[0]}% | Clay ${texture[1]}%`,
+          },
+          producer: {
+            ...planting.producer,
+            __typename: "Producer",
+            code: Math.random().toString(32).slice(-7),
+          },
+          events: planting.events.map((e) => ({
+            ...e,
+            id: e.id.toString(),
+            __typename: "PlantingEvent",
+          })),
+          matchingFilters: [],
+        };
+      });
     plantings(clientPlantings);
     producers(
       uniqBy(
@@ -176,9 +178,28 @@ const loadPlantings = async () => {
 
   console.log("load data...");
 
-  const externalPlantings: externalData.Planting[] = await (
-    await fetch("https://app.surveystack.io/static/coffeeshop/plantings")
-  ).json();
+  let externalPlantings: externalData.Planting[] = await fetch(
+    "https://app.surveystack.io/static/coffeeshop/plantings"
+  )
+    .then((result) => result.json())
+    .then((plantings) => {
+      if (!Array.isArray(plantings) || plantings.length === 0) {
+        throw new Error(
+          `Got invalid planting data: '${JSON.stringify(plantings)}'`
+        );
+      }
+      return plantings;
+    })
+    .catch((e) => {
+      console.error(
+        "Failed to load data from server. Reverting to fix data",
+        e
+      );
+      console.warn("Loading fixed plantings...")
+      return fetch("all-plantings-simplified.json").then((r) => r.json());
+    });
+
+  externalPlantings = externalPlantings.filter((p) => !!p.cropType);
   console.log("Got data");
   try {
     updateVars(externalPlantings);
@@ -231,10 +252,14 @@ const createFilter = (
   };
 };
 
-export const filters = makeVar<Filter[]>(isDemo() ? [
-  createFilter(schemeTableau10[4], "Produce Corn, Beef", "corn"),
-  createFilter(schemeTableau10[0], "General Mills - KS", "corn"),
-] : []);
+export const filters = makeVar<Filter[]>(
+  isDemo()
+    ? [
+        createFilter(schemeTableau10[4], "Produce Corn, Beef", "corn"),
+        createFilter(schemeTableau10[0], "General Mills - KS", "corn"),
+      ]
+    : []
+);
 export const producers = makeVar<Producer[]>(
   isDemo()
     ? range(128).map(() => ({
