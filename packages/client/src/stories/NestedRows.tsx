@@ -1,12 +1,12 @@
 import { findLastIndex, last } from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
 import { ValueDistribution } from "../components/ValueDistribution";
-import { useValueDistributionQuery } from "../components/ValueDistribution.generated";
 import { RowData } from "../contexts/rows";
-
+import { NestedRowsQuery, useNestedRowsQuery } from "./NestedRows.generated";
 
 const flattenRows = (
   rows: RowData[],
+  groupedValues: NestedRowsQuery["groupedValues"],
   nesting = 0
 ): {
   row: RowData;
@@ -15,14 +15,46 @@ const flattenRows = (
   isLastChild: boolean;
   hideBranches: number;
   childRowNames: string[];
+  allData: {
+    filter:
+      | {
+          id: string;
+          color: string;
+        }
+      | null
+      | undefined;
+    name: string;
+    value: number;
+    plantingId: string;
+  }[];
 }[] =>
   rows
     .map((row) => {
-      const children = flattenRows(row.children || [], nesting + 1);
+      const children = flattenRows(
+        row.children || [],
+        groupedValues,
+        nesting + 1
+      );
       const childCount = children
         ? findLastIndex(children, { nesting: nesting + 1 }) + 1
         : 0;
       children.slice(childCount).forEach((child) => (child.hideBranches += 1));
+
+      const childRowNames = children.map((c) => c.row.name);
+      const { name, showAggregation } = row;
+      const valueNames = showAggregation ? childRowNames : [name];
+      const allData = (groupedValues || [])
+        .map((v) => {
+          return v.values
+            .filter((v) => valueNames.includes(v.name))
+            .map((data) => ({ ...data, filter: v.filter }));
+        })
+        .flat();
+
+      if (allData.length === 0 && children.every(c => c.allData.length === 0)) {
+        return [];
+      }
+
       return [
         {
           row,
@@ -30,20 +62,21 @@ const flattenRows = (
           childCount,
           isLastChild: row === last(rows),
           hideBranches: 0,
-          childRowNames: children.map((c) => c.row.name),
+          childRowNames,
+          allData,
         },
         ...children,
       ];
     })
     .flat();
 
-export const NestedRows = ({
-  rows,
-}: {
-  rows: RowData[];
-}) => {
-  const query = useValueDistributionQuery();
-  const flatRows = useMemo(() => flattenRows(rows), [rows]);
+export const NestedRows = ({ rows }: { rows: RowData[] }) => {
+  const query = useNestedRowsQuery();
+  const flatRows = useMemo(
+    () =>
+      flattenRows(rows, query?.data?.groupedValues || []),
+    [rows, query?.data?.groupedValues]
+  );
   const [isClosed, setIsClosed] = useState<boolean[]>(
     new Array(rows.length).fill(false)
   );
@@ -90,6 +123,7 @@ export const NestedRows = ({
             isLastChild,
             hideBranches,
             childRowNames,
+            allData,
           },
           i
         ) => (
@@ -104,6 +138,7 @@ export const NestedRows = ({
             onToggleChildren={() => toggleOpen(i)}
             openState={openStates[i]!}
             queryResult={query}
+            allData={allData}
           />
         )
       )}

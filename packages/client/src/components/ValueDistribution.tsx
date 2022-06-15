@@ -18,11 +18,7 @@ import {
   unhightlightPlanting,
 } from "../contexts/FiltersContext";
 import { useEffectDebugger } from "../utils/useEffectDebugger";
-import {
-  useValueDistributionQuery,
-  ValueDistributionQuery,
-} from "./ValueDistribution.generated";
-import { useReactiveVar } from "@apollo/client";
+import { useNestedRowsQuery } from "../stories/NestedRows.generated";
 
 // TODO read height from props
 
@@ -152,7 +148,19 @@ type Props = {
   hideBranches: number;
   onToggleChildren: () => void;
   openState: "open" | "closed" | "parentClosed";
-  queryResult: ReturnType<typeof useValueDistributionQuery>;
+  queryResult: ReturnType<typeof useNestedRowsQuery>;
+  allData: {
+    filter:
+      | {
+          id: string;
+          color: string;
+        }
+      | null
+      | undefined;
+    name: string;
+    value: number;
+    plantingId: string;
+  }[];
 };
 
 /**
@@ -163,12 +171,14 @@ export const ValueDistribution = ({
   highlightedFiltering,
   valueNames,
   queryResult,
+  allData,
   ...props
 }: Props) => {
   valueNames = useMemo(
     () => (Array.isArray(valueNames) ? valueNames : [valueNames]),
     [valueNames]
   );
+  // console.log(valueNames, allData)
   const {
     data: { groupedValues = [], highlightedFilter, highlightedPlanting } = {},
   } = queryResult;
@@ -188,17 +198,17 @@ export const ValueDistribution = ({
   );
   const theme = useTheme();
   const canvas = useCanvas();
-  const allData = useMemo(
-    () =>
-      groupedValues
-        .map((v) => {
-          return v.values
-            .filter((v) => valueNames.includes(v.name))
-            .map((data) => ({ ...data, filter: v.filter }));
-        })
-        .flat(),
-    [groupedValues, valueNames]
-  );
+  // const allData = useMemo(
+  //   () =>
+  //     groupedValues
+  //       .map((v) => {
+  //         return v.values
+  //           .filter((v) => valueNames.includes(v.name))
+  //           .map((data) => ({ ...data, filter: v.filter }));
+  //       })
+  //       .flat(),
+  //   [groupedValues, valueNames]
+  // );
   const allValues = useMemo(() => allData.map((d) => d.value), [allData]);
   const scale = useMemo(() => {
     const [min, max] = extent(allValues);

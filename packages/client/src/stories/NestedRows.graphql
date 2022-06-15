@@ -1,4 +1,4 @@
-query ValueDistribution($cropType: String! = "") {
+query NestedRows($cropType: String! = "") {
   selectedCropType @client @export(as: "cropType")
   groupedValues(cropType: $cropType) @client {
     id
