@@ -63,7 +63,7 @@ const Label = withTheme(styled.div<{
     p.theme.valueDistribution.varianceLineHeight +
     p.theme.valueDistribution.rowGap / 2}px;
   margin-bottom: ${(p) => p.theme.valueDistribution.rowGap / 2}px;
-  min-width: ${(p) => 145 - p.nesting * p.theme.valueDistribution.tabSize}px;
+  min-width: ${(p) => 190 - p.nesting * p.theme.valueDistribution.tabSize}px;
   font-size: 13.5px;
   font-family: ${(p) => p.theme.font};
   font-weight: ${(p) => (p.childCount > 0 ? 700 : 400)};
