@@ -193,3 +193,27 @@ export const ZONES = [
   "9a",
   "9b",
 ];
+
+export const FLAGS = [
+  "organic",
+  "priority",
+  "non-gmo",
+  "transitionalregen",
+  "transitionalorganic",
+  "organic_not_cert",
+  "monitor",
+  "regenerative",
+  "biodynamic",
+  "greenhouse"
+]
+
+export const TYPES = [
+  "nonprofit_farm",
+  "directsale_farm",
+  "research_farm",
+  "community_garden",
+  "wholesale_farm",
+  "market_garden",
+  "home_garden",
+  "cooperative_farm"
+]

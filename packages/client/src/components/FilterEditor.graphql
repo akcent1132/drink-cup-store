@@ -4,6 +4,8 @@ query FilterEditor($filterId: String!) {
     color
     name
     activeParams {
+      types
+      flags
       groups
       colors
       years
@@ -18,6 +20,8 @@ query FilterEditor($filterId: String!) {
       zones
     }
     draftParams {
+      types
+      flags
       groups
       colors
       years

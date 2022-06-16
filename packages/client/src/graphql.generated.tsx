@@ -31,12 +31,14 @@ export type FilterParams = {
   climateRegion: Array<Scalars['String']>;
   colors: Array<Scalars['String']>;
   farmPractices: Array<Scalars['String']>;
+  flags: Array<Scalars['String']>;
   flavorScore: Array<Scalars['Int']>;
   groups: Array<Scalars['String']>;
   landPreparation: Array<Scalars['String']>;
   sampleSource: Array<Scalars['String']>;
   sweetnessScore: Array<Scalars['Int']>;
   tasteScore: Array<Scalars['Int']>;
+  types: Array<Scalars['String']>;
   years: Array<Scalars['Int']>;
   zones: Array<Scalars['String']>;
 };
@@ -159,18 +161,20 @@ export type FilterFieldPolicy = {
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type FilterParamsKeySpecifier = ('amendments' | 'climateRegion' | 'colors' | 'farmPractices' | 'flavorScore' | 'groups' | 'landPreparation' | 'sampleSource' | 'sweetnessScore' | 'tasteScore' | 'years' | 'zones' | FilterParamsKeySpecifier)[];
+export type FilterParamsKeySpecifier = ('amendments' | 'climateRegion' | 'colors' | 'farmPractices' | 'flags' | 'flavorScore' | 'groups' | 'landPreparation' | 'sampleSource' | 'sweetnessScore' | 'tasteScore' | 'types' | 'years' | 'zones' | FilterParamsKeySpecifier)[];
 export type FilterParamsFieldPolicy = {
 	amendments?: FieldPolicy<any> | FieldReadFunction<any>,
 	climateRegion?: FieldPolicy<any> | FieldReadFunction<any>,
 	colors?: FieldPolicy<any> | FieldReadFunction<any>,
 	farmPractices?: FieldPolicy<any> | FieldReadFunction<any>,
+	flags?: FieldPolicy<any> | FieldReadFunction<any>,
 	flavorScore?: FieldPolicy<any> | FieldReadFunction<any>,
 	groups?: FieldPolicy<any> | FieldReadFunction<any>,
 	landPreparation?: FieldPolicy<any> | FieldReadFunction<any>,
 	sampleSource?: FieldPolicy<any> | FieldReadFunction<any>,
 	sweetnessScore?: FieldPolicy<any> | FieldReadFunction<any>,
 	tasteScore?: FieldPolicy<any> | FieldReadFunction<any>,
+	types?: FieldPolicy<any> | FieldReadFunction<any>,
 	years?: FieldPolicy<any> | FieldReadFunction<any>,
 	zones?: FieldPolicy<any> | FieldReadFunction<any>
 };

@@ -8,7 +8,7 @@ export type FilterEditorQueryVariables = Types.Exact<{
 }>;
 
 
-export type FilterEditorQuery = { __typename?: 'Query', filter?: { __typename?: 'Filter', id: string, color: string, name: string, activeParams?: { __typename?: 'FilterParams', groups: Array<string>, colors: Array<string>, years: Array<number>, sweetnessScore: Array<number>, flavorScore: Array<number>, tasteScore: Array<number>, climateRegion: Array<string>, sampleSource: Array<string>, farmPractices: Array<string>, amendments: Array<string>, landPreparation: Array<string>, zones: Array<string> } | null, draftParams?: { __typename?: 'FilterParams', groups: Array<string>, colors: Array<string>, years: Array<number>, sweetnessScore: Array<number>, flavorScore: Array<number>, tasteScore: Array<number>, climateRegion: Array<string>, sampleSource: Array<string>, farmPractices: Array<string>, amendments: Array<string>, landPreparation: Array<string>, zones: Array<string> } | null } | null };
+export type FilterEditorQuery = { __typename?: 'Query', filter?: { __typename?: 'Filter', id: string, color: string, name: string, activeParams?: { __typename?: 'FilterParams', types: Array<string>, flags: Array<string>, groups: Array<string>, colors: Array<string>, years: Array<number>, sweetnessScore: Array<number>, flavorScore: Array<number>, tasteScore: Array<number>, climateRegion: Array<string>, sampleSource: Array<string>, farmPractices: Array<string>, amendments: Array<string>, landPreparation: Array<string>, zones: Array<string> } | null, draftParams?: { __typename?: 'FilterParams', types: Array<string>, flags: Array<string>, groups: Array<string>, colors: Array<string>, years: Array<number>, sweetnessScore: Array<number>, flavorScore: Array<number>, tasteScore: Array<number>, climateRegion: Array<string>, sampleSource: Array<string>, farmPractices: Array<string>, amendments: Array<string>, landPreparation: Array<string>, zones: Array<string> } | null } | null };
 
 
 export const FilterEditorDocument = gql`
@@ -18,6 +18,8 @@ export const FilterEditorDocument = gql`
     color
     name
     activeParams {
+      types
+      flags
       groups
       colors
       years
@@ -32,6 +34,8 @@ export const FilterEditorDocument = gql`
       zones
     }
     draftParams {
+      types
+      flags
       groups
       colors
       years

@@ -21,6 +21,8 @@ import {
   SAMPLE_SOURCE,
   GROUPS,
   ZONES,
+  TYPES,
+  FLAGS,
 } from "../contexts/lists";
 import { range } from "lodash";
 import { TagSelect } from "./TagSelect";
@@ -202,6 +204,14 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
             onChange={updateName}
           />
         </Label>
+        <Label label="Types">
+          <TagSelect
+            onChange={(types) => updateParams({ types })}
+            value={params.types}
+            options={TYPES}
+            allowSearch
+          />
+        </Label>
         <RangeInput
           label="Years"
           min={YEAR_MIN}
@@ -214,6 +224,14 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
             onChange={(groups) => updateParams({ groups })}
             value={params.groups}
             options={GROUPS}
+            allowSearch
+          />
+        </Label>
+        <Label label="Flags">
+          <TagSelect
+            onChange={(flags) => updateParams({ flags })}
+            value={params.flags}
+            options={FLAGS}
             allowSearch
           />
         </Label>
@@ -238,27 +256,27 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
             options={SAMPLE_SOURCE}
           />
         </Label>
-        {/* <RangeInput
-          label="Sweetness Score"
-          min={1}
-          max={10}
+        <RangeInput
+          label="Weed Control"
+          min={10}
+          max={17}
           value={params.sweetnessScore}
           onChange={updateSweetnessScore}
         />
         <RangeInput
-          label="Flavor Score"
-          min={1}
-          max={10}
+          label="Pest-Disease Control"
+          min={0}
+          max={7}
           value={params.flavorScore}
           onChange={updateFlavorScore}
         />
         <RangeInput
-          label="Taste Score"
+          label="Tillage"
           min={1}
-          max={10}
+          max={9}
           value={params.tasteScore}
           onChange={updateTasteScore}
-        /> */}
+        />
         <Label label="Farm Practices">
           <TagSelect
             onChange={(farmPractices) => updateParams({ farmPractices })}

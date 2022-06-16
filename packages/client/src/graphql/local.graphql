@@ -53,8 +53,10 @@ type PlantingEventDetail {
 }
 
 type FilterParams {
+  types: [String!]!
   groups: [String!]!
   colors: [String!]!
+  flags: [String!]!
   years: [Int!]!
   sweetnessScore: [Int!]!
   flavorScore: [Int!]!

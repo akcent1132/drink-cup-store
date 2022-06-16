@@ -25,7 +25,9 @@ import {
   FARM_PRACTICES,
   AMENDMENTS,
   LAND_PREPARATION,
-  ZONES
+  ZONES,
+  TYPES,
+  FLAGS
 } from "./lists";
 import {
   Filter,
@@ -342,15 +344,17 @@ export const loadEventDetails = async (
 const createFilterParams = (): FilterParams => {
   return {
     __typename: "FilterParams",
+    types: sampleSize(TYPES, Math.random() * 3 + 1),
     groups: sampleSize(GROUPS, Math.random() * 3 + 1),
     colors: sampleSize(COLORS, Math.random() * 3 + 1),
+    flags: sampleSize(FLAGS, Math.random() * 3 + 1),
     years: [2018, 2019, 2020],
-    sweetnessScore: range(1, 11).splice(
+    sweetnessScore: range(10, 17).splice(
       Math.random() * 8,
       1 + Math.random() * 3
     ),
-    flavorScore: range(1, 11).splice(Math.random() * 8, 1 + Math.random() * 3),
-    tasteScore: range(1, 11).splice(Math.random() * 8, 1 + Math.random() * 3),
+    flavorScore: range(1, 7).splice(Math.random() * 5, 1 + Math.random() * 3),
+    tasteScore: range(1, 9).splice(Math.random() * 8, 1 + Math.random() * 3),
     climateRegion: sampleSize(CLIMATE_REGION, Math.random() * 3 + 1),
     sampleSource: sampleSize(SAMPLE_SOURCE, Math.random() * 3 + 1),
     farmPractices: sampleSize(FARM_PRACTICES, Math.random() * 3 + 1),
