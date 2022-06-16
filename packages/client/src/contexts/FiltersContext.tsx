@@ -423,6 +423,8 @@ export const openEventCard = (plantingId: string) => {
   if (!openEventCardIds().includes(plantingId)) {
     openEventCardIds([plantingId, ...openEventCardIds()]);
   }
+  selectedFilterId(null);
+  selectedProducerId(null);
 };
 export const closeEventCard = (plantingId: string) => {
   openEventCardIds(openEventCardIds().filter((id) => id !== plantingId));
