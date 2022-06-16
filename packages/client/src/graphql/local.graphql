@@ -64,6 +64,7 @@ type FilterParams {
   farmPractices: [String!]!
   amendments: [String!]!
   landPreparation: [String!]!
+  zones: [String!]!
 }
 
 type Filter {

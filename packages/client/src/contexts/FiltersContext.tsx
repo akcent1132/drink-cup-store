@@ -25,6 +25,7 @@ import {
   FARM_PRACTICES,
   AMENDMENTS,
   LAND_PREPARATION,
+  ZONES
 } from "./lists";
 import {
   Filter,
@@ -118,7 +119,12 @@ declare module externalData {
   }
   
   export interface Params {
-    texture: string
+    soil_group?: string
+    soil_suborder?: string
+    soil_order?: string
+    clay_percentage?: number
+    sand_percentage?: number
+    soil_texture?: number
     zone?: string
     hardiness_zone?: string
     temperature?: number
@@ -350,6 +356,7 @@ const createFilterParams = (): FilterParams => {
     farmPractices: sampleSize(FARM_PRACTICES, Math.random() * 3 + 1),
     amendments: sampleSize(AMENDMENTS, Math.random() * 3 + 1),
     landPreparation: sampleSize(LAND_PREPARATION, Math.random() * 3 + 1),
+    zones: sampleSize(ZONES, Math.random() * 3 + 1),
   };
 };
 

@@ -15,6 +15,7 @@ query FilterEditor($filterId: String!) {
       farmPractices
       amendments
       landPreparation
+      zones
     }
     draftParams {
       groups
@@ -28,6 +29,7 @@ query FilterEditor($filterId: String!) {
       farmPractices
       amendments
       landPreparation
+      zones
     }
   }
 }

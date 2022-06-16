@@ -20,6 +20,7 @@ import {
   LAND_PREPARATION,
   SAMPLE_SOURCE,
   GROUPS,
+  ZONES,
 } from "../contexts/lists";
 import { range } from "lodash";
 import { TagSelect } from "./TagSelect";
@@ -216,13 +217,13 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
             allowSearch
           />
         </Label>
-        <Label label="Colors">
+        {/* <Label label="Colors">
           <TagSelect
             onChange={(colors) => updateParams({ colors })}
             value={params.colors}
             options={COLORS}
           />
-        </Label>
+        </Label> */}
         <Label label="Climate Region">
           <TagSelect
             onChange={(climateRegion) => updateParams({ climateRegion })}
@@ -237,7 +238,7 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
             options={SAMPLE_SOURCE}
           />
         </Label>
-        <RangeInput
+        {/* <RangeInput
           label="Sweetness Score"
           min={1}
           max={10}
@@ -257,7 +258,7 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
           max={10}
           value={params.tasteScore}
           onChange={updateTasteScore}
-        />
+        /> */}
         <Label label="Farm Practices">
           <TagSelect
             onChange={(farmPractices) => updateParams({ farmPractices })}
@@ -277,6 +278,13 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
             onChange={(landPreparation) => updateParams({ landPreparation })}
             value={params.landPreparation}
             options={LAND_PREPARATION}
+          />
+        </Label>
+        <Label label="Hardiness Zones">
+          <TagSelect
+            onChange={(zones) => updateParams({ zones })}
+            value={params.zones}
+            options={ZONES}
           />
         </Label>
         <GButton label="Update" onClick={handleApply} />

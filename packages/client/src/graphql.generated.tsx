@@ -38,6 +38,7 @@ export type FilterParams = {
   sweetnessScore: Array<Scalars['Int']>;
   tasteScore: Array<Scalars['Int']>;
   years: Array<Scalars['Int']>;
+  zones: Array<Scalars['String']>;
 };
 
 export type GroupedValues = {
@@ -158,7 +159,7 @@ export type FilterFieldPolicy = {
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type FilterParamsKeySpecifier = ('amendments' | 'climateRegion' | 'colors' | 'farmPractices' | 'flavorScore' | 'groups' | 'landPreparation' | 'sampleSource' | 'sweetnessScore' | 'tasteScore' | 'years' | FilterParamsKeySpecifier)[];
+export type FilterParamsKeySpecifier = ('amendments' | 'climateRegion' | 'colors' | 'farmPractices' | 'flavorScore' | 'groups' | 'landPreparation' | 'sampleSource' | 'sweetnessScore' | 'tasteScore' | 'years' | 'zones' | FilterParamsKeySpecifier)[];
 export type FilterParamsFieldPolicy = {
 	amendments?: FieldPolicy<any> | FieldReadFunction<any>,
 	climateRegion?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -170,7 +171,8 @@ export type FilterParamsFieldPolicy = {
 	sampleSource?: FieldPolicy<any> | FieldReadFunction<any>,
 	sweetnessScore?: FieldPolicy<any> | FieldReadFunction<any>,
 	tasteScore?: FieldPolicy<any> | FieldReadFunction<any>,
-	years?: FieldPolicy<any> | FieldReadFunction<any>
+	years?: FieldPolicy<any> | FieldReadFunction<any>,
+	zones?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type GroupedValuesKeySpecifier = ('filter' | 'id' | 'values' | GroupedValuesKeySpecifier)[];
 export type GroupedValuesFieldPolicy = {

@@ -109,7 +109,7 @@ const RightFlipContainer = styled.div`
 `;
 
 const COLORS = schemeTableau10.slice(0, 9);
-
+let filterNamePostfix = 1;
 const RandomContent = () => {
   const { data: { filters = [], selectedCropType } = {} } =
     useRandomContentQuery();
@@ -120,7 +120,7 @@ const RandomContent = () => {
       name = name || faker.company.companyName();
       const _color =
         color || sample(freeColors.length > 0 ? freeColors : COLORS)!;
-      addFilter(_color, name, selectedCropType || "corn");
+      addFilter(_color, `New Filter ${filterNamePostfix++}`, selectedCropType || "corn");
     },
     [filters]
   );
