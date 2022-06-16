@@ -40,6 +40,15 @@ type PlantingEvent {
   id: String!
   type: String!
   date: String!
+  detailsKey: String
+  details: [PlantingEventDetail!]
+}
+
+type PlantingEventDetail {
+  id: String!
+  name: String!
+  value: String
+  valueList: [String!]
 }
 
 type FilterParams {

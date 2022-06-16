@@ -63,8 +63,18 @@ export type Planting = {
 export type PlantingEvent = {
   __typename: 'PlantingEvent';
   date: Scalars['String'];
+  details: Maybe<Array<PlantingEventDetail>>;
+  detailsKey: Maybe<Scalars['String']>;
   id: Scalars['String'];
   type: Scalars['String'];
+};
+
+export type PlantingEventDetail = {
+  __typename: 'PlantingEventDetail';
+  id: Scalars['String'];
+  name: Scalars['String'];
+  value: Maybe<Scalars['String']>;
+  valueList: Maybe<Array<Scalars['String']>>;
 };
 
 export type PlantingParams = {
@@ -178,11 +188,20 @@ export type PlantingFieldPolicy = {
 	title?: FieldPolicy<any> | FieldReadFunction<any>,
 	values?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type PlantingEventKeySpecifier = ('date' | 'id' | 'type' | PlantingEventKeySpecifier)[];
+export type PlantingEventKeySpecifier = ('date' | 'details' | 'detailsKey' | 'id' | 'type' | PlantingEventKeySpecifier)[];
 export type PlantingEventFieldPolicy = {
 	date?: FieldPolicy<any> | FieldReadFunction<any>,
+	details?: FieldPolicy<any> | FieldReadFunction<any>,
+	detailsKey?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	type?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type PlantingEventDetailKeySpecifier = ('id' | 'name' | 'value' | 'valueList' | PlantingEventDetailKeySpecifier)[];
+export type PlantingEventDetailFieldPolicy = {
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	name?: FieldPolicy<any> | FieldReadFunction<any>,
+	value?: FieldPolicy<any> | FieldReadFunction<any>,
+	valueList?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type PlantingParamsKeySpecifier = ('precipitation' | 'temperature' | 'texture' | 'zone' | PlantingParamsKeySpecifier)[];
 export type PlantingParamsFieldPolicy = {
@@ -238,6 +257,10 @@ export type StrictTypedTypePolicies = {
 	PlantingEvent?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | PlantingEventKeySpecifier | (() => undefined | PlantingEventKeySpecifier),
 		fields?: PlantingEventFieldPolicy,
+	},
+	PlantingEventDetail?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | PlantingEventDetailKeySpecifier | (() => undefined | PlantingEventDetailKeySpecifier),
+		fields?: PlantingEventDetailFieldPolicy,
 	},
 	PlantingParams?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | PlantingParamsKeySpecifier | (() => undefined | PlantingParamsKeySpecifier),

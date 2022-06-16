@@ -1,26 +1,33 @@
 query EventsCard($plantingId: String!) {
-    planting(id: $plantingId) {
-        id
-        isHighlighted
-        producer {
-            id
-            code
-        }
-        title
-        params {
-            precipitation
-            temperature
-            texture
-            zone
-        }
-        events {
-            id
-            date
-            type
-        }
-        matchingFilters {
-            id
-            color
-        }
+  planting(id: $plantingId) {
+    id
+    isHighlighted
+    producer {
+      id
+      code
     }
+    title
+    params {
+      precipitation
+      temperature
+      texture
+      zone
+    }
+    events {
+      id
+      date
+      type
+      detailsKey
+      details {
+        id
+        name
+        value
+        valueList
+      }
+    }
+    matchingFilters {
+      id
+      color
+    }
+  }
 }

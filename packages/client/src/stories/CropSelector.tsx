@@ -18,8 +18,8 @@ export const CropSelector = () => {
         map(groupBy(data?.allPlantings, "cropType"), (plantings, cropType) => ({
           name: cropType,
           plantingCount: plantings.length,
-        })),
-        "cropType"
+        })).filter(d => d.plantingCount >= 3),
+        "name"
       ),
     [data]
   );

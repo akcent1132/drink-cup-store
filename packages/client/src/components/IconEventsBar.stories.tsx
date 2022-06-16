@@ -11,7 +11,7 @@ export default {
   component: IconEventsBar,
 } as ComponentMeta<typeof IconEventsBar>;
 
-const EventsBarWithTheme = withEditableTheme(IconEventsBar)
+const EventsBarWithTheme = withEditableTheme(IconEventsBar);
 const Template: ComponentStory<typeof EventsBarWithTheme> = (args) => (
   <EventsBarWithTheme {...args} />
 );
@@ -19,5 +19,10 @@ const Template: ComponentStory<typeof EventsBarWithTheme> = (args) => (
 export const Default = Template.bind({});
 
 Default.args = {
-  events: getFarmEvents(),
+  events: getFarmEvents().map((e) => ({
+    ...e,
+    details: [],
+    date: e.date.toString(),
+    __typename: "PlantingEvent",
+  })),
 };

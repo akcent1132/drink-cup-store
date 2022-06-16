@@ -19,6 +19,10 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import { Spacer } from "./EventsCard";
 import useCopy from "use-copy";
+import { EventsCardQuery } from "./EventsCard.generated";
+import { keyBy, mapValues } from "lodash";
+import { getEventDetailsVar } from "../contexts/FiltersContext";
+import { makeVar, useReactiveVar } from "@apollo/client";
 
 export const defaultTheme = {
   borderColor: "rgba(255,255,255,.4)",
@@ -48,6 +52,10 @@ interface Props {
   onClose?: () => void;
   onMouseEnter?: (e: React.MouseEvent) => void;
   onMouseLeave?: (e: React.MouseEvent) => void;
+  eventDetails?: NonNullable<
+    EventsCardQuery["planting"]
+  >["events"][number]["details"];
+  debugInfo?: any;
 }
 
 export const EventDetailsPopup = ({
@@ -58,22 +66,33 @@ export const EventDetailsPopup = ({
   onClose,
   onMouseEnter,
   onMouseLeave,
+  debugInfo,
 }: Props) => {
   const [target, setTarget] = useState(null);
   const ref = useCallback((node) => setTarget(node), []);
-  const data = useMemo(
-    () => ({
-      Name: "Herbicide Spark 65P 30 liter_acre",
-      Notes:
-        "Added 300 liters of Spark total but diluted it with extra water for this field.",
-      "Quantity 1": "Spark 65P (rate) 30 litre_acre",
-      "Quantity 2": "Spark 65P (quantity) 300 litre",
-      "Material 1": ["Spark 65P"],
-      Flags: ["Greenhouse", "Organic"],
-    }),
-    []
+  const eventDetailsVar = getEventDetailsVar(debugInfo.detailsKey);
+  const eventDetails = useReactiveVar(eventDetailsVar);
+
+  console.log("POPUP", { eventDetails });
+  const data = mapValues(
+    keyBy(eventDetails, "name"),
+    (d) => d.value || d.valueList || "N/A"
   );
-  const [copied, copy, setCopied] = useCopy(JSON.stringify(data, null, 2));
+  // const data = useMemo(
+  //   () => ({
+  //     Name: "Herbicide Spark 65P 30 liter_acre",
+  //     Notes:
+  //       "Added 300 liters of Spark total but diluted it with extra water for this field.",
+  //     "Quantity 1": "Spark 65P (rate) 30 litre_acre",
+  //     "Quantity 2": "Spark 65P (quantity) 300 litre",
+  //     "Material 1": ["Spark 65P"],
+  //     Flags: ["Greenhouse", "Organic"],
+  //   }),
+  //   []
+  // );
+  const [copied, copy, setCopied] = useCopy(
+    JSON.stringify({ title, date, debugInfo, ...data }, null, 2)
+  );
 
   const copyData = useCallback(() => {
     copy();
@@ -133,25 +152,29 @@ export const EventDetailsPopup = ({
                 padding-bottom: 4px;
               `}
             >
-              <NameValueList>
-                {Object.entries(data).map(([key, value]) => (
-                  <NameValuePair name={key} key={key}>
-                    {Array.isArray(value) ? (
-                      <Box direction="row" gap="2px">
-                        {value.map((v, i) => (
-                          <Tag size="xsmall" value={v} key={i} />
-                        ))}
-                      </Box>
-                    ) : typeof value === "string" ? (
-                      <Text size="xsmall" color="text-strong">
-                        {value}
-                      </Text>
-                    ) : (
-                      value
-                    )}
-                  </NameValuePair>
-                ))}
-              </NameValueList>
+              {eventDetails ? (
+                <NameValueList>
+                  {Object.entries(data || {}).map(([key, value]) => (
+                    <NameValuePair name={key} key={key}>
+                      {Array.isArray(value) ? (
+                        <Box direction="row" gap="2px">
+                          {value.map((v, i) => (
+                            <Tag size="xsmall" value={v} key={i} />
+                          ))}
+                        </Box>
+                      ) : typeof value === "string" ? (
+                        <Text size="xsmall" color="text-strong">
+                          {value}
+                        </Text>
+                      ) : (
+                        value
+                      )}
+                    </NameValuePair>
+                  ))}
+                </NameValueList>
+              ) : (
+                "loading..."
+              )}
             </Box>
             <Box background="light-4" pad="none" direction="row">
               <Spacer />
@@ -202,3 +225,6 @@ export const EventDetailsPopup = ({
     </>
   );
 };
+function useFetch<T>(url: any): { data: any; error: any } {
+  throw new Error("Function not implemented.");
+}

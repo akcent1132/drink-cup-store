@@ -7,6 +7,7 @@ import "../index.css";
 import { IconEventsBar, FarmEvent } from "./IconEventsBar";
 import CloseIcon from "@mui/icons-material/Close";
 import tinycolor from "tinycolor2";
+import { useFetch } from 'usehooks-ts'
 import {
   closeEventCard,
   hightlightPlanting,
@@ -123,6 +124,7 @@ export const EventsCard = ({
   const { data: { planting } = {} } = useEventsCardQuery({
     variables: { plantingId },
   });
+
   const onClose = useCallback(
     () => planting && closeEventCard(planting.id),
     [planting?.id]
@@ -182,10 +184,7 @@ export const EventsCard = ({
         <ParamValue>{planting.params.texture}</ParamValue>
       </Params>
       <IconEventsBar
-        events={planting.events.map(({ date, ...e }) => ({
-          ...e,
-          date: new Date(date),
-        }))}
+        events={planting.events}
       />
     </Root>
   );

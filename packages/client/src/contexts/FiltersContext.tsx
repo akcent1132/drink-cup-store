@@ -1,17 +1,21 @@
 import { randomNormal } from "d3-random";
 import {
+  isEqual,
+  isNumber,
+  map,
   range,
   sample,
   sampleSize,
   startCase,
   sum,
+  take,
   uniqBy,
   uniqueId,
 } from "lodash";
 import React from "react";
 import seedrandom from "seedrandom";
 import { RowData, ROWS } from "./rows";
-import { makeVar } from "@apollo/client";
+import { makeVar, ReactiveVar } from "@apollo/client";
 import {
   CROPS,
   GROUPS,
@@ -26,13 +30,14 @@ import {
   Filter,
   FilterParams,
   Planting,
+  PlantingEventDetail,
   PlantingValue,
   Producer,
 } from "../graphql.generated";
 import { schemeTableau10 } from "d3-scale-chromatic";
 import { getFarmEvent, randomZone } from "../utils/random";
 
-const isDemo = () => !!process.env.STORYBOOK;
+export const isDemo = () => !!process.env.STORYBOOK;
 
 let plantingId = 0;
 const createPlantings = (
@@ -93,28 +98,52 @@ const createPlantings = (
 };
 
 declare module externalData {
-  interface Value {
-    name: string;
-    value: any;
+  export interface Planting {
+    _id: string
+    drupal_internal__id: number
+    flag: string[]
+    values: Value[]
+    params: Params
+    title: string
+    events: Event[]
+    cropType: string
+    producer: Producer
   }
-  interface Event {
-    id: number;
-    type: string;
-    date: string;
+  
+  export interface Value {
+    name: string
+    modus_test_id?: string
+    value: any
   }
-  interface Producer {
-    id: string;
+  
+  export interface Params {
+    texture: string
+    zone?: string
+    hardiness_zone?: string
+    temperature?: number
+    precipitation?: number
   }
-  interface Planting {
-    _id: string;
-    drupal_internal__id: number;
-    values: Value[];
-    title: string;
-    events: Event[];
-    cropType: string;
-    producer: Producer;
+  
+  export interface Event {
+    id: number
+    type?: string
+    date: string
+  }
+  
+  export interface Producer {
+    id: string
   }
 }
+
+const fixEventType = (type: string): string => {
+  type = type.toLowerCase();
+  switch (type) {
+    case "weed_control":
+      return "weeding";
+    default:
+      return type;
+  }
+};
 
 const loadPlantings = async () => {
   const LS_KEY = "data.plantings";
@@ -131,11 +160,13 @@ const loadPlantings = async () => {
           __typename: "Planting",
           isHighlighted: false,
           id: planting._id,
-          values: planting.values.map((v) => ({
-            ...v,
-            __typename: "PlantingValue",
-            plantingId: planting._id,
-          })),
+          values: planting.values.filter(v => isNumber(v.value)).map((v) => {
+            return {
+              ...v,
+              __typename: "PlantingValue",
+              plantingId: planting._id,
+            }
+          }),
           params: {
             __typename: "PlantingParams",
             zone: zone.name,
@@ -146,11 +177,16 @@ const loadPlantings = async () => {
           producer: {
             ...planting.producer,
             __typename: "Producer",
-            code: Math.random().toString(32).slice(-7),
+            code: seedrandom(planting.producer.id)().toString(32).slice(-7),
           },
           events: planting.events.map((e) => ({
             ...e,
             id: e.id.toString(),
+            type: fixEventType(e.type || ""),
+            detailsKey: `${planting.producer.id.split(".")[0]}/${
+              planting.drupal_internal__id
+            }/${e.id.toString()}`,
+            details: [],
             __typename: "PlantingEvent",
           })),
           matchingFilters: [],
@@ -188,14 +224,14 @@ const loadPlantings = async () => {
           `Got invalid planting data: '${JSON.stringify(plantings)}'`
         );
       }
-      return plantings;
+      return take(plantings, 5800);
     })
     .catch((e) => {
       console.error(
         "Failed to load data from server. Reverting to fix data",
         e
       );
-      console.warn("Loading fixed plantings...")
+      console.warn("Loading fixed plantings...");
       return fetch("all-plantings-simplified.json").then((r) => r.json());
     });
 
@@ -203,12 +239,95 @@ const loadPlantings = async () => {
   console.log("Got data");
   try {
     updateVars(externalPlantings);
-    localStorage[LS_KEY] = JSON.stringify(externalPlantings);
+    try {
+      localStorage[LS_KEY] = JSON.stringify(externalPlantings);
+    } catch (e) {
+      console.log("Failed to cache data", e);
+    }
   } catch (e) {
     console.error(`Failed to update plantings from fresh data\n${e}`);
   }
 
   console.log("finised loading data");
+};
+
+export const getEventDetailsVar = (key: string) => {
+  if (!eventDetailsMap[key]) {
+    eventDetailsMap[key] = makeVar<PlantingEventDetail[] | null>(null );
+  }
+  return eventDetailsMap[key];
+}
+const _loadingEventDetails: { [key: string]: boolean } = {};
+export const loadEventDetails = async (
+  producerKey: string,
+  plantingId: string
+) => {
+  const LS_KEY = `data.eventDetails.${producerKey}.${plantingId}`;
+  if (_loadingEventDetails[LS_KEY]) {
+    return;
+  }
+  _loadingEventDetails[LS_KEY] = true;
+
+  const updateVars = (eventDetails: { [key: string]: string | string[] }[]) => {
+    for (const details of eventDetails) {
+      const { id, uuid, ...data } = details;
+      const key = `${producerKey}/${plantingId}/${id}`;
+      const list: PlantingEventDetail[] = map(data, (value, name) => ({
+        id: `${uuid}/${key}/${name}`,
+        valueList: Array.isArray(value) ? value : null,
+        value: Array.isArray(value) ? null : value,
+        name,
+        __typename: "PlantingEventDetail" as "PlantingEventDetail",
+      })).filter((d) => d.value || d.valueList);
+
+      const eventDetailsVar = getEventDetailsVar(key)
+      if (!isEqual(eventDetailsVar(), list)) {
+        eventDetailsVar(list);
+      }
+    }
+  };
+
+  try {
+    if (localStorage[LS_KEY]) {
+      console.log("loading event details from local storage...");
+      try {
+        updateVars(JSON.parse(localStorage[LS_KEY]));
+      } catch (e) {
+        console.error(
+          `Failed to update event details from localStorage["${LS_KEY}"]\n${e}`
+        );
+      }
+    }
+
+    console.log("load data...");
+
+    const url = `https://app.surveystack.io/static/coffeeshop/events/${producerKey}/${plantingId}`;
+    let externalData: { [key: string]: string | string[] }[] = await fetch(url)
+      .then((result) => result.json())
+      .catch((e) => {
+        console.error(
+          "Failed to load eventDetails from server. Reverting to fix data",
+          e
+        );
+        return [];
+      });
+
+    console.log("Got data", externalData);
+    try {
+      updateVars(externalData);
+      try {
+        localStorage[LS_KEY] = JSON.stringify(externalData);
+      } catch (e) {
+        console.log("Failed to cache data", e);
+      }
+    } catch (e) {
+      console.error(`Failed to update event details from fresh data\n${e}`);
+    }
+
+    console.log("finised loading data");
+  } finally {
+    _loadingEventDetails[LS_KEY] = false;
+  }
 };
 
 const createFilterParams = (): FilterParams => {
@@ -271,7 +390,10 @@ export const producers = makeVar<Producer[]>(
 );
 export const selectedFilterId = makeVar<string | null>(null);
 export const selectedProducerId = makeVar<string | null>(null);
-export const selectedCropType = makeVar(isDemo() ? "corn" : "beet");
+export const selectedCropType = makeVar(isDemo() ? "corn" : "wheat");
+export const eventDetailsMap: {
+  [key: string]: ReactiveVar<PlantingEventDetail[] | null>;
+} = {};
 
 export const plantings = makeVar<Planting[]>(
   isDemo()

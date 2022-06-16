@@ -17,11 +17,10 @@ import { ReactComponent as IconIrrigation } from "../assets/foodIcons/noun-water
 import { ReactComponent as IconJoker } from "../assets/foodIcons/noun-indigenous-knowledge-4476235.svg";
 import useSize from "@react-hook/size";
 import { forceCollide, forceSimulation, forceY } from "d3-force";
-import { getFarmEvent } from "../utils/random";
 import { useXOverlap } from "../utils/useOverlap";
 import { capitalize, uniqBy } from "lodash";
-import { ValuePopup } from "./ValuePopup";
 import { EventDetailsPopup } from "./EventDetailsPopup";
+import { EventsCardQuery } from "./EventsCard.generated";
 
 export const defaultTheme = {
   iconSize: 26,
@@ -156,7 +155,7 @@ type IconNode = {
 };
 
 type Props = {
-  events?: FarmEvent[];
+  events: NonNullable<EventsCardQuery["planting"]>["events"];
 };
 
 const createDateForce = () => {
@@ -207,20 +206,28 @@ const useLastNonNull = <T,>(value: T) => {
  * Primary UI component for user interaction
  */
 export const IconEventsBar = (props: Props) => {
-  const [events, setEvents] = useState(props.events || []);
+  const [_events, setEvents] = useState(props.events || []);
+  const events = useMemo(
+    () => _events.map((e) => ({ ...e, date: new Date(e.date) })),
+    [_events]
+  );
   const [hoveredEventType, setHoveredEventType] = useState<string | null>(null);
   const [selectedEventType, setSelectedEventType] = useState<string | null>(
     null
   );
   // ugly hacks to test event details card behaviors
-  const [hoveredEventPoint, setHoveredEvent] = useStateLater<FarmEvent | null>(
+  const [hoveredEventPoint, setHoveredEvent] = useStateLater<
+    typeof events[number] | null
+  >(null);
+  const prevHoveredPoint = useLastNonNull(hoveredEventPoint);
+  const [hoveredCard, setHoveredCard] = useState<typeof events[number] | null>(
     null
   );
-  const prevHoveredPoint = useLastNonNull(hoveredEventPoint);
-  const [hoveredCard, setHoveredCard] = useState<FarmEvent | null>(null);
   const hoveredEvent = hoveredEventPoint || hoveredCard;
   // console.log({hoveredEventPoint, hoveredCard, prevHoveredPoint, hoveredEvent})
-  const [fixedEvent, setFixedEvent] = useState<FarmEvent | null>(null);
+  const [fixedEvent, setFixedEvent] = useState<typeof events[number] | null>(
+    null
+  );
   const ref = useRef<HTMLDivElement>(null);
   const refDate = useRef<HTMLDivElement>(null);
   const refDateStart = useRef<HTMLDivElement>(null);
@@ -354,16 +361,19 @@ export const IconEventsBar = (props: Props) => {
       >
         {fixedEvent ? (
           <EventDetailsPopup
+            eventDetails={fixedEvent.details}
             key={fixedEvent.id}
             date={`${timeFormat("%b %-d, %Y")(fixedEvent.date)}`}
             title={capitalize(fixedEvent.type)}
             x={scale(fixedEvent.date)}
             y={theme.tickHeight / 2 + theme.timelineTopMargin}
             onClose={eventClickOut}
+            debugInfo={fixedEvent}
           />
         ) : null}
         {hoveredEvent && hoveredEvent !== fixedEvent ? (
           <EventDetailsPopup
+            eventDetails={hoveredEvent.details}
             key={hoveredEvent.id}
             date={`${timeFormat("%b %-d, %Y")(hoveredEvent.date)}`}
             title={capitalize(hoveredEvent.type)}
@@ -373,6 +383,7 @@ export const IconEventsBar = (props: Props) => {
               prevHoveredPoint && setHoveredCard(prevHoveredPoint)
             }
             onMouseLeave={(e) => setHoveredCard(null)}
+            debugInfo={hoveredEvent}
           />
         ) : null}
       </div>
