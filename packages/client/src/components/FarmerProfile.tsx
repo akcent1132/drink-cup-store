@@ -12,6 +12,9 @@ import { selectProducer } from "../contexts/FiltersContext";
 import { range } from "lodash";
 import { createFakePlantingCardData } from "../stories/Dashboard";
 import { Tabs } from "./Tabs";
+import CopyAllIcon from "@mui/icons-material/CopyAll";
+import CheckIcon from "@mui/icons-material/Check";
+import useCopy from "use-copy";
 
 const Root = withTheme(styled.div`
   background-color: ${(p) => p.theme.colors.darkTransparent};
@@ -52,9 +55,20 @@ const CardContainer = styled.div`
 const LOREM =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec non congue ex, ac tempus eros. Pellentesque varius finibus velit, in auctor sem tristique eu. Sed blandit luctus blandit. In sollicitudin malesuada ullamcorper. Pellentesque porttitor, lectus id auctor fermentum, leo neque pulvinar ipsum, vel sagittis ipsum eros non nisi.";
 
+  const EMAIL = "684c9b3930413fdab7c6425ec01c878d@comm.surveystack.org"
 type Props = { name: string };
 export const FarmerProfile = ({ name }: Props) => {
   const [tabIndex, setTabIndex] = useState(0);
+
+  const [copied, copy, setCopied] = useCopy(EMAIL);
+
+  const copyData = useCallback(() => {
+    copy();
+
+    setTimeout(() => {
+      setCopied(false);
+    }, 3000);
+  }, [copy, setCopied]);
 
   const handleClose = useCallback(
     () => selectProducer(null),
@@ -102,9 +116,12 @@ export const FarmerProfile = ({ name }: Props) => {
                 align-self: flex-end;
                 font-weight: bold;
               `}
-              color="rgb(13, 195, 159)"
               // primary
-              label="Message on Hylo"
+              // color="rgb(13, 195, 159)"
+              onClick={copyData}
+              label="Contact"
+              icon={copied ? <CheckIcon /> : <CopyAllIcon />}
+              reverse
             />
             {/* </Box> */}
             <Spacer />
