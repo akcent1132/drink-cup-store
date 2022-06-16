@@ -180,6 +180,7 @@ const loadPlantings = async () => {
             ...planting.producer,
             __typename: "Producer",
             code: seedrandom(planting.producer.id)().toString(32).slice(-7),
+            plantings: [],
           },
           events: planting.events.map((e) => ({
             ...e,
@@ -387,6 +388,7 @@ export const producers = makeVar<Producer[]>(
         __typename: "Producer",
         id: uniqueId(),
         code: Math.random().toString(32).slice(-7),
+        plantings: [],
       }))
     : []
 );

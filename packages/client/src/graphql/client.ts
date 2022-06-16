@@ -229,16 +229,26 @@ const typePolicies: StrictTypedTypePolicies = {
       details: {
         read(_, { readField }) {
           if (isDemo()) {
-            return FAKE_PLANTING_DETAILS
+            return FAKE_PLANTING_DETAILS;
           }
           const detailsKey = readField<string | null>("detailsKey");
-          console.log("DK", detailsKey)
+          console.log("DK", detailsKey);
           const [producerKey, plantingId] = (detailsKey || "").split("/");
           loadEventDetails(producerKey, plantingId);
           // console.log("ED", detailsKey, eventDetailsMap()[detailsKey || ""]);
-          const details = eventDetailsMap[detailsKey||''];
-          console.log("details && details()", details && details())
-          return details && details() || null;
+          const details = eventDetailsMap[detailsKey || ""];
+          console.log("details && details()", details && details());
+          return (details && details()) || null;
+        },
+      },
+    },
+  },
+  Producer: {
+    fields: {
+      plantings: {
+        read(_, { readField }) {
+          const producerId = readField<string>("id") || "";
+          return plantings().filter((p) => p.producer.id === producerId);
         },
       },
     },

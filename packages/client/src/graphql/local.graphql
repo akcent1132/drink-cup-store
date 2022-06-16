@@ -86,4 +86,5 @@ type GroupedValues {
 type Producer {
   id: String!
   code: String!
+  plantings: [Planting!]!
 }

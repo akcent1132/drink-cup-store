@@ -13,7 +13,7 @@ export type RandomContentQuery = { __typename?: 'Query', selectedCropType: strin
 export type DashboardQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type DashboardQuery = { __typename?: 'Query', selectedFilter?: { __typename?: 'Filter', id: string } | null, selectedProducer?: { __typename?: 'Producer', id: string, code: string } | null, allPlantings: Array<{ __typename?: 'Planting', id: string }> };
+export type DashboardQuery = { __typename?: 'Query', selectedFilter?: { __typename?: 'Filter', id: string } | null, selectedProducer?: { __typename?: 'Producer', id: string, code: string, plantings: Array<{ __typename?: 'Planting', id: string, isHighlighted: boolean, title: string, producer: { __typename?: 'Producer', id: string, code: string }, params: { __typename?: 'PlantingParams', precipitation: string, temperature: string, texture: string, zone: string }, events: Array<{ __typename?: 'PlantingEvent', id: string, date: string, type: string, detailsKey?: string | null, details?: Array<{ __typename?: 'PlantingEventDetail', id: string, name: string, value?: string | null, valueList?: Array<string> | null }> | null }>, matchingFilters: Array<{ __typename?: 'Filter', id: string, color: string }> }> } | null, allPlantings: Array<{ __typename?: 'Planting', id: string }> };
 
 
 export const RandomContentDocument = gql`
@@ -62,6 +62,37 @@ export const DashboardDocument = gql`
   selectedProducer {
     id
     code
+    plantings {
+      id
+      isHighlighted
+      producer {
+        id
+        code
+      }
+      title
+      params {
+        precipitation
+        temperature
+        texture
+        zone
+      }
+      events {
+        id
+        date
+        type
+        detailsKey
+        details {
+          id
+          name
+          value
+          valueList
+        }
+      }
+      matchingFilters {
+        id
+        color
+      }
+    }
   }
   allPlantings {
     id

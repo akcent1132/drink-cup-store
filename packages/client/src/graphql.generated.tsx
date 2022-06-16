@@ -97,6 +97,7 @@ export type Producer = {
   __typename: 'Producer';
   code: Scalars['String'];
   id: Scalars['String'];
+  plantings: Array<Planting>;
 };
 
 export type Query = {
@@ -218,10 +219,11 @@ export type PlantingValueFieldPolicy = {
 	plantingId?: FieldPolicy<any> | FieldReadFunction<any>,
 	value?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type ProducerKeySpecifier = ('code' | 'id' | ProducerKeySpecifier)[];
+export type ProducerKeySpecifier = ('code' | 'id' | 'plantings' | ProducerKeySpecifier)[];
 export type ProducerFieldPolicy = {
 	code?: FieldPolicy<any> | FieldReadFunction<any>,
-	id?: FieldPolicy<any> | FieldReadFunction<any>
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	plantings?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type QueryKeySpecifier = ('allPlantings' | 'filter' | 'filters' | 'groupedValues' | 'highlightedFilter' | 'highlightedPlanting' | 'openEventCards' | 'planting' | 'plantings' | 'selectedCropType' | 'selectedFilter' | 'selectedProducer' | 'test' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {

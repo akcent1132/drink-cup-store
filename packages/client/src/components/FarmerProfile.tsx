@@ -9,18 +9,20 @@ import CloseIcon from "@mui/icons-material/Close";
 import { IconButton } from "./FilterEditor";
 import { useCallback, useMemo, useState } from "react";
 import { selectProducer } from "../contexts/FiltersContext";
-import { range } from "lodash";
+import { range, sortBy, take } from "lodash";
 import { createFakePlantingCardData } from "../stories/Dashboard";
 import { Tabs } from "./Tabs";
 import CopyAllIcon from "@mui/icons-material/CopyAll";
 import CheckIcon from "@mui/icons-material/Check";
 import useCopy from "use-copy";
+import { DashboardQuery } from "../stories/Dashboard.generated";
 
 const Root = withTheme(styled.div`
   background-color: ${(p) => p.theme.colors.darkTransparent};
   display: flex;
   gap: 16px;
   flex-direction: column;
+  padding-bottom: 70px;
 `);
 
 const NameContainer = styled.div`
@@ -56,8 +58,8 @@ const LOREM =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec non congue ex, ac tempus eros. Pellentesque varius finibus velit, in auctor sem tristique eu. Sed blandit luctus blandit. In sollicitudin malesuada ullamcorper. Pellentesque porttitor, lectus id auctor fermentum, leo neque pulvinar ipsum, vel sagittis ipsum eros non nisi.";
 
   const EMAIL = "684c9b3930413fdab7c6425ec01c878d@comm.surveystack.org"
-type Props = { name: string };
-export const FarmerProfile = ({ name }: Props) => {
+type Props = { producer: NonNullable<DashboardQuery['selectedProducer']> };
+export const FarmerProfile = ({ producer }: Props) => {
   const [tabIndex, setTabIndex] = useState(0);
 
   const [copied, copy, setCopied] = useCopy(EMAIL);
@@ -75,20 +77,20 @@ export const FarmerProfile = ({ name }: Props) => {
     []
   );
 
-  const plantings = useMemo(
-    () =>
-      range(1 + Math.random() * 5).map((id) =>
-        createFakePlantingCardData(id.toString(), "")
-      ),
-    []
-  );
-  const fields = useMemo(
-    () =>
-      range(1 + Math.random() * 5).map((id) =>
-        createFakePlantingCardData(id.toString(), "")
-      ),
-    []
-  );
+  // const plantings = useMemo(
+  //   () =>
+  //     range(1 + Math.random() * 5).map((id) =>
+  //       createFakePlantingCardData(id.toString(), "")
+  //     ),
+  //   []
+  // );
+  // const fields = useMemo(
+  //   () =>
+  //     range(1 + Math.random() * 5).map((id) =>
+  //       createFakePlantingCardData(id.toString(), "")
+  //     ),
+  //   []
+  // );
   return (
     <Root>
       <Box direction="row">
@@ -102,7 +104,7 @@ export const FarmerProfile = ({ name }: Props) => {
           >
             <NameContainer>
               <NameLabel>Producer ID</NameLabel>
-              <Name>{name}</Name>
+              <Name>{producer.code}</Name>
             </NameContainer>
             {/* <Box
               align="end"
@@ -147,7 +149,7 @@ export const FarmerProfile = ({ name }: Props) => {
             label: "Plantings",
             renderPanel: () => (
               <CardContainer>
-                {plantings.map((p) => (
+                {take(sortBy(producer.plantings, p => p.events.length).reverse(), 5).map((p) => (
                   <EventsCard key={p.id} plantingId={p.id} hideName hideColorBorder />
                 ))}
               </CardContainer>
@@ -157,7 +159,7 @@ export const FarmerProfile = ({ name }: Props) => {
             label: "Fields",
             renderPanel: () => (
               <CardContainer>
-                {fields.map((p) => (
+                {producer.plantings.map((p) => (
                   <EventsCard key={p.id} plantingId={p.id} hideName hideColorBorder />
                 ))}
               </CardContainer>
