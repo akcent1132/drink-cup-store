@@ -13,7 +13,7 @@ export type RandomContentQuery = { __typename?: 'Query', selectedCropType: strin
 export type DashboardQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type DashboardQuery = { __typename?: 'Query', selectedFilter?: { __typename?: 'Filter', id: string } | null, selectedProducer?: { __typename?: 'Producer', id: string } | null, allPlantings: Array<{ __typename?: 'Planting', id: string }> };
+export type DashboardQuery = { __typename?: 'Query', selectedFilter?: { __typename?: 'Filter', id: string } | null, selectedProducer?: { __typename?: 'Producer', id: string, code: string } | null, allPlantings: Array<{ __typename?: 'Planting', id: string }> };
 
 
 export const RandomContentDocument = gql`
@@ -61,6 +61,7 @@ export const DashboardDocument = gql`
   }
   selectedProducer {
     id
+    code
   }
   allPlantings {
     id

@@ -13,6 +13,7 @@ query Dashboard {
   }
   selectedProducer {
     id
+    code
   }
   allPlantings {
     id

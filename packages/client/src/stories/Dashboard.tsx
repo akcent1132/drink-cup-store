@@ -216,7 +216,7 @@ export const Dashboard = ({ iframeSrc }: Props) => {
           ]
         : selectedProducer
         ? [
-            <FarmerProfile name={selectedProducer.id} />,
+            <FarmerProfile name={selectedProducer.code} />,
             `FarmerProfile-${selectedProducer.id}`,
           ]
         : [<PlantingCardList />, `Events`],
