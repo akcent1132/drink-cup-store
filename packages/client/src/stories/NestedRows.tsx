@@ -25,6 +25,7 @@ const flattenRows = (
       | undefined;
     name: string;
     value: number;
+    modusId?: string | null;
     plantingId: string;
   }[];
 }[] =>

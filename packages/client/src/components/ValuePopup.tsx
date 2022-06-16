@@ -23,6 +23,11 @@ const Container = styled.div<{ x: number; y: number }>`
   pointer-events: none;
 `;
 
+const Bold = styled.span`
+  font-weight: 900;
+`;
+
+
 const Root = withTheme(styled.div`
   font-family: ${(p) => p.theme.font};
 
@@ -63,16 +68,17 @@ const Content = withTheme(styled.div`
 `);
 
 interface Props {
+  modusId?: string;
   value: string;
   x: number;
   y: number;
 }
 
-export const ValuePopup = ({ value, x, y }: Props) => {
+export const ValuePopup = ({ value, modusId, x, y }: Props) => {
   return (
     <Container {...{ x, y }}>
       <Root>
-        <Content>{value}</Content>
+        <Content>{modusId ? `${modusId}: ` : ''}<Bold>{value}</Bold></Content>
       </Root>
     </Container>
   );

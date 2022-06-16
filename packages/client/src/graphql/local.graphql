@@ -28,6 +28,7 @@ type PlantingValue {
   name: String!
   value: Float!
   plantingId: String!
+  modusId: String
 }
 type PlantingParams {
   zone: String!

@@ -87,6 +87,7 @@ export type PlantingParams = {
 
 export type PlantingValue = {
   __typename: 'PlantingValue';
+  modusId: Maybe<Scalars['String']>;
   name: Scalars['String'];
   plantingId: Scalars['String'];
   value: Scalars['Float'];
@@ -210,8 +211,9 @@ export type PlantingParamsFieldPolicy = {
 	texture?: FieldPolicy<any> | FieldReadFunction<any>,
 	zone?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type PlantingValueKeySpecifier = ('name' | 'plantingId' | 'value' | PlantingValueKeySpecifier)[];
+export type PlantingValueKeySpecifier = ('modusId' | 'name' | 'plantingId' | 'value' | PlantingValueKeySpecifier)[];
 export type PlantingValueFieldPolicy = {
+	modusId?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantingId?: FieldPolicy<any> | FieldReadFunction<any>,
 	value?: FieldPolicy<any> | FieldReadFunction<any>

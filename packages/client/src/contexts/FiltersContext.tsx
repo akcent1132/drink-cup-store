@@ -65,6 +65,7 @@ const createPlantings = (
             name: row.name,
             value: norm(),
             plantingId: id,
+            modusId: "MOD-US/ID",
           });
         }
         if (row.children) {
@@ -163,6 +164,7 @@ const loadPlantings = async () => {
           values: planting.values.filter(v => isNumber(v.value)).map((v) => {
             return {
               ...v,
+              modusId: v.modus_test_id || null,
               __typename: "PlantingValue",
               plantingId: planting._id,
             }

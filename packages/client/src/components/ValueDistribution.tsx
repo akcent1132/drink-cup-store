@@ -159,6 +159,7 @@ type Props = {
       | undefined;
     name: string;
     value: number;
+    modusId?: string | null;
     plantingId: string;
   }[];
 };
@@ -441,6 +442,7 @@ export const ValueDistribution = ({
 
         {localHoveredValue ? (
           <ValuePopup
+            modusId={localHoveredValue.modusId || undefined}
             value={`${formatValue(localHoveredValue.value)}`}
             x={scale(localHoveredValue.value)}
             y={theme.valueDistribution.varianceLineHeight}

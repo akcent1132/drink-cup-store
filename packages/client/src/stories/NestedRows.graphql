@@ -10,6 +10,7 @@ query NestedRows($cropType: String! = "") {
       name
       value
       plantingId
+      modusId
     }
   }
   highlightedPlanting {
