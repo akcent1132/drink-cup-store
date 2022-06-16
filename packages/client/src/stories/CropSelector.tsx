@@ -18,7 +18,7 @@ export const CropSelector = () => {
         map(groupBy(data?.allPlantings, "cropType"), (plantings, cropType) => ({
           name: cropType,
           plantingCount: plantings.length,
-        })).filter(d => d.plantingCount >= 3),
+        })).filter(d => d.plantingCount >= 30),
         "name"
       ),
     [data]
@@ -43,9 +43,8 @@ export const CropSelector = () => {
   return (
     <Select
       css={css`
-        height: 30px;
+        height: 0px;
       `}
-      dropHeight="small"
       placeholder="Select a crop"
       value={data?.selectedCropType}
       valueKey={{ key: "value", reduce: true }}
