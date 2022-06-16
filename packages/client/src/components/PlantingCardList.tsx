@@ -36,7 +36,7 @@ const hiddenStyles = {
 export const PlantingCardList = () => {
   const { data: { openEventCards } = {} } = usePlantingCardListQuery();
 
-  if (!openEventCards) {
+  if (!openEventCards || openEventCards.length === 0) {
     return null;
   }
 

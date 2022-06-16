@@ -232,12 +232,10 @@ const typePolicies: StrictTypedTypePolicies = {
             return FAKE_PLANTING_DETAILS;
           }
           const detailsKey = readField<string | null>("detailsKey");
-          console.log("DK", detailsKey);
           const [producerKey, plantingId] = (detailsKey || "").split("/");
           loadEventDetails(producerKey, plantingId);
           // console.log("ED", detailsKey, eventDetailsMap()[detailsKey || ""]);
           const details = eventDetailsMap[detailsKey || ""];
-          console.log("details && details()", details && details());
           return (details && details()) || null;
         },
       },

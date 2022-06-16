@@ -30,6 +30,7 @@ export const defaultTheme = {
   tickWidth: 2,
   meanTickWidth: 6,
   varianceLineHeight: 8,
+  labelWidth: 190,
   averageColor: tinycolor("white").setAlpha(0.1).toString(),
 };
 
@@ -63,7 +64,9 @@ const Label = withTheme(styled.div<{
     p.theme.valueDistribution.varianceLineHeight +
     p.theme.valueDistribution.rowGap / 2}px;
   margin-bottom: ${(p) => p.theme.valueDistribution.rowGap / 2}px;
-  min-width: ${(p) => 190 - p.nesting * p.theme.valueDistribution.tabSize}px;
+  min-width: ${(p) =>
+    p.theme.valueDistribution.labelWidth -
+    p.nesting * p.theme.valueDistribution.tabSize}px;
   font-size: 13.5px;
   font-family: ${(p) => p.theme.font};
   font-weight: ${(p) => (p.childCount > 0 ? 700 : 400)};
