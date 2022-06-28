@@ -11,7 +11,8 @@
     "url": "git+ssh://git@gitlab.com/our-sci/software/coffee-shop.git"
   },
   "scripts": {
-    "start": "nodemon --watch './**/*.ts' --exec 'ts-node' src/index.ts",
+    "start": "nodemon --watch './src/**/*.ts'  --exec 'ts-node' src/index.ts",
+    "start:docker": "yarn start -- --legacy-watch",
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "bugs": {

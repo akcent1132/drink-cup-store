@@ -13,6 +13,12 @@
 #       - "introspection"
 
 overwrite: true
+
+watch: true
+# Passed directly through to chokidar's file watch configuration
+watchConfig:
+  usePolling: true
+  interval: 1000
 generates:
   # generate the types for the graphql resolvers
   packages/server/src/resolvers.generated.ts:

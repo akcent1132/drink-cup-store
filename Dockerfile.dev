@@ -1,0 +1,16 @@
+FROM node:16-buster
+
+WORKDIR /app
+
+# Copy these files from your host into the image
+COPY lerna.json .
+COPY yarn.lock .
+COPY package.json .
+COPY packages/server/yarn.lock packages/server/
+COPY packages/server/package.json packages/server/
+COPY packages/client/yarn.lock packages/client/
+COPY packages/client/package.json packages/client/
+
+# Run the command inside the image filesystem
+RUN yarn install && yarn lerna bootstrap
+

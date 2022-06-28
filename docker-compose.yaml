@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+       - ./:/app/
+       - /app/node_modules
+       - /app/packages/server/node_modules
+       - /app/packages/client/node_modules
+    ports:
+      - 4000:4000      
+      - 3000:3000
+      - 6006:6006
+    command: sh -c "sleep infinity"
+    # command: sh -c "yarn codegen"
+
