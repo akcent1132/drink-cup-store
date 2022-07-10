@@ -16,6 +16,8 @@ import CheckIcon from "@mui/icons-material/Check";
 import useCopy from "use-copy";
 import { DashboardQuery } from "../stories/Dashboard.generated";
 
+const LS_SHOW_PRODUCER_NAME = "show-producer-name";
+
 const Root = withTheme(styled.div`
   background-color: ${(p) => p.theme.colors.darkTransparent};
   display: flex;
@@ -56,8 +58,8 @@ const CardContainer = styled.div`
 const LOREM =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec non congue ex, ac tempus eros. Pellentesque varius finibus velit, in auctor sem tristique eu. Sed blandit luctus blandit. In sollicitudin malesuada ullamcorper. Pellentesque porttitor, lectus id auctor fermentum, leo neque pulvinar ipsum, vel sagittis ipsum eros non nisi.";
 
-  const EMAIL = "684c9b3930413fdab7c6425ec01c878d@comm.surveystack.org"
-type Props = { producer: NonNullable<DashboardQuery['selectedProducer']> };
+const EMAIL = "684c9b3930413fdab7c6425ec01c878d@comm.surveystack.org";
+type Props = { producer: NonNullable<DashboardQuery["selectedProducer"]> };
 export const FarmerProfile = ({ producer }: Props) => {
   const [tabIndex, setTabIndex] = useState(0);
 
@@ -71,10 +73,7 @@ export const FarmerProfile = ({ producer }: Props) => {
     }, 3000);
   }, [copy, setCopied]);
 
-  const handleClose = useCallback(
-    () => selectProducer(null),
-    []
-  );
+  const handleClose = useCallback(() => selectProducer(null), []);
 
   // const plantings = useMemo(
   //   () =>
@@ -103,7 +102,11 @@ export const FarmerProfile = ({ producer }: Props) => {
           >
             <NameContainer>
               <NameLabel>Producer ID</NameLabel>
-              <Name>{producer.code}</Name>
+              <Name>
+                {localStorage[LS_SHOW_PRODUCER_NAME] === "true"
+                  ? producer.id
+                  : producer.code}
+              </Name>
             </NameContainer>
             {/* <Box
               align="end"
@@ -148,8 +151,16 @@ export const FarmerProfile = ({ producer }: Props) => {
             label: "Plantings",
             renderPanel: () => (
               <CardContainer>
-                {take(sortBy(producer.plantings, p => p.events.length).reverse(), 5).map((p) => (
-                  <EventsCard key={p.id} plantingId={p.id} hideName hideColorBorder />
+                {take(
+                  sortBy(producer.plantings, (p) => p.events.length).reverse(),
+                  5
+                ).map((p) => (
+                  <EventsCard
+                    key={p.id}
+                    plantingId={p.id}
+                    hideName
+                    hideColorBorder
+                  />
                 ))}
               </CardContainer>
             ),
@@ -159,7 +170,12 @@ export const FarmerProfile = ({ producer }: Props) => {
             renderPanel: () => (
               <CardContainer>
                 {producer.plantings.map((p) => (
-                  <EventsCard key={p.id} plantingId={p.id} hideName hideColorBorder />
+                  <EventsCard
+                    key={p.id}
+                    plantingId={p.id}
+                    hideName
+                    hideColorBorder
+                  />
                 ))}
               </CardContainer>
             ),
