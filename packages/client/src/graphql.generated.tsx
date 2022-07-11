@@ -13,6 +13,19 @@ export type Scalars = {
   Float: number;
 };
 
+export type AuthState = {
+  __typename: 'AuthState';
+  isLoggedIn: Scalars['Boolean'];
+  user: Maybe<AuthUser>;
+};
+
+export type AuthUser = {
+  __typename: 'AuthUser';
+  email: Scalars['String'];
+  id: Scalars['String'];
+  name: Scalars['String'];
+};
+
 export type Filter = {
   __typename: 'Filter';
   activeParams: Maybe<FilterParams>;
@@ -106,6 +119,7 @@ export type Producer = {
 export type Query = {
   __typename: 'Query';
   allPlantings: Array<Planting>;
+  auth: Maybe<AuthState>;
   filter: Maybe<Filter>;
   filters: Array<Filter>;
   groupedValues: Array<GroupedValues>;
@@ -150,6 +164,17 @@ export type QueryPlantingsArgs = {
   cropType: Scalars['String'];
 };
 
+export type AuthStateKeySpecifier = ('isLoggedIn' | 'user' | AuthStateKeySpecifier)[];
+export type AuthStateFieldPolicy = {
+	isLoggedIn?: FieldPolicy<any> | FieldReadFunction<any>,
+	user?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type AuthUserKeySpecifier = ('email' | 'id' | 'name' | AuthUserKeySpecifier)[];
+export type AuthUserFieldPolicy = {
+	email?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	name?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type FilterKeySpecifier = ('activeParams' | 'color' | 'cropType' | 'draftParams' | 'id' | 'isHighlighted' | 'name' | 'plantings' | FilterKeySpecifier)[];
 export type FilterFieldPolicy = {
 	activeParams?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -231,9 +256,10 @@ export type ProducerFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('allPlantings' | 'filter' | 'filters' | 'groupedValues' | 'highlightedFilter' | 'highlightedPlanting' | 'openEventCards' | 'planting' | 'plantings' | 'selectedCropType' | 'selectedFilter' | 'selectedProducer' | 'test' | QueryKeySpecifier)[];
+export type QueryKeySpecifier = ('allPlantings' | 'auth' | 'filter' | 'filters' | 'groupedValues' | 'highlightedFilter' | 'highlightedPlanting' | 'openEventCards' | 'planting' | 'plantings' | 'selectedCropType' | 'selectedFilter' | 'selectedProducer' | 'test' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
 	allPlantings?: FieldPolicy<any> | FieldReadFunction<any>,
+	auth?: FieldPolicy<any> | FieldReadFunction<any>,
 	filter?: FieldPolicy<any> | FieldReadFunction<any>,
 	filters?: FieldPolicy<any> | FieldReadFunction<any>,
 	groupedValues?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -248,6 +274,14 @@ export type QueryFieldPolicy = {
 	test?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type StrictTypedTypePolicies = {
+	AuthState?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | AuthStateKeySpecifier | (() => undefined | AuthStateKeySpecifier),
+		fields?: AuthStateFieldPolicy,
+	},
+	AuthUser?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | AuthUserKeySpecifier | (() => undefined | AuthUserKeySpecifier),
+		fields?: AuthUserFieldPolicy,
+	},
 	Filter?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | FilterKeySpecifier | (() => undefined | FilterKeySpecifier),
 		fields?: FilterFieldPolicy,

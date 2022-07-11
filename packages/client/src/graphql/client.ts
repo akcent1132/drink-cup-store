@@ -22,6 +22,7 @@ import {
   StrictTypedTypePolicies,
 } from "../graphql.generated";
 import seedrandom from "seedrandom";
+import { authState } from "./auth";
 
 const typeDefs = loader("./local.graphql");
 
@@ -86,10 +87,10 @@ const getGroupedValues = (cropType: string) => {
 const typePolicies: StrictTypedTypePolicies = {
   Query: {
     fields: {
-      test: {
+      auth: {
         read() {
-          return true;
-        },
+          return authState()
+        }
       },
       selectedCropType: {
         read(): string {

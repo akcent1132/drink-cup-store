@@ -12,6 +12,7 @@ extend type Query {
   openEventCards(cropType: String!): [Planting!]!
   selectedFilter: Filter
   selectedProducer: Producer
+  auth: AuthState,
 }
 type Planting {
   id: String!
@@ -91,3 +92,15 @@ type Producer {
   code: String!
   plantings: [Planting!]!
 }
+
+type AuthUser { 
+  id: String!
+  name: String!
+  email: String!
+}
+
+type AuthState {
+  isLoggedIn: Boolean!
+  user: AuthUser
+}
+

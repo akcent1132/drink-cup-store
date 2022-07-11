@@ -27,7 +27,7 @@ import {
   LAND_PREPARATION,
   ZONES,
   TYPES,
-  FLAGS
+  FLAGS,
 } from "./lists";
 import {
   Filter,
@@ -103,44 +103,44 @@ const createPlantings = (
 
 declare module externalData {
   export interface Planting {
-    _id: string
-    drupal_internal__id: number
-    flag: string[]
-    values: Value[]
-    params: Params
-    title: string
-    events: Event[]
-    cropType: string
-    producer: Producer
+    _id: string;
+    drupal_internal__id: number;
+    flag: string[];
+    values: Value[];
+    params: Params;
+    title: string;
+    events: Event[];
+    cropType: string;
+    producer: Producer;
   }
-  
+
   export interface Value {
-    name: string
-    modus_test_id?: string
-    value: any
+    name: string;
+    modus_test_id?: string;
+    value: any;
   }
-  
+
   export interface Params {
-    soil_group?: string
-    soil_suborder?: string
-    soil_order?: string
-    clay_percentage?: number
-    sand_percentage?: number
-    soil_texture?: number
-    zone?: string
-    hardiness_zone?: string
-    temperature?: number
-    precipitation?: number
+    soil_group?: string;
+    soil_suborder?: string;
+    soil_order?: string;
+    clay_percentage?: number;
+    sand_percentage?: number;
+    soil_texture?: number;
+    zone?: string;
+    hardiness_zone?: string;
+    temperature?: number;
+    precipitation?: number;
   }
-  
+
   export interface Event {
-    id: number
-    type?: string
-    date: string
+    id: number;
+    type?: string;
+    date: string;
   }
-  
+
   export interface Producer {
-    id: string
+    id: string;
   }
 }
 
@@ -169,14 +169,16 @@ const loadPlantings = async () => {
           __typename: "Planting",
           isHighlighted: false,
           id: planting._id,
-          values: planting.values.filter(v => isNumber(v.value)).map((v) => {
-            return {
-              ...v,
-              modusId: v.modus_test_id || null,
-              __typename: "PlantingValue",
-              plantingId: planting._id,
-            }
-          }),
+          values: planting.values
+            .filter((v) => isNumber(v.value))
+            .map((v) => {
+              return {
+                ...v,
+                modusId: v.modus_test_id || null,
+                __typename: "PlantingValue",
+                plantingId: planting._id,
+              };
+            }),
           params: {
             __typename: "PlantingParams",
             zone: zone.name,
@@ -264,10 +266,10 @@ const loadPlantings = async () => {
 
 export const getEventDetailsVar = (key: string) => {
   if (!eventDetailsMap[key]) {
-    eventDetailsMap[key] = makeVar<PlantingEventDetail[] | null>(null );
+    eventDetailsMap[key] = makeVar<PlantingEventDetail[] | null>(null);
   }
   return eventDetailsMap[key];
-}
+};
 const _loadingEventDetails: { [key: string]: boolean } = {};
 export const loadEventDetails = async (
   producerKey: string,
@@ -291,7 +293,7 @@ export const loadEventDetails = async (
         __typename: "PlantingEventDetail" as "PlantingEventDetail",
       })).filter((d) => d.value || d.valueList);
 
-      const eventDetailsVar = getEventDetailsVar(key)
+      const eventDetailsVar = getEventDetailsVar(key);
       if (!isEqual(eventDetailsVar(), list)) {
         eventDetailsVar(list);
       }
