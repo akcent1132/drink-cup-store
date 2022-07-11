@@ -1,3 +1,8 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/packages/server/src" }]
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/packages/server/src"
+    }
+  ]
 }
