@@ -7,10 +7,13 @@ import { ApolloServer } from "apollo-server-express";
 import { ApolloServerPluginDrainHttpServer } from "apollo-server-core";
 import express from "express";
 import http from "http";
+import { CropResolvers } from './resolvers.generated';
 
-async function startApolloServer() {
-  const app = express();
-  const httpServer = http.createServer(app);
+
+const app = express();
+const httpServer = http.createServer(app);
+
+async function startApolloServer(app: any, httpServer: http.Server) {
   const server = new ApolloServer({
     typeDefs,
     resolvers,
@@ -24,4 +27,6 @@ async function startApolloServer() {
   console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`);
 }
 
-startApolloServer();
+startApolloServer(app, httpServer);
+export default httpServer;
+
