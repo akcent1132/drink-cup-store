@@ -17,6 +17,8 @@
   # Default build command.
   command = "CI=false yarn && yarn lerna bootstrap && yarn client:build"
 
+  environment = { CI = "false" }
+
 # [[plugins]]
 #   # Installs the Lighthouse Build Plugin for all deploy contexts
 #   package = "@netlify/plugin-lighthouse"
