@@ -16,7 +16,7 @@ import {
 } from "../contexts/FiltersContext";
 import { loader } from "graphql.macro";
 import {
-  FilterParams,
+  FilterParam,
   Planting,
   Producer,
   StrictTypedTypePolicies,
@@ -37,18 +37,39 @@ const plantingsOfFilterCache: {
 const getPlantingsOfFilter = (
   id: string,
   cropType: string,
-  activeParams: FilterParams | null
+  params: FilterParam[]
 ) => {
-  const plantings = getPlantings(cropType);
-  const hash = `${cropType}-${JSON.stringify(activeParams)}-${
+  let plantings = getPlantings(cropType);
+  const hash = `${cropType}-${JSON.stringify(params)}-${
     plantings.length
   }-${id}`;
   if (plantingsOfFilterCache[id]?.hash !== hash) {
-    const rnd = seedrandom(hash);
-    const portion = 0.03 + 0.07 * rnd();
+    for (const param of params) {
+      const { value } = param;
+      if (value.__typename === "FilterValueRange") {
+        plantings = plantings.filter((p) =>
+          p.values.every(
+            (v) =>
+              v.name !== param.key ||
+              (v.value >= value.min && v.value <= value.max)
+          )
+        );
+      }
+      // TODO
+      // else if (value.__typename === "FilterValueOption") {
+      //   plantings = plantings.filter((p) =>
+      //     p.values.every(
+      //       (v) =>
+      //         v.name !== param.key ||
+      //         (v.value >= value.min && v.value <= value.max)
+      //     )
+      //   );
+      // }
+    }
+
     plantingsOfFilterCache[id] = {
       hash,
-      plantings: plantings.filter(() => rnd() < portion),
+      plantings,
     };
   }
 
@@ -63,7 +84,7 @@ const getGroupedValues = (cropType: string) => {
       const matchingPlantingIds = getPlantingsOfFilter(
         filter.id,
         filter.cropType,
-        filter.activeParams
+        filter.params
       ).map((p) => p.id);
       const matchingPlantings = remove(unmatchedPlantings, (p) =>
         matchingPlantingIds.includes(p.id)
@@ -89,8 +110,8 @@ const typePolicies: StrictTypedTypePolicies = {
     fields: {
       auth: {
         read() {
-          return authState()
-        }
+          return authState();
+        },
       },
       selectedCropType: {
         read(): string {
@@ -163,7 +184,7 @@ const typePolicies: StrictTypedTypePolicies = {
         const hash =
           filters()
             .filter((f) => f.cropType === cropType)
-            .map((filter) => JSON.stringify(filter.activeParams))
+            .map((filter) => JSON.stringify(filter.params))
             .join() + plantings().length;
 
         const [cacheHash, cacheGroupedValues] = options.storage[cropType] || [];
@@ -191,8 +212,8 @@ const typePolicies: StrictTypedTypePolicies = {
         read(_, { readField }) {
           const id = readField<string>("id") || "";
           const cropType = readField<string>("cropType") || "";
-          const activeParams = readField<FilterParams>("activeParams") || null;
-          return getPlantingsOfFilter(id, cropType, activeParams);
+          const params = readField<FilterParam[]>("params") || [];
+          return getPlantingsOfFilter(id, cropType, [...params]);
         },
       },
       isHighlighted: {
@@ -212,7 +233,7 @@ const typePolicies: StrictTypedTypePolicies = {
             getPlantingsOfFilter(
               filter.id,
               filter.cropType,
-              filter.activeParams
+              filter.params
             ).some((planting) => planting.id === id)
           );
         },

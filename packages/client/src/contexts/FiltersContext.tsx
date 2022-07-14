@@ -31,7 +31,8 @@ import {
 } from "./lists";
 import {
   Filter,
-  FilterParams,
+  FilterParam,
+  FilterValue,
   Planting,
   PlantingEventDetail,
   PlantingValue,
@@ -343,28 +344,28 @@ export const loadEventDetails = async (
   }
 };
 
-const createFilterParams = (): FilterParams => {
-  return {
-    __typename: "FilterParams",
-    types: sampleSize(TYPES, Math.random() * 3 + 1),
-    groups: sampleSize(GROUPS, Math.random() * 3 + 1),
-    colors: sampleSize(COLORS, Math.random() * 3 + 1),
-    flags: sampleSize(FLAGS, Math.random() * 3 + 1),
-    years: [2018, 2019, 2020],
-    sweetnessScore: range(10, 17).splice(
-      Math.random() * 8,
-      1 + Math.random() * 3
-    ),
-    flavorScore: range(1, 7).splice(Math.random() * 5, 1 + Math.random() * 3),
-    tasteScore: range(1, 9).splice(Math.random() * 8, 1 + Math.random() * 3),
-    climateRegion: sampleSize(CLIMATE_REGION, Math.random() * 3 + 1),
-    sampleSource: sampleSize(SAMPLE_SOURCE, Math.random() * 3 + 1),
-    farmPractices: sampleSize(FARM_PRACTICES, Math.random() * 3 + 1),
-    amendments: sampleSize(AMENDMENTS, Math.random() * 3 + 1),
-    landPreparation: sampleSize(LAND_PREPARATION, Math.random() * 3 + 1),
-    zones: sampleSize(ZONES, Math.random() * 3 + 1),
-  };
-};
+// const createFilterParams = (): FilterParams => {
+//   return {
+//     __typename: "FilterParams",
+//     types: sampleSize(TYPES, Math.random() * 3 + 1),
+//     groups: sampleSize(GROUPS, Math.random() * 3 + 1),
+//     colors: sampleSize(COLORS, Math.random() * 3 + 1),
+//     flags: sampleSize(FLAGS, Math.random() * 3 + 1),
+//     years: [2018, 2019, 2020],
+//     sweetnessScore: range(10, 17).splice(
+//       Math.random() * 8,
+//       1 + Math.random() * 3
+//     ),
+//     flavorScore: range(1, 7).splice(Math.random() * 5, 1 + Math.random() * 3),
+//     tasteScore: range(1, 9).splice(Math.random() * 8, 1 + Math.random() * 3),
+//     climateRegion: sampleSize(CLIMATE_REGION, Math.random() * 3 + 1),
+//     sampleSource: sampleSize(SAMPLE_SOURCE, Math.random() * 3 + 1),
+//     farmPractices: sampleSize(FARM_PRACTICES, Math.random() * 3 + 1),
+//     amendments: sampleSize(AMENDMENTS, Math.random() * 3 + 1),
+//     landPreparation: sampleSize(LAND_PREPARATION, Math.random() * 3 + 1),
+//     zones: sampleSize(ZONES, Math.random() * 3 + 1),
+//   };
+// };
 
 let filterId = 0;
 const createFilter = (
@@ -373,7 +374,32 @@ const createFilter = (
   cropType: string
 ): Filter => {
   const id = (++filterId).toString();
-  const params = createFilterParams();
+  const p = plantings().filter((p) => p.cropType === cropType);
+  const values = p
+    .map((p) => p.values)
+    .flat()
+    .reduce((acc, value) => {
+      if (!(value.name in acc)) {
+        acc[value.name] = { min: value.value, max: value.value };
+      }
+      acc[value.name].min = Math.min(acc[value.name].min, value.value);
+      acc[value.name].max = Math.max(acc[value.name].max, value.value);
+      return acc;
+    }, {} as { [key: string]: { min: number; max: number } });
+  const params = Object.keys(values)
+    .map((key) => ({
+      __typename: "FilterParam" as "FilterParam",
+      key,
+      value: {
+        __typename: "FilterValueRange" as "FilterValueRange",
+        fullMin: values[key].min,
+        fullMax: values[key].max,
+        min: values[key].min,
+        max: values[key].max,
+      },
+    }))
+    .filter((v) => v.value.min !== v.value.max);
+  console.log({ params });
   return {
     __typename: "Filter",
     id,
@@ -381,8 +407,7 @@ const createFilter = (
     cropType,
     color,
     plantings: [],
-    draftParams: params,
-    activeParams: params,
+    params,
     isHighlighted: false,
   };
 };
@@ -475,12 +500,12 @@ export const selectProducer = (producerId: string | null) => {
   selectedFilterId(null);
 };
 
-export const applyDraftFilter = (filterId: string) =>
-  filters(
-    filters().map((f) =>
-      f.id === filterId ? { ...f, activeParams: f.draftParams } : f
-    )
-  );
+export const applyDraftFilter = (filterId: string) => {};
+// filters(
+//   filters().map((f) => {}
+//     // f.id === filterId ? { ...f, activeParams: f.draftParams } : f
+//   )
+// );
 
 export const updateFilterName = (filterId: string, name: string) =>
   filters(filters().map((f) => (f.id === filterId ? { ...f, name } : f)));
@@ -495,17 +520,13 @@ export const removeAllFilters = () => {
   selectedFilterId(null);
 };
 
-export const editFilter = (filterId: string, params: Partial<FilterParams>) =>
+export const editFilter = (filterId: string, key: string, value: FilterValue) =>
   filters(
     filters().map((f) =>
       f.id === filterId
         ? {
             ...f,
-            draftParams: {
-              ...f.activeParams!,
-              ...f.draftParams,
-              ...params,
-            },
+            params: f.params.map((p) => (p.key === key ? { ...p, value } : p)),
           }
         : f
     )

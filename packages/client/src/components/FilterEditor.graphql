@@ -3,37 +3,21 @@ query FilterEditor($filterId: String!) {
     id
     color
     name
-    activeParams {
-      types
-      flags
-      groups
-      colors
-      years
-      sweetnessScore
-      flavorScore
-      tasteScore
-      climateRegion
-      sampleSource
-      farmPractices
-      amendments
-      landPreparation
-      zones
-    }
-    draftParams {
-      types
-      flags
-      groups
-      colors
-      years
-      sweetnessScore
-      flavorScore
-      tasteScore
-      climateRegion
-      sampleSource
-      farmPractices
-      amendments
-      landPreparation
-      zones
+    params {
+      key
+      value {
+        __typename
+        ... on FilterValueRange {
+          min
+          max
+          fullMin
+          fullMax
+        }
+        ... on FilterValueOption {
+          allOptions
+          options
+        }
+      }
     }
   }
 }

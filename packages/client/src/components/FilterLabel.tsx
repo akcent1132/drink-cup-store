@@ -122,7 +122,7 @@ export const FilterLabel = ({
     onMouseLeave && onMouseLeave();
   }, [onMouseLeave]);
   const handleDelete = useCallback(() => removeFilter(filterId), []);
-  const handleSelect = useCallback(() => selectFilter(filterId), []);
+  const handleSelect = useCallback(() => {selectFilter(filterId)}, []);
   return (
     <Root
       {...{ color, onClick, className }}

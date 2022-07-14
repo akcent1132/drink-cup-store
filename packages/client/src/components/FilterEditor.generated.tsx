@@ -8,7 +8,7 @@ export type FilterEditorQueryVariables = Types.Exact<{
 }>;
 
 
-export type FilterEditorQuery = { __typename?: 'Query', filter?: { __typename?: 'Filter', id: string, color: string, name: string, activeParams?: { __typename?: 'FilterParams', types: Array<string>, flags: Array<string>, groups: Array<string>, colors: Array<string>, years: Array<number>, sweetnessScore: Array<number>, flavorScore: Array<number>, tasteScore: Array<number>, climateRegion: Array<string>, sampleSource: Array<string>, farmPractices: Array<string>, amendments: Array<string>, landPreparation: Array<string>, zones: Array<string> } | null, draftParams?: { __typename?: 'FilterParams', types: Array<string>, flags: Array<string>, groups: Array<string>, colors: Array<string>, years: Array<number>, sweetnessScore: Array<number>, flavorScore: Array<number>, tasteScore: Array<number>, climateRegion: Array<string>, sampleSource: Array<string>, farmPractices: Array<string>, amendments: Array<string>, landPreparation: Array<string>, zones: Array<string> } | null } | null };
+export type FilterEditorQuery = { __typename?: 'Query', filter?: { __typename?: 'Filter', id: string, color: string, name: string, params: Array<{ __typename?: 'FilterParam', key: string, value: { __typename: 'FilterValueOption', allOptions: Array<string>, options: Array<string> } | { __typename: 'FilterValueRange', min: number, max: number, fullMin: number, fullMax: number } }> } | null };
 
 
 export const FilterEditorDocument = gql`
@@ -17,37 +17,21 @@ export const FilterEditorDocument = gql`
     id
     color
     name
-    activeParams {
-      types
-      flags
-      groups
-      colors
-      years
-      sweetnessScore
-      flavorScore
-      tasteScore
-      climateRegion
-      sampleSource
-      farmPractices
-      amendments
-      landPreparation
-      zones
-    }
-    draftParams {
-      types
-      flags
-      groups
-      colors
-      years
-      sweetnessScore
-      flavorScore
-      tasteScore
-      climateRegion
-      sampleSource
-      farmPractices
-      amendments
-      landPreparation
-      zones
+    params {
+      key
+      value {
+        __typename
+        ... on FilterValueRange {
+          min
+          max
+          fullMin
+          fullMax
+        }
+        ... on FilterValueOption {
+          allOptions
+          options
+        }
+      }
     }
   }
 }

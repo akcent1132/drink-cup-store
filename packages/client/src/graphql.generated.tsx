@@ -28,32 +28,35 @@ export type AuthUser = {
 
 export type Filter = {
   __typename: 'Filter';
-  activeParams: Maybe<FilterParams>;
   color: Scalars['String'];
   cropType: Scalars['String'];
-  draftParams: Maybe<FilterParams>;
   id: Scalars['String'];
   isHighlighted: Scalars['Boolean'];
   name: Scalars['String'];
+  params: Array<FilterParam>;
   plantings: Array<Maybe<Planting>>;
 };
 
-export type FilterParams = {
-  __typename: 'FilterParams';
-  amendments: Array<Scalars['String']>;
-  climateRegion: Array<Scalars['String']>;
-  colors: Array<Scalars['String']>;
-  farmPractices: Array<Scalars['String']>;
-  flags: Array<Scalars['String']>;
-  flavorScore: Array<Scalars['Int']>;
-  groups: Array<Scalars['String']>;
-  landPreparation: Array<Scalars['String']>;
-  sampleSource: Array<Scalars['String']>;
-  sweetnessScore: Array<Scalars['Int']>;
-  tasteScore: Array<Scalars['Int']>;
-  types: Array<Scalars['String']>;
-  years: Array<Scalars['Int']>;
-  zones: Array<Scalars['String']>;
+export type FilterParam = {
+  __typename: 'FilterParam';
+  key: Scalars['String'];
+  value: FilterValue;
+};
+
+export type FilterValue = FilterValueOption | FilterValueRange;
+
+export type FilterValueOption = {
+  __typename: 'FilterValueOption';
+  allOptions: Array<Scalars['String']>;
+  options: Array<Scalars['String']>;
+};
+
+export type FilterValueRange = {
+  __typename: 'FilterValueRange';
+  fullMax: Scalars['Float'];
+  fullMin: Scalars['Float'];
+  max: Scalars['Float'];
+  min: Scalars['Float'];
 };
 
 export type GroupedValues = {
@@ -175,33 +178,32 @@ export type AuthUserFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type FilterKeySpecifier = ('activeParams' | 'color' | 'cropType' | 'draftParams' | 'id' | 'isHighlighted' | 'name' | 'plantings' | FilterKeySpecifier)[];
+export type FilterKeySpecifier = ('color' | 'cropType' | 'id' | 'isHighlighted' | 'name' | 'params' | 'plantings' | FilterKeySpecifier)[];
 export type FilterFieldPolicy = {
-	activeParams?: FieldPolicy<any> | FieldReadFunction<any>,
 	color?: FieldPolicy<any> | FieldReadFunction<any>,
 	cropType?: FieldPolicy<any> | FieldReadFunction<any>,
-	draftParams?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	isHighlighted?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
+	params?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type FilterParamsKeySpecifier = ('amendments' | 'climateRegion' | 'colors' | 'farmPractices' | 'flags' | 'flavorScore' | 'groups' | 'landPreparation' | 'sampleSource' | 'sweetnessScore' | 'tasteScore' | 'types' | 'years' | 'zones' | FilterParamsKeySpecifier)[];
-export type FilterParamsFieldPolicy = {
-	amendments?: FieldPolicy<any> | FieldReadFunction<any>,
-	climateRegion?: FieldPolicy<any> | FieldReadFunction<any>,
-	colors?: FieldPolicy<any> | FieldReadFunction<any>,
-	farmPractices?: FieldPolicy<any> | FieldReadFunction<any>,
-	flags?: FieldPolicy<any> | FieldReadFunction<any>,
-	flavorScore?: FieldPolicy<any> | FieldReadFunction<any>,
-	groups?: FieldPolicy<any> | FieldReadFunction<any>,
-	landPreparation?: FieldPolicy<any> | FieldReadFunction<any>,
-	sampleSource?: FieldPolicy<any> | FieldReadFunction<any>,
-	sweetnessScore?: FieldPolicy<any> | FieldReadFunction<any>,
-	tasteScore?: FieldPolicy<any> | FieldReadFunction<any>,
-	types?: FieldPolicy<any> | FieldReadFunction<any>,
-	years?: FieldPolicy<any> | FieldReadFunction<any>,
-	zones?: FieldPolicy<any> | FieldReadFunction<any>
+export type FilterParamKeySpecifier = ('key' | 'value' | FilterParamKeySpecifier)[];
+export type FilterParamFieldPolicy = {
+	key?: FieldPolicy<any> | FieldReadFunction<any>,
+	value?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type FilterValueOptionKeySpecifier = ('allOptions' | 'options' | FilterValueOptionKeySpecifier)[];
+export type FilterValueOptionFieldPolicy = {
+	allOptions?: FieldPolicy<any> | FieldReadFunction<any>,
+	options?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type FilterValueRangeKeySpecifier = ('fullMax' | 'fullMin' | 'max' | 'min' | FilterValueRangeKeySpecifier)[];
+export type FilterValueRangeFieldPolicy = {
+	fullMax?: FieldPolicy<any> | FieldReadFunction<any>,
+	fullMin?: FieldPolicy<any> | FieldReadFunction<any>,
+	max?: FieldPolicy<any> | FieldReadFunction<any>,
+	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type GroupedValuesKeySpecifier = ('filter' | 'id' | 'values' | GroupedValuesKeySpecifier)[];
 export type GroupedValuesFieldPolicy = {
@@ -286,9 +288,17 @@ export type StrictTypedTypePolicies = {
 		keyFields?: false | FilterKeySpecifier | (() => undefined | FilterKeySpecifier),
 		fields?: FilterFieldPolicy,
 	},
-	FilterParams?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | FilterParamsKeySpecifier | (() => undefined | FilterParamsKeySpecifier),
-		fields?: FilterParamsFieldPolicy,
+	FilterParam?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | FilterParamKeySpecifier | (() => undefined | FilterParamKeySpecifier),
+		fields?: FilterParamFieldPolicy,
+	},
+	FilterValueOption?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | FilterValueOptionKeySpecifier | (() => undefined | FilterValueOptionKeySpecifier),
+		fields?: FilterValueOptionFieldPolicy,
+	},
+	FilterValueRange?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | FilterValueRangeKeySpecifier | (() => undefined | FilterValueRangeKeySpecifier),
+		fields?: FilterValueRangeFieldPolicy,
 	},
 	GroupedValues?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | GroupedValuesKeySpecifier | (() => undefined | GroupedValuesKeySpecifier),

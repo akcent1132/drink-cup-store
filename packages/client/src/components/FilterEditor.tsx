@@ -24,7 +24,7 @@ import {
   TYPES,
   FLAGS,
 } from "../contexts/lists";
-import { range } from "lodash";
+import { capitalize, range } from "lodash";
 import { TagSelect } from "./TagSelect";
 import CloseIcon from "@mui/icons-material/Close";
 import { Spacer } from "./EventsCard";
@@ -35,6 +35,7 @@ import {
   updateFilterName,
 } from "../contexts/FiltersContext";
 import { useFilterEditorQuery } from "./FilterEditor.generated";
+import { FilterValueOption, FilterValueRange } from "../graphql.generated";
 
 const Root = withTheme(styled.div`
   background-color: ${(p) => p.theme.colors.bgSidePanel};
@@ -141,6 +142,35 @@ const RangeInput = ({
   </Label>
 );
 
+const ThinRangeInput = ({
+  min,
+  max,
+  value,
+  onChange,
+}: {
+  min: number;
+  max: number;
+  value: number[];
+  onChange: (bounds: number[]) => void;
+}) => (
+    <Box gap="small">
+      <Stack>
+        <Box background="light-4" height="6px" direction="row" />
+        <RangeSelector
+          direction="horizontal"
+          min={min}
+          max={max}
+          // step={1}
+          values={value}
+          onChange={(values) => onChange(values)}
+        />
+      </Stack>
+      <Box align="center">
+        <Text size="small">{`${value[0]} - ${value[1]}`}</Text>
+      </Box>
+    </Box>
+);
+
 /**
  * Primary UI component for user interaction
  */
@@ -149,7 +179,7 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
     variables: { filterId: selectedFilterId },
   });
   const handleApply = useCallback(
-    () => filter && applyDraftFilter(filter.id),
+    () => {}, //filter && applyDraftFilter(filter.id),
     [filter?.id]
   );
   const handleClose = useCallback(() => filter && selectFilter(null), []);
@@ -158,31 +188,31 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
       filter && updateFilterName(filter.id, event.target.value),
     [filter?.id]
   );
-  const updateYears = useCallback(
-    ([from, to]) =>
-      filter && editFilter(filter.id, { years: range(from, to + 1) }),
-    [filter?.id]
-  );
-  const updateSweetnessScore = useCallback(
-    ([from, to]) =>
-      filter && editFilter(filter.id, { sweetnessScore: range(from, to + 1) }),
-    [filter?.id]
-  );
-  const updateFlavorScore = useCallback(
-    ([from, to]) =>
-      filter && editFilter(filter.id, { flavorScore: range(from, to + 1) }),
-    [filter?.id]
-  );
-  const updateTasteScore = useCallback(
-    ([from, to]) =>
-      filter && editFilter(filter.id, { tasteScore: range(from, to + 1) }),
-    [filter?.id]
-  );
-  const updateParams = useCallback(
-    (params) => filter && editFilter(filter.id, params),
-    [filter?.id]
-  );
-  const params = filter?.draftParams || filter?.activeParams;
+  // const updateYears = useCallback(
+  //   ([from, to]) =>
+  //     filter && editFilter(filter.id, { years: range(from, to + 1) }),
+  //   [filter?.id]
+  // );
+  // const updateSweetnessScore = useCallback(
+  //   ([from, to]) =>
+  //     filter && editFilter(filter.id, { sweetnessScore: range(from, to + 1) }),
+  //   [filter?.id]
+  // );
+  // const updateFlavorScore = useCallback(
+  //   ([from, to]) =>
+  //     filter && editFilter(filter.id, { flavorScore: range(from, to + 1) }),
+  //   [filter?.id]
+  // );
+  // const updateTasteScore = useCallback(
+  //   ([from, to]) =>
+  //     filter && editFilter(filter.id, { tasteScore: range(from, to + 1) }),
+  //   [filter?.id]
+  // );
+  // const updateParams = useCallback(
+  //   (params) => filter && editFilter(filter.id, params),
+  //   [filter?.id]
+  // );
+  const params = filter?.params;
   if (!params) {
     return null;
   }
@@ -204,7 +234,29 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
             onChange={updateName}
           />
         </Label>
-        <Label label="Types">
+        {params.map((param) => (
+          <Label label={capitalize(param.key)}>
+            {param.value.__typename === "FilterValueOption" ? (
+              <TagSelect
+                onChange={(options) => editFilter(filter.id, param.key, { ...param.value as FilterValueOption, options })}
+                value={param.value.options}
+                options={param.value.allOptions}
+                allowSearch
+              />
+            ) : (
+              <ThinRangeInput
+                min={param.value.fullMin}
+                max={param.value.fullMax}
+                value={[param.value.min, param.value.max]}
+                onChange={([min, max]) =>
+                  editFilter(filter.id, param.key, { ...param.value as FilterValueRange, min, max })
+                }
+              />
+            )}
+          </Label>
+        ))}
+
+        {/* <Label label="Types">
           <TagSelect
             onChange={(types) => updateParams({ types })}
             value={params.types}
@@ -235,13 +287,6 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
             allowSearch
           />
         </Label>
-        {/* <Label label="Colors">
-          <TagSelect
-            onChange={(colors) => updateParams({ colors })}
-            value={params.colors}
-            options={COLORS}
-          />
-        </Label> */}
         <Label label="Climate Region">
           <TagSelect
             onChange={(climateRegion) => updateParams({ climateRegion })}
@@ -304,7 +349,7 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
             value={params.zones}
             options={ZONES}
           />
-        </Label>
+        </Label> */}
         <GButton label="Update" onClick={handleApply} />
       </Body>
     </Root>
