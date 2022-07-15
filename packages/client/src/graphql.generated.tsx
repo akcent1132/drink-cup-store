@@ -40,11 +40,16 @@ export type Filter = {
 export type FilterParam = {
   __typename: 'FilterParam';
   active: Scalars['Boolean'];
-  id: Scalars['String'];
+  dataSource: Maybe<FilterParamDataSource>;
   key: Scalars['String'];
   modusId: Maybe<Scalars['String']>;
   value: FilterValue;
 };
+
+export enum FilterParamDataSource {
+  FarmOnboarding = 'FARM_ONBOARDING',
+  Values = 'VALUES'
+}
 
 export type FilterValue = FilterValueOption | FilterValueRange;
 
@@ -56,10 +61,9 @@ export type FilterValueOption = {
 
 export type FilterValueRange = {
   __typename: 'FilterValueRange';
-  fullMax: Scalars['Float'];
-  fullMin: Scalars['Float'];
   max: Scalars['Float'];
   min: Scalars['Float'];
+  values: Array<Scalars['Float']>;
 };
 
 export type GroupedValues = {
@@ -191,10 +195,10 @@ export type FilterFieldPolicy = {
 	params?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type FilterParamKeySpecifier = ('active' | 'id' | 'key' | 'modusId' | 'value' | FilterParamKeySpecifier)[];
+export type FilterParamKeySpecifier = ('active' | 'dataSource' | 'key' | 'modusId' | 'value' | FilterParamKeySpecifier)[];
 export type FilterParamFieldPolicy = {
 	active?: FieldPolicy<any> | FieldReadFunction<any>,
-	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	dataSource?: FieldPolicy<any> | FieldReadFunction<any>,
 	key?: FieldPolicy<any> | FieldReadFunction<any>,
 	modusId?: FieldPolicy<any> | FieldReadFunction<any>,
 	value?: FieldPolicy<any> | FieldReadFunction<any>
@@ -204,12 +208,11 @@ export type FilterValueOptionFieldPolicy = {
 	allOptions?: FieldPolicy<any> | FieldReadFunction<any>,
 	options?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type FilterValueRangeKeySpecifier = ('fullMax' | 'fullMin' | 'max' | 'min' | FilterValueRangeKeySpecifier)[];
+export type FilterValueRangeKeySpecifier = ('max' | 'min' | 'values' | FilterValueRangeKeySpecifier)[];
 export type FilterValueRangeFieldPolicy = {
-	fullMax?: FieldPolicy<any> | FieldReadFunction<any>,
-	fullMin?: FieldPolicy<any> | FieldReadFunction<any>,
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
-	min?: FieldPolicy<any> | FieldReadFunction<any>
+	min?: FieldPolicy<any> | FieldReadFunction<any>,
+	values?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type GroupedValuesKeySpecifier = ('filter' | 'id' | 'values' | GroupedValuesKeySpecifier)[];
 export type GroupedValuesFieldPolicy = {

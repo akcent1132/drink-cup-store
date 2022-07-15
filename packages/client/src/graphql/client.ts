@@ -1,7 +1,8 @@
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
-import { remove } from "lodash";
+import { get, remove } from "lodash";
 import {
   eventDetailsMap,
+  farmProfiles,
   filters,
   highlightedFilterId,
   highlightedPlantingId,
@@ -17,6 +18,7 @@ import {
 import { loader } from "graphql.macro";
 import {
   FilterParam,
+  FilterParamDataSource,
   Planting,
   Producer,
   StrictTypedTypePolicies,
@@ -34,42 +36,58 @@ const plantingsOfFilterCache: {
   [key: string]: { hash: string; plantings: Planting[] };
 } = {};
 
+// Matching rules
+// - Range values math if
+//   - planting has any value (with the given key) in the given range
+//   - planting has no value with the given key
+// - Option values match
+//   - if the planting has a matching value (with the given key) with the selected option
 const getPlantingsOfFilter = (
   id: string,
   cropType: string,
   params: FilterParam[]
 ) => {
-  let plantings = getPlantings(cropType);
+  let filteredPlantings = getPlantings(cropType);
+
+  let farms = farmProfiles();
+
   const hash = `${cropType}-${JSON.stringify(params)}-${
-    plantings.length
+    filteredPlantings.length
   }-${id}`;
+
   if (plantingsOfFilterCache[id]?.hash !== hash) {
-    for (const param of params) {
-      const { value } = param;
-      if (value.__typename === "FilterValueRange") {
-        plantings = plantings.filter((p) =>
-          p.values.every(
-            (v) =>
-              v.name !== param.key ||
-              (v.value >= value.min && v.value <= value.max)
-          )
-        );
+    const activeParams = params.filter((p) => p.active);
+
+    if (activeParams.length === 0) {
+      filteredPlantings = [];
+    } else {
+      for (const param of activeParams) {
+        const { value } = param;
+        if (value.__typename === "FilterValueRange") {
+          filteredPlantings = filteredPlantings.filter((p) => {
+            const values =
+              param.dataSource === FilterParamDataSource.Values
+                ? p.values.filter((v) => v.name === param.key)
+                : [get(farms, [p.producer.id, param.key])].flat();
+            return values.every(
+              (v) => v.value >= value.min && v.value <= value.max
+            );
+          });
+        } else if (value.__typename === "FilterValueOption") {
+          filteredPlantings = filteredPlantings.filter((p) => {
+            const optionsInPlanting = [
+              get(farms, [p.producer.id, param.key]),
+            ].flat();
+            console.log(p.producer.id, param.key, { optionsInPlanting });
+            return optionsInPlanting.some((o) => value.options.includes(o));
+          });
+        }
       }
-      // TODO
-      // else if (value.__typename === "FilterValueOption") {
-      //   plantings = plantings.filter((p) =>
-      //     p.values.every(
-      //       (v) =>
-      //         v.name !== param.key ||
-      //         (v.value >= value.min && v.value <= value.max)
-      //     )
-      //   );
-      // }
     }
 
     plantingsOfFilterCache[id] = {
       hash,
-      plantings,
+      plantings: filteredPlantings,
     };
   }
 

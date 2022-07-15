@@ -4,17 +4,16 @@ query FilterEditor($filterId: String!) {
     color
     name
     params {
-      id
       key
       active
       modusId
+      dataSource
       value {
         __typename
         ... on FilterValueRange {
           min
           max
-          fullMin
-          fullMax
+          values
         }
         ... on FilterValueOption {
           allOptions

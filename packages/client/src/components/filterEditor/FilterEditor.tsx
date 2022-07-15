@@ -11,7 +11,7 @@ import {
 } from "grommet";
 import { css, withTheme } from "@emotion/react";
 import React, { useCallback } from "react";
-import { capitalize, range, throttle } from "lodash";
+import { capitalize, first, last, range, throttle } from "lodash";
 import { TagSelect } from "../TagSelect";
 import CloseIcon from "@mui/icons-material/Close";
 import { Spacer } from "../EventsCard";
@@ -241,8 +241,8 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
                 />
               ) : (
                 <ThinRangeInput
-                  min={param.value.fullMin}
-                  max={param.value.fullMax}
+                  min={Math.min(...param.value.values) || 0}
+                  max={Math.max(...param.value.values) || 0}
                   value={[param.value.min, param.value.max]}
                   onChange={throttle(([min, max]) =>
                     editFilterParam(filter.id, param.key, {

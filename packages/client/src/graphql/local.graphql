@@ -58,20 +58,23 @@ type FilterValueOption {
   options: [String!]!
 }
 type FilterValueRange {
-  fullMin: Float!,
-  fullMax: Float!,
+  values: [Float!]!,
   min: Float!,
   max: Float!,
 }
 
 union FilterValue = FilterValueOption | FilterValueRange
+enum FilterParamDataSource {
+  VALUES
+  FARM_ONBOARDING
+}
 
 type FilterParam {
   modusId: String
-  id: String!
   key: String!
   value: FilterValue!
   active: Boolean!
+  dataSource: FilterParamDataSource,
 }
 
 type Filter {

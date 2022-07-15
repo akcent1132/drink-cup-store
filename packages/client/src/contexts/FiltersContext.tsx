@@ -1,14 +1,19 @@
 import { randomNormal } from "d3-random";
 import {
+  Dictionary,
+  get,
   isEqual,
   isNumber,
+  isString,
+  keyBy,
   map,
   range,
   sample,
-  sampleSize,
   startCase,
   sum,
-  take,
+  toNumber,
+  toString,
+  uniq,
   uniqBy,
   uniqueId,
 } from "lodash";
@@ -16,22 +21,11 @@ import React from "react";
 import seedrandom from "seedrandom";
 import { RowData, ROWS } from "./rows";
 import { makeVar, ReactiveVar } from "@apollo/client";
-import {
-  CROPS,
-  GROUPS,
-  COLORS,
-  CLIMATE_REGION,
-  SAMPLE_SOURCE,
-  FARM_PRACTICES,
-  AMENDMENTS,
-  LAND_PREPARATION,
-  ZONES,
-  TYPES,
-  FLAGS,
-} from "./lists";
+import { CROPS } from "./lists";
 import {
   Filter,
   FilterParam,
+  FilterParamDataSource,
   FilterValue,
   Maybe,
   Planting,
@@ -146,6 +140,67 @@ declare module externalData {
   export interface Producer {
     id: string;
   }
+
+  export interface FarmProfile {
+    farmDomain: string;
+    title: string;
+    surveystack_id: string;
+    animals_detail: any;
+    animals_total: number;
+    area: any;
+    area_community: any;
+    area_total_hectares: number;
+    average_annual_rainfall?: number;
+    average_annual_temperature?: number;
+    bio: any;
+    certifications_current: string;
+    certifications_current_detail: string[];
+    certifications_future: any;
+    certifications_future_detail: any[];
+    climate_zone?: string;
+    conditions_detail?: string;
+    county?: string;
+    equity_practices: any[];
+    farm_leadership_experience: any;
+    flexible: any;
+    goal_1: any;
+    goal_2: any;
+    goal_3: any;
+    hardiness_zone?: string;
+    immediate_data_source: string;
+    indigenous_territory: any[];
+    interest: string[];
+    land_other: any[];
+    land_other_detail: any;
+    land_type_detail: any;
+    location_address_line1?: string;
+    location_address_line2?: string;
+    location_administrative_area: any;
+    location_country_code?: string;
+    location_locality?: string;
+    location_postal_code?: string;
+    management_plans_current: string;
+    management_plans_current_detail: string[];
+    management_plans_future: any;
+    management_plans_future_detail: any[];
+    motivations: string[];
+    name: string;
+    organization?: string;
+    organization_id: any;
+    preferred: any;
+    products_animals: any[];
+    products_categories: string[];
+    products_detail: any[];
+    products_value_added: any[];
+    records_software: any[];
+    records_system: string[];
+    role?: string;
+    schema_version: any;
+    social: any;
+    types: string[];
+    unique_id: any;
+    units?: string;
+  }
 }
 
 const fixEventType = (type: string): string => {
@@ -158,10 +213,37 @@ const fixEventType = (type: string): string => {
   }
 };
 
-const loadPlantings = async () => {
-  const LS_KEY = "data.plantings";
+const cachedLoad = async <T,>(
+  url: string,
+  updateVars: (data: T) => void,
+  lsKey: string
+) => {
+  if (localStorage[lsKey]) {
+    console.log("loading plantings from local storage...");
+    try {
+      updateVars(JSON.parse(localStorage[lsKey]));
+    } catch (e) {
+      console.error(
+        `Failed to update data from localStorage["${lsKey}"]\n${e}`
+      );
+    }
+  }
 
-  const updateVars = (externalPlantings: externalData.Planting[]) => {
+  const data = await fetch(url).then((result) => result.json());
+  try {
+    updateVars(data);
+    try {
+      localStorage[lsKey] = JSON.stringify(data);
+    } catch (e) {
+      console.log(`Failed to cache data (${lsKey})`, e);
+    }
+  } catch (e) {
+    console.error(`Failed to update vars from fresh data (${lsKey})\n${e}`);
+  }
+};
+
+const loadPlantings = async () => {
+  const updatePlantings = (externalPlantings: externalData.Planting[]) => {
     const clientPlantings: Planting[] = externalPlantings
       .filter((p) => p.cropType !== null)
       .map((planting) => {
@@ -218,56 +300,31 @@ const loadPlantings = async () => {
     );
   };
 
-  if (localStorage[LS_KEY]) {
-    console.log("loading plantings from local storage...");
-    try {
-      updateVars(JSON.parse(localStorage[LS_KEY]));
-    } catch (e) {
-      console.error(
-        `Failed to update plantings from localStorage["${LS_KEY}"]\n${e}`
-      );
-    }
-  }
+  const updateFarms = (data: externalData.FarmProfile[]) => {
+    farmProfiles(keyBy(data, "farmDomain"));
+  };
 
-  console.log("load data...");
+  await Promise.all([
+    cachedLoad(
+      "https://app.surveystack.io/static/coffeeshop/plantings",
+      updatePlantings,
+      "data.plantings"
+    ),
+    cachedLoad(
+      "https://app.surveystack.io/static/coffeeshop/farm_profiles",
+      updateFarms,
+      "data.farm_profiles"
+    ),
+  ]);
 
-  let externalPlantings: externalData.Planting[] = await fetch(
-    "https://app.surveystack.io/static/coffeeshop/plantings"
-  )
-    .then((result) => result.json())
-    .then((plantings) => {
-      if (!Array.isArray(plantings) || plantings.length === 0) {
-        throw new Error(
-          `Got invalid planting data: '${JSON.stringify(plantings)}'`
-        );
-      }
-      return take(plantings, 5800);
-    })
-    .catch((e) => {
-      console.error(
-        "Failed to load data from server. Reverting to fix data",
-        e
-      );
-      console.warn("Loading fixed plantings...");
-      return fetch("all-plantings-simplified.json").then((r) => r.json());
-    });
-
-  externalPlantings = externalPlantings.filter((p) => !!p.cropType);
-  console.log("Got data");
-  try {
-    updateVars(externalPlantings);
-    try {
-      localStorage[LS_KEY] = JSON.stringify(externalPlantings);
-    } catch (e) {
-      console.log("Failed to cache data", e);
-    }
-  } catch (e) {
-    console.error(`Failed to update plantings from fresh data\n${e}`);
-  }
-
-  console.log("finised loading data");
+  console.log(
+    `finised loading data. Got ${plantings().length} plantings and ${
+      farmProfiles().length
+    } farmProfiles`
+  );
 };
 
+export const farmProfiles = makeVar<Dictionary<externalData.FarmProfile>>({});
 export const getEventDetailsVar = (key: string) => {
   if (!eventDetailsMap[key]) {
     eventDetailsMap[key] = makeVar<PlantingEventDetail[] | null>(null);
@@ -370,6 +427,67 @@ export const loadEventDetails = async (
 //   };
 // };
 
+const farmProfileFilterProperties = [
+  { key: "farmDomain", type: "string" },
+  { key: "title", type: "string" },
+  // { key: "surveystack_id", type: "string" },
+  // { key: "animals_detail", type: "n/a" },
+  { key: "animals_total", type: "number" },
+  // { key: "area", type: "n/a" },
+  // { key: "area_community", type: "n/a" },
+  { key: "area_total_hectares", type: "number" },
+  { key: "average_annual_rainfall", type: "number" },
+  { key: "average_annual_temperature", type: "number" },
+  // { key: "bio", type: "n/a" },
+  { key: "certifications_current", type: "string" },
+  { key: "certifications_current_detail", type: "string" },
+  // { key: "certifications_future", type: "n/a" },
+  // { key: "certifications_future_detail", type: "n/a" },
+  { key: "climate_zone", type: "string" },
+  // { key: "conditions_detail", type: "string" },
+  { key: "county", type: "string" },
+  // { key: "equity_practices", type: "n/a" },
+  // { key: "farm_leadership_experience", type: "n/a" },
+  // { key: "flexible", type: "n/a" },
+  // { key: "goal_1", type: "n/a" },
+  // { key: "goal_2", type: "n/a" },
+  // { key: "goal_3", type: "n/a" },
+  { key: "hardiness_zone", type: "string" },
+  { key: "immediate_data_source", type: "string" },
+  // { key: "indigenous_territory", type: "n/a" },
+  { key: "interest", type: "string" },
+  // { key: "land_other", type: "n/a" },
+  // { key: "land_other_detail", type: "n/a" },
+  // { key: "land_type_detail", type: "n/a" },
+  { key: "location_address_line1", type: "string" },
+  { key: "location_address_line2", type: "string" },
+  // { key: "location_administrative_area", type: "n/a" },
+  { key: "location_country_code", type: "string" },
+  { key: "location_locality", type: "string" },
+  { key: "location_postal_code", type: "string" },
+  { key: "management_plans_current", type: "string" },
+  { key: "management_plans_current_detail", type: "string" },
+  // { key: "management_plans_future", type: "n/a" },
+  // { key: "management_plans_future_detail", type: "n/a" },
+  { key: "motivations", type: "string" },
+  // { key: "name", type: "string" },
+  { key: "organization", type: "string" },
+  // { key: "organization_id", type: "n/a" },
+  // { key: "preferred", type: "n/a" },
+  // { key: "products_animals", type: "n/a" },
+  { key: "products_categories", type: "string" },
+  // { key: "products_detail", type: "n/a" },
+  // { key: "products_value_added", type: "n/a" },
+  // { key: "records_software", type: "n/a" },
+  { key: "records_system", type: "string" },
+  { key: "role", type: "string" },
+  // { key: "schema_version", type: "n/a" },
+  // { key: "social", type: "n/a" },
+  { key: "types", type: "string" },
+  // { key: "unique_id", type: "n/a" },
+  { key: "units", type: "string" },
+];
+
 let filterId = 0;
 const createFilter = (
   color: string,
@@ -383,34 +501,91 @@ const createFilter = (
     .flat()
     .reduce((acc, value) => {
       if (!(value.name in acc)) {
-        acc[value.name] = { min: value.value, max: value.value, modusId: value.modusId };
+        acc[value.name] = {
+          values: [],
+          modusId: value.modusId,
+        };
       }
-      acc[value.name].min = Math.min(acc[value.name].min, value.value);
-      acc[value.name].max = Math.max(acc[value.name].max, value.value);
+      acc[value.name].values.push(value.value);
       return acc;
-    }, {} as { [key: string]: { min: number; max: number, modusId: Maybe<string> } });
+    }, {} as { [key: string]: { values: number[]; modusId: Maybe<string> } });
+
   // const options = p.reduce((options, planting) => {
   //   planting.params.
   //   return {
 
   //   }
   // }, {})
-  const params = Object.keys(values)
-    .map((key) => ({
-      __typename: "FilterParam" as "FilterParam",
-      id: `val-${key}-${values[key].modusId}`,
-      key,
-      modusId: values[key].modusId,
-      active: false,
-      value: {
-        __typename: "FilterValueRange" as "FilterValueRange",
-        fullMin: values[key].min,
-        fullMax: values[key].max,
-        min: values[key].min,
-        max: values[key].max,
-      },
-    }))
-    .filter((v) => v.value.min !== v.value.max);
+  const valueParams: FilterParam[] = Object.keys(values).map((key) => ({
+    __typename: "FilterParam" as "FilterParam",
+    key,
+    modusId: values[key].modusId,
+    active: false,
+    value: {
+      __typename: "FilterValueRange" as "FilterValueRange",
+      values: values[key].values,
+      min: Math.min(...values[key].values),
+      max: Math.max(...values[key].values),
+    },
+    dataSource: FilterParamDataSource.Values,
+  }));
+
+  const farmParams: FilterParam[] = farmProfileFilterProperties
+    .map(({ key, type }) => {
+      if (type === "number") {
+        const values: number[] = uniq(
+          Object.values(farmProfiles())
+            .map((p) => get(p, key))
+            .flat()
+            .map(toNumber)
+            .filter(isNumber)
+        ).sort();
+        return {
+          key,
+          value: {
+            __typename: "FilterValueRange" as "FilterValueRange",
+            values,
+            min: Math.min(...values),
+            max: Math.max(...values),
+          },
+        };
+      }
+      if (type === "string") {
+        const allOptions: string[] = uniq(
+          Object.values(farmProfiles())
+            .map((p) => get(p, key))
+            .flat()
+            .map(toString)
+            .filter((s) => isString(s) && s !== "")
+        ).sort();
+        console.log("ALL OPTIONS", key, allOptions);
+        return {
+          key,
+          value: {
+            __typename: "FilterValueOption" as "FilterValueOption",
+            allOptions,
+            options: [],
+          },
+        };
+      }
+    })
+    .filter(Boolean)
+    .map((param) => {
+      return {
+        __typename: "FilterParam" as "FilterParam",
+        active: false,
+        modusId: null,
+        dataSource: FilterParamDataSource.FarmOnboarding,
+        ...param!,
+      };
+    });
+
+  const params = [...valueParams, ...farmParams].filter(
+    (p) =>
+      (p.value.__typename === "FilterValueOption" &&
+        p.value.allOptions.length > 0) ||
+      (p.value.__typename === "FilterValueRange" && p.value.values.length > 0)
+  );
 
   console.log({ params });
   return {
@@ -566,9 +741,9 @@ export const setFilterParamActive = (
     )
   );
 
-export const setActiveFilterParams = (filterId: string, keys: string[]) =>
-{console.log("setActiveParams", keys)  
-filters(
+export const setActiveFilterParams = (filterId: string, keys: string[]) => {
+  console.log("setActiveParams", keys);
+  filters(
     filters().map((f) =>
       f.id === filterId
         ? {
@@ -580,4 +755,5 @@ filters(
           }
         : f
     )
-  );}
+  );
+};
