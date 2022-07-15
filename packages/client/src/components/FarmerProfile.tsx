@@ -6,7 +6,7 @@ import { css, withTheme } from "@emotion/react";
 import { Box, Button } from "grommet";
 import { EventsCard, Spacer } from "./EventsCard";
 import CloseIcon from "@mui/icons-material/Close";
-import { IconButton } from "./FilterEditor";
+import { IconButton } from "./filterEditor/FilterEditor";
 import { useCallback, useMemo, useState } from "react";
 import { selectProducer } from "../contexts/FiltersContext";
 import { sortBy, take } from "lodash";

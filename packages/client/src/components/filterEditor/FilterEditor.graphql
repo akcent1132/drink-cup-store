@@ -4,7 +4,10 @@ query FilterEditor($filterId: String!) {
     color
     name
     params {
+      id
       key
+      active
+      modusId
       value {
         __typename
         ... on FilterValueRange {

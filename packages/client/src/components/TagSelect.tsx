@@ -2,7 +2,6 @@ import React, { useState } from "react";
 
 import { FormClose } from "grommet-icons";
 import { Box, Button, Select, Text } from "grommet";
-import { css } from "@emotion/react";
 import { without } from "lodash";
 
 type Props = {

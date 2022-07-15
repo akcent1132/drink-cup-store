@@ -9,33 +9,21 @@ import {
   TextInput,
   Text,
 } from "grommet";
-import "../index.css";
 import { css, withTheme } from "@emotion/react";
 import React, { useCallback } from "react";
-import {
-  COLORS,
-  AMENDMENTS,
-  CLIMATE_REGION,
-  FARM_PRACTICES,
-  LAND_PREPARATION,
-  SAMPLE_SOURCE,
-  GROUPS,
-  ZONES,
-  TYPES,
-  FLAGS,
-} from "../contexts/lists";
-import { capitalize, range } from "lodash";
-import { TagSelect } from "./TagSelect";
+import { capitalize, range, throttle } from "lodash";
+import { TagSelect } from "../TagSelect";
 import CloseIcon from "@mui/icons-material/Close";
-import { Spacer } from "./EventsCard";
+import { Spacer } from "../EventsCard";
 import {
   applyDraftFilter,
-  editFilter,
+  editFilterParam,
   selectFilter,
   updateFilterName,
-} from "../contexts/FiltersContext";
+} from "../../contexts/FiltersContext";
 import { useFilterEditorQuery } from "./FilterEditor.generated";
-import { FilterValueOption, FilterValueRange } from "../graphql.generated";
+import { FilterValueOption, FilterValueRange } from "../../graphql.generated";
+import { FilterParamSelector } from "./FilterParamSelector";
 
 const Root = withTheme(styled.div`
   background-color: ${(p) => p.theme.colors.bgSidePanel};
@@ -153,22 +141,22 @@ const ThinRangeInput = ({
   value: number[];
   onChange: (bounds: number[]) => void;
 }) => (
-    <Box gap="small">
-      <Stack>
-        <Box background="light-4" height="6px" direction="row" />
-        <RangeSelector
-          direction="horizontal"
-          min={min}
-          max={max}
-          // step={1}
-          values={value}
-          onChange={(values) => onChange(values)}
-        />
-      </Stack>
-      <Box align="center">
-        <Text size="small">{`${value[0]} - ${value[1]}`}</Text>
-      </Box>
+  <Box gap="small">
+    <Stack>
+      <Box background="light-4" height="6px" direction="row" />
+      <RangeSelector
+        direction="horizontal"
+        min={min}
+        max={max}
+        // step={1}
+        values={value}
+        onChange={(values) => onChange(values)}
+      />
+    </Stack>
+    <Box align="center">
+      <Text size="small">{`${value[0]} - ${value[1]}`}</Text>
     </Box>
+  </Box>
 );
 
 /**
@@ -178,10 +166,10 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
   const { data: { filter } = {} } = useFilterEditorQuery({
     variables: { filterId: selectedFilterId },
   });
-  const handleApply = useCallback(
-    () => {}, //filter && applyDraftFilter(filter.id),
-    [filter?.id]
-  );
+  // const handleApply = useCallback(
+  //   () => {}, //filter && applyDraftFilter(filter.id),
+  //   [filter?.id]
+  // );
   const handleClose = useCallback(() => filter && selectFilter(null), []);
   const updateName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) =>
@@ -216,6 +204,7 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
   if (!params) {
     return null;
   }
+  console.log("PARAMS", params)
 
   return (
     <Root>
@@ -234,27 +223,39 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
             onChange={updateName}
           />
         </Label>
-        {params.map((param) => (
-          <Label label={capitalize(param.key)}>
-            {param.value.__typename === "FilterValueOption" ? (
-              <TagSelect
-                onChange={(options) => editFilter(filter.id, param.key, { ...param.value as FilterValueOption, options })}
-                value={param.value.options}
-                options={param.value.allOptions}
-                allowSearch
-              />
-            ) : (
-              <ThinRangeInput
-                min={param.value.fullMin}
-                max={param.value.fullMax}
-                value={[param.value.min, param.value.max]}
-                onChange={([min, max]) =>
-                  editFilter(filter.id, param.key, { ...param.value as FilterValueRange, min, max })
-                }
-              />
-            )}
-          </Label>
-        ))}
+        <FilterParamSelector filterId={filter.id} params={params} />
+        {params.map((param) =>
+          !param.active ? null : (
+            <Label label={capitalize(param.key)} key={param.key}>
+              {param.value.__typename === "FilterValueOption" ? (
+                <TagSelect
+                  onChange={(options) =>
+                    editFilterParam(filter.id, param.key, {
+                      ...(param.value as FilterValueOption),
+                      options,
+                    })
+                  }
+                  value={param.value.options}
+                  options={param.value.allOptions}
+                  allowSearch
+                />
+              ) : (
+                <ThinRangeInput
+                  min={param.value.fullMin}
+                  max={param.value.fullMax}
+                  value={[param.value.min, param.value.max]}
+                  onChange={throttle(([min, max]) =>
+                    editFilterParam(filter.id, param.key, {
+                      ...(param.value as FilterValueRange),
+                      min,
+                      max,
+                    }), 345)
+                  }
+                />
+              )}
+            </Label>
+          )
+        )}
 
         {/* <Label label="Types">
           <TagSelect
@@ -350,7 +351,7 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
             options={ZONES}
           />
         </Label> */}
-        <GButton label="Update" onClick={handleApply} />
+        {/* <GButton label="Update" onClick={handleApply} /> */}
       </Body>
     </Root>
   );

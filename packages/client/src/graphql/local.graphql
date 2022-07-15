@@ -67,8 +67,11 @@ type FilterValueRange {
 union FilterValue = FilterValueOption | FilterValueRange
 
 type FilterParam {
+  modusId: String
+  id: String!
   key: String!
   value: FilterValue!
+  active: Boolean!
 }
 
 type Filter {

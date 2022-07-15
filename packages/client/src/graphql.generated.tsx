@@ -39,7 +39,10 @@ export type Filter = {
 
 export type FilterParam = {
   __typename: 'FilterParam';
+  active: Scalars['Boolean'];
+  id: Scalars['String'];
   key: Scalars['String'];
+  modusId: Maybe<Scalars['String']>;
   value: FilterValue;
 };
 
@@ -188,9 +191,12 @@ export type FilterFieldPolicy = {
 	params?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type FilterParamKeySpecifier = ('key' | 'value' | FilterParamKeySpecifier)[];
+export type FilterParamKeySpecifier = ('active' | 'id' | 'key' | 'modusId' | 'value' | FilterParamKeySpecifier)[];
 export type FilterParamFieldPolicy = {
+	active?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	key?: FieldPolicy<any> | FieldReadFunction<any>,
+	modusId?: FieldPolicy<any> | FieldReadFunction<any>,
 	value?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type FilterValueOptionKeySpecifier = ('allOptions' | 'options' | FilterValueOptionKeySpecifier)[];

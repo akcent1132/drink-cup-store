@@ -21,7 +21,7 @@ import { FilterLabel } from "../components/FilterLabel";
 import faker from "faker";
 import { memoize, range, sample, sum, without } from "lodash";
 import { HyloBox } from "./HyloBox";
-import { FilterEditor } from "../components/FilterEditor";
+import { FilterEditor } from "../components/filterEditor/FilterEditor";
 import { NestedRows } from "./NestedRows";
 import { schemeTableau10 } from "d3-scale-chromatic";
 import {

@@ -33,6 +33,7 @@ import {
   Filter,
   FilterParam,
   FilterValue,
+  Maybe,
   Planting,
   PlantingEventDetail,
   PlantingValue,
@@ -40,6 +41,8 @@ import {
 } from "../graphql.generated";
 import { schemeTableau10 } from "d3-scale-chromatic";
 import { getFarmEvent, randomZone } from "../utils/random";
+import _ from "lodash";
+window._ = _;
 
 export const isDemo = () => !!process.env.STORYBOOK;
 
@@ -380,16 +383,25 @@ const createFilter = (
     .flat()
     .reduce((acc, value) => {
       if (!(value.name in acc)) {
-        acc[value.name] = { min: value.value, max: value.value };
+        acc[value.name] = { min: value.value, max: value.value, modusId: value.modusId };
       }
       acc[value.name].min = Math.min(acc[value.name].min, value.value);
       acc[value.name].max = Math.max(acc[value.name].max, value.value);
       return acc;
-    }, {} as { [key: string]: { min: number; max: number } });
+    }, {} as { [key: string]: { min: number; max: number, modusId: Maybe<string> } });
+  // const options = p.reduce((options, planting) => {
+  //   planting.params.
+  //   return {
+
+  //   }
+  // }, {})
   const params = Object.keys(values)
     .map((key) => ({
       __typename: "FilterParam" as "FilterParam",
+      id: `val-${key}-${values[key].modusId}`,
       key,
+      modusId: values[key].modusId,
+      active: false,
       value: {
         __typename: "FilterValueRange" as "FilterValueRange",
         fullMin: values[key].min,
@@ -399,6 +411,7 @@ const createFilter = (
       },
     }))
     .filter((v) => v.value.min !== v.value.max);
+
   console.log({ params });
   return {
     __typename: "Filter",
@@ -520,7 +533,11 @@ export const removeAllFilters = () => {
   selectedFilterId(null);
 };
 
-export const editFilter = (filterId: string, key: string, value: FilterValue) =>
+export const editFilterParam = (
+  filterId: string,
+  key: string,
+  value: FilterValue
+) =>
   filters(
     filters().map((f) =>
       f.id === filterId
@@ -531,3 +548,35 @@ export const editFilter = (filterId: string, key: string, value: FilterValue) =>
         : f
     )
   );
+
+export const setFilterParamActive = (
+  filterId: string,
+  key: string,
+  active: boolean
+) =>
+  filters(
+    filters().map((f) =>
+      f.id === filterId
+        ? {
+            ...f,
+            params: f.params.map((p) => (p.key === key ? { ...p, active } : p)),
+          }
+        : f
+    )
+  );
+
+export const setActiveFilterParams = (filterId: string, keys: string[]) =>
+{console.log("setActiveParams", keys)  
+filters(
+    filters().map((f) =>
+      f.id === filterId
+        ? {
+            ...f,
+            params: f.params.map((p) => ({
+              ...p,
+              active: keys.includes(p.key),
+            })),
+          }
+        : f
+    )
+  );}

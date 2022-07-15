@@ -1,4 +1,4 @@
-import * as Types from '../graphql.generated';
+import * as Types from '../../graphql.generated';
 
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
@@ -8,7 +8,7 @@ export type FilterEditorQueryVariables = Types.Exact<{
 }>;
 
 
-export type FilterEditorQuery = { __typename?: 'Query', filter?: { __typename?: 'Filter', id: string, color: string, name: string, params: Array<{ __typename?: 'FilterParam', key: string, value: { __typename: 'FilterValueOption', allOptions: Array<string>, options: Array<string> } | { __typename: 'FilterValueRange', min: number, max: number, fullMin: number, fullMax: number } }> } | null };
+export type FilterEditorQuery = { __typename?: 'Query', filter?: { __typename?: 'Filter', id: string, color: string, name: string, params: Array<{ __typename?: 'FilterParam', id: string, key: string, active: boolean, modusId?: string | null, value: { __typename: 'FilterValueOption', allOptions: Array<string>, options: Array<string> } | { __typename: 'FilterValueRange', min: number, max: number, fullMin: number, fullMax: number } }> } | null };
 
 
 export const FilterEditorDocument = gql`
@@ -18,7 +18,10 @@ export const FilterEditorDocument = gql`
     color
     name
     params {
+      id
       key
+      active
+      modusId
       value {
         __typename
         ... on FilterValueRange {
