@@ -7,6 +7,7 @@ import {
   isString,
   keyBy,
   map,
+  omitBy,
   range,
   sample,
   startCase,
@@ -510,12 +511,6 @@ const createFilter = (
       return acc;
     }, {} as { [key: string]: { values: number[]; modusId: Maybe<string> } });
 
-  // const options = p.reduce((options, planting) => {
-  //   planting.params.
-  //   return {
-
-  //   }
-  // }, {})
   const valueParams: FilterParam[] = Object.keys(values).map((key) => ({
     __typename: "FilterParam" as "FilterParam",
     key,
@@ -530,11 +525,17 @@ const createFilter = (
     dataSource: FilterParamDataSource.Values,
   }));
 
+  const farmIdsInPlantings = uniq(plantings().map((p) => p.producer.id));
+  const relevantFarms = omitBy(
+    farmProfiles(),
+    (p) => !farmIdsInPlantings.includes(p.farmDomain)
+  );
+
   const farmParams: FilterParam[] = farmProfileFilterProperties
     .map(({ key, type }) => {
       if (type === "number") {
         const values: number[] = uniq(
-          Object.values(farmProfiles())
+          Object.values(relevantFarms)
             .map((p) => get(p, key))
             .flat()
             .map(toNumber)
@@ -552,7 +553,7 @@ const createFilter = (
       }
       if (type === "string") {
         const allOptions: string[] = uniq(
-          Object.values(farmProfiles())
+          Object.values(relevantFarms)
             .map((p) => get(p, key))
             .flat()
             .map(toString)

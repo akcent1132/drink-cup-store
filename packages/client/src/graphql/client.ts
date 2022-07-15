@@ -57,7 +57,7 @@ const getPlantingsOfFilter = (
 
   if (plantingsOfFilterCache[id]?.hash !== hash) {
     const activeParams = params.filter((p) => p.active);
-
+    console.log({ activeParams });
     if (activeParams.length === 0) {
       filteredPlantings = [];
     } else {
@@ -78,7 +78,9 @@ const getPlantingsOfFilter = (
             const optionsInPlanting = [
               get(farms, [p.producer.id, param.key]),
             ].flat();
-            console.log(p.producer.id, param.key, { optionsInPlanting });
+            if (optionsInPlanting.filter(Boolean).length) {
+              console.log(p.producer.id, param.key, { optionsInPlanting });
+            }
             return optionsInPlanting.some((o) => value.options.includes(o));
           });
         }
