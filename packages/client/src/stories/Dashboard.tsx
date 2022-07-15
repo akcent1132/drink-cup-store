@@ -29,6 +29,7 @@ import {
   removeAllFilters,
   highlightFilter,
   unhighlightFilter,
+  selectFilter,
 } from "../contexts/FiltersContext";
 import { ROWS } from "../contexts/rows";
 import { Button } from "../components/Button";
@@ -120,7 +121,8 @@ const RandomContent = () => {
       name = name || faker.company.companyName();
       const _color =
         color || sample(freeColors.length > 0 ? freeColors : COLORS)!;
-      addFilter(_color, `New Filter ${filterNamePostfix++}`, selectedCropType || "corn");
+      const filter = addFilter(_color, `New Filter ${filterNamePostfix++}`, selectedCropType || "corn");
+      selectFilter(filter.id);
     },
     [filters]
   );

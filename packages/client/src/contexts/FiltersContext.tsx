@@ -500,6 +500,7 @@ if (!isDemo()) {
 export const addFilter = (color: string, name: string, cropType: string) => {
   const filter = createFilter(color, name, cropType);
   filters([...filters(), filter]);
+  return filter;
 };
 
 // TODO combine right panel content type into one state
