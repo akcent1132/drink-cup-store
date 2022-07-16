@@ -1,4 +1,5 @@
 import { Select, Text } from "grommet";
+import { startCase } from "lodash";
 import { useMemo, useState } from "react";
 import { setActiveFilterParams } from "../../contexts/FiltersContext";
 import { FilterEditorQuery } from "./FilterEditor.generated";
@@ -23,7 +24,7 @@ export const FilterParamSelector = ({ filterId, params }: Props) => {
       valueLabel={<Text>{label}</Text>}
       value={params.filter((p) => p.active).map((p) => p.key)}
       valueKey={{ key: "key", reduce: true }}
-      labelKey="key"
+      labelKey={({key}) => key.length <= 3 ? key : startCase(key.toLowerCase())}
       onChange={({ value: nextValue }) =>
         setActiveFilterParams(filterId, nextValue)
       }
