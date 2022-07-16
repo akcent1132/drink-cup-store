@@ -1,5 +1,6 @@
 import { randomNormal } from "d3-random";
 import {
+  countBy,
   Dictionary,
   get,
   isEqual,
@@ -518,7 +519,7 @@ const createFilter = (
     active: false,
     value: {
       __typename: "FilterValueRange" as "FilterValueRange",
-      values: values[key].values,
+      values: uniq(values[key].values).sort(),
       min: Math.min(...values[key].values),
       max: Math.max(...values[key].values),
     },
@@ -552,18 +553,20 @@ const createFilter = (
         };
       }
       if (type === "string") {
-        const allOptions: string[] = uniq(
-          Object.values(relevantFarms)
-            .map((p) => get(p, key))
-            .flat()
-            .map(toString)
-            .filter((s) => isString(s) && s !== "")
-        ).sort();
+        let allOptions: string[] = Object.values(relevantFarms)
+          .map((p) => get(p, key))
+          .flat()
+          .map(toString)
+          .filter((s) => isString(s) && s !== "");
+        const occurenceMap = countBy(allOptions)
+        allOptions = uniq(allOptions).sort()
+        const occurences = allOptions.map(option => occurenceMap[option])
         return {
           key,
           value: {
             __typename: "FilterValueOption" as "FilterValueOption",
             allOptions,
+            occurences,
             options: [],
           },
         };
@@ -580,6 +583,7 @@ const createFilter = (
       };
     });
 
+  // Remove empty filter params
   const params = [...valueParams, ...farmParams].filter(
     (p) =>
       (p.value.__typename === "FilterValueOption" &&

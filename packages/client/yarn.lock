@@ -10280,10 +10280,10 @@ grommet-styles@^0.2.0:
   resolved "https://registry.yarnpkg.com/grommet-styles/-/grommet-styles-0.2.0.tgz#b2eac2b7e2747cb523434d21728ce5234f8ce4f4"
   integrity sha512-0OMSYuGeyifYKpg4Gv2HzL8rUdd0ddnJ5LbCBKgDuloC71XIwr9g/Fxa6rs737MbPV7OZ4pEm4wvrjH4epzf1A==
 
-grommet@^2.21.0:
-  version "2.21.0"
-  resolved "https://registry.yarnpkg.com/grommet/-/grommet-2.21.0.tgz#7798ba9e4ad9a0ccf8a45929548dc903cc15f19b"
-  integrity sha512-KMmqGDg59IFR5pFN58bicoMpCLiizH0+VTq496TOamQFuIit6w2RMINsyO/LSREfKOBKARg3UAaDQQpdxxWLXw==
+grommet@2.25.0:
+  version "2.25.0"
+  resolved "https://registry.yarnpkg.com/grommet/-/grommet-2.25.0.tgz#c1b6e1d4437d0ea0b87fb8a245a185ded781d037"
+  integrity sha512-sPdZDZ9ufqi7NxYlW9ZGaglbK1Ny0XEhlzWN5WwU4ES3mFKQZkn6LcO14Iw9bTof6AqgO11tu+5uRxh1UOS0LA==
   dependencies:
     grommet-icons "^4.7.0"
     hoist-non-react-statics "^3.2.0"
@@ -12940,9 +12940,9 @@ markdown-to-jsx@^7.1.3:
   integrity sha512-YQEMMMCX3PYOWtUAQu8Fmz5/sH09s17eyQnDubwaAo8sWmnRTT1og96EFv1vL59l4nWfmtF3L91pqkuheVqRlA==
 
 markdown-to-jsx@^7.1.5:
-  version "7.1.6"
-  resolved "https://registry.yarnpkg.com/markdown-to-jsx/-/markdown-to-jsx-7.1.6.tgz#421487df2a66fe4231d94db653a34da033691e62"
-  integrity sha512-1wrIGZYwIG2gR3yfRmbr4FlQmhaAKoKTpRo4wur4fp9p0njU1Hi7vR8fj0AUKKIcPduiJmPprzmCB5B/GvlC7g==
+  version "7.1.7"
+  resolved "https://registry.yarnpkg.com/markdown-to-jsx/-/markdown-to-jsx-7.1.7.tgz#a5f22102fb12241c8cea1ca6a4050bb76b23a25d"
+  integrity sha512-VI3TyyHlGkO8uFle0IOibzpO1c1iJDcXcS/zBrQrXQQvJ2tpdwVzVZ7XdKsyRz1NdRmre4dqQkMZzUHaKIG/1w==
 
 material-colors@^1.2.1:
   version "1.2.6"
@@ -13630,7 +13630,7 @@ oauth-sign@~0.9.0:
 object-assign@^4.1.0, object-assign@^4.1.1:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
-  integrity sha1-IQmtx5ZYh8/AXLvUQsrIv7s2CGM=
+  integrity sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==
 
 object-copy@^0.1.0:
   version "0.1.0"

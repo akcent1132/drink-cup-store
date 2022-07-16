@@ -17,6 +17,7 @@ query FilterEditor($filterId: String!) {
         }
         ... on FilterValueOption {
           allOptions
+          occurences
           options
         }
       }

@@ -55,6 +55,7 @@ type PlantingEventDetail {
 
 type FilterValueOption {
   allOptions: [String!]!
+  occurences: [Int!]!
   options: [String!]!
 }
 type FilterValueRange {

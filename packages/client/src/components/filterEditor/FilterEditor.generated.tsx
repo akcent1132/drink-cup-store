@@ -8,7 +8,7 @@ export type FilterEditorQueryVariables = Types.Exact<{
 }>;
 
 
-export type FilterEditorQuery = { __typename?: 'Query', filter?: { __typename?: 'Filter', id: string, color: string, name: string, params: Array<{ __typename?: 'FilterParam', key: string, active: boolean, modusId?: string | null, dataSource?: Types.FilterParamDataSource | null, value: { __typename: 'FilterValueOption', allOptions: Array<string>, options: Array<string> } | { __typename: 'FilterValueRange', min: number, max: number, values: Array<number> } }> } | null };
+export type FilterEditorQuery = { __typename?: 'Query', filter?: { __typename?: 'Filter', id: string, color: string, name: string, params: Array<{ __typename?: 'FilterParam', key: string, active: boolean, modusId?: string | null, dataSource?: Types.FilterParamDataSource | null, value: { __typename: 'FilterValueOption', allOptions: Array<string>, occurences: Array<number>, options: Array<string> } | { __typename: 'FilterValueRange', min: number, max: number, values: Array<number> } }> } | null };
 
 
 export const FilterEditorDocument = gql`
@@ -31,6 +31,7 @@ export const FilterEditorDocument = gql`
         }
         ... on FilterValueOption {
           allOptions
+          occurences
           options
         }
       }

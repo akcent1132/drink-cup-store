@@ -55,7 +55,7 @@ export const RangeSlider = ({
         />
       </Stack>
       <Box align="center">
-        <Text size="small">{`${formatter(value[0])} - ${formatter(value[1])} step: ${step}`}</Text>
+        <Text size="small">{`${formatter(value[0])} - ${formatter(value[1])}`}</Text>
       </Box>
     </Box>
   );

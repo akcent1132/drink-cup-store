@@ -1,17 +1,11 @@
 /** @jsxImportSource @emotion/react */
 
 import styled from "@emotion/styled";
-import {
-  Box,
-  RangeSelector,
-  Stack,
-  TextInput,
-  Text,
-} from "grommet";
+import { Box, RangeSelector, Stack, TextInput, Text } from "grommet";
 import { css, withTheme } from "@emotion/react";
 import React, { useCallback } from "react";
-import { capitalize, range, throttle } from "lodash";
-import { TagSelect } from "../TagSelect";
+import { capitalize, range, throttle, zipWith } from "lodash";
+import { TagSelect } from "./TagSelect";
 import CloseIcon from "@mui/icons-material/Close";
 import { Spacer } from "../EventsCard";
 import {
@@ -91,44 +85,6 @@ export const IconButton = styled.div`
 interface Props {
   selectedFilterId: string;
 }
-const YEAR_MIN = 2017;
-const YEAR_MAX = 2022;
-
-const RangeInput = ({
-  min,
-  max,
-  value,
-  label,
-  onChange,
-}: {
-  min: number;
-  max: number;
-  value: number[];
-  label: string;
-  onChange: (bounds: number[]) => void;
-}) => (
-  <Label label={label}>
-    <Stack>
-      <Box direction="row" justify="between">
-        {range(min, max + 1).map((value) => (
-          <Box key={value} pad="small" border={false}>
-            <Text style={{ fontFamily: "monospace" }}>{value}</Text>
-          </Box>
-        ))}
-      </Box>
-      <RangeSelector
-        direction="horizontal"
-        invert={false}
-        min={min}
-        max={max}
-        size="full"
-        round="small"
-        values={[Math.min(...value), Math.max(...value)]}
-        onChange={(values) => onChange(values)}
-      />
-    </Stack>
-  </Label>
-);
 
 /**
  * Primary UI component for user interaction
@@ -183,7 +139,11 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
                     })
                   }
                   value={param.value.options}
-                  options={param.value.allOptions}
+                  options={zipWith(
+                    param.value.allOptions,
+                    param.value.occurences,
+                    (value, occurences) => ({ value, label: `${value} (${occurences})` })
+                  )}
                   allowSearch
                 />
               ) : (
@@ -192,13 +152,15 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
                   max={Math.max(...param.value.values) || 0}
                   value={[param.value.min, param.value.max]}
                   allValues={param.value.values}
-                  onChange={throttle(([min, max]) =>
-                    editFilterParam(filter.id, param.key, {
-                      ...(param.value as FilterValueRange),
-                      min,
-                      max,
-                    }), 128)
-                  }
+                  onChange={throttle(
+                    ([min, max]) =>
+                      editFilterParam(filter.id, param.key, {
+                        ...(param.value as FilterValueRange),
+                        min,
+                        max,
+                      }),
+                    128
+                  )}
                 />
               )}
             </Label>

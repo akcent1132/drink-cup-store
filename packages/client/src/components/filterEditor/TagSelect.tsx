@@ -4,10 +4,14 @@ import { FormClose } from "grommet-icons";
 import { Box, Button, Select, Text } from "grommet";
 import { without } from "lodash";
 
+type Option = {
+  value: string;
+  label?: string;
+};
 type Props = {
   onChange: (value: string[]) => void;
   value: string[];
-  options: string[];
+  options: Option[];
   allowSearch?: boolean;
 };
 
@@ -18,13 +22,13 @@ export const TagSelect = ({
   allowSearch,
 }: Props) => {
   const [options, setOptions] = useState(defaultOptions);
-  const onRemoveSeason = (option: string) => {
-    onChange(value.filter((o) => o !== option));
+  const onRemoveSeason = (option: Option) => {
+    onChange(value.filter((o) => o !== option.value));
   };
 
-  const renderTag = (option: string) => (
+  const renderTag = (option: Option) => (
     <Button
-      key={`season_tag_${option}`}
+      key={`season_tag_${option.value}`}
       href="#"
       onClick={(event) => {
         event.preventDefault();
@@ -43,7 +47,7 @@ export const TagSelect = ({
         round="large"
       >
         <Text size="small" weight="bold">
-          {option}
+          {option.label || option.value}
         </Text>
         <Box round="full" margin={{ left: "xsmall" }}>
           <FormClose size="small" style={{ width: "12px", height: "12px" }} />
@@ -52,9 +56,9 @@ export const TagSelect = ({
     </Button>
   );
 
-  const renderOption = (option: string, state: any) => (
+  const renderOption = (option: Option, state: any) => (
     <Box pad="small" background={state.active ? "active" : undefined}>
-      {option}
+      {option.label || option.value}
     </Box>
   );
 
@@ -68,7 +72,10 @@ export const TagSelect = ({
         value={
           <Box wrap direction="row">
             {value && value.length ? (
-              value.map((option) => renderTag(option))
+              value
+                .map((v) => options.find((o) => o.value === v))
+                .filter(Boolean)
+                .map((option) => renderTag(option!))
             ) : (
               <Box
                 pad={{ vertical: "xsmall", horizontal: "small" }}
@@ -80,13 +87,12 @@ export const TagSelect = ({
           </Box>
         }
         options={options}
-        selected={value.map((v) => options.indexOf(v))}
+        valueKey={{ key: "value", reduce: true }}
         onChange={({ option }) => {
-          if (value.includes(option)) {
-            onChange(without(value, option))
-          }
-          else {
-            onChange([...value, option])
+          if (value.includes(option.value)) {
+            onChange(without(value, option.value));
+          } else {
+            onChange([...value, option.value]);
           }
         }}
         onClose={() => setOptions(defaultOptions)}
@@ -104,7 +110,7 @@ export const TagSelect = ({
                 // handles escaping special characters. Without escaping special
                 // characters, errors will appear in the console
                 const exp = new RegExp(escapedText, "i");
-                setOptions(defaultOptions.filter((o) => exp.test(o)));
+                setOptions(defaultOptions.filter((o) => exp.test(o.value)));
               }
             : undefined
         }

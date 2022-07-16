@@ -56,6 +56,7 @@ export type FilterValue = FilterValueOption | FilterValueRange;
 export type FilterValueOption = {
   __typename: 'FilterValueOption';
   allOptions: Array<Scalars['String']>;
+  occurences: Array<Scalars['Int']>;
   options: Array<Scalars['String']>;
 };
 
@@ -203,9 +204,10 @@ export type FilterParamFieldPolicy = {
 	modusId?: FieldPolicy<any> | FieldReadFunction<any>,
 	value?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type FilterValueOptionKeySpecifier = ('allOptions' | 'options' | FilterValueOptionKeySpecifier)[];
+export type FilterValueOptionKeySpecifier = ('allOptions' | 'occurences' | 'options' | FilterValueOptionKeySpecifier)[];
 export type FilterValueOptionFieldPolicy = {
 	allOptions?: FieldPolicy<any> | FieldReadFunction<any>,
+	occurences?: FieldPolicy<any> | FieldReadFunction<any>,
 	options?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type FilterValueRangeKeySpecifier = ('max' | 'min' | 'values' | FilterValueRangeKeySpecifier)[];
