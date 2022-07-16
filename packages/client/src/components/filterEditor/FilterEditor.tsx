@@ -24,6 +24,7 @@ import {
 import { useFilterEditorQuery } from "./FilterEditor.generated";
 import { FilterValueOption, FilterValueRange } from "../../graphql.generated";
 import { FilterParamSelector } from "./FilterParamSelector";
+import { RangeSlider } from "./RangeSlider";
 
 const Root = withTheme(styled.div`
   background-color: ${(p) => p.theme.colors.bgSidePanel};
@@ -130,35 +131,6 @@ const RangeInput = ({
   </Label>
 );
 
-const ThinRangeInput = ({
-  min,
-  max,
-  value,
-  onChange,
-}: {
-  min: number;
-  max: number;
-  value: number[];
-  onChange: (bounds: number[]) => void;
-}) => (
-  <Box gap="small">
-    <Stack>
-      <Box background="light-4" height="6px" direction="row" />
-      <RangeSelector
-        direction="horizontal"
-        min={min}
-        max={max}
-        // step={1}
-        values={value}
-        onChange={(values) => onChange(values)}
-      />
-    </Stack>
-    <Box align="center">
-      <Text size="small">{`${value[0]} - ${value[1]}`}</Text>
-    </Box>
-  </Box>
-);
-
 /**
  * Primary UI component for user interaction
  */
@@ -240,10 +212,11 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
                   allowSearch
                 />
               ) : (
-                <ThinRangeInput
+                <RangeSlider
                   min={Math.min(...param.value.values) || 0}
                   max={Math.max(...param.value.values) || 0}
                   value={[param.value.min, param.value.max]}
+                  allValues={param.value.values}
                   onChange={throttle(([min, max]) =>
                     editFilterParam(filter.id, param.key, {
                       ...(param.value as FilterValueRange),
