@@ -3,7 +3,6 @@
 import styled from "@emotion/styled";
 import {
   Box,
-  Button as GButton,
   RangeSelector,
   Stack,
   TextInput,
@@ -11,7 +10,7 @@ import {
 } from "grommet";
 import { css, withTheme } from "@emotion/react";
 import React, { useCallback } from "react";
-import { capitalize, first, last, range, throttle } from "lodash";
+import { capitalize, range, throttle } from "lodash";
 import { TagSelect } from "../TagSelect";
 import CloseIcon from "@mui/icons-material/Close";
 import { Spacer } from "../EventsCard";
@@ -148,35 +147,11 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
       filter && updateFilterName(filter.id, event.target.value),
     [filter?.id]
   );
-  // const updateYears = useCallback(
-  //   ([from, to]) =>
-  //     filter && editFilter(filter.id, { years: range(from, to + 1) }),
-  //   [filter?.id]
-  // );
-  // const updateSweetnessScore = useCallback(
-  //   ([from, to]) =>
-  //     filter && editFilter(filter.id, { sweetnessScore: range(from, to + 1) }),
-  //   [filter?.id]
-  // );
-  // const updateFlavorScore = useCallback(
-  //   ([from, to]) =>
-  //     filter && editFilter(filter.id, { flavorScore: range(from, to + 1) }),
-  //   [filter?.id]
-  // );
-  // const updateTasteScore = useCallback(
-  //   ([from, to]) =>
-  //     filter && editFilter(filter.id, { tasteScore: range(from, to + 1) }),
-  //   [filter?.id]
-  // );
-  // const updateParams = useCallback(
-  //   (params) => filter && editFilter(filter.id, params),
-  //   [filter?.id]
-  // );
+
   const params = filter?.params;
   if (!params) {
     return null;
   }
-  console.log("PARAMS", params)
 
   return (
     <Root>
@@ -222,109 +197,13 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
                       ...(param.value as FilterValueRange),
                       min,
                       max,
-                    }), 345)
+                    }), 128)
                   }
                 />
               )}
             </Label>
           )
         )}
-
-        {/* <Label label="Types">
-          <TagSelect
-            onChange={(types) => updateParams({ types })}
-            value={params.types}
-            options={TYPES}
-            allowSearch
-          />
-        </Label>
-        <RangeInput
-          label="Years"
-          min={YEAR_MIN}
-          max={YEAR_MAX}
-          value={params.years}
-          onChange={updateYears}
-        />
-        <Label label="Groups">
-          <TagSelect
-            onChange={(groups) => updateParams({ groups })}
-            value={params.groups}
-            options={GROUPS}
-            allowSearch
-          />
-        </Label>
-        <Label label="Flags">
-          <TagSelect
-            onChange={(flags) => updateParams({ flags })}
-            value={params.flags}
-            options={FLAGS}
-            allowSearch
-          />
-        </Label>
-        <Label label="Climate Region">
-          <TagSelect
-            onChange={(climateRegion) => updateParams({ climateRegion })}
-            value={params.climateRegion}
-            options={CLIMATE_REGION}
-          />
-        </Label>
-        <Label label="Sample Source">
-          <TagSelect
-            onChange={(sampleSource) => updateParams({ sampleSource })}
-            value={params.sampleSource}
-            options={SAMPLE_SOURCE}
-          />
-        </Label>
-        <RangeInput
-          label="Weed Control"
-          min={10}
-          max={17}
-          value={params.sweetnessScore}
-          onChange={updateSweetnessScore}
-        />
-        <RangeInput
-          label="Pest-Disease Control"
-          min={0}
-          max={7}
-          value={params.flavorScore}
-          onChange={updateFlavorScore}
-        />
-        <RangeInput
-          label="Tillage"
-          min={1}
-          max={9}
-          value={params.tasteScore}
-          onChange={updateTasteScore}
-        />
-        <Label label="Farm Practices">
-          <TagSelect
-            onChange={(farmPractices) => updateParams({ farmPractices })}
-            value={params.farmPractices}
-            options={FARM_PRACTICES}
-          />
-        </Label>
-        <Label label="Amendments">
-          <TagSelect
-            onChange={(amendments) => updateParams({ amendments })}
-            value={params.amendments}
-            options={AMENDMENTS}
-          />
-        </Label>
-        <Label label="Land Preparation">
-          <TagSelect
-            onChange={(landPreparation) => updateParams({ landPreparation })}
-            value={params.landPreparation}
-            options={LAND_PREPARATION}
-          />
-        </Label>
-        <Label label="Hardiness Zones">
-          <TagSelect
-            onChange={(zones) => updateParams({ zones })}
-            value={params.zones}
-            options={ZONES}
-          />
-        </Label> */}
-        {/* <GButton label="Update" onClick={handleApply} /> */}
       </Body>
     </Root>
   );

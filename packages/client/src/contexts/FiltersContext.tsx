@@ -559,7 +559,6 @@ const createFilter = (
             .map(toString)
             .filter((s) => isString(s) && s !== "")
         ).sort();
-        console.log("ALL OPTIONS", key, allOptions);
         return {
           key,
           value: {

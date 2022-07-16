@@ -1,9 +1,7 @@
 import { Box, RangeSelector, Select, Stack, Text } from "grommet";
 import styled from "@emotion/styled";
-import { startCase } from "lodash";
-import { useMemo, useState } from "react";
-import { setActiveFilterParams } from "../../contexts/FiltersContext";
-import { FilterEditorQuery } from "./FilterEditor.generated";
+import { useMemo } from "react";
+import { format } from "d3-format";
 
 const TickBox = styled.div`
   width: 100%;
@@ -31,29 +29,34 @@ export const RangeSlider = ({
   value: number[];
   allValues: number[];
   onChange: (bounds: number[]) => void;
-}) => (
-  <Box gap="small">
-    <Stack>
-      <TickBox>
-        {allValues.map((v) => (
-          <Tick
-            style={{
-              left: `${((v - min) / (max - min)) * 100}%`,
-            }}
-          />
-        ))}
-      </TickBox>
-      <RangeSelector
-        direction="horizontal"
-        min={min}
-        max={max}
-        // step={1}
-        values={value}
-        onChange={(values) => onChange(values)}
-      />
-    </Stack>
-    <Box align="center">
-      <Text size="small">{`${value[0]} - ${value[1]}/${allValues.length}`}</Text>
+}) => {
+  const intMode = useMemo(() => allValues.every(Number.isInteger), [allValues]);
+  const formatter = useMemo(() => intMode ? format('') : format('.1f'), [intMode]);
+  const step = intMode ? 1 : .01
+  return (
+    <Box gap="small">
+      <Stack>
+        <TickBox>
+          {allValues.map((v) => (
+            <Tick
+              style={{
+                left: `${((v - min) / (max - min)) * 100}%`,
+              }}
+            />
+          ))}
+        </TickBox>
+        <RangeSelector
+          direction="horizontal"
+          min={min}
+          max={max}
+          step={step}
+          values={value}
+          onChange={(values) => {console.log(values);onChange(values)}}
+        />
+      </Stack>
+      <Box align="center">
+        <Text size="small">{`${formatter(value[0])} - ${formatter(value[1])} step: ${step}`}</Text>
+      </Box>
     </Box>
-  </Box>
-);
+  );
+};
