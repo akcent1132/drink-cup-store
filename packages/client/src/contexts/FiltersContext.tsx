@@ -220,16 +220,16 @@ const cachedLoad = async <T,>(
   updateVars: (data: T) => void,
   lsKey: string
 ) => {
-  if (localStorage[lsKey]) {
-    console.log("loading plantings from local storage...");
-    try {
-      updateVars(JSON.parse(localStorage[lsKey]));
-    } catch (e) {
-      console.error(
-        `Failed to update data from localStorage["${lsKey}"]\n${e}`
-      );
-    }
-  }
+  // if (localStorage[lsKey]) {
+  //   console.log("loading plantings from local storage...");
+  //   try {
+  //     updateVars(JSON.parse(localStorage[lsKey]));
+  //   } catch (e) {
+  //     console.error(
+  //       `Failed to update data from localStorage["${lsKey}"]\n${e}`
+  //     );
+  //   }
+  // }
 
   const data = await fetch(url).then((result) => result.json());
   try {

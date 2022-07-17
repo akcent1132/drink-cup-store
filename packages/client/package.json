@@ -37,6 +37,7 @@
     "grommet": "2.25.0",
     "grommet-icons": "^4.7.0",
     "lodash": "^4.17.21",
+    "msw": "^0.44.1",
     "polished": "^4.1.4",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -126,5 +127,8 @@
     "chromatic": "^6.3.3",
     "surge": "^0.23.1",
     "webpack": "^5.65.0"
+  },
+  "msw": {
+    "workerDirectory": "public"
   }
 }

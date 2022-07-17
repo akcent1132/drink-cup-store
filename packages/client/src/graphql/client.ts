@@ -25,6 +25,7 @@ import {
 } from "../graphql.generated";
 import seedrandom from "seedrandom";
 import { authState } from "./auth";
+import "./server"
 
 const typeDefs = loader("./local.graphql");
 
