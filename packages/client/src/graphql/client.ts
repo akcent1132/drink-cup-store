@@ -139,25 +139,25 @@ const typePolicies: StrictTypedTypePolicies = {
           return selectedCropType();
         },
       },
-      plantings: {
-        read(_, options) {
-          // @ts-ignore
-          const cropType: string = options.args.cropType;
-          return getPlantings(cropType);
-        },
-      },
-      allPlantings: {
-        read() {
-          return plantings();
-        },
-      },
-      planting: {
-        read(_, options) {
-          // @ts-ignore
-          const id: string = options.args.id;
-          return plantings().find((planting) => planting.id === id) || null;
-        },
-      },
+      // plantings: {
+      //   read(_, options) {
+      //     // @ts-ignore
+      //     const cropType: string = options.args.cropType;
+      //     return getPlantings(cropType);
+      //   },
+      // },
+      // allPlantings: {
+      //   read() {
+      //     return plantings();
+      //   },
+      // },
+      // planting: {
+      //   read(_, options) {
+      //     // @ts-ignore
+      //     const id: string = options.args.id;
+      //     return plantings().find((planting) => planting.id === id) || null;
+      //   },
+      // },
       highlightedPlanting: {
         read() {
           const id = highlightedPlantingId();

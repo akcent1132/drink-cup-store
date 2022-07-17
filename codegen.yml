@@ -1,5 +1,5 @@
 # overwrite: true
-# schema: "packages/client/src/graphql/local.graphql"
+# schema: "packages/client/src/graphql/{server,local}.graphql"
 # documents: "packages/client/src/{stories,components}/**/!(*.generated).graphql"
 # generates:
 #   src/generated/graphql.tsx:
@@ -21,19 +21,22 @@ watchConfig:
   interval: 1000
 generates:
   # generate the types for the graphql resolvers
-  packages/server/src/resolvers.generated.ts:
-    schema: 
-    - "packages/server/src/schema/definitions/**/!(*.generated).ts"
+  packages/resolvers.generated.ts:
+    schema: "packages/client/src/graphql/server.graphql"
     config:
       useIndexSignature: true
       # defaultMapper: Partial<{T}>
     plugins:
       - "typescript"
       - "typescript-resolvers"
+  packages/client/src/graphql/schema.server.generated.json:
+    schema: "packages/client/src/graphql/server.graphql"
+    plugins:
+      - introspection
   
   # generate the types for the server+local graphql API
   packages/client/src/graphql.generated.tsx:
-    schema: "packages/client/src/graphql/local.graphql"
+    schema: "packages/client/src/graphql/{server,local}.graphql"
     plugins:
       - "typescript"
       - "typescript-apollo-client-helpers"
@@ -43,7 +46,7 @@ generates:
 
   # generate the types for the React component queries
   packages/client/src/:
-    schema: "packages/client/src/graphql/local.graphql"
+    schema: "packages/client/src/graphql/{server,local}.graphql"
     documents: 
      - "packages/client/src/{stories,components}/**/!(*.generated).graphql"
     preset: near-operation-file
@@ -55,7 +58,7 @@ generates:
       - typescript-react-apollo
 
   ./graphql.schema.json:
-    schema: "packages/client/src/graphql/local.graphql"
+    schema: "packages/client/src/graphql/{server,local}.graphql"
     plugins:
       - "introspection"
 

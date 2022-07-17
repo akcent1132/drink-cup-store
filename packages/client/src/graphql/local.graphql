@@ -14,45 +14,10 @@ extend type Query {
   selectedProducer: Producer
   auth: AuthState,
 }
-type Planting {
-  id: String!
-  cropType: String!
-  values: [PlantingValue!]!
-  title: String!
-  producer: Producer!
-  params: PlantingParams!
-  events: [PlantingEvent!]!
+extend type Planting {
   matchingFilters: [Filter!]!
   isHighlighted: Boolean!
 }
-type PlantingValue {
-  name: String!
-  value: Float!
-  plantingId: String!
-  modusId: String
-}
-type PlantingParams {
-  zone: String!
-  temperature: String!
-  precipitation: String!
-  texture: String!
-}
-
-type PlantingEvent {
-  id: String!
-  type: String!
-  date: String!
-  detailsKey: String
-  details: [PlantingEventDetail!]
-}
-
-type PlantingEventDetail {
-  id: String!
-  name: String!
-  value: String
-  valueList: [String!]
-}
-
 type FilterValueOption {
   allOptions: [String!]!
   occurences: [Int!]!
@@ -92,12 +57,6 @@ type GroupedValues {
   id: String!
   filter: Filter
   values: [PlantingValue!]!
-}
-
-type Producer {
-  id: String!
-  code: String!
-  plantings: [Planting!]!
 }
 
 type AuthUser { 

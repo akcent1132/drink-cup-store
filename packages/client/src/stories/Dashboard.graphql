@@ -1,6 +1,6 @@
 query RandomContent($cropType: String! = "") {
   selectedCropType @client @export(as: "cropType")
-  filters(cropType: $cropType) {
+  filters(cropType: $cropType) @client {
     id
     name
     color
@@ -8,10 +8,10 @@ query RandomContent($cropType: String! = "") {
 }
 
 query Dashboard {
-  selectedFilter {
+  selectedFilter @client {
     id
   }
-  selectedProducer {
+  selectedProducer @client {
     id
     code
     plantings {

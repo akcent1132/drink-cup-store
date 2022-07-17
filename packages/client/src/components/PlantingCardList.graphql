@@ -1,6 +1,6 @@
 query PlantingCardList($cropType: String! = "") {
   selectedCropType @client @export(as: "cropType")
-  openEventCards(cropType: $cropType) {
+  openEventCards(cropType: $cropType) @client {
     id
   }
 }

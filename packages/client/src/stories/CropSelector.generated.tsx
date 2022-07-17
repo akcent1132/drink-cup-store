@@ -11,7 +11,7 @@ export type CropSelectorQuery = { __typename?: 'Query', selectedCropType: string
 
 export const CropSelectorDocument = gql`
     query CropSelector {
-  selectedCropType
+  selectedCropType @client
   allPlantings {
     id
     cropType

@@ -1,19 +1,34 @@
+
 import { setupWorker, rest } from "msw";
-import { buildSchema, graphql } from "graphql";
+import { buildClientSchema, graphql } from "graphql";
+import { makeExecutableSchema } from '@graphql-tools/schema'
+import { Resolvers } from '../../../resolvers.generated'
+import jsonSchema from './schema.server.generated.json'
 
 // Construct a schema, using GraphQL schema language
-var schema = buildSchema(`
-  type Query {
-    hello: String
-  }
-`);
+// @ts-ignore
+const typeDefs = buildClientSchema(jsonSchema);
 
 // The root provides a resolver function for each API endpoint
-var rootValue = {
-  hello: () => {
-    return "Hello world!";
+const resolvers: Resolvers = {
+  Query: {
+    allPlantings() {
+        return [];
+    },
+    plantings() {
+        return [];
+    },
+    planting() {
+        return null
+    },
+
   },
 };
+
+const schema = makeExecutableSchema({
+    typeDefs,
+    resolvers,
+})
 
 const worker = setupWorker(
   rest.post("/login", (req, res, ctx) => {
@@ -31,7 +46,6 @@ const worker = setupWorker(
         await graphql({
           schema,
           source: query,
-          rootValue,
           variableValues: variables,
           operationName,
         })

@@ -27,10 +27,10 @@ export const NestedRowsDocument = gql`
       modusId
     }
   }
-  highlightedPlanting {
+  highlightedPlanting @client {
     id
   }
-  highlightedFilter {
+  highlightedFilter @client {
     id
   }
 }

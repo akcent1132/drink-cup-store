@@ -19,7 +19,7 @@ export type DashboardQuery = { __typename?: 'Query', selectedFilter?: { __typena
 export const RandomContentDocument = gql`
     query RandomContent($cropType: String! = "") {
   selectedCropType @client @export(as: "cropType")
-  filters(cropType: $cropType) {
+  filters(cropType: $cropType) @client {
     id
     name
     color
@@ -56,10 +56,10 @@ export type RandomContentLazyQueryHookResult = ReturnType<typeof useRandomConten
 export type RandomContentQueryResult = Apollo.QueryResult<RandomContentQuery, RandomContentQueryVariables>;
 export const DashboardDocument = gql`
     query Dashboard {
-  selectedFilter {
+  selectedFilter @client {
     id
   }
-  selectedProducer {
+  selectedProducer @client {
     id
     code
     plantings {

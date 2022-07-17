@@ -14,7 +14,7 @@ export type PlantingCardListQuery = { __typename?: 'Query', selectedCropType: st
 export const PlantingCardListDocument = gql`
     query PlantingCardList($cropType: String! = "") {
   selectedCropType @client @export(as: "cropType")
-  openEventCards(cropType: $cropType) {
+  openEventCards(cropType: $cropType) @client {
     id
   }
 }
