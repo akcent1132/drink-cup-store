@@ -315,11 +315,11 @@ const FAKE_PLANTING_DETAILS = [
 }));
 
 const cache = new InMemoryCache({
-  typePolicies,
+  // typePolicies,
 });
 export const client = new ApolloClient({
   cache,
   connectToDevTools: true,
-  // uri: "http://localhost:4000/graphql",
-  typeDefs,
+  uri: "/graphql",
+  // typeDefs,
 });

@@ -31,14 +31,18 @@ export const RangeSlider = ({
   onChange: (bounds: number[]) => void;
 }) => {
   const intMode = useMemo(() => allValues.every(Number.isInteger), [allValues]);
-  const formatter = useMemo(() => intMode ? format('') : format('.1f'), [intMode]);
-  const step = intMode ? 1 : .01
+  const formatter = useMemo(
+    () => (intMode ? format("") : format(".1f")),
+    [intMode]
+  );
+  const step = intMode ? 1 : 0.01;
   return (
     <Box gap="small">
       <Stack>
         <TickBox>
-          {allValues.map((v) => (
+          {allValues.map((v, i) => (
             <Tick
+              key={i}
               style={{
                 left: `${((v - min) / (max - min)) * 100}%`,
               }}
@@ -51,11 +55,16 @@ export const RangeSlider = ({
           max={max}
           step={step}
           values={value}
-          onChange={(values) => {console.log(values);onChange(values)}}
+          onChange={(values) => {
+            console.log(values);
+            onChange(values);
+          }}
         />
       </Stack>
       <Box align="center">
-        <Text size="small">{`${formatter(value[0])} - ${formatter(value[1])}`}</Text>
+        <Text size="small">{`${formatter(value[0])} - ${formatter(
+          value[1]
+        )}`}</Text>
       </Box>
     </Box>
   );
