@@ -46,6 +46,11 @@ export const GrommetConfig = ({ children }: PropsWithChildren<{}>) => {
           xlarge: "0px 12px 24px rgba(0, 0, 0, 0.40)",
         },
       },
+      
+      // @ts-ignore
+    drop: {
+      zIndex: '2000',
+    }
     },
     tip: {
       content: {

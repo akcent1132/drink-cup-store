@@ -588,7 +588,7 @@ const createFilter = (
     (p) =>
       (p.value.__typename === "FilterValueOption" &&
         p.value.allOptions.length > 0) ||
-      (p.value.__typename === "FilterValueRange" && p.value.values.length > 0)
+      (p.value.__typename === "FilterValueRange" && p.value.values.length > 1)
   );
 
   console.log({ params });

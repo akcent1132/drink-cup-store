@@ -119,6 +119,7 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
         </IconButton>
       </Header>
       <Body>
+        <FilterParamSelector filterId={filter.id} params={params} />
         <Label label="Name">
           <TextInput
             placeholder="Filter name"
@@ -126,7 +127,6 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
             onChange={updateName}
           />
         </Label>
-        <FilterParamSelector filterId={filter.id} params={params} />
         {params.map((param) =>
           !param.active ? null : (
             <Label label={capitalize(param.key)} key={param.key}>
@@ -142,7 +142,10 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
                   options={zipWith(
                     param.value.allOptions,
                     param.value.occurences,
-                    (value, occurences) => ({ value, label: `${value} (${occurences})` })
+                    (value, occurences) => ({
+                      value,
+                      label: `${value} (${occurences})`,
+                    })
                   )}
                   allowSearch
                 />
