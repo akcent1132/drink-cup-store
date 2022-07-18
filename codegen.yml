@@ -21,7 +21,7 @@ watchConfig:
   interval: 1000
 generates:
   # generate the types for the graphql resolvers
-  packages/resolvers.generated.ts:
+  packages/client/src/graphql/resolvers.generated.ts:
     schema: "packages/client/src/graphql/server.graphql"
     config:
       useIndexSignature: true
