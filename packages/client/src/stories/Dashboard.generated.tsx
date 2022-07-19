@@ -10,10 +10,12 @@ export type RandomContentQueryVariables = Types.Exact<{
 
 export type RandomContentQuery = { __typename?: 'Query', selectedCropType: string, filters: Array<{ __typename?: 'Filter', id: string, name: string, color: string }> };
 
-export type DashboardQueryVariables = Types.Exact<{ [key: string]: never; }>;
+export type DashboardQueryVariables = Types.Exact<{
+  producerId?: Types.InputMaybe<Types.Scalars['String']>;
+}>;
 
 
-export type DashboardQuery = { __typename?: 'Query', selectedFilter?: { __typename?: 'Filter', id: string } | null, selectedProducer?: { __typename?: 'Producer', id: string, code: string, plantings: Array<{ __typename?: 'Planting', id: string, isHighlighted: boolean, title: string, producer: { __typename?: 'Producer', id: string, code: string }, params: { __typename?: 'PlantingParams', precipitation: string, temperature: string, texture: string, zone: string }, events: Array<{ __typename?: 'PlantingEvent', id: string, date: string, type: string, detailsKey?: string | null, details?: Array<{ __typename?: 'PlantingEventDetail', id: string, name: string, value?: string | null, valueList?: Array<string> | null }> | null }>, matchingFilters: Array<{ __typename?: 'Filter', id: string, color: string }> }> } | null, allPlantings: Array<{ __typename?: 'Planting', id: string }> };
+export type DashboardQuery = { __typename?: 'Query', selectedFilterId?: string | null, selectedProducerId?: string | null, selectedProducer?: { __typename?: 'Producer', id: string, code: string, plantings: Array<{ __typename?: 'Planting', id: string, isHighlighted: boolean, title: string, producer: { __typename?: 'Producer', id: string, code: string }, params: { __typename?: 'PlantingParams', precipitation: string, temperature: string, texture: string, zone: string }, events: Array<{ __typename?: 'PlantingEvent', id: string, date: string, type: string, detailsKey?: string | null, details?: Array<{ __typename?: 'PlantingEventDetail', id: string, name: string, value?: string | null, valueList?: Array<string> | null }> | null }>, matchingFilters: Array<{ __typename?: 'Filter', id: string, color: string }> }> } | null, allPlantings: Array<{ __typename?: 'Planting', id: string }> };
 
 
 export const RandomContentDocument = gql`
@@ -55,16 +57,15 @@ export type RandomContentQueryHookResult = ReturnType<typeof useRandomContentQue
 export type RandomContentLazyQueryHookResult = ReturnType<typeof useRandomContentLazyQuery>;
 export type RandomContentQueryResult = Apollo.QueryResult<RandomContentQuery, RandomContentQueryVariables>;
 export const DashboardDocument = gql`
-    query Dashboard {
-  selectedFilter @client {
-    id
-  }
-  selectedProducer @client {
+    query Dashboard($producerId: String) {
+  selectedFilterId @client
+  selectedProducerId @client @export(as: "producerId")
+  selectedProducer: producer(id: $producerId) {
     id
     code
     plantings {
       id
-      isHighlighted
+      isHighlighted @client
       producer {
         id
         code
@@ -88,7 +89,7 @@ export const DashboardDocument = gql`
           valueList
         }
       }
-      matchingFilters {
+      matchingFilters @client {
         id
         color
       }
@@ -112,6 +113,7 @@ export const DashboardDocument = gql`
  * @example
  * const { data, loading, error } = useDashboardQuery({
  *   variables: {
+ *      producerId: // value for 'producerId'
  *   },
  * });
  */

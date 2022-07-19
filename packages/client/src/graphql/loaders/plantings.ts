@@ -109,3 +109,61 @@ export const loadPlantings = pMemoize(async () => {
     });
   return clientPlantings;
 });
+
+// const createFakePlantings = (
+//   cropType: string,
+//   count: number,
+//   stdMax = 2,
+//   meanMax = 5
+// ): Planting[] => {
+//   const rnd = seedrandom(cropType + "create planting data");
+//   return range(count).map((i) => {
+//     const id = (plantingId++).toString();
+//     const values: PlantingValue[] = [];
+//     const walk = (rows: RowData[]) => {
+//       for (const row of rows) {
+//         // use the same distribution on the same rows
+//         const rndValue = seedrandom(cropType + row.name);
+//         const mean = (rndValue() - 0.5) * meanMax;
+//         const std = rndValue() * stdMax;
+//         // TODO add multilpe measurements to some value types
+//         // const count = countMax * rndValue();
+//         const norm = randomNormal.source(rnd)(mean, std);
+//         if (row.type === "value") {
+//           values.push({
+//             __typename: "PlantingValue",
+//             name: row.name,
+//             value: norm(),
+//             plantingId: id,
+//             modusId: "MOD-US/ID",
+//           });
+//         }
+//         if (row.children) {
+//           walk(row.children);
+//         }
+//       }
+//     };
+//     walk(ROWS);
+//     const zone = randomZone();
+//     let texture = [Math.random(), Math.random()];
+//     texture = texture.map((t) => Math.round((t / sum(texture)) * 100));
+//     return {
+//       __typename: "Planting",
+//       isHighlighted: false,
+//       id,
+//       cropType,
+//       values,
+//       title: `${startCase(cropType)} ${2017 + Math.floor(Math.random() * 6)}`,
+//       producer: sample(producers())!,
+//       params: {
+//         __typename: "PlantingParams",
+//         zone: zone.name,
+//         temperature: zone.temp.toString() + "°",
+//         precipitation: `${32 + Math.floor(32 * Math.random())}″`,
+//         texture: `Sand: ${texture[0]}% | Clay ${texture[1]}%`,
+//       },
+//       events: range(6 + 6 * Math.random()).map(() => getFarmEvent()),
+//       matchingFilters: [],
+//     };
+//   });
+// };

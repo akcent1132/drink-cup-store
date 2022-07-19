@@ -3,7 +3,7 @@
 import styled from "@emotion/styled";
 import { Box, RangeSelector, Stack, TextInput, Text } from "grommet";
 import { css, withTheme } from "@emotion/react";
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { capitalize, range, throttle, zipWith } from "lodash";
 import { TagSelect } from "./TagSelect";
 import CloseIcon from "@mui/icons-material/Close";
@@ -18,6 +18,7 @@ import { useFilterEditorQuery } from "./FilterEditor.generated";
 import { FilterValueOption, FilterValueRange } from "../../graphql.generated";
 import { FilterParamSelector } from "./FilterParamSelector";
 import { RangeSlider } from "./RangeSlider";
+import { getFilterables } from "./getFilterables";
 
 const Root = withTheme(styled.div`
   background-color: ${(p) => p.theme.colors.bgSidePanel};
@@ -90,9 +91,13 @@ interface Props {
  * Primary UI component for user interaction
  */
 export const FilterEditor = ({ selectedFilterId }: Props) => {
-  const { data: { filter } = {} } = useFilterEditorQuery({
+  const { data: { filter, plantings } = {} } = useFilterEditorQuery({
     variables: { filterId: selectedFilterId },
   });
+  const filterables = useMemo(
+    () => getFilterables(plantings || []),
+    [plantings]
+  );
   // const handleApply = useCallback(
   //   () => {}, //filter && applyDraftFilter(filter.id),
   //   [filter?.id]
@@ -119,7 +124,11 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
         </IconButton>
       </Header>
       <Body>
-        <FilterParamSelector filterId={filter.id} params={params} />
+        <FilterParamSelector
+          filterId={filter.id}
+          filterables={filterables}
+          params={params}
+        />
         <Label label="Name">
           <TextInput
             placeholder="Filter name"
@@ -127,8 +136,11 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
             onChange={updateName}
           />
         </Label>
-        {params.map((param) =>
-          !param.active ? null : (
+        {params.map((param) => {
+          const filterable = filterables.find(
+            (f) => f.key === param.key && f.dataSource === param.dataSource
+          );
+          return (
             <Label label={capitalize(param.key)} key={param.key}>
               {param.value.__typename === "FilterValueOption" ? (
                 <TagSelect
@@ -139,22 +151,27 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
                     })
                   }
                   value={param.value.options}
-                  options={zipWith(
-                    param.value.allOptions,
-                    param.value.occurences,
-                    (value, occurences) => ({
-                      value,
-                      label: `${value} (${occurences})`,
-                    })
-                  )}
+                  options={
+                    (filterable?.type === "option" &&
+                      filterable.options.map(({ value, occurences }) => ({
+                        value,
+                        label: `${value} (${occurences})`,
+                      }))) ||
+                    []
+                  }
                   allowSearch
                 />
               ) : (
                 <RangeSlider
-                  min={Math.min(...param.value.values) || 0}
-                  max={Math.max(...param.value.values) || 0}
                   value={[param.value.min, param.value.max]}
-                  allValues={param.value.values}
+                  allValues={
+                    (filterable?.type === "numeric" &&
+                      filterable.values.length > 1 &&
+                      filterable.values) || [
+                      param.value.min / 2,
+                      param.value.max * 2,
+                    ]
+                  }
                   onChange={throttle(
                     ([min, max]) =>
                       editFilterParam(filter.id, param.key, {
@@ -167,8 +184,8 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
                 />
               )}
             </Label>
-          )
-        )}
+          );
+        })}
       </Body>
     </Root>
   );

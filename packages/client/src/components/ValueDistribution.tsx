@@ -184,7 +184,7 @@ export const ValueDistribution = ({
   );
   // console.log(valueNames, allData)
   const {
-    data: { groupedValues = [], highlightedFilter, highlightedPlanting } = {},
+    data: { groupedValues = [], highlightedFilterId, highlightedPlantingId } = {},
   } = queryResult;
   // const _higlightedPlantingId = useReactiveVar(highlightedPlantingId)
   // const highlightedPlanting = useMemo(() => _higlightedPlantingId && {
@@ -301,16 +301,16 @@ export const ValueDistribution = ({
     for (const valueSet of sortBy(
       Object.values(groupBy(allData, "filter.id")),
       (valueSet) =>
-        highlightedFilter && highlightedFilter.id === valueSet[0].filter?.id
+        highlightedFilterId === valueSet[0].filter?.id
     )) {
       const filter = valueSet[0].filter;
       ctx.beginPath();
       const color = tinycolor(
         filter?.color || theme.valueDistribution.averageColor
       );
-      ctx.fillStyle = !highlightedFilter
+      ctx.fillStyle = !highlightedFilterId
         ? color.toString()
-        : highlightedFilter && highlightedFilter.id === filter?.id
+        : highlightedFilterId === filter?.id
         ? color.saturate(2).toString()
         : color
             .desaturate(12)
@@ -376,11 +376,11 @@ export const ValueDistribution = ({
     }
 
     // Draw hover
-    if (highlightedPlanting) {
+    if (highlightedPlantingId) {
       ctx.beginPath();
       ctx.fillStyle = theme.color("white");
       allData.map((data) => {
-        if (data.plantingId === highlightedPlanting.id) {
+        if (data.plantingId === highlightedPlantingId) {
           ctx.rect(
             scale(data.value) - theme.valueDistribution.tickWidth / 2,
             theme.valueDistribution.varianceLineHeight,
@@ -397,8 +397,8 @@ export const ValueDistribution = ({
     canvas.height,
     scale,
     allMean,
-    highlightedPlanting?.id,
-    highlightedFilter?.id,
+    highlightedPlantingId,
+    highlightedFilterId,
   ]);
 
   const leftBranches = props.nesting - props.hideBranches;

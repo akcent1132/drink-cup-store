@@ -1,5 +1,11 @@
-import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
-import { get, remove } from "lodash";
+import {
+  ApolloClient,
+  InMemoryCache,
+  gql,
+  ApolloLink,
+  HttpLink,
+} from "@apollo/client";
+import { onError } from "@apollo/client/link/error";
 import {
   eventDetailsMap,
   farmProfiles,
@@ -9,7 +15,6 @@ import {
   isDemo,
   loadEventDetails,
   openEventCardIds,
-  plantings,
   producers,
   selectedCropType,
   selectedFilterId,
@@ -20,18 +25,13 @@ import {
   FilterParam,
   FilterParamDataSource,
   Planting,
-  Producer,
   StrictTypedTypePolicies,
 } from "../graphql.generated";
 import seedrandom from "seedrandom";
 import { authState } from "./auth";
-import "./server"
+import "./server";
 
 const typeDefs = loader("./local.graphql");
-
-const getPlantings = (cropType: string) => {
-  return plantings().filter((planting) => planting.cropType === cropType);
-};
 
 const plantingsOfFilterCache: {
   [key: string]: { hash: string; plantings: Planting[] };
@@ -48,83 +48,84 @@ const getPlantingsOfFilter = (
   cropType: string,
   params: FilterParam[]
 ) => {
-  let filteredPlantings = getPlantings(cropType);
+  return [];
+  // let filteredPlantings = getPlantings(cropType);
 
-  let farms = farmProfiles();
+  // let farms = farmProfiles();
 
-  const hash = `${cropType}-${JSON.stringify(params)}-${
-    filteredPlantings.length
-  }-${id}`;
+  // const hash = `${cropType}-${JSON.stringify(params)}-${
+  //   filteredPlantings.length
+  // }-${id}`;
 
-  if (plantingsOfFilterCache[id]?.hash !== hash) {
-    const activeParams = params.filter((p) => p.active);
-    console.log({ activeParams });
-    if (activeParams.length === 0) {
-      filteredPlantings = [];
-    } else {
-      for (const param of activeParams) {
-        const { value } = param;
-        if (value.__typename === "FilterValueRange") {
-          filteredPlantings = filteredPlantings.filter((p) => {
-            const values =
-              param.dataSource === FilterParamDataSource.Values
-                ? p.values.filter((v) => v.name === param.key)
-                : [get(farms, [p.producer.id, param.key])].flat();
-            return values.every(
-              (v) => v.value >= value.min && v.value <= value.max
-            );
-          });
-        } else if (value.__typename === "FilterValueOption") {
-          filteredPlantings = filteredPlantings.filter((p) => {
-            const optionsInPlanting = [
-              get(farms, [p.producer.id, param.key]),
-            ].flat();
-            if (optionsInPlanting.filter(Boolean).length) {
-              console.log(p.producer.id, param.key, { optionsInPlanting });
-            }
-            return optionsInPlanting.some((o) => value.options.includes(o));
-          });
-        }
-      }
-    }
+  // if (plantingsOfFilterCache[id]?.hash !== hash) {
+  //   const activeParams = params.filter((p) => p.active);
+  //   console.log({ activeParams });
+  //   if (activeParams.length === 0) {
+  //     filteredPlantings = [];
+  //   } else {
+  //     for (const param of activeParams) {
+  //       const { value } = param;
+  //       if (value.__typename === "FilterValueRange") {
+  //         filteredPlantings = filteredPlantings.filter((p) => {
+  //           const values =
+  //             param.dataSource === FilterParamDataSource.Values
+  //               ? p.values.filter((v) => v.name === param.key)
+  //               : [get(farms, [p.producer.id, param.key])].flat();
+  //           return values.every(
+  //             (v) => v.value >= value.min && v.value <= value.max
+  //           );
+  //         });
+  //       } else if (value.__typename === "FilterValueOption") {
+  //         filteredPlantings = filteredPlantings.filter((p) => {
+  //           const optionsInPlanting = [
+  //             get(farms, [p.producer.id, param.key]),
+  //           ].flat();
+  //           if (optionsInPlanting.filter(Boolean).length) {
+  //             console.log(p.producer.id, param.key, { optionsInPlanting });
+  //           }
+  //           return optionsInPlanting.some((o) => value.options.includes(o));
+  //         });
+  //       }
+  //     }
+  //   }
 
-    plantingsOfFilterCache[id] = {
-      hash,
-      plantings: filteredPlantings,
-    };
-  }
+  //   plantingsOfFilterCache[id] = {
+  //     hash,
+  //     plantings: filteredPlantings,
+  //   };
+  // }
 
-  return plantingsOfFilterCache[id].plantings;
+  // return plantingsOfFilterCache[id].plantings;
 };
 
-const getGroupedValues = (cropType: string) => {
-  const unmatchedPlantings = getPlantings(cropType);
-  const cropFilters = filters()
-    .filter((f) => f.cropType === cropType)
-    .map((filter) => {
-      const matchingPlantingIds = getPlantingsOfFilter(
-        filter.id,
-        filter.cropType,
-        filter.params
-      ).map((p) => p.id);
-      const matchingPlantings = remove(unmatchedPlantings, (p) =>
-        matchingPlantingIds.includes(p.id)
-      );
-      return {
-        filter,
-        plantings: matchingPlantings,
-      };
-    });
-  const groupedValues = [
-    { filter: null, plantings: unmatchedPlantings },
-    ...cropFilters,
-  ].map(({ filter, plantings }) => ({
-    id: filter?.id || "unmatched_values",
-    filter,
-    values: plantings.map((planting) => planting.values).flat(),
-  }));
-  return groupedValues;
-};
+// const getGroupedValues = (cropType: string) => {
+//   const unmatchedPlantings = getPlantings(cropType);
+//   const cropFilters = filters()
+//     .filter((f) => f.cropType === cropType)
+//     .map((filter) => {
+//       const matchingPlantingIds = getPlantingsOfFilter(
+//         filter.id,
+//         filter.cropType,
+//         filter.params
+//       ).map((p) => p.id);
+//       const matchingPlantings = remove(unmatchedPlantings, (p) =>
+//         matchingPlantingIds.includes(p.id)
+//       );
+//       return {
+//         filter,
+//         plantings: matchingPlantings,
+//       };
+//     });
+//   const groupedValues = [
+//     { filter: null, plantings: unmatchedPlantings },
+//     ...cropFilters,
+//   ].map(({ filter, plantings }) => ({
+//     id: filter?.id || "unmatched_values",
+//     filter,
+//     values: plantings.map((planting) => planting.values).flat(),
+//   }));
+//   return groupedValues;
+// };
 
 const typePolicies: StrictTypedTypePolicies = {
   Query: {
@@ -136,6 +137,7 @@ const typePolicies: StrictTypedTypePolicies = {
       },
       selectedCropType: {
         read(): string {
+          console.log("read selectedCropType", selectedCropType());
           return selectedCropType();
         },
       },
@@ -158,31 +160,30 @@ const typePolicies: StrictTypedTypePolicies = {
       //     return plantings().find((planting) => planting.id === id) || null;
       //   },
       // },
-      highlightedPlanting: {
+      highlightedPlantingId: {
         read() {
-          const id = highlightedPlantingId();
-          return plantings().find((planting) => planting.id === id) || null;
+          return highlightedPlantingId();
         },
       },
-      highlightedFilter: {
+      highlightedFilterId: {
         read() {
-          const id = highlightedFilterId();
-          return filters().find((filter) => filter.id === id) || null;
+          return highlightedFilterId();
         },
       },
-      openEventCards: {
+      openEventCardIds: {
         read(_, options) {
-          // @ts-ignore
-          const cropType: string = options.args.cropType;
-          if (!cropType) {
-            return null;
-          }
-          const cropPlantings = plantings().filter(
-            (planting) => planting.cropType === cropType
-          );
-          return openEventCardIds()
-            .map((id) => cropPlantings.find((p) => p.id === id))
-            .filter(Boolean);
+          return openEventCardIds();
+          // // @ts-ignore
+          // const cropType: string = options.args.cropType;
+          // if (!cropType) {
+          //   return null;
+          // }
+          // const cropPlantings = plantings().filter(
+          //   (planting) => planting.cropType === cropType
+          // );
+          // return openEventCardIds()
+          //   .map((id) => cropPlantings.find((p) => p.id === id))
+          //   .filter(Boolean);
         },
       },
       filters: {
@@ -200,30 +201,29 @@ const typePolicies: StrictTypedTypePolicies = {
         },
       },
       groupedValues(_, options) {
-        // @ts-ignore
-        const cropType: string = options.args.cropType;
-        const hash =
-          filters()
-            .filter((f) => f.cropType === cropType)
-            .map((filter) => JSON.stringify(filter.params))
-            .join() + plantings().length;
+        return [];
+        // // @ts-ignore
+        // const cropType: string = options.args.cropType;
+        // const hash =
+        //   filters()
+        //     .filter((f) => f.cropType === cropType)
+        //     .map((filter) => JSON.stringify(filter.params))
+        //     .join() + plantings().length;
 
-        const [cacheHash, cacheGroupedValues] = options.storage[cropType] || [];
-        if (cacheHash === hash) {
-          return cacheGroupedValues;
-        } else {
-          const groupedValues = getGroupedValues(cropType);
-          options.storage[cropType] = [hash, groupedValues];
-          return groupedValues;
-        }
+        // const [cacheHash, cacheGroupedValues] = options.storage[cropType] || [];
+        // if (cacheHash === hash) {
+        //   return cacheGroupedValues;
+        // } else {
+        //   const groupedValues = getGroupedValues(cropType);
+        //   options.storage[cropType] = [hash, groupedValues];
+        //   return groupedValues;
+        // }
       },
-      selectedFilter() {
-        const id = selectedFilterId();
-        return filters().find((f) => f.id === id) || null;
+      selectedFilterId() {
+        return selectedFilterId();
       },
-      selectedProducer() {
-        const id = selectedProducerId();
-        return producers().find((p) => p.id === id) || null;
+      selectedProducerId() {
+        return selectedProducerId();
       },
     },
   },
@@ -255,6 +255,7 @@ const typePolicies: StrictTypedTypePolicies = {
               filter.id,
               filter.cropType,
               filter.params
+              //@ts-ignore
             ).some((planting) => planting.id === id)
           );
         },
@@ -284,16 +285,6 @@ const typePolicies: StrictTypedTypePolicies = {
       },
     },
   },
-  Producer: {
-    fields: {
-      plantings: {
-        read(_, { readField }) {
-          const producerId = readField<string>("id") || "";
-          return plantings().filter((p) => p.producer.id === producerId);
-        },
-      },
-    },
-  },
 };
 
 const FAKE_PLANTING_DETAILS = [
@@ -315,11 +306,42 @@ const FAKE_PLANTING_DETAILS = [
 }));
 
 const cache = new InMemoryCache({
-  // typePolicies,
+  typePolicies,
+});
+
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors)
+    graphQLErrors.forEach(({ message, locations, path }) =>
+      console.error(
+        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+      )
+    );
+  if (networkError) console.log(`[Network error]: ${networkError}`);
 });
 export const client = new ApolloClient({
   cache,
+  link: ApolloLink.from([
+    onError(({ graphQLErrors, networkError }) => {
+      if (networkError) {
+        console.warn(`[Network error]: ${networkError}`);
+      }
+
+      if (graphQLErrors) {
+        graphQLErrors.forEach(({ message, locations, path }) =>
+          console.error(
+            `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+          )
+        );
+      }
+    }),
+    new HttpLink({ uri: "/graphql" }),
+  ]),
   connectToDevTools: true,
-  uri: "/graphql",
-  // typeDefs,
+  // uri: "/graphql",
+  typeDefs,
 });
+
+// @ts-ignore DEBUG
+global.client = client;
+// @ts-ignore DEBUG
+global.gql = gql;

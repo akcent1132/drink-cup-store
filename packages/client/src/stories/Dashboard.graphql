@@ -7,16 +7,15 @@ query RandomContent($cropType: String! = "") {
   }
 }
 
-query Dashboard {
-  selectedFilter @client {
-    id
-  }
-  selectedProducer @client {
+query Dashboard($producerId: String) {
+  selectedFilterId @client
+  selectedProducerId @client @export(as: "producerId") 
+  selectedProducer: producer(id: $producerId) {
     id
     code
     plantings {
       id
-      isHighlighted
+      isHighlighted @client
       producer {
         id
         code
@@ -40,7 +39,7 @@ query Dashboard {
           valueList
         }
       }
-      matchingFilters {
+      matchingFilters @client {
         id
         color
       }

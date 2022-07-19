@@ -8,7 +8,7 @@ export type NestedRowsQueryVariables = Types.Exact<{
 }>;
 
 
-export type NestedRowsQuery = { __typename?: 'Query', selectedCropType: string, groupedValues: Array<{ __typename?: 'GroupedValues', id: string, filter?: { __typename?: 'Filter', id: string, color: string } | null, values: Array<{ __typename?: 'PlantingValue', name: string, value: number, plantingId: string, modusId?: string | null }> }>, highlightedPlanting?: { __typename?: 'Planting', id: string } | null, highlightedFilter?: { __typename?: 'Filter', id: string } | null };
+export type NestedRowsQuery = { __typename?: 'Query', selectedCropType: string, highlightedPlantingId?: string | null, highlightedFilterId?: string | null, groupedValues: Array<{ __typename?: 'GroupedValues', id: string, filter?: { __typename?: 'Filter', id: string, color: string } | null, values: Array<{ __typename?: 'PlantingValue', name: string, value: number, plantingId: string, modusId?: string | null }> }> };
 
 
 export const NestedRowsDocument = gql`
@@ -27,12 +27,8 @@ export const NestedRowsDocument = gql`
       modusId
     }
   }
-  highlightedPlanting @client {
-    id
-  }
-  highlightedFilter @client {
-    id
-  }
+  highlightedPlantingId @client
+  highlightedFilterId @client
 }
     `;
 

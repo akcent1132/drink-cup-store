@@ -10,18 +10,18 @@ import { capitalize, find, groupBy, map, sortBy, startCase } from "lodash";
 import Badge from "@mui/material/Badge";
 
 export const CropSelector = () => {
-  const { data } = useCropSelectorQuery();
-
+  const { data: { allPlantings, selectedCropType: value } = {} } = useCropSelectorQuery();
+  console.log("CROP SELECTOR", value)
   const crops = useMemo(
     () =>
       sortBy(
-        map(groupBy(data?.allPlantings, "cropType"), (plantings, cropType) => ({
+        map(groupBy(allPlantings, "cropType"), (plantings, cropType) => ({
           name: cropType,
           plantingCount: plantings.length,
         })).filter(d => d.plantingCount >= 30),
         "name"
       ),
-    [data]
+    [allPlantings]
   );
   const options = useMemo(
     () =>
@@ -38,15 +38,16 @@ export const CropSelector = () => {
         //   </Box>
         // )
       })),
-    []
+    [crops]
   );
+
   return (
     <Select
       css={css`
         height: 0px;
       `}
       placeholder="Select a crop"
-      value={data?.selectedCropType}
+      value={value}
       valueKey={{ key: "value", reduce: true }}
       labelKey="label"
       options={options}

@@ -1,7 +1,7 @@
 query EventsCard($plantingId: String!) {
   planting(id: $plantingId) {
     id
-    isHighlighted
+    isHighlighted @client
     producer {
       id
       code
@@ -25,7 +25,7 @@ query EventsCard($plantingId: String!) {
         valueList
       }
     }
-    matchingFilters {
+    matchingFilters @client {
       id
       color
     }

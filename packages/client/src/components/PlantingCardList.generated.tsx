@@ -8,15 +8,13 @@ export type PlantingCardListQueryVariables = Types.Exact<{
 }>;
 
 
-export type PlantingCardListQuery = { __typename?: 'Query', selectedCropType: string, openEventCards: Array<{ __typename?: 'Planting', id: string }> };
+export type PlantingCardListQuery = { __typename?: 'Query', selectedCropType: string, openEventCardIds: Array<string> };
 
 
 export const PlantingCardListDocument = gql`
     query PlantingCardList($cropType: String! = "") {
   selectedCropType @client @export(as: "cropType")
-  openEventCards(cropType: $cropType) @client {
-    id
-  }
+  openEventCardIds(cropType: $cropType) @client
 }
     `;
 

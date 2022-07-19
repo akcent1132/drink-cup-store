@@ -34,9 +34,9 @@ const hiddenStyles = {
 };
 
 export const PlantingCardList = () => {
-  const { data: { openEventCards } = {} } = usePlantingCardListQuery();
+  const { data: { openEventCardIds } = {} } = usePlantingCardListQuery();
 
-  if (!openEventCards || openEventCards.length === 0) {
+  if (!openEventCardIds || openEventCardIds.length === 0) {
     return null;
   }
 
@@ -44,9 +44,9 @@ export const PlantingCardList = () => {
     <Events>
       <ClassNames>
         {({ css }) =>
-          !openEventCards ? null : (
+          !openEventCardIds ? null : (
             <TransitionGroup>
-              {openEventCards.map(({ id: plantingId }) => (
+              {openEventCardIds.map((plantingId) => (
                 <CSSTransition
                   key={plantingId}
                   classNames={{

@@ -102,47 +102,6 @@ const createPlantings = (
 };
 
 declare module externalData {
-  export interface Planting {
-    _id: string;
-    drupal_internal__id: number;
-    flag: string[];
-    values: Value[];
-    params: Params;
-    title: string;
-    events: Event[];
-    cropType: string;
-    producer: Producer;
-  }
-
-  export interface Value {
-    name: string;
-    modus_test_id?: string;
-    value: any;
-  }
-
-  export interface Params {
-    soil_group?: string;
-    soil_suborder?: string;
-    soil_order?: string;
-    clay_percentage?: number;
-    sand_percentage?: number;
-    soil_texture?: number;
-    zone?: string;
-    hardiness_zone?: string;
-    temperature?: number;
-    precipitation?: number;
-  }
-
-  export interface Event {
-    id: number;
-    type?: string;
-    date: string;
-  }
-
-  export interface Producer {
-    id: string;
-  }
-
   export interface FarmProfile {
     farmDomain: string;
     title: string;
@@ -242,88 +201,6 @@ const cachedLoad = async <T,>(
   } catch (e) {
     console.error(`Failed to update vars from fresh data (${lsKey})\n${e}`);
   }
-};
-
-const loadPlantings = async () => {
-  const updatePlantings = (externalPlantings: externalData.Planting[]) => {
-    const clientPlantings: Planting[] = externalPlantings
-      .filter((p) => p.cropType !== null)
-      .map((planting) => {
-        const zone = randomZone();
-        let texture = [Math.random(), Math.random()];
-        texture = texture.map((t) => Math.round((t / sum(texture)) * 100));
-        return {
-          ...planting,
-          __typename: "Planting",
-          isHighlighted: false,
-          id: planting._id,
-          values: planting.values
-            .filter((v) => isNumber(v.value))
-            .map((v) => {
-              return {
-                ...v,
-                modusId: v.modus_test_id || null,
-                __typename: "PlantingValue",
-                plantingId: planting._id,
-              };
-            }),
-          params: {
-            __typename: "PlantingParams",
-            zone: zone.name,
-            temperature: zone.temp.toString() + "°",
-            precipitation: `${32 + Math.floor(32 * Math.random())}″`,
-            texture: `Sand: ${texture[0]}% | Clay ${texture[1]}%`,
-          },
-          producer: {
-            ...planting.producer,
-            __typename: "Producer",
-            code: seedrandom(planting.producer.id)().toString(32).slice(-7),
-            plantings: [],
-          },
-          events: planting.events.map((e) => ({
-            ...e,
-            id: e.id.toString(),
-            type: fixEventType(e.type || ""),
-            detailsKey: `${planting.producer.id.split(".")[0]}/${
-              planting.drupal_internal__id
-            }/${e.id.toString()}`,
-            details: [],
-            __typename: "PlantingEvent",
-          })),
-          matchingFilters: [],
-        };
-      });
-    plantings(clientPlantings);
-    producers(
-      uniqBy(
-        clientPlantings.map((p) => p.producer),
-        "id"
-      )
-    );
-  };
-
-  const updateFarms = (data: externalData.FarmProfile[]) => {
-    farmProfiles(keyBy(data, "farmDomain"));
-  };
-
-  await Promise.all([
-    cachedLoad(
-      "https://app.surveystack.io/static/coffeeshop/plantings",
-      updatePlantings,
-      "data.plantings"
-    ),
-    cachedLoad(
-      "https://app.surveystack.io/static/coffeeshop/farm_profiles",
-      updateFarms,
-      "data.farm_profiles"
-    ),
-  ]);
-
-  console.log(
-    `finised loading data. Got ${plantings().length} plantings and ${
-      farmProfiles().length
-    } farmProfiles`
-  );
 };
 
 export const farmProfiles = makeVar<Dictionary<externalData.FarmProfile>>({});
@@ -497,101 +374,101 @@ const createFilter = (
   cropType: string
 ): Filter => {
   const id = (++filterId).toString();
-  const p = plantings().filter((p) => p.cropType === cropType);
-  const values = p
-    .map((p) => p.values)
-    .flat()
-    .reduce((acc, value) => {
-      if (!(value.name in acc)) {
-        acc[value.name] = {
-          values: [],
-          modusId: value.modusId,
-        };
-      }
-      acc[value.name].values.push(value.value);
-      return acc;
-    }, {} as { [key: string]: { values: number[]; modusId: Maybe<string> } });
+  // const p = [].filter((p) => p.cropType === cropType);
+  // const values = p
+  //   .map((p) => p.values)
+  //   .flat()
+  //   .reduce((acc, value) => {
+  //     if (!(value.name in acc)) {
+  //       acc[value.name] = {
+  //         values: [],
+  //         modusId: value.modusId,
+  //       };
+  //     }
+  //     acc[value.name].values.push(value.value);
+  //     return acc;
+  //   }, {} as { [key: string]: { values: number[]; modusId: Maybe<string> } });
 
-  const valueParams: FilterParam[] = Object.keys(values).map((key) => ({
-    __typename: "FilterParam" as "FilterParam",
-    key,
-    modusId: values[key].modusId,
-    active: false,
-    value: {
-      __typename: "FilterValueRange" as "FilterValueRange",
-      values: uniq(values[key].values).sort(),
-      min: Math.min(...values[key].values),
-      max: Math.max(...values[key].values),
-    },
-    dataSource: FilterParamDataSource.Values,
-  }));
+  // const valueParams: FilterParam[] = Object.keys(values).map((key) => ({
+  //   __typename: "FilterParam" as "FilterParam",
+  //   key,
+  //   modusId: values[key].modusId,
+  //   active: false,
+  //   value: {
+  //     __typename: "FilterValueRange" as "FilterValueRange",
+  //     values: uniq(values[key].values).sort(),
+  //     min: Math.min(...values[key].values),
+  //     max: Math.max(...values[key].values),
+  //   },
+  //   dataSource: FilterParamDataSource.Values,
+  // }));
 
-  const farmIdsInPlantings = uniq(plantings().map((p) => p.producer.id));
-  const relevantFarms = omitBy(
-    farmProfiles(),
-    (p) => !farmIdsInPlantings.includes(p.farmDomain)
-  );
+  // const farmIdsInPlantings = uniq(plantings().map((p) => p.producer.id));
+  // const relevantFarms = omitBy(
+  //   farmProfiles(),
+  //   (p) => !farmIdsInPlantings.includes(p.farmDomain)
+  // );
 
-  const farmParams: FilterParam[] = farmProfileFilterProperties
-    .map(({ key, type }) => {
-      if (type === "number") {
-        const values: number[] = uniq(
-          Object.values(relevantFarms)
-            .map((p) => get(p, key))
-            .flat()
-            .map(toNumber)
-            .filter(isNumber)
-        ).sort();
-        return {
-          key,
-          value: {
-            __typename: "FilterValueRange" as "FilterValueRange",
-            values,
-            min: Math.min(...values),
-            max: Math.max(...values),
-          },
-        };
-      }
-      if (type === "string") {
-        let allOptions: string[] = Object.values(relevantFarms)
-          .map((p) => get(p, key))
-          .flat()
-          .map(toString)
-          .filter((s) => isString(s) && s !== "");
-        const occurenceMap = countBy(allOptions)
-        allOptions = uniq(allOptions).sort()
-        const occurences = allOptions.map(option => occurenceMap[option])
-        return {
-          key,
-          value: {
-            __typename: "FilterValueOption" as "FilterValueOption",
-            allOptions,
-            occurences,
-            options: [],
-          },
-        };
-      }
-    })
-    .filter(Boolean)
-    .map((param) => {
-      return {
-        __typename: "FilterParam" as "FilterParam",
-        active: false,
-        modusId: null,
-        dataSource: FilterParamDataSource.FarmOnboarding,
-        ...param!,
-      };
-    });
+  // const farmParams: FilterParam[] = farmProfileFilterProperties
+  //   .map(({ key, type }) => {
+  //     if (type === "number") {
+  //       const values: number[] = uniq(
+  //         Object.values(relevantFarms)
+  //           .map((p) => get(p, key))
+  //           .flat()
+  //           .map(toNumber)
+  //           .filter(isNumber)
+  //       ).sort();
+  //       return {
+  //         key,
+  //         value: {
+  //           __typename: "FilterValueRange" as "FilterValueRange",
+  //           values,
+  //           min: Math.min(...values),
+  //           max: Math.max(...values),
+  //         },
+  //       };
+  //     }
+  //     if (type === "string") {
+  //       let allOptions: string[] = Object.values(relevantFarms)
+  //         .map((p) => get(p, key))
+  //         .flat()
+  //         .map(toString)
+  //         .filter((s) => isString(s) && s !== "");
+  //       const occurenceMap = countBy(allOptions)
+  //       allOptions = uniq(allOptions).sort()
+  //       const occurences = allOptions.map(option => occurenceMap[option])
+  //       return {
+  //         key,
+  //         value: {
+  //           __typename: "FilterValueOption" as "FilterValueOption",
+  //           allOptions,
+  //           occurences,
+  //           options: [],
+  //         },
+  //       };
+  //     }
+  //   })
+  //   .filter(Boolean)
+  //   .map((param) => {
+  //     return {
+  //       __typename: "FilterParam" as "FilterParam",
+  //       active: false,
+  //       modusId: null,
+  //       dataSource: FilterParamDataSource.FarmOnboarding,
+  //       ...param!,
+  //     };
+  //   });
 
-  // Remove empty filter params
-  const params = [...valueParams, ...farmParams].filter(
-    (p) =>
-      (p.value.__typename === "FilterValueOption" &&
-        p.value.allOptions.length > 0) ||
-      (p.value.__typename === "FilterValueRange" && p.value.values.length > 1)
-  );
+  // // Remove empty filter params
+  // const params = [...valueParams, ...farmParams].filter(
+  //   (p) =>
+  //     (p.value.__typename === "FilterValueOption" &&
+  //       p.value.allOptions.length > 0) ||
+  //     (p.value.__typename === "FilterValueRange" && p.value.values.length > 1)
+  // );
 
-  console.log({ params });
+  // console.log({ params });
   return {
     __typename: "Filter",
     id,
@@ -599,7 +476,7 @@ const createFilter = (
     cropType,
     color,
     plantings: [],
-    params,
+    params: [],
     isHighlighted: false,
   };
 };
@@ -624,24 +501,13 @@ export const producers = makeVar<Producer[]>(
 );
 export const selectedFilterId = makeVar<string | null>(null);
 export const selectedProducerId = makeVar<string | null>(null);
+// TODO save in ls
 export const selectedCropType = makeVar(isDemo() ? "corn" : "wheat");
 export const eventDetailsMap: {
   [key: string]: ReactiveVar<PlantingEventDetail[] | null>;
 } = {};
 
-export const plantings = makeVar<Planting[]>(
-  isDemo()
-    ? CROPS.map((cropType) =>
-        createPlantings(cropType.name, cropType.plantingCount)
-      ).flat()
-    : []
-);
-export const openEventCardIds = makeVar<string[]>(
-  plantings()
-    .filter((p) => p.cropType === selectedCropType())
-    .map((p) => p.id)
-    .slice(0, 2)
-);
+export const openEventCardIds = makeVar<string[]>([]);
 export const openEventCard = (plantingId: string) => {
   if (!openEventCardIds().includes(plantingId)) {
     openEventCardIds([plantingId, ...openEventCardIds()]);
@@ -672,9 +538,6 @@ export const unhighlightFilter = (filterId: string) => {
 };
 
 console.log("is demo:", isDemo());
-if (!isDemo()) {
-  loadPlantings();
-}
 
 export const addFilter = (color: string, name: string, cropType: string) => {
   const filter = createFilter(color, name, cropType);
@@ -745,17 +608,25 @@ export const setFilterParamActive = (
     )
   );
 
-export const setActiveFilterParams = (filterId: string, keys: string[]) => {
-  console.log("setActiveParams", keys);
+export const addFilterParam = (filterId: string, param: FilterParam) => {
   filters(
     filters().map((f) =>
       f.id === filterId
         ? {
             ...f,
-            params: f.params.map((p) => ({
-              ...p,
-              active: keys.includes(p.key),
-            })),
+            params: [...f.params.filter((p) => p.key !== param.key), param],
+          }
+        : f
+    )
+  );
+};
+export const removeFilterParam = (filterId: string, key: string) => {
+  filters(
+    filters().map((f) =>
+      f.id === filterId
+        ? {
+            ...f,
+            params: f.params.filter((p) => p.key !== key),
           }
         : f
     )

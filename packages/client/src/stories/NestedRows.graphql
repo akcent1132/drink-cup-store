@@ -13,10 +13,6 @@ query NestedRows($cropType: String! = "") {
       modusId
     }
   }
-  highlightedPlanting @client {
-    id
-  }
-  highlightedFilter @client {
-    id
-  }
+  highlightedPlantingId @client
+  highlightedFilterId @client 
 }

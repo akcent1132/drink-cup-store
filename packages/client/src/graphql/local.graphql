@@ -1,30 +1,25 @@
 extend type Query {
-  plantings(cropType: String!): [Planting!]!
-  allPlantings: [Planting!]!
-  planting(id: String!): Planting
-  highlightedPlanting: Planting
-  highlightedFilter: Filter
+  highlightedPlantingId: String
+  highlightedFilterId: String
   groupedValues(cropType: String!): [GroupedValues!]!
   filters(cropType: String!): [Filter!]!
   filter(id: String!): Filter
   selectedCropType: String!
   test: Boolean!
-  openEventCards(cropType: String!): [Planting!]!
-  selectedFilter: Filter
-  selectedProducer: Producer
+  openEventCardIds(cropType: String!): [String!]!
+  selectedFilterId: String
+  selectedProducerId: String
   auth: AuthState,
+  notgood: String
 }
 extend type Planting {
   matchingFilters: [Filter!]!
   isHighlighted: Boolean!
 }
 type FilterValueOption {
-  allOptions: [String!]!
-  occurences: [Int!]!
   options: [String!]!
 }
 type FilterValueRange {
-  values: [Float!]!,
   min: Float!,
   max: Float!,
 }
@@ -36,7 +31,6 @@ enum FilterParamDataSource {
 }
 
 type FilterParam {
-  modusId: String
   key: String!
   value: FilterValue!
   active: Boolean!

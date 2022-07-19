@@ -18,19 +18,17 @@ const Tick = styled.div`
 `;
 
 export const RangeSlider = ({
-  min,
-  max,
   value,
   allValues,
   onChange,
 }: {
-  min: number;
-  max: number;
   value: number[];
   allValues: number[];
   onChange: (bounds: number[]) => void;
 }) => {
   const intMode = useMemo(() => allValues.every(Number.isInteger), [allValues]);
+  const min = useMemo(() => Math.min(...allValues), [allValues]);
+  const max = useMemo(() => Math.max(...allValues), [allValues]);
   const formatter = useMemo(
     () => (intMode ? format("") : format(".1f")),
     [intMode]

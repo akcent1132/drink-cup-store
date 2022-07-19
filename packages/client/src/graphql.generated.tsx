@@ -42,7 +42,6 @@ export type FilterParam = {
   active: Scalars['Boolean'];
   dataSource: Maybe<FilterParamDataSource>;
   key: Scalars['String'];
-  modusId: Maybe<Scalars['String']>;
   value: FilterValue;
 };
 
@@ -55,8 +54,6 @@ export type FilterValue = FilterValueOption | FilterValueRange;
 
 export type FilterValueOption = {
   __typename: 'FilterValueOption';
-  allOptions: Array<Scalars['String']>;
-  occurences: Array<Scalars['Int']>;
   options: Array<Scalars['String']>;
 };
 
@@ -64,7 +61,6 @@ export type FilterValueRange = {
   __typename: 'FilterValueRange';
   max: Scalars['Float'];
   min: Scalars['Float'];
-  values: Array<Scalars['Float']>;
 };
 
 export type GroupedValues = {
@@ -134,14 +130,16 @@ export type Query = {
   filter: Maybe<Filter>;
   filters: Array<Filter>;
   groupedValues: Array<GroupedValues>;
-  highlightedFilter: Maybe<Filter>;
-  highlightedPlanting: Maybe<Planting>;
-  openEventCards: Array<Planting>;
+  highlightedFilterId: Maybe<Scalars['String']>;
+  highlightedPlantingId: Maybe<Scalars['String']>;
+  notgood: Maybe<Scalars['String']>;
+  openEventCardIds: Array<Scalars['String']>;
   planting: Maybe<Planting>;
   plantings: Array<Planting>;
+  producer: Maybe<Producer>;
   selectedCropType: Scalars['String'];
-  selectedFilter: Maybe<Filter>;
-  selectedProducer: Maybe<Producer>;
+  selectedFilterId: Maybe<Scalars['String']>;
+  selectedProducerId: Maybe<Scalars['String']>;
   test: Scalars['Boolean'];
 };
 
@@ -161,18 +159,23 @@ export type QueryGroupedValuesArgs = {
 };
 
 
-export type QueryOpenEventCardsArgs = {
+export type QueryOpenEventCardIdsArgs = {
   cropType: Scalars['String'];
 };
 
 
 export type QueryPlantingArgs = {
-  id: Scalars['String'];
+  id: InputMaybe<Scalars['String']>;
 };
 
 
 export type QueryPlantingsArgs = {
   cropType: Scalars['String'];
+};
+
+
+export type QueryProducerArgs = {
+  id: InputMaybe<Scalars['String']>;
 };
 
 export type AuthStateKeySpecifier = ('isLoggedIn' | 'user' | AuthStateKeySpecifier)[];
@@ -196,25 +199,21 @@ export type FilterFieldPolicy = {
 	params?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type FilterParamKeySpecifier = ('active' | 'dataSource' | 'key' | 'modusId' | 'value' | FilterParamKeySpecifier)[];
+export type FilterParamKeySpecifier = ('active' | 'dataSource' | 'key' | 'value' | FilterParamKeySpecifier)[];
 export type FilterParamFieldPolicy = {
 	active?: FieldPolicy<any> | FieldReadFunction<any>,
 	dataSource?: FieldPolicy<any> | FieldReadFunction<any>,
 	key?: FieldPolicy<any> | FieldReadFunction<any>,
-	modusId?: FieldPolicy<any> | FieldReadFunction<any>,
 	value?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type FilterValueOptionKeySpecifier = ('allOptions' | 'occurences' | 'options' | FilterValueOptionKeySpecifier)[];
+export type FilterValueOptionKeySpecifier = ('options' | FilterValueOptionKeySpecifier)[];
 export type FilterValueOptionFieldPolicy = {
-	allOptions?: FieldPolicy<any> | FieldReadFunction<any>,
-	occurences?: FieldPolicy<any> | FieldReadFunction<any>,
 	options?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type FilterValueRangeKeySpecifier = ('max' | 'min' | 'values' | FilterValueRangeKeySpecifier)[];
+export type FilterValueRangeKeySpecifier = ('max' | 'min' | FilterValueRangeKeySpecifier)[];
 export type FilterValueRangeFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
-	min?: FieldPolicy<any> | FieldReadFunction<any>,
-	values?: FieldPolicy<any> | FieldReadFunction<any>
+	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type GroupedValuesKeySpecifier = ('filter' | 'id' | 'values' | GroupedValuesKeySpecifier)[];
 export type GroupedValuesFieldPolicy = {
@@ -269,21 +268,23 @@ export type ProducerFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('allPlantings' | 'auth' | 'filter' | 'filters' | 'groupedValues' | 'highlightedFilter' | 'highlightedPlanting' | 'openEventCards' | 'planting' | 'plantings' | 'selectedCropType' | 'selectedFilter' | 'selectedProducer' | 'test' | QueryKeySpecifier)[];
+export type QueryKeySpecifier = ('allPlantings' | 'auth' | 'filter' | 'filters' | 'groupedValues' | 'highlightedFilterId' | 'highlightedPlantingId' | 'notgood' | 'openEventCardIds' | 'planting' | 'plantings' | 'producer' | 'selectedCropType' | 'selectedFilterId' | 'selectedProducerId' | 'test' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
 	allPlantings?: FieldPolicy<any> | FieldReadFunction<any>,
 	auth?: FieldPolicy<any> | FieldReadFunction<any>,
 	filter?: FieldPolicy<any> | FieldReadFunction<any>,
 	filters?: FieldPolicy<any> | FieldReadFunction<any>,
 	groupedValues?: FieldPolicy<any> | FieldReadFunction<any>,
-	highlightedFilter?: FieldPolicy<any> | FieldReadFunction<any>,
-	highlightedPlanting?: FieldPolicy<any> | FieldReadFunction<any>,
-	openEventCards?: FieldPolicy<any> | FieldReadFunction<any>,
+	highlightedFilterId?: FieldPolicy<any> | FieldReadFunction<any>,
+	highlightedPlantingId?: FieldPolicy<any> | FieldReadFunction<any>,
+	notgood?: FieldPolicy<any> | FieldReadFunction<any>,
+	openEventCardIds?: FieldPolicy<any> | FieldReadFunction<any>,
 	planting?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>,
+	producer?: FieldPolicy<any> | FieldReadFunction<any>,
 	selectedCropType?: FieldPolicy<any> | FieldReadFunction<any>,
-	selectedFilter?: FieldPolicy<any> | FieldReadFunction<any>,
-	selectedProducer?: FieldPolicy<any> | FieldReadFunction<any>,
+	selectedFilterId?: FieldPolicy<any> | FieldReadFunction<any>,
+	selectedProducerId?: FieldPolicy<any> | FieldReadFunction<any>,
 	test?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type StrictTypedTypePolicies = {

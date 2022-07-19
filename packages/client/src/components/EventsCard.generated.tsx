@@ -15,7 +15,7 @@ export const EventsCardDocument = gql`
     query EventsCard($plantingId: String!) {
   planting(id: $plantingId) {
     id
-    isHighlighted
+    isHighlighted @client
     producer {
       id
       code
@@ -39,7 +39,7 @@ export const EventsCardDocument = gql`
         valueList
       }
     }
-    matchingFilters {
+    matchingFilters @client {
       id
       color
     }

@@ -4,6 +4,7 @@ import { makeExecutableSchema } from "@graphql-tools/schema";
 import { Resolvers } from "./resolvers.generated";
 import jsonSchema from "./schema.server.generated.json";
 import { loadPlantings } from "./loaders/plantings";
+import seedrandom from "seedrandom";
 
 // Construct a schema, using GraphQL schema language
 // @ts-ignore
@@ -22,6 +23,22 @@ const resolvers: Resolvers = {
     async planting(_, { id }) {
       const plantings = await loadPlantings();
       return plantings.find((p) => p.id === id) || null;
+    },
+    async producer(_, { id }) {
+      if (!id) {
+        return null
+      }
+      return {
+        id,
+        code: seedrandom(id)().toString(32).slice(-7),
+        plantings: [],
+      };
+    },
+  },
+  Producer: {
+    async plantings({ id }) {
+      const plantings = await loadPlantings();
+      return plantings.filter((p) => p.producer.id === id);
     },
   },
 };
@@ -42,16 +59,13 @@ const worker = setupWorker(
 
   rest.post("/graphql", async (req, res, ctx) => {
     const { query, variables, operationName } = await req.json();
-    return res(
-      ctx.json(
-        await graphql({
-          schema,
-          source: query,
-          variableValues: variables,
-          operationName,
-        })
-      )
-    );
+    const result = await graphql({
+      schema,
+      source: query,
+      variableValues: variables,
+      operationName,
+    });
+    return res(ctx.json(result));
   })
 );
 

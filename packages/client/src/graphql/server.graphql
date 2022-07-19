@@ -1,7 +1,8 @@
 extend type Query {
   plantings(cropType: String!): [Planting!]!
   allPlantings: [Planting!]!
-  planting(id: String!): Planting
+  planting(id: String): Planting
+  producer(id: String): Producer
 }
 type Planting {
   id: String!

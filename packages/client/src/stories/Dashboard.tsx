@@ -190,9 +190,9 @@ interface Props {
 }
 
 export const Dashboard = ({ iframeSrc }: Props) => {
-  const { data: { selectedFilter, selectedProducer, allPlantings } = {} } =
+  const { data: { selectedFilterId, selectedProducer } = {}, loading } =
     useDashboardQuery();
-  console.log({ selectedFilter, selectedProducer });
+
   const [tabIndex, setTabIndex] = useState(0);
   const rightSide = useRef<HTMLDivElement>(null);
   const pages = useMemo(
@@ -211,9 +211,9 @@ export const Dashboard = ({ iframeSrc }: Props) => {
 
   const [SideContent, sideContentKey] = useMemo(
     () =>
-      selectedFilter
+      selectedFilterId
         ? [
-            <FilterEditor selectedFilterId={selectedFilter.id} />,
+            <FilterEditor selectedFilterId={selectedFilterId} />,
             "FilterEditor",
           ]
         : selectedProducer
@@ -222,12 +222,12 @@ export const Dashboard = ({ iframeSrc }: Props) => {
             `FarmerProfile-${selectedProducer.id}`,
           ]
         : [<PlantingCardList />, `Events`],
-    [selectedFilter?.id, selectedProducer?.id]
+    [selectedFilterId, selectedProducer?.id]
   );
 
   return (
     <Root>
-      {!allPlantings || allPlantings?.length === 0 ? (
+      {loading ? (
         <Layer full background="rgba(255,255,255,0.3)" animate={false}>
           <Box fill align="center" justify="center">
             <Spinner />

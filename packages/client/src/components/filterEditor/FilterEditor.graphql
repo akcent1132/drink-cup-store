@@ -1,23 +1,29 @@
-query FilterEditor($filterId: String!) {
-  filter(id: $filterId) {
+query FilterEditor($filterId: String!, $cropType: String! = "") {
+  selectedCropType @client @export(as: "cropType")
+  plantings(cropType: $cropType) {
+    id
+    values {
+      name
+      value
+      modusId
+    }
+  }
+
+  filter(id: $filterId) @client {
     id
     color
     name
     params {
       key
       active
-      modusId
       dataSource
       value {
         __typename
         ... on FilterValueRange {
           min
           max
-          values
         }
         ... on FilterValueOption {
-          allOptions
-          occurences
           options
         }
       }
