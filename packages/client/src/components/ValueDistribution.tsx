@@ -143,7 +143,6 @@ type Props = {
    */
   label: string;
   valueNames: string[] | string;
-  highlightedFiltering?: string | null;
   className?: string;
   nesting: number;
   childCount: number;
@@ -151,15 +150,13 @@ type Props = {
   hideBranches: number;
   onToggleChildren: () => void;
   openState: "open" | "closed" | "parentClosed";
-  queryResult: ReturnType<typeof useNestedRowsQuery>;
+  highlightedFilterId?: string;
+  highlightedPlantingId?: string;
   allData: {
-    filter:
-      | {
-          id: string;
-          color: string;
-        }
-      | null
-      | undefined;
+    filter: {
+      id: string;
+      color: string | null;
+    };
     name: string;
     value: number;
     modusId?: string | null;
@@ -172,9 +169,9 @@ type Props = {
  */
 export const ValueDistribution = ({
   label,
-  highlightedFiltering,
   valueNames,
-  queryResult,
+  highlightedFilterId,
+  highlightedPlantingId,
   allData,
   ...props
 }: Props) => {
@@ -182,14 +179,6 @@ export const ValueDistribution = ({
     () => (Array.isArray(valueNames) ? valueNames : [valueNames]),
     [valueNames]
   );
-  // console.log(valueNames, allData)
-  const {
-    data: { groupedValues = [], highlightedFilterId, highlightedPlantingId } = {},
-  } = queryResult;
-  // const _higlightedPlantingId = useReactiveVar(highlightedPlantingId)
-  // const highlightedPlanting = useMemo(() => _higlightedPlantingId && {
-  //   id: _higlightedPlantingId,
-  // } || null, [_higlightedPlantingId]);
   const { colors } = useTheme();
   const [isHovering, setIsHovering] = useState(false);
   const onHoverData = useCallback(
@@ -392,7 +381,7 @@ export const ValueDistribution = ({
       ctx.fill();
     }
   }, [
-    groupedValues,
+    allData,
     canvas.width,
     canvas.height,
     scale,

@@ -34,7 +34,7 @@ export type Filter = {
   isHighlighted: Scalars['Boolean'];
   name: Scalars['String'];
   params: Array<FilterParam>;
-  plantings: Array<Maybe<Planting>>;
+  plantings: Array<Planting>;
 };
 
 export type FilterParam = {
@@ -129,7 +129,6 @@ export type Query = {
   auth: Maybe<AuthState>;
   filter: Maybe<Filter>;
   filters: Array<Filter>;
-  groupedValues: Array<GroupedValues>;
   highlightedFilterId: Maybe<Scalars['String']>;
   highlightedPlantingId: Maybe<Scalars['String']>;
   notgood: Maybe<Scalars['String']>;
@@ -154,18 +153,13 @@ export type QueryFiltersArgs = {
 };
 
 
-export type QueryGroupedValuesArgs = {
-  cropType: Scalars['String'];
-};
-
-
 export type QueryOpenEventCardIdsArgs = {
   cropType: Scalars['String'];
 };
 
 
 export type QueryPlantingArgs = {
-  id: InputMaybe<Scalars['String']>;
+  id: Scalars['String'];
 };
 
 
@@ -268,13 +262,12 @@ export type ProducerFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('allPlantings' | 'auth' | 'filter' | 'filters' | 'groupedValues' | 'highlightedFilterId' | 'highlightedPlantingId' | 'notgood' | 'openEventCardIds' | 'planting' | 'plantings' | 'producer' | 'selectedCropType' | 'selectedFilterId' | 'selectedProducerId' | 'test' | QueryKeySpecifier)[];
+export type QueryKeySpecifier = ('allPlantings' | 'auth' | 'filter' | 'filters' | 'highlightedFilterId' | 'highlightedPlantingId' | 'notgood' | 'openEventCardIds' | 'planting' | 'plantings' | 'producer' | 'selectedCropType' | 'selectedFilterId' | 'selectedProducerId' | 'test' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
 	allPlantings?: FieldPolicy<any> | FieldReadFunction<any>,
 	auth?: FieldPolicy<any> | FieldReadFunction<any>,
 	filter?: FieldPolicy<any> | FieldReadFunction<any>,
 	filters?: FieldPolicy<any> | FieldReadFunction<any>,
-	groupedValues?: FieldPolicy<any> | FieldReadFunction<any>,
 	highlightedFilterId?: FieldPolicy<any> | FieldReadFunction<any>,
 	highlightedPlantingId?: FieldPolicy<any> | FieldReadFunction<any>,
 	notgood?: FieldPolicy<any> | FieldReadFunction<any>,

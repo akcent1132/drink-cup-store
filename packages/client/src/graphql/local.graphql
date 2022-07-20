@@ -1,7 +1,9 @@
 extend type Query {
   highlightedPlantingId: String
   highlightedFilterId: String
-  groupedValues(cropType: String!): [GroupedValues!]!
+  plantings(cropType: String!): [Planting!]!
+  allPlantings: [Planting!]!
+  planting(id: String!): Planting
   filters(cropType: String!): [Filter!]!
   filter(id: String!): Filter
   selectedCropType: String!
@@ -42,7 +44,7 @@ type Filter {
   name: String!
   color: String!
   cropType: String!
-  plantings: [Planting]!
+  plantings: [Planting!]!
   params: [FilterParam!]!
   isHighlighted: Boolean!
 }

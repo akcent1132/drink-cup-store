@@ -8,18 +8,14 @@ export type NestedRowsQueryVariables = Types.Exact<{
 }>;
 
 
-export type NestedRowsQuery = { __typename?: 'Query', selectedCropType: string, highlightedPlantingId?: string | null, highlightedFilterId?: string | null, groupedValues: Array<{ __typename?: 'GroupedValues', id: string, filter?: { __typename?: 'Filter', id: string, color: string } | null, values: Array<{ __typename?: 'PlantingValue', name: string, value: number, plantingId: string, modusId?: string | null }> }> };
+export type NestedRowsQuery = { __typename?: 'Query', selectedCropType: string, highlightedPlantingId?: string | null, highlightedFilterId?: string | null, plantings: Array<{ __typename?: 'Planting', id: string, values: Array<{ __typename?: 'PlantingValue', name: string, value: number, plantingId: string, modusId?: string | null }> }>, filters: Array<{ __typename?: 'Filter', id: string, color: string, name: string, params: Array<{ __typename?: 'FilterParam', key: string, active: boolean, dataSource?: Types.FilterParamDataSource | null, value: { __typename: 'FilterValueOption', options: Array<string> } | { __typename: 'FilterValueRange', min: number, max: number } }>, plantings: Array<{ __typename?: 'Planting', id: string, values: Array<{ __typename?: 'PlantingValue', name: string, value: number, plantingId: string, modusId?: string | null }> }> }> };
 
 
 export const NestedRowsDocument = gql`
     query NestedRows($cropType: String! = "") {
   selectedCropType @client @export(as: "cropType")
-  groupedValues(cropType: $cropType) @client {
+  plantings(cropType: $cropType) {
     id
-    filter {
-      id
-      color
-    }
     values {
       name
       value
@@ -29,6 +25,35 @@ export const NestedRowsDocument = gql`
   }
   highlightedPlantingId @client
   highlightedFilterId @client
+  filters(cropType: $cropType) @client {
+    id
+    color
+    name
+    params {
+      key
+      active
+      dataSource
+      value {
+        __typename
+        ... on FilterValueRange {
+          min
+          max
+        }
+        ... on FilterValueOption {
+          options
+        }
+      }
+    }
+    plantings {
+      id
+      values {
+        name
+        value
+        plantingId
+        modusId
+      }
+    }
+  }
 }
     `;
 

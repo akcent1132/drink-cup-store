@@ -1,11 +1,20 @@
 query NestedRows($cropType: String! = "") {
   selectedCropType @client @export(as: "cropType")
-  groupedValues(cropType: $cropType) @client {
+  # groupedValues(cropType: $cropType) @client {
+  #   id
+  #   filter {
+  #     id
+  #     color
+  #   }
+  #   values {
+  #     name
+  #     value
+  #     plantingId
+  #     modusId
+  #   }
+  # }
+  plantings(cropType: $cropType) {
     id
-    filter {
-      id
-      color
-    }
     values {
       name
       value
@@ -15,4 +24,33 @@ query NestedRows($cropType: String! = "") {
   }
   highlightedPlantingId @client
   highlightedFilterId @client 
+  filters(cropType: $cropType) @client {
+    id
+    color
+    name
+    params {
+      key
+      active
+      dataSource
+      value {
+        __typename
+        ... on FilterValueRange {
+          min
+          max
+        }
+        ... on FilterValueOption {
+          options
+        }
+      }
+    }
+    plantings {
+      id
+      values {
+        name
+        value
+        plantingId
+        modusId
+      }
+    }
+  }
 }

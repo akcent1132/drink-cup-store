@@ -27,7 +27,6 @@ import {
   Planting,
   StrictTypedTypePolicies,
 } from "../graphql.generated";
-import seedrandom from "seedrandom";
 import { authState } from "./auth";
 import "./server";
 
@@ -199,25 +198,6 @@ const typePolicies: StrictTypedTypePolicies = {
           const id: string = options.args.id;
           return filters().find((filter) => filter.id === id) || null;
         },
-      },
-      groupedValues(_, options) {
-        return [];
-        // // @ts-ignore
-        // const cropType: string = options.args.cropType;
-        // const hash =
-        //   filters()
-        //     .filter((f) => f.cropType === cropType)
-        //     .map((filter) => JSON.stringify(filter.params))
-        //     .join() + plantings().length;
-
-        // const [cacheHash, cacheGroupedValues] = options.storage[cropType] || [];
-        // if (cacheHash === hash) {
-        //   return cacheGroupedValues;
-        // } else {
-        //   const groupedValues = getGroupedValues(cropType);
-        //   options.storage[cropType] = [hash, groupedValues];
-        //   return groupedValues;
-        // }
       },
       selectedFilterId() {
         return selectedFilterId();
