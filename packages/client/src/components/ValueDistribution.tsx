@@ -307,7 +307,7 @@ export const ValueDistribution = ({
             .toString();
 
       // draw variance line
-      if (filter) {
+      if (filter.color) {
         const values = valueSet.map((v) => v.value);
         const q1 = quantile(values, 0.25);
         const q3 = quantile(values, 0.75);
