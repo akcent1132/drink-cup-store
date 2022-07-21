@@ -32,6 +32,7 @@ const getLabeledValues = (
         }))
     )
     .flat();
+    console.log("???",{filters, plantings, labeledValues})
   return labeledValues;
 };
 
@@ -104,6 +105,7 @@ export const NestedRows = ({ rows }: { rows: RowData[] }) => {
     () => (filters && plantings ? getLabeledValues(filters, plantings) : []),
     [filters, plantings]
   );
+  console.log('???', {filters, plantings, labeledValues})
   const flatRows = useMemo(
     () => flattenRows(rows, labeledValues),
     [rows, labeledValues]
