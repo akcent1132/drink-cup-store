@@ -14,10 +14,49 @@ export type Scalars = {
   Float: number;
 };
 
+export type FarmOnboarding = {
+  __typename?: 'FarmOnboarding';
+  animals_total?: Maybe<Scalars['Int']>;
+  area_total_hectares?: Maybe<Scalars['Float']>;
+  average_annual_rainfall?: Maybe<Scalars['Float']>;
+  average_annual_temperature?: Maybe<Scalars['Float']>;
+  certifications_current: Array<Scalars['String']>;
+  certifications_current_detail: Array<Scalars['String']>;
+  certifications_future: Array<Scalars['String']>;
+  certifications_future_detail: Array<Scalars['String']>;
+  climate_zone?: Maybe<Scalars['String']>;
+  conditions_detail?: Maybe<Scalars['String']>;
+  county?: Maybe<Scalars['String']>;
+  equity_practices: Array<Scalars['String']>;
+  farmDomain?: Maybe<Scalars['String']>;
+  goals: Array<Scalars['String']>;
+  hardiness_zone?: Maybe<Scalars['String']>;
+  immediate_data_source?: Maybe<Scalars['String']>;
+  interest: Array<Scalars['String']>;
+  location_address_line1?: Maybe<Scalars['String']>;
+  location_address_line2?: Maybe<Scalars['String']>;
+  location_country_code?: Maybe<Scalars['String']>;
+  location_locality?: Maybe<Scalars['String']>;
+  location_postal_code?: Maybe<Scalars['String']>;
+  management_plans_current?: Maybe<Scalars['String']>;
+  management_plans_current_detail: Array<Scalars['String']>;
+  motivations: Array<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  organization?: Maybe<Scalars['String']>;
+  products_categories: Array<Scalars['String']>;
+  records_system: Array<Scalars['String']>;
+  role?: Maybe<Scalars['String']>;
+  surveystack_id?: Maybe<Scalars['String']>;
+  title?: Maybe<Scalars['String']>;
+  types: Array<Scalars['String']>;
+  units?: Maybe<Scalars['String']>;
+};
+
 export type Planting = {
   __typename?: 'Planting';
   cropType: Scalars['String'];
   events: Array<PlantingEvent>;
+  farmOnboarding?: Maybe<FarmOnboarding>;
   id: Scalars['String'];
   params: PlantingParams;
   producer: Producer;
@@ -67,6 +106,7 @@ export type Producer = {
 
 export type Query = {
   __typename?: 'Query';
+  allFarmOnboardings: Array<FarmOnboarding>;
   allPlantings: Array<Planting>;
   planting?: Maybe<Planting>;
   plantings: Array<Planting>;
@@ -159,7 +199,9 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
+  FarmOnboarding: ResolverTypeWrapper<FarmOnboarding>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
   Planting: ResolverTypeWrapper<Planting>;
   PlantingEvent: ResolverTypeWrapper<PlantingEvent>;
   PlantingEventDetail: ResolverTypeWrapper<PlantingEventDetail>;
@@ -173,7 +215,9 @@ export type ResolversTypes = ResolversObject<{
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean'];
+  FarmOnboarding: FarmOnboarding;
   Float: Scalars['Float'];
+  Int: Scalars['Int'];
   Planting: Planting;
   PlantingEvent: PlantingEvent;
   PlantingEventDetail: PlantingEventDetail;
@@ -184,9 +228,48 @@ export type ResolversParentTypes = ResolversObject<{
   String: Scalars['String'];
 }>;
 
+export type FarmOnboardingResolvers<ContextType = any, ParentType extends ResolversParentTypes['FarmOnboarding'] = ResolversParentTypes['FarmOnboarding']> = ResolversObject<{
+  animals_total?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  area_total_hectares?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  average_annual_rainfall?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  average_annual_temperature?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  certifications_current?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  certifications_current_detail?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  certifications_future?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  certifications_future_detail?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  climate_zone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  conditions_detail?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  county?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  equity_practices?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  farmDomain?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  goals?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  hardiness_zone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  immediate_data_source?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  interest?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  location_address_line1?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  location_address_line2?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  location_country_code?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  location_locality?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  location_postal_code?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  management_plans_current?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  management_plans_current_detail?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  motivations?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  organization?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  products_categories?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  records_system?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  role?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  surveystack_id?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  types?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  units?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type PlantingResolvers<ContextType = any, ParentType extends ResolversParentTypes['Planting'] = ResolversParentTypes['Planting']> = ResolversObject<{
   cropType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   events?: Resolver<Array<ResolversTypes['PlantingEvent']>, ParentType, ContextType>;
+  farmOnboarding?: Resolver<Maybe<ResolversTypes['FarmOnboarding']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   params?: Resolver<ResolversTypes['PlantingParams'], ParentType, ContextType>;
   producer?: Resolver<ResolversTypes['Producer'], ParentType, ContextType>;
@@ -236,6 +319,7 @@ export type ProducerResolvers<ContextType = any, ParentType extends ResolversPar
 }>;
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
+  allFarmOnboardings?: Resolver<Array<ResolversTypes['FarmOnboarding']>, ParentType, ContextType>;
   allPlantings?: Resolver<Array<ResolversTypes['Planting']>, ParentType, ContextType>;
   planting?: Resolver<Maybe<ResolversTypes['Planting']>, ParentType, ContextType, Partial<QueryPlantingArgs>>;
   plantings?: Resolver<Array<ResolversTypes['Planting']>, ParentType, ContextType, RequireFields<QueryPlantingsArgs, 'cropType'>>;
@@ -243,6 +327,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{
+  FarmOnboarding?: FarmOnboardingResolvers<ContextType>;
   Planting?: PlantingResolvers<ContextType>;
   PlantingEvent?: PlantingEventResolvers<ContextType>;
   PlantingEventDetail?: PlantingEventDetailResolvers<ContextType>;

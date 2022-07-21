@@ -26,6 +26,44 @@ export type AuthUser = {
   name: Scalars['String'];
 };
 
+export type FarmOnboarding = {
+  __typename: 'FarmOnboarding';
+  animals_total: Maybe<Scalars['Int']>;
+  area_total_hectares: Maybe<Scalars['Float']>;
+  average_annual_rainfall: Maybe<Scalars['Float']>;
+  average_annual_temperature: Maybe<Scalars['Float']>;
+  certifications_current: Array<Scalars['String']>;
+  certifications_current_detail: Array<Scalars['String']>;
+  certifications_future: Array<Scalars['String']>;
+  certifications_future_detail: Array<Scalars['String']>;
+  climate_zone: Maybe<Scalars['String']>;
+  conditions_detail: Maybe<Scalars['String']>;
+  county: Maybe<Scalars['String']>;
+  equity_practices: Array<Scalars['String']>;
+  farmDomain: Maybe<Scalars['String']>;
+  goals: Array<Scalars['String']>;
+  hardiness_zone: Maybe<Scalars['String']>;
+  immediate_data_source: Maybe<Scalars['String']>;
+  interest: Array<Scalars['String']>;
+  location_address_line1: Maybe<Scalars['String']>;
+  location_address_line2: Maybe<Scalars['String']>;
+  location_country_code: Maybe<Scalars['String']>;
+  location_locality: Maybe<Scalars['String']>;
+  location_postal_code: Maybe<Scalars['String']>;
+  management_plans_current: Maybe<Scalars['String']>;
+  management_plans_current_detail: Array<Scalars['String']>;
+  motivations: Array<Scalars['String']>;
+  name: Maybe<Scalars['String']>;
+  organization: Maybe<Scalars['String']>;
+  products_categories: Array<Scalars['String']>;
+  records_system: Array<Scalars['String']>;
+  role: Maybe<Scalars['String']>;
+  surveystack_id: Maybe<Scalars['String']>;
+  title: Maybe<Scalars['String']>;
+  types: Array<Scalars['String']>;
+  units: Maybe<Scalars['String']>;
+};
+
 export type Filter = {
   __typename: 'Filter';
   color: Scalars['String'];
@@ -74,6 +112,7 @@ export type Planting = {
   __typename: 'Planting';
   cropType: Scalars['String'];
   events: Array<PlantingEvent>;
+  farmOnboarding: Maybe<FarmOnboarding>;
   id: Scalars['String'];
   isHighlighted: Scalars['Boolean'];
   matchingFilters: Array<Filter>;
@@ -125,6 +164,7 @@ export type Producer = {
 
 export type Query = {
   __typename: 'Query';
+  allFarmOnboardings: Array<FarmOnboarding>;
   allPlantings: Array<Planting>;
   auth: Maybe<AuthState>;
   filter: Maybe<Filter>;
@@ -183,6 +223,43 @@ export type AuthUserFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>
 };
+export type FarmOnboardingKeySpecifier = ('animals_total' | 'area_total_hectares' | 'average_annual_rainfall' | 'average_annual_temperature' | 'certifications_current' | 'certifications_current_detail' | 'certifications_future' | 'certifications_future_detail' | 'climate_zone' | 'conditions_detail' | 'county' | 'equity_practices' | 'farmDomain' | 'goals' | 'hardiness_zone' | 'immediate_data_source' | 'interest' | 'location_address_line1' | 'location_address_line2' | 'location_country_code' | 'location_locality' | 'location_postal_code' | 'management_plans_current' | 'management_plans_current_detail' | 'motivations' | 'name' | 'organization' | 'products_categories' | 'records_system' | 'role' | 'surveystack_id' | 'title' | 'types' | 'units' | FarmOnboardingKeySpecifier)[];
+export type FarmOnboardingFieldPolicy = {
+	animals_total?: FieldPolicy<any> | FieldReadFunction<any>,
+	area_total_hectares?: FieldPolicy<any> | FieldReadFunction<any>,
+	average_annual_rainfall?: FieldPolicy<any> | FieldReadFunction<any>,
+	average_annual_temperature?: FieldPolicy<any> | FieldReadFunction<any>,
+	certifications_current?: FieldPolicy<any> | FieldReadFunction<any>,
+	certifications_current_detail?: FieldPolicy<any> | FieldReadFunction<any>,
+	certifications_future?: FieldPolicy<any> | FieldReadFunction<any>,
+	certifications_future_detail?: FieldPolicy<any> | FieldReadFunction<any>,
+	climate_zone?: FieldPolicy<any> | FieldReadFunction<any>,
+	conditions_detail?: FieldPolicy<any> | FieldReadFunction<any>,
+	county?: FieldPolicy<any> | FieldReadFunction<any>,
+	equity_practices?: FieldPolicy<any> | FieldReadFunction<any>,
+	farmDomain?: FieldPolicy<any> | FieldReadFunction<any>,
+	goals?: FieldPolicy<any> | FieldReadFunction<any>,
+	hardiness_zone?: FieldPolicy<any> | FieldReadFunction<any>,
+	immediate_data_source?: FieldPolicy<any> | FieldReadFunction<any>,
+	interest?: FieldPolicy<any> | FieldReadFunction<any>,
+	location_address_line1?: FieldPolicy<any> | FieldReadFunction<any>,
+	location_address_line2?: FieldPolicy<any> | FieldReadFunction<any>,
+	location_country_code?: FieldPolicy<any> | FieldReadFunction<any>,
+	location_locality?: FieldPolicy<any> | FieldReadFunction<any>,
+	location_postal_code?: FieldPolicy<any> | FieldReadFunction<any>,
+	management_plans_current?: FieldPolicy<any> | FieldReadFunction<any>,
+	management_plans_current_detail?: FieldPolicy<any> | FieldReadFunction<any>,
+	motivations?: FieldPolicy<any> | FieldReadFunction<any>,
+	name?: FieldPolicy<any> | FieldReadFunction<any>,
+	organization?: FieldPolicy<any> | FieldReadFunction<any>,
+	products_categories?: FieldPolicy<any> | FieldReadFunction<any>,
+	records_system?: FieldPolicy<any> | FieldReadFunction<any>,
+	role?: FieldPolicy<any> | FieldReadFunction<any>,
+	surveystack_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	title?: FieldPolicy<any> | FieldReadFunction<any>,
+	types?: FieldPolicy<any> | FieldReadFunction<any>,
+	units?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type FilterKeySpecifier = ('color' | 'cropType' | 'id' | 'isHighlighted' | 'name' | 'params' | 'plantings' | FilterKeySpecifier)[];
 export type FilterFieldPolicy = {
 	color?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -215,10 +292,11 @@ export type GroupedValuesFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	values?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type PlantingKeySpecifier = ('cropType' | 'events' | 'id' | 'isHighlighted' | 'matchingFilters' | 'params' | 'producer' | 'title' | 'values' | PlantingKeySpecifier)[];
+export type PlantingKeySpecifier = ('cropType' | 'events' | 'farmOnboarding' | 'id' | 'isHighlighted' | 'matchingFilters' | 'params' | 'producer' | 'title' | 'values' | PlantingKeySpecifier)[];
 export type PlantingFieldPolicy = {
 	cropType?: FieldPolicy<any> | FieldReadFunction<any>,
 	events?: FieldPolicy<any> | FieldReadFunction<any>,
+	farmOnboarding?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	isHighlighted?: FieldPolicy<any> | FieldReadFunction<any>,
 	matchingFilters?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -262,8 +340,9 @@ export type ProducerFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('allPlantings' | 'auth' | 'filter' | 'filters' | 'highlightedFilterId' | 'highlightedPlantingId' | 'notgood' | 'openEventCardIds' | 'planting' | 'plantings' | 'producer' | 'selectedCropType' | 'selectedFilterId' | 'selectedProducerId' | 'test' | QueryKeySpecifier)[];
+export type QueryKeySpecifier = ('allFarmOnboardings' | 'allPlantings' | 'auth' | 'filter' | 'filters' | 'highlightedFilterId' | 'highlightedPlantingId' | 'notgood' | 'openEventCardIds' | 'planting' | 'plantings' | 'producer' | 'selectedCropType' | 'selectedFilterId' | 'selectedProducerId' | 'test' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
+	allFarmOnboardings?: FieldPolicy<any> | FieldReadFunction<any>,
 	allPlantings?: FieldPolicy<any> | FieldReadFunction<any>,
 	auth?: FieldPolicy<any> | FieldReadFunction<any>,
 	filter?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -288,6 +367,10 @@ export type StrictTypedTypePolicies = {
 	AuthUser?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | AuthUserKeySpecifier | (() => undefined | AuthUserKeySpecifier),
 		fields?: AuthUserFieldPolicy,
+	},
+	FarmOnboarding?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | FarmOnboardingKeySpecifier | (() => undefined | FarmOnboardingKeySpecifier),
+		fields?: FarmOnboardingFieldPolicy,
 	},
 	Filter?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | FilterKeySpecifier | (() => undefined | FilterKeySpecifier),

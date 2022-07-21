@@ -5,6 +5,7 @@ import { Resolvers } from "./resolvers.generated";
 import jsonSchema from "./schema.server.generated.json";
 import { loadPlantings } from "./loaders/plantings";
 import seedrandom from "seedrandom";
+import { loadFarmOnboardings } from "./loaders/farmOnboardings";
 
 // Construct a schema, using GraphQL schema language
 // @ts-ignore
@@ -26,7 +27,7 @@ const resolvers: Resolvers = {
     },
     async producer(_, { id }) {
       if (!id) {
-        return null
+        return null;
       }
       return {
         id,
@@ -34,11 +35,24 @@ const resolvers: Resolvers = {
         plantings: [],
       };
     },
+
+    async allFarmOnboardings() {
+      return await loadFarmOnboardings();
+    },
   },
   Producer: {
     async plantings({ id }) {
       const plantings = await loadPlantings();
       return plantings.filter((p) => p.producer.id === id);
+    },
+  },
+  Planting: {
+    async farmOnboarding({ producer }) {
+      return (
+        (await loadFarmOnboardings()).find(
+          (f) => f.farmDomain && f.farmDomain === producer.id
+        ) || null
+      );
     },
   },
 };
