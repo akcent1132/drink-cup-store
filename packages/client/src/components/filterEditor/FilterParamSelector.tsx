@@ -1,7 +1,7 @@
-import { Box, CheckBox, Select, Text } from "grommet";
+import { Box, Select, Text } from "grommet";
 import { BlockQuote, Time } from "grommet-icons";
-import { map, startCase, without } from "lodash";
-import { useMemo, useState } from "react";
+import { startCase, without } from "lodash";
+import { useState } from "react";
 import {
   addFilterParam,
   removeFilterParam,
@@ -9,6 +9,7 @@ import {
 import { Filterable } from "./getFilterables";
 import { FilterEditorQuery } from "./FilterEditor.generated";
 import { FilterParam } from "../../graphql.generated";
+import { css } from "@emotion/react";
 
 type Param = NonNullable<FilterEditorQuery["filter"]>["params"][number];
 type Props = {
@@ -36,15 +37,15 @@ export const FilterParamSelector = ({
         align="center"
         pad="xsmall"
         flex={false}
-        background={active ? "accent-1" : ""}
+        background={active ? "" : ""}
       >
         {option.type === "numeric" ? (
-          <Time size="small" />
+          <Time size="medium" />
         ) : (
-          <BlockQuote size="small" />
+          <BlockQuote size="medium" />
         )}
         <Text
-          size="small"
+          size="medium"
           weight={active ? "bold" : "normal"}
           style={{ marginLeft: "4px" }}
         >
@@ -56,18 +57,24 @@ export const FilterParamSelector = ({
 
   return (
     <Select
+
+    css={css`
+    height: 0px;
+  `}
       multiple
-      clear={{ label: "Remove all" }}
+      // clear={{ label: "Remove all" }}
       size="small"
-      dropHeight="medium"
-      plain
-      messages={{ multiple: label }}
-      placeholder={label}
+      // dropHeight="medium"
+      // plain
+      // messages={{ multiple: label }}
+      // placeholder={label}
       options={options}
-      valueLabel={<Text>{label}</Text>}
+      // valueLabel={<Text>{label}</Text>}
       value={params.filter((p) => p.active).map((p) => p.key)}
       valueKey={{ key: "key", reduce: true }}
-      labelKey={({ key }) => prettyKey(key)}
+      // labelKey={(option) => renderOption(option)}
+
+      labelKey={(option) => option.key}
       onChange={({ value: selectedKeys }) => {
         const currentKeys = params.map((p) => p.key);
         // add new filter params
@@ -101,20 +108,18 @@ export const FilterParamSelector = ({
         );
       }}
       closeOnChange={false}
-      onClose={() => setOptions(filterables)}
-      onSearch={(text) => {
-        // The line below escapes regular expression special characters:
-        // [ \ ^ $ . | ? * + ( )
-        const escapedText = text.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&");
+      // onClose={() => setOptions(filterables)}
+      // onSearch={(text) => {
+      //   // The line below escapes regular expression special characters:
+      //   // [ \ ^ $ . | ? * + ( )
+      //   const escapedText = text.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&");
 
-        // Create the regular expression with modified value which
-        // handles escaping special characters. Without escaping special
-        // characters, errors will appear in the console
-        const exp = new RegExp(escapedText, "i");
-        setOptions(filterables.filter((p) => exp.test(p.key)));
-      }}
-    >
-      {renderOption}
-    </Select>
+      //   // Create the regular expression with modified value which
+      //   // handles escaping special characters. Without escaping special
+      //   // characters, errors will appear in the console
+      //   const exp = new RegExp(escapedText, "i");
+      //   setOptions(filterables.filter((p) => exp.test(p.key)));
+      // }}
+    />
   );
 };

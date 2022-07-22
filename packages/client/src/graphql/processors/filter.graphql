@@ -10,6 +10,12 @@ query Plantings($cropType: String! $filterId: String!) {
     producer {
       id
     }
+    farmOnboarding {
+      values {
+        key
+        values
+      }
+    }
   }
   filter(id: $filterId) @client {
     id

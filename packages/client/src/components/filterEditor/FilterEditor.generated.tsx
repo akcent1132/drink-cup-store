@@ -9,7 +9,7 @@ export type FilterEditorQueryVariables = Types.Exact<{
 }>;
 
 
-export type FilterEditorQuery = { __typename?: 'Query', selectedCropType: string, plantings: Array<{ __typename?: 'Planting', id: string, values: Array<{ __typename?: 'PlantingValue', name: string, value: number, modusId?: string | null }> }>, filter?: { __typename?: 'Filter', id: string, color: string, name: string, params: Array<{ __typename?: 'FilterParam', key: string, active: boolean, dataSource?: Types.FilterParamDataSource | null, value: { __typename: 'FilterValueOption', options: Array<string> } | { __typename: 'FilterValueRange', min: number, max: number } }> } | null };
+export type FilterEditorQuery = { __typename?: 'Query', selectedCropType: string, plantings: Array<{ __typename?: 'Planting', id: string, values: Array<{ __typename?: 'PlantingValue', name: string, value: number, modusId?: string | null }>, farmOnboarding?: { __typename?: 'FarmOnboarding', values: Array<{ __typename?: 'FarmOnboardingValue', key: string, values: Array<string> }> } | null }>, filter?: { __typename?: 'Filter', id: string, color: string, name: string, params: Array<{ __typename?: 'FilterParam', key: string, active: boolean, dataSource?: Types.FilterParamDataSource | null, value: { __typename: 'FilterValueOption', options: Array<string> } | { __typename: 'FilterValueRange', min: number, max: number } }> } | null };
 
 
 export const FilterEditorDocument = gql`
@@ -21,6 +21,12 @@ export const FilterEditorDocument = gql`
       name
       value
       modusId
+    }
+    farmOnboarding {
+      values {
+        key
+        values
+      }
     }
   }
   filter(id: $filterId) @client {

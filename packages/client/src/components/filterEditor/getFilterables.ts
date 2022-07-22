@@ -1,73 +1,13 @@
+import { countBy, isEmpty, map, mapValues, sortBy, uniq } from "lodash";
 import { FilterParamDataSource, Maybe } from "../../graphql.generated";
 import { FilterEditorQuery } from "./FilterEditor.generated";
-
-const farmProfileFilterProperties = [
-  { key: "farmDomain", type: "string" },
-  { key: "title", type: "string" },
-  // { key: "surveystack_id", type: "string" },
-  // { key: "animals_detail", type: "n/a" },
-  { key: "animals_total", type: "number" },
-  // { key: "area", type: "n/a" },
-  // { key: "area_community", type: "n/a" },
-  { key: "area_total_hectares", type: "number" },
-  { key: "average_annual_rainfall", type: "number" },
-  { key: "average_annual_temperature", type: "number" },
-  // { key: "bio", type: "n/a" },
-  { key: "certifications_current", type: "string" },
-  { key: "certifications_current_detail", type: "string" },
-  // { key: "certifications_future", type: "n/a" },
-  // { key: "certifications_future_detail", type: "n/a" },
-  { key: "climate_zone", type: "string" },
-  // { key: "conditions_detail", type: "string" },
-  { key: "county", type: "string" },
-  // { key: "equity_practices", type: "n/a" },
-  // { key: "farm_leadership_experience", type: "n/a" },
-  // { key: "flexible", type: "n/a" },
-  // { key: "goal_1", type: "n/a" },
-  // { key: "goal_2", type: "n/a" },
-  // { key: "goal_3", type: "n/a" },
-  { key: "hardiness_zone", type: "string" },
-  { key: "immediate_data_source", type: "string" },
-  // { key: "indigenous_territory", type: "n/a" },
-  { key: "interest", type: "string" },
-  // { key: "land_other", type: "n/a" },
-  // { key: "land_other_detail", type: "n/a" },
-  // { key: "land_type_detail", type: "n/a" },
-  { key: "location_address_line1", type: "string" },
-  { key: "location_address_line2", type: "string" },
-  // { key: "location_administrative_area", type: "n/a" },
-  { key: "location_country_code", type: "string" },
-  { key: "location_locality", type: "string" },
-  { key: "location_postal_code", type: "string" },
-  { key: "management_plans_current", type: "string" },
-  { key: "management_plans_current_detail", type: "string" },
-  // { key: "management_plans_future", type: "n/a" },
-  // { key: "management_plans_future_detail", type: "n/a" },
-  { key: "motivations", type: "string" },
-  // { key: "name", type: "string" },
-  { key: "organization", type: "string" },
-  // { key: "organization_id", type: "n/a" },
-  // { key: "preferred", type: "n/a" },
-  // { key: "products_animals", type: "n/a" },
-  { key: "products_categories", type: "string" },
-  // { key: "products_detail", type: "n/a" },
-  // { key: "products_value_added", type: "n/a" },
-  // { key: "records_software", type: "n/a" },
-  { key: "records_system", type: "string" },
-  { key: "role", type: "string" },
-  // { key: "schema_version", type: "n/a" },
-  // { key: "social", type: "n/a" },
-  { key: "types", type: "string" },
-  // { key: "unique_id", type: "n/a" },
-  { key: "units", type: "string" },
-];
 
 type FilterableNumeric = {
   type: "numeric";
   key: string;
   modusId?: string;
   values: number[];
-  dataSource: FilterParamDataSource,
+  dataSource: FilterParamDataSource;
 };
 type FilterableOption = {
   type: "option";
@@ -76,7 +16,7 @@ type FilterableOption = {
     value: string;
     occurences: number;
   }[];
-  dataSource: FilterParamDataSource,
+  dataSource: FilterParamDataSource;
 };
 export type Filterable = FilterableNumeric | FilterableOption;
 
@@ -94,7 +34,7 @@ export const getFilterables = (
             key: value.name,
             values: [],
             modusId: value.modusId || undefined,
-            dataSource: FilterParamDataSource.Values
+            dataSource: FilterParamDataSource.Values,
           };
         }
         acc[value.name].values.push(value.value);
@@ -102,19 +42,52 @@ export const getFilterables = (
       }, {} as { [key: string]: FilterableNumeric })
   );
 
-  const options: FilterableOption[] = [
-    {
-      type: 'option',
-      key: "test_options",
-      options: [
-        { value: "value1", occurences: 123 },
-        { value: "value2", occurences: 123 },
-        { value: "value3", occurences: 123 },
-      ],
-      dataSource: FilterParamDataSource.FarmOnboarding
-    },
-  ];
-  return [...values, ...options];
+  const isSomething = <T>(x: T | null | undefined): x is T =>
+    x !== undefined && x !== null;
+
+  const farmValuesRaw = plantings
+    .map((p) => p.farmOnboarding?.values)
+    .flat()
+    .filter(isSomething)
+    .reduce((acc, { key, values }) => {
+      if (!(key in acc)) {
+        acc[key] = [];
+      }
+      acc[key].push(...values);
+      return acc;
+    }, {} as { [key: string]: string[] });
+  console.log("farmValuesRaw", farmValuesRaw);
+  const farmValues: Filterable[] = map(farmValuesRaw, (values, key) => {
+    values = values.filter((x) => !isEmpty(x));
+
+    const numValues = uniq(values.map((v) => Number.parseFloat(v)));
+    if (numValues.every((v) => Number.isFinite(v))) {
+      if (numValues.length < 2) {
+        return null;
+      }
+      return {
+        type: "numeric" as "numeric",
+        key,
+        values: numValues,
+        modusId: undefined,
+        dataSource: FilterParamDataSource.FarmOnboarding,
+      };
+    } else {
+      const options = map(countBy(values), (occurences, value) => ({
+        occurences,
+        value,
+      }));
+      return {
+        type: "option" as "option",
+        key,
+        options,
+        modusId: undefined,
+        dataSource: FilterParamDataSource.FarmOnboarding,
+      };
+    }
+  }).filter(isSomething);
+  console.log("farmValues", farmValues);
+  return sortBy([...values, ...farmValues], 'key');
 };
 
 //   let filterId = 0;

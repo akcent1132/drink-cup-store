@@ -1,13 +1,11 @@
 /** @jsxImportSource @emotion/react */
 
 import React, { useMemo, useState } from "react";
-import { CROPS } from "../contexts/lists";
 import { Box, Select, Text } from "grommet";
 import { css } from "@emotion/react";
 import { selectedCropType } from "../contexts/FiltersContext";
 import { useCropSelectorQuery } from "./CropSelector.generated";
 import { capitalize, find, groupBy, map, sortBy, startCase } from "lodash";
-import Badge from "@mui/material/Badge";
 
 export const CropSelector = () => {
   const { data: { allPlantings, selectedCropType: value } = {} } = useCropSelectorQuery();
@@ -51,10 +49,7 @@ export const CropSelector = () => {
       valueKey={{ key: "value", reduce: true }}
       labelKey="label"
       options={options}
-      onChange={({ value }) => {
-        console.log("selectedCropType(value)", value);
-        selectedCropType(value);
-      }}
+      onChange={({ value }) => selectedCropType(value)}
     />
   );
 };

@@ -49,61 +49,12 @@ type Producer {
   plantings: [Planting!]!
 }
 
+type FarmOnboardingValue {
+  key: String!
+  values: [String!]!
+}
+
 type FarmOnboarding {
-    farmDomain: String
-    hardiness_zone: String
-    title: String
-    surveystack_id: String
-    # animals_detail: null
-    animals_total: Int
-    # area: null
-    # area_community: null
-    area_total_hectares: Float
-    average_annual_rainfall: Float
-    average_annual_temperature: Float
-    # bio: null
-    certifications_current: [String!]!
-    certifications_current_detail: [String!]!
-    certifications_future: [String!]!
-    certifications_future_detail: [String!]!
-    climate_zone: String
-    conditions_detail: String
-    county: String
-    equity_practices: [String!]!
-    # farm_leadership_experience: null
-    # flexible: null
-    goals: [String!]!
-    immediate_data_source: String
-    # indigenous_territory: any[]
-    interest: [String!]!
-    # land_other: any[]
-    # land_other_detail: null
-    # land_type_detail: null
-    location_address_line1: String
-    location_address_line2: String
-    # location_administrative_area: null
-    location_country_code: String
-    location_locality: String
-    location_postal_code: String
-    management_plans_current: String
-    management_plans_current_detail: [String!]!
-    # management_plans_future: null
-    # management_plans_future_detail: any[]
-    motivations: [String!]!
-    name: String
-    organization: String
-    # organization_id: null
-    # preferred: null
-    # products_animals: any[]
-    products_categories: [String!]!
-    # products_detail: any[]
-    # products_value_added: any[]
-    # records_software: any[]
-    records_system: [String!]!
-    role: String
-    # schema_version: null
-    # social: null
-    types: [String!]!
-    # unique_id: null
-    units: String
+  farmDomain: String
+  values: [FarmOnboardingValue!]!
 }

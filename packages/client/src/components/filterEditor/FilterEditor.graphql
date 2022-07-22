@@ -7,6 +7,12 @@ query FilterEditor($filterId: String!, $cropType: String! = "") {
       value
       modusId
     }
+    farmOnboarding {
+      values {
+        key
+        values
+      }
+    }
   }
 
   filter(id: $filterId) @client {

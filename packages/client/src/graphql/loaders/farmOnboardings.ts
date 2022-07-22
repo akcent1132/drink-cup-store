@@ -1,5 +1,6 @@
 import { FarmOnboarding } from "../resolvers.generated";
 import pMemoize from "p-memoize";
+import { isArray, isEmpty, map, toString } from "lodash";
 
 declare module externalData {
   export interface FarmOnboarding {
@@ -79,63 +80,20 @@ declare module externalData {
   }
 }
 
-const toString = (value: any) => (value ? String(value) : null);
-const toInt = (value: any) =>
-  Number.isFinite(Number.parseInt(value)) ? Number.parseInt(value) : null;
-const toFloat = (value: any) =>
-  Number.isFinite(Number.parseFloat(value)) ? Number.parseFloat(value) : null;
-const toStringList = (value: any) =>
-  (Array.isArray(value) ? value : [value])
-    .map((v) => String(v))
-    .filter(Boolean);
+export const loadFarmOnboardings = pMemoize(
+  async (): Promise<FarmOnboarding[]> => {
+    const externalData: externalData.FarmOnboarding[] = await fetch(
+      "https://app.surveystack.io/static/coffeeshop/farm_profiles"
+    ).then((result) => result.json());
 
-
-
-export const loadFarmOnboardings = pMemoize(async (): Promise<FarmOnboarding[]> => {
-  const externalData: externalData.FarmOnboarding[] = await fetch(
-    "https://app.surveystack.io/static/coffeeshop/farm_profiles"
-  ).then((result) => result.json());
-
-  return externalData.map((farm) => ({
-    farmDomain: toString(farm.farmDomain),
-    title: toString(farm.title),
-    surveystack_id: toString(farm.surveystack_id),
-    animals_total: toInt(farm.animals_total),
-    area_total_hectares: toFloat(farm.area_total_hectares),
-    average_annual_rainfall: toFloat(farm.average_annual_rainfall),
-    average_annual_temperature: toFloat(farm.average_annual_temperature),
-    certifications_current: toStringList(farm.certifications_current),
-    certifications_current_detail: toStringList(
-      farm.certifications_current_detail
-    ),
-    certifications_future: toStringList(farm.certifications_future),
-    certifications_future_detail: toStringList(
-      farm.certifications_future_detail
-    ),
-    climate_zone: toString(farm.climate_zone),
-    conditions_detail: toString(farm.conditions_detail),
-    county: toString(farm.county),
-    equity_practices: toStringList(farm.equity_practices),
-    goals: toStringList([farm.goal_1, farm.goal_2, farm.goal_3]),
-    hardiness_zone: toString(farm.hardiness_zone),
-    immediate_data_source: toString(farm.immediate_data_source),
-    interest: toStringList(farm.interest),
-    location_address_line1: toString(farm.location_address_line1),
-    location_address_line2: toString(farm.location_address_line2),
-    location_country_code: toString(farm.location_country_code),
-    location_locality: toString(farm.location_locality),
-    location_postal_code: toString(farm.location_postal_code),
-    management_plans_current: toString(farm.management_plans_current),
-    management_plans_current_detail: toStringList(
-      farm.management_plans_current_detail
-    ),
-    motivations: toStringList(farm.motivations),
-    name: toString(farm.name),
-    organization: toString(farm.organization),
-    products_categories: toStringList(farm.products_categories),
-    records_system: toStringList(farm.records_system),
-    role: toString(farm.role),
-    types: toStringList(farm.types),
-    units: toString(farm.units),
-  }));
-});
+    return externalData.map((farm) => ({
+      farmDomain: toString(farm.farmDomain),
+      values: map(farm, (values, key) => ({
+        key,
+        values: (isArray(values) ? values : [values])
+          .filter(x => !isEmpty(x))
+          .map(toString),
+      })),
+    }));
+  }
+);

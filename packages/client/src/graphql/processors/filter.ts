@@ -5,9 +5,31 @@ import { client } from "../client";
 import { PlantingsDocument, PlantingsQuery } from "./filter.generated";
 
 type FilterResult = { hash: string; plantings: PlantingsQuery["plantings"] };
+type Param = NonNullable<PlantingsQuery["filter"]>["params"][number];
+type Planting = PlantingsQuery["plantings"][number];
+
+const isMatchingFarmOnboardingValue = (planting: Planting, param: Param) => {
+  // values of this planting
+  const values =
+    (planting.farmOnboarding?.values || []).find((v) => v.key === param.key)
+      ?.values || [];
+  const paramValue = param.value;
+  if (paramValue.__typename === "FilterValueOption") {
+    return paramValue.options.some((option) => values.includes(option));
+  } else {
+    const numValues = values
+      .map((v) => Number.parseFloat(v))
+      .filter((v) => Number.isFinite(v));
+    // don't filter if the planting has no value for this property
+    if (numValues.length === 0) {
+      return true;
+    }
+    return numValues.some((v) => v >= paramValue.min && v <= paramValue.max);
+  }
+};
 
 // Matching rules:
-// - Range values math if
+// - Range values match if
 //   - planting has any value (with the given key) in the given range
 //   - planting has no value with the given key
 // - Option values match
@@ -35,33 +57,24 @@ export const getPlantingsOfFilterVar = memoize(
         const activeParams = filter.params.filter((p) => p.active);
         let filteredPlantings = plantings;
 
-        const farms = {}; //TODO
-
         if (activeParams.length === 0) {
           filteredPlantings = [];
         } else {
           for (const param of activeParams) {
-            const { value } = param;
-            if (value.__typename === "FilterValueRange") {
-              filteredPlantings = filteredPlantings.filter((p) => {
-                const values =
-                  param.dataSource === FilterParamDataSource.Values
-                    ? p.values.filter((v) => v.name === param.key)
-                    : [get(farms, [p.producer.id, param.key])].flat();
-                return values.every(
-                  (v) => v.value >= value.min && v.value <= value.max
-                );
-              });
-            } else if (value.__typename === "FilterValueOption") {
-              filteredPlantings = filteredPlantings.filter((p) => {
-                const optionsInPlanting = [
-                  get(farms, [p.producer.id, param.key]),
-                ].flat();
-                if (optionsInPlanting.filter(Boolean).length) {
-                  console.log(p.producer.id, param.key, { optionsInPlanting });
-                }
-                return optionsInPlanting.some((o) => value.options.includes(o));
-              });
+            if (param.dataSource === FilterParamDataSource.FarmOnboarding) {
+              filteredPlantings = filteredPlantings.filter((planting) =>
+                isMatchingFarmOnboardingValue(planting, param)
+              );
+            } else {
+              const paramValue = param.value;
+              if (paramValue.__typename === "FilterValueRange") {
+                filteredPlantings = filteredPlantings.filter((planting) => {
+                  return planting.values.some(
+                    ({ value }) =>
+                      value >= paramValue.min && value <= paramValue.max
+                  );
+                });
+              }
             }
           }
         }

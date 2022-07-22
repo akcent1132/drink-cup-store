@@ -9,7 +9,7 @@ export type PlantingsQueryVariables = Types.Exact<{
 }>;
 
 
-export type PlantingsQuery = { __typename?: 'Query', plantings: Array<{ __typename?: 'Planting', id: string, values: Array<{ __typename?: 'PlantingValue', name: string, value: number, plantingId: string, modusId?: string | null }>, producer: { __typename?: 'Producer', id: string } }>, filter?: { __typename?: 'Filter', id: string, color: string, name: string, params: Array<{ __typename?: 'FilterParam', key: string, active: boolean, dataSource?: Types.FilterParamDataSource | null, value: { __typename: 'FilterValueOption', options: Array<string> } | { __typename: 'FilterValueRange', min: number, max: number } }> } | null };
+export type PlantingsQuery = { __typename?: 'Query', plantings: Array<{ __typename?: 'Planting', id: string, values: Array<{ __typename?: 'PlantingValue', name: string, value: number, plantingId: string, modusId?: string | null }>, producer: { __typename?: 'Producer', id: string }, farmOnboarding?: { __typename?: 'FarmOnboarding', values: Array<{ __typename?: 'FarmOnboardingValue', key: string, values: Array<string> }> } | null }>, filter?: { __typename?: 'Filter', id: string, color: string, name: string, params: Array<{ __typename?: 'FilterParam', key: string, active: boolean, dataSource?: Types.FilterParamDataSource | null, value: { __typename: 'FilterValueOption', options: Array<string> } | { __typename: 'FilterValueRange', min: number, max: number } }> } | null };
 
 
 export const PlantingsDocument = gql`
@@ -24,6 +24,12 @@ export const PlantingsDocument = gql`
     }
     producer {
       id
+    }
+    farmOnboarding {
+      values {
+        key
+        values
+      }
     }
   }
   filter(id: $filterId) @client {
