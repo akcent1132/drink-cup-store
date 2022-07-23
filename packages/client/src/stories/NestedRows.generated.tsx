@@ -8,7 +8,7 @@ export type NestedRowsQueryVariables = Types.Exact<{
 }>;
 
 
-export type NestedRowsQuery = { __typename?: 'Query', selectedCropType: string, highlightedPlantingId?: string | null, highlightedFilterId?: string | null, plantings: Array<{ __typename?: 'Planting', id: string, values: Array<{ __typename?: 'PlantingValue', name: string, value: number, plantingId: string, modusId?: string | null }> }>, filters: Array<{ __typename?: 'Filter', id: string, color: string, name: string, params: Array<{ __typename?: 'FilterParam', key: string, active: boolean, dataSource?: Types.FilterParamDataSource | null, value: { __typename: 'FilterValueOption', options: Array<string> } | { __typename: 'FilterValueRange', min: number, max: number } }>, plantings: Array<{ __typename?: 'Planting', id: string, values: Array<{ __typename?: 'PlantingValue', name: string, value: number, plantingId: string, modusId?: string | null }> }> }> };
+export type NestedRowsQuery = { __typename?: 'Query', selectedCropType: string, highlightedPlantingId?: string | null, highlightedFilterId?: string | null, plantings: Array<{ __typename?: 'Planting', id: string, values: Array<{ __typename?: 'PlantingValue', name: string, value: number, plantingId: string, modusId?: string | null }>, farmOnboarding?: { __typename?: 'FarmOnboarding', values: Array<{ __typename?: 'FarmOnboardingValue', key: string, values: Array<string> }> } | null }> };
 
 
 export const NestedRowsDocument = gql`
@@ -22,38 +22,15 @@ export const NestedRowsDocument = gql`
       plantingId
       modusId
     }
+    farmOnboarding {
+      values {
+        key
+        values
+      }
+    }
   }
   highlightedPlantingId @client
   highlightedFilterId @client
-  filters(cropType: $cropType) @client {
-    id
-    color
-    name
-    params {
-      key
-      active
-      dataSource
-      value {
-        __typename
-        ... on FilterValueRange {
-          min
-          max
-        }
-        ... on FilterValueOption {
-          options
-        }
-      }
-    }
-    plantings {
-      id
-      values {
-        name
-        value
-        plantingId
-        modusId
-      }
-    }
-  }
 }
     `;
 

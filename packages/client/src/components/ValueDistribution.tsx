@@ -153,10 +153,10 @@ type Props = {
   highlightedFilterId?: string;
   highlightedPlantingId?: string;
   allData: {
-    filter: {
+    matchingFilters: {
       id: string;
       color: string | null;
-    };
+    }[];
     name: string;
     value: number;
     modusId?: string | null;
@@ -219,7 +219,9 @@ export const ValueDistribution = ({
   const handlePlotMouseMove = useCallback(
     (e: React.MouseEvent) => {
       //TODO memo
-      const allSelectableData = allData.filter((v) => !!v.filter);
+      const allSelectableData = allData.filter(
+        (v) => v.matchingFilters.length > 0
+      );
       const allSelectableValues = allSelectableData.map((d) => d.value);
       if (allSelectableValues.length === 0) {
         return;
@@ -255,7 +257,7 @@ export const ValueDistribution = ({
     setLocalHoveredValue(null);
   }, [localHoveredValue]);
   const handlePlotMouseClick = useCallback(() => {
-    if (localHoveredValue && localHoveredValue.filter) {
+    if (localHoveredValue && localHoveredValue.matchingFilters[0]) {
       openEventCard(localHoveredValue.plantingId);
     }
   }, [localHoveredValue]);
@@ -270,6 +272,20 @@ export const ValueDistribution = ({
   //     "highlightedFilter",
   //   ]
   // );
+
+  // select maximum one filter for each value
+  const allDataWithFilter = useMemo(
+    () =>
+      allData.map((value) => ({
+        ...value,
+        filter:
+          value.matchingFilters.find((f) => f.id === highlightedFilterId) ||
+          value.matchingFilters.length
+            ? value.matchingFilters[0]
+            : null,
+      })),
+    [allData, highlightedFilterId]
+  );
 
   useEffect(() => {
     const ctx = canvas.resize();
@@ -287,11 +303,15 @@ export const ValueDistribution = ({
     );
     ctx.fill();
 
-    for (const valueSet of sortBy(
-      Object.values(groupBy(allData, "filter.id")),
-      (valueSet) =>
-        highlightedFilterId === valueSet[0].filter?.id
-    )) {
+    let valuesGrouppedByFilter = Object.values(
+      groupBy(allDataWithFilter, (value) => value.filter?.id)
+    );
+    // move values to front (top) if they match the highlightedFilterId
+    valuesGrouppedByFilter = sortBy(valuesGrouppedByFilter, (valueSet) =>
+      valueSet[0].matchingFilters.some((f) => f.id === highlightedFilterId)
+    );
+
+    for (const valueSet of valuesGrouppedByFilter) {
       const filter = valueSet[0].filter;
       ctx.beginPath();
       const color = tinycolor(
@@ -307,7 +327,7 @@ export const ValueDistribution = ({
             .toString();
 
       // draw variance line
-      if (filter.color) {
+      if (filter) {
         const values = valueSet.map((v) => v.value);
         const q1 = quantile(values, 0.25);
         const q3 = quantile(values, 0.75);
@@ -368,7 +388,7 @@ export const ValueDistribution = ({
     if (highlightedPlantingId) {
       ctx.beginPath();
       ctx.fillStyle = theme.color("white");
-      allData.map((data) => {
+      allDataWithFilter.map((data) => {
         if (data.plantingId === highlightedPlantingId) {
           ctx.rect(
             scale(data.value) - theme.valueDistribution.tickWidth / 2,
@@ -381,7 +401,7 @@ export const ValueDistribution = ({
       ctx.fill();
     }
   }, [
-    allData,
+    allDataWithFilter,
     canvas.width,
     canvas.height,
     scale,

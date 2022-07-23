@@ -44,6 +44,7 @@ import {
   useRandomContentQuery,
 } from "./Dashboard.generated";
 import { Box, Layer, Spinner } from "grommet";
+import { FiltersProvider } from "../contexts/FiltersCtx";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -121,7 +122,11 @@ const RandomContent = () => {
       name = name || faker.company.companyName();
       const _color =
         color || sample(freeColors.length > 0 ? freeColors : COLORS)!;
-      const filter = addFilter(_color, `New Filter ${filterNamePostfix++}`, selectedCropType || "corn");
+      const filter = addFilter(
+        _color,
+        `New Filter ${filterNamePostfix++}`,
+        selectedCropType || "corn"
+      );
       selectFilter(filter.id);
     },
     [filters]
@@ -212,10 +217,7 @@ export const Dashboard = ({ iframeSrc }: Props) => {
   const [SideContent, sideContentKey] = useMemo(
     () =>
       selectedFilterId
-        ? [
-            <FilterEditor selectedFilterId={selectedFilterId} />,
-            "FilterEditor",
-          ]
+        ? [<FilterEditor selectedFilterId={selectedFilterId} />, "FilterEditor"]
         : selectedProducer
         ? [
             <FarmerProfile producer={selectedProducer} />,
@@ -295,6 +297,8 @@ export const Dashboard = ({ iframeSrc }: Props) => {
 
 export const App = (props: ComponentProps<typeof Dashboard>) => (
   <ApolloProvider client={client}>
-    <Dashboard {...props} />
+    <FiltersProvider>
+      <Dashboard {...props} />
+    </FiltersProvider>
   </ApolloProvider>
 );

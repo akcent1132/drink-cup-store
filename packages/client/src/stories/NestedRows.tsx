@@ -1,22 +1,84 @@
 import { findLastIndex, last, remove } from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
 import { ValueDistribution } from "../components/ValueDistribution";
+import { Filter, useFilters } from "../contexts/FiltersCtx";
 import { RowData } from "../contexts/rows";
+import { FilterParamDataSource } from "../graphql.generated";
 import { NestedRowsQuery, useNestedRowsQuery } from "./NestedRows.generated";
 
+type Planting = NestedRowsQuery["plantings"][number];
+
+// TODO caching
+const isMatchingFarmOnboardingValue = (
+  planting: Planting,
+  param: Filter["params"][number]
+) => {
+  // values of this planting
+  const values =
+    (planting.farmOnboarding?.values || []).find((v) => v.key === param.key)
+      ?.values || [];
+  const paramValue = param.value;
+  if (paramValue.__typename === "FilterValueOption") {
+    return paramValue.options.some((option) => values.includes(option));
+  } else {
+    const numValues = values
+      .map((v) => Number.parseFloat(v))
+      .filter((v) => Number.isFinite(v));
+    // don't filter if the planting has no value for this property
+    if (numValues.length === 0) {
+      return true;
+    }
+    return numValues.some((v) => v >= paramValue.min && v <= paramValue.max);
+  }
+};
+
+const getPlantingIdsOfFilter = (filter: Filter, plantings: Planting[]) => {
+  console.time(`getPlantingsOfFilterVar ${filter.id}`);
+
+  const activeParams = filter.params.filter((p) => p.active);
+  let filteredPlantings = plantings;
+
+  if (activeParams.length === 0) {
+    filteredPlantings = [];
+  } else {
+    for (const param of activeParams) {
+      if (param.dataSource === FilterParamDataSource.FarmOnboarding) {
+        filteredPlantings = filteredPlantings.filter((planting) =>
+          isMatchingFarmOnboardingValue(planting, param)
+        );
+      } else {
+        const paramValue = param.value;
+        if (paramValue.__typename === "FilterValueRange") {
+          filteredPlantings = filteredPlantings.filter((planting) => {
+            return planting.values.some(
+              ({ value }) => value >= paramValue.min && value <= paramValue.max
+            );
+          });
+        }
+      }
+    }
+  }
+
+  console.timeEnd(`getPlantingsOfFilterVar ${filter.id}`);
+
+  return filteredPlantings.map((p) => p.id);
+};
+
 const getLabeledValues = (
-  filters: NestedRowsQuery["filters"],
+  filters: Filter[],
   plantings: NestedRowsQuery["plantings"]
 ) => {
-  console.time(`Get labeled values`)
-  const matchedPlantingIds = filters
-    .map((f) => f.plantings.map((p) => p.id))
-    .flat();
+  console.time(`Get labeled values`);
+
+  const plantingIdsOfFilters = filters.map((filter) =>
+    getPlantingIdsOfFilter(filter, plantings)
+  );
+  const matchedPlantingIds = plantingIdsOfFilters.flat();
   const unmatchedPlantings = plantings.filter(
     (p) => !matchedPlantingIds.includes(p.id)
   );
 
-  const labeledValues = [
+  const _labeledValues = [
     { id: "unmatched_values", color: null, plantings: unmatchedPlantings },
     ...filters,
   ]
@@ -34,7 +96,21 @@ const getLabeledValues = (
     )
     .flat();
 
-  console.timeEnd(`Get labeled values`)
+  // flat list of values from all plantings tagged with the matching filters
+  const labeledValues = plantings
+    .map((planting) => {
+      const matchingFilters = filters
+        .filter((_, idx) => plantingIdsOfFilters[idx].includes(planting.id))
+        .map((filter) => ({ id: filter.id, color: filter.color }));
+      return planting.values.map((value) => ({
+        ...value,
+        plantingId: planting.id,
+        matchingFilters,
+      }));
+    })
+    .flat();
+
+  console.timeEnd(`Get labeled values`);
   return labeledValues;
 };
 
@@ -50,10 +126,10 @@ const flattenRows = (
   hideBranches: number;
   childRowNames: string[];
   allData: {
-    filter: {
+    matchingFilters: {
       id: string;
       color: string | null;
-    };
+    }[];
     name: string;
     value: number;
     modusId?: string | null;
@@ -101,11 +177,21 @@ const flattenRows = (
 
 export const NestedRows = ({ rows }: { rows: RowData[] }) => {
   const {
-    data: { filters, plantings, highlightedFilterId, highlightedPlantingId } = {},
+    data: {
+      selectedCropType,
+      plantings,
+      highlightedFilterId,
+      highlightedPlantingId,
+    } = {},
   } = useNestedRowsQuery();
+  const filtersCtx = useFilters();
+  const filters = useMemo(
+    () => filtersCtx.filters.filter((f) => f.cropType === selectedCropType),
+    [filtersCtx.filters, selectedCropType]
+  );
   const labeledValues = useMemo(
     () => (filters && plantings ? getLabeledValues(filters, plantings) : []),
-    [JSON.stringify(filters), plantings]
+    [filters, plantings]
   );
   const flatRows = useMemo(
     () => flattenRows(rows, labeledValues),
