@@ -27,7 +27,6 @@ import {
 } from "../graphql.generated";
 import { authState } from "./auth";
 import "./server";
-import { getPlantingsOfFilterVar } from "./processors/filter";
 import { memoize } from "lodash";
 
 const typeDefs = loader("./local.graphql");

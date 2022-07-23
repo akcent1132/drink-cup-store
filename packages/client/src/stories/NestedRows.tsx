@@ -32,8 +32,14 @@ const isMatchingFarmOnboardingValue = (
   }
 };
 
+// Matching rules:
+// - Range values match if
+//   - planting has any value (with the given key) in the given range
+//   - planting has no value with the given key
+// - Option values match
+//   - if the planting has a matching value (with the given key) with the selected option
 const getPlantingIdsOfFilter = (filter: Filter, plantings: Planting[]) => {
-  console.time(`getPlantingsOfFilterVar ${filter.id}`);
+  console.time(`getPlantingsOfFilter ${filter.id}`);
 
   const activeParams = filter.params.filter((p) => p.active);
   let filteredPlantings = plantings;
@@ -59,7 +65,7 @@ const getPlantingIdsOfFilter = (filter: Filter, plantings: Planting[]) => {
     }
   }
 
-  console.timeEnd(`getPlantingsOfFilterVar ${filter.id}`);
+  console.timeEnd(`getPlantingsOfFilter ${filter.id}`);
 
   return filteredPlantings.map((p) => p.id);
 };
