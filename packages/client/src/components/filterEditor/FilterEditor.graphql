@@ -13,25 +13,4 @@ query FilterEditor($cropType: String! = "") {
       }
     }
   }
-
-  # filter(id: $filterId) @client {
-  #   id
-  #   color
-  #   name
-  #   params {
-  #     key
-  #     active
-  #     dataSource
-  #     value {
-  #       __typename
-  #       ... on FilterValueRange {
-  #         min
-  #         max
-  #       }
-  #       ... on FilterValueOption {
-  #         options
-  #       }
-  #     }
-  #   }
-  # }
 }

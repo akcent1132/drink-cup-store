@@ -17,33 +17,4 @@ query NestedRows($cropType: String! = "") {
   }
   highlightedPlantingId @client
   highlightedFilterId @client 
-  # filters(cropType: $cropType) @client {
-  #   id
-  #   color
-  #   name
-  #   params {
-  #     key
-  #     active
-  #     dataSource
-  #     value {
-  #       __typename
-  #       ... on FilterValueRange {
-  #         min
-  #         max
-  #       }
-  #       ... on FilterValueOption {
-  #         options
-  #       }
-  #     }
-  #   }
-  #   plantings {
-  #     id
-  #     values {
-  #       name
-  #       value
-  #       plantingId
-  #       modusId
-  #     }
-  #   }
-  # }
 }

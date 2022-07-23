@@ -44,7 +44,7 @@ import {
   useRandomContentQuery,
 } from "./Dashboard.generated";
 import { Box, Layer, Spinner } from "grommet";
-import { FiltersProvider } from "../contexts/FiltersCtx";
+import { FiltersProvider, useFilters } from "../contexts/FiltersCtx";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -113,8 +113,15 @@ const RightFlipContainer = styled.div`
 const COLORS = schemeTableau10.slice(0, 9);
 let filterNamePostfix = 1;
 const RandomContent = () => {
-  const { data: { filters = [], selectedCropType } = {} } =
-    useRandomContentQuery();
+  const { data: { selectedCropType } = {} } = useRandomContentQuery();
+  const filtersCtx = useFilters();
+  const filters = useMemo(
+    () =>
+      filtersCtx.filters.filter(
+        (filter) => filter.cropType === selectedCropType
+      ),
+    [selectedCropType, filtersCtx.filters]
+  );
   const { colors } = useTheme();
   const handleAddFilter = useCallback(
     (name?: string, color?: string) => {

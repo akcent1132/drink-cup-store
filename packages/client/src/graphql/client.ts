@@ -23,9 +23,6 @@ import {
 import { loader } from "graphql.macro";
 import {
   Filter,
-  FilterParam,
-  FilterParamDataSource,
-  Planting,
   StrictTypedTypePolicies,
 } from "../graphql.generated";
 import { authState } from "./auth";
@@ -133,7 +130,7 @@ const typePolicies: StrictTypedTypePolicies = {
         read(_, { readField }) {
           const id = readField<string>("id") || "";
           const cropType = readField<string>("cropType") || "";
-          return getPlantingsOfFilterVar(id, cropType)().plantings;
+          return getPlantingsDashOfFilterVar(id, cropType)().plantings;
         },
       },
       isHighlighted: {

@@ -8,7 +8,7 @@ export type RandomContentQueryVariables = Types.Exact<{
 }>;
 
 
-export type RandomContentQuery = { __typename?: 'Query', selectedCropType: string, filters: Array<{ __typename?: 'Filter', id: string, name: string, color: string }> };
+export type RandomContentQuery = { __typename?: 'Query', selectedCropType: string };
 
 export type DashboardQueryVariables = Types.Exact<{
   producerId?: Types.InputMaybe<Types.Scalars['String']>;
@@ -21,11 +21,6 @@ export type DashboardQuery = { __typename?: 'Query', selectedFilterId?: string |
 export const RandomContentDocument = gql`
     query RandomContent($cropType: String! = "") {
   selectedCropType @client @export(as: "cropType")
-  filters(cropType: $cropType) @client {
-    id
-    name
-    color
-  }
 }
     `;
 
