@@ -15,7 +15,12 @@ export type DashboardQueryVariables = Types.Exact<{
 }>;
 
 
-export type DashboardQuery = { __typename?: 'Query', selectedFilterId?: string | null, selectedProducerId?: string | null, selectedProducer?: { __typename?: 'Producer', id: string, code: string, plantings: Array<{ __typename?: 'Planting', id: string, isHighlighted: boolean, title: string, producer: { __typename?: 'Producer', id: string, code: string }, params: { __typename?: 'PlantingParams', precipitation: string, temperature: string, texture: string, zone: string }, events: Array<{ __typename?: 'PlantingEvent', id: string, date: string, type: string, detailsKey?: string | null, details?: Array<{ __typename?: 'PlantingEventDetail', id: string, name: string, value?: string | null, valueList?: Array<string> | null }> | null }>, matchingFilters: Array<{ __typename?: 'Filter', id: string, color: string }> }> } | null, allPlantings: Array<{ __typename?: 'Planting', id: string }> };
+export type DashboardQuery = { __typename?: 'Query', selectedFilterId?: string | null, selectedProducerId?: string | null, selectedProducer?: { __typename?: 'Producer', id: string, code: string, plantings: Array<{ __typename?: 'Planting', id: string, isHighlighted: boolean, title: string, producer: { __typename?: 'Producer', id: string, code: string }, params: { __typename?: 'PlantingParams', precipitation: string, temperature: string, texture: string, zone: string }, events: Array<{ __typename?: 'PlantingEvent', id: string, date: string, type: string, detailsKey?: string | null, details?: Array<{ __typename?: 'PlantingEventDetail', id: string, name: string, value?: string | null, valueList?: Array<string> | null }> | null }> }> } | null, allPlantings: Array<{ __typename?: 'Planting', id: string }> };
+
+export type PreloadDataQueryVariables = Types.Exact<{ [key: string]: never; }>;
+
+
+export type PreloadDataQuery = { __typename?: 'Query', allFarmOnboardings: Array<{ __typename?: 'FarmOnboarding', farmDomain?: string | null, values: Array<{ __typename?: 'FarmOnboardingValue', key: string, values: Array<string> }> }> };
 
 
 export const RandomContentDocument = gql`
@@ -84,10 +89,6 @@ export const DashboardDocument = gql`
           valueList
         }
       }
-      matchingFilters @client {
-        id
-        color
-      }
     }
   }
   allPlantings {
@@ -123,3 +124,41 @@ export function useDashboardLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<
 export type DashboardQueryHookResult = ReturnType<typeof useDashboardQuery>;
 export type DashboardLazyQueryHookResult = ReturnType<typeof useDashboardLazyQuery>;
 export type DashboardQueryResult = Apollo.QueryResult<DashboardQuery, DashboardQueryVariables>;
+export const PreloadDataDocument = gql`
+    query PreloadData {
+  allFarmOnboardings {
+    farmDomain
+    values {
+      key
+      values
+    }
+  }
+}
+    `;
+
+/**
+ * __usePreloadDataQuery__
+ *
+ * To run a query within a React component, call `usePreloadDataQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePreloadDataQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePreloadDataQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function usePreloadDataQuery(baseOptions?: Apollo.QueryHookOptions<PreloadDataQuery, PreloadDataQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<PreloadDataQuery, PreloadDataQueryVariables>(PreloadDataDocument, options);
+      }
+export function usePreloadDataLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PreloadDataQuery, PreloadDataQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<PreloadDataQuery, PreloadDataQueryVariables>(PreloadDataDocument, options);
+        }
+export type PreloadDataQueryHookResult = ReturnType<typeof usePreloadDataQuery>;
+export type PreloadDataLazyQueryHookResult = ReturnType<typeof usePreloadDataLazyQuery>;
+export type PreloadDataQueryResult = Apollo.QueryResult<PreloadDataQuery, PreloadDataQueryVariables>;

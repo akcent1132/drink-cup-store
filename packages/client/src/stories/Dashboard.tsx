@@ -204,7 +204,7 @@ interface Props {
 export const Dashboard = ({ iframeSrc }: Props) => {
   const { data: { selectedFilterId, selectedProducer } = {}, loading } =
     useDashboardQuery();
-
+    
   const [tabIndex, setTabIndex] = useState(0);
   const rightSide = useRef<HTMLDivElement>(null);
   const pages = useMemo(

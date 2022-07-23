@@ -142,7 +142,7 @@ export const EventsCard = ({
   }
   return (
     <Root
-      color={planting.matchingFilters[0]?.color || "grey"}
+      color={"grey"}
       isHighlighted={planting.isHighlighted}
       onMouseEnter={onHoverData}
       onMouseLeave={onLeaveData}

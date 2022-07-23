@@ -25,9 +25,5 @@ query EventsCard($plantingId: String!) {
         valueList
       }
     }
-    matchingFilters @client {
-      id
-      color
-    }
   }
 }

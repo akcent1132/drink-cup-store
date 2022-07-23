@@ -82,7 +82,6 @@ export type Planting = {
   farmOnboarding: Maybe<FarmOnboarding>;
   id: Scalars['String'];
   isHighlighted: Scalars['Boolean'];
-  matchingFilters: Array<Filter>;
   params: PlantingParams;
   producer: Producer;
   title: Scalars['String'];
@@ -136,7 +135,6 @@ export type Query = {
   auth: Maybe<AuthState>;
   highlightedFilterId: Maybe<Scalars['String']>;
   highlightedPlantingId: Maybe<Scalars['String']>;
-  notgood: Maybe<Scalars['String']>;
   openEventCardIds: Array<Scalars['String']>;
   planting: Maybe<Planting>;
   plantings: Array<Planting>;
@@ -144,7 +142,6 @@ export type Query = {
   selectedCropType: Scalars['String'];
   selectedFilterId: Maybe<Scalars['String']>;
   selectedProducerId: Maybe<Scalars['String']>;
-  test: Scalars['Boolean'];
 };
 
 
@@ -154,7 +151,7 @@ export type QueryOpenEventCardIdsArgs = {
 
 
 export type QueryPlantingArgs = {
-  id: Scalars['String'];
+  id: InputMaybe<Scalars['String']>;
 };
 
 
@@ -214,14 +211,13 @@ export type FilterValueRangeFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type PlantingKeySpecifier = ('cropType' | 'events' | 'farmOnboarding' | 'id' | 'isHighlighted' | 'matchingFilters' | 'params' | 'producer' | 'title' | 'values' | PlantingKeySpecifier)[];
+export type PlantingKeySpecifier = ('cropType' | 'events' | 'farmOnboarding' | 'id' | 'isHighlighted' | 'params' | 'producer' | 'title' | 'values' | PlantingKeySpecifier)[];
 export type PlantingFieldPolicy = {
 	cropType?: FieldPolicy<any> | FieldReadFunction<any>,
 	events?: FieldPolicy<any> | FieldReadFunction<any>,
 	farmOnboarding?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	isHighlighted?: FieldPolicy<any> | FieldReadFunction<any>,
-	matchingFilters?: FieldPolicy<any> | FieldReadFunction<any>,
 	params?: FieldPolicy<any> | FieldReadFunction<any>,
 	producer?: FieldPolicy<any> | FieldReadFunction<any>,
 	title?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -262,22 +258,20 @@ export type ProducerFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('allFarmOnboardings' | 'allPlantings' | 'auth' | 'highlightedFilterId' | 'highlightedPlantingId' | 'notgood' | 'openEventCardIds' | 'planting' | 'plantings' | 'producer' | 'selectedCropType' | 'selectedFilterId' | 'selectedProducerId' | 'test' | QueryKeySpecifier)[];
+export type QueryKeySpecifier = ('allFarmOnboardings' | 'allPlantings' | 'auth' | 'highlightedFilterId' | 'highlightedPlantingId' | 'openEventCardIds' | 'planting' | 'plantings' | 'producer' | 'selectedCropType' | 'selectedFilterId' | 'selectedProducerId' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
 	allFarmOnboardings?: FieldPolicy<any> | FieldReadFunction<any>,
 	allPlantings?: FieldPolicy<any> | FieldReadFunction<any>,
 	auth?: FieldPolicy<any> | FieldReadFunction<any>,
 	highlightedFilterId?: FieldPolicy<any> | FieldReadFunction<any>,
 	highlightedPlantingId?: FieldPolicy<any> | FieldReadFunction<any>,
-	notgood?: FieldPolicy<any> | FieldReadFunction<any>,
 	openEventCardIds?: FieldPolicy<any> | FieldReadFunction<any>,
 	planting?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>,
 	producer?: FieldPolicy<any> | FieldReadFunction<any>,
 	selectedCropType?: FieldPolicy<any> | FieldReadFunction<any>,
 	selectedFilterId?: FieldPolicy<any> | FieldReadFunction<any>,
-	selectedProducerId?: FieldPolicy<any> | FieldReadFunction<any>,
-	test?: FieldPolicy<any> | FieldReadFunction<any>
+	selectedProducerId?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type StrictTypedTypePolicies = {
 	AuthState?: Omit<TypePolicy, "fields" | "keyFields"> & {

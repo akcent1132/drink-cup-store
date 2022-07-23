@@ -8,7 +8,7 @@ export type EventsCardQueryVariables = Types.Exact<{
 }>;
 
 
-export type EventsCardQuery = { __typename?: 'Query', planting?: { __typename?: 'Planting', id: string, isHighlighted: boolean, title: string, producer: { __typename?: 'Producer', id: string, code: string }, params: { __typename?: 'PlantingParams', precipitation: string, temperature: string, texture: string, zone: string }, events: Array<{ __typename?: 'PlantingEvent', id: string, date: string, type: string, detailsKey?: string | null, details?: Array<{ __typename?: 'PlantingEventDetail', id: string, name: string, value?: string | null, valueList?: Array<string> | null }> | null }>, matchingFilters: Array<{ __typename?: 'Filter', id: string, color: string }> } | null };
+export type EventsCardQuery = { __typename?: 'Query', planting?: { __typename?: 'Planting', id: string, isHighlighted: boolean, title: string, producer: { __typename?: 'Producer', id: string, code: string }, params: { __typename?: 'PlantingParams', precipitation: string, temperature: string, texture: string, zone: string }, events: Array<{ __typename?: 'PlantingEvent', id: string, date: string, type: string, detailsKey?: string | null, details?: Array<{ __typename?: 'PlantingEventDetail', id: string, name: string, value?: string | null, valueList?: Array<string> | null }> | null }> } | null };
 
 
 export const EventsCardDocument = gql`
@@ -38,10 +38,6 @@ export const EventsCardDocument = gql`
         value
         valueList
       }
-    }
-    matchingFilters @client {
-      id
-      color
     }
   }
 }

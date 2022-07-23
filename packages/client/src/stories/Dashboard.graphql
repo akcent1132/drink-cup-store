@@ -34,13 +34,19 @@ query Dashboard($producerId: String) {
           valueList
         }
       }
-      matchingFilters @client {
-        id
-        color
-      }
     }
   }
   allPlantings {
     id
+  }
+}
+
+query PreloadData {
+  allFarmOnboardings {
+    farmDomain
+    values {
+      key
+      values
+    }
   }
 }
