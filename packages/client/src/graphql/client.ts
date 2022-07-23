@@ -101,20 +101,6 @@ const typePolicies: StrictTypedTypePolicies = {
           //   .filter(Boolean);
         },
       },
-      filters: {
-        read(_, options): Filter[] {
-          // @ts-ignore
-          const cropType: string = options.args.cropType;
-          return filters().filter((f) => f.cropType === cropType);
-        },
-      },
-      filter: {
-        read(_, options) {
-          // @ts-ignore
-          const id: string = options.args.id;
-          return filters().find((f) => f.id === id) || null;
-        },
-      },
       selectedFilterId() {
         return selectedFilterId();
       },
@@ -125,13 +111,6 @@ const typePolicies: StrictTypedTypePolicies = {
   },
   Filter: {
     fields: {
-      plantings: {
-        read(_, { readField }) {
-          const id = readField<string>("id") || "";
-          const cropType = readField<string>("cropType") || "";
-          return getPlantingsDashOfFilterVar(id, cropType)().plantings;
-        },
-      },
       isHighlighted: {
         read(_, { readField }) {
           const id = readField<string>("id");

@@ -1,21 +1,13 @@
 extend type Query {
   highlightedPlantingId: String
   highlightedFilterId: String
-  plantings(cropType: String!): [Planting!]!
-  allPlantings: [Planting!]!
-  planting(id: String!): Planting
-  filters(cropType: String!): [Filter!]!
-  filter(id: String!): Filter
   selectedCropType: String!
-  test: Boolean!
   openEventCardIds(cropType: String!): [String!]!
   selectedFilterId: String
   selectedProducerId: String
   auth: AuthState,
-  notgood: String
 }
 extend type Planting {
-  matchingFilters: [Filter!]!
   isHighlighted: Boolean!
 }
 type FilterValueOption {
