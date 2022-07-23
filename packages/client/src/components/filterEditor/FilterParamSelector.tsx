@@ -1,15 +1,21 @@
-import { startCase, without } from "lodash";
-import { useState } from "react";
+import { sortBy, startCase, without } from "lodash";
+import { useMemo, useState } from "react";
 import {
   addFilterParam,
   removeFilterParam,
 } from "../../contexts/FiltersContext";
 import { Filterable } from "./getFilterables";
-import { FilterParam } from "../../graphql.generated";
+import { FilterParam, FilterParamDataSource } from "../../graphql.generated";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import { OutlinedInput, Theme } from "@mui/material";
+import OutlinedInput from "@mui/material/Input";
 import { Filter } from "../../contexts/FiltersCtx";
+import BarChartIcon from "@mui/icons-material/BarChart";
+import JoinInnerIcon from "@mui/icons-material/JoinInner";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import Typography from "@mui/material/Typography";
+import ListItemText from "@mui/material/ListItemText";
+import Divider from "@mui/material/Divider";
 
 type Param = Filter["params"][number];
 type Props = {
@@ -30,6 +36,19 @@ const prettyKey = (key: string) =>
 //   };
 // }
 
+const OptionListItem = ({option}: {option: Filterable}) => (
+  <MenuItem key={option.key} value={option.key}>
+          <ListItemText>{prettyKey(option.key)}</ListItemText>
+          <ListItemIcon>
+            {option.type === "numeric" ? (
+              <BarChartIcon  fontSize="small" />
+            ) : (
+              <JoinInnerIcon fontSize="small" />
+            )}
+          </ListItemIcon>
+        </MenuItem>
+)
+
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -47,7 +66,20 @@ export const FilterParamSelector = ({
   filterables,
 }: Props) => {
   const [options, setOptions] = useState(filterables);
-  const label = "Select filter properties...";
+  const farmOptions = useMemo(
+    () =>
+      sortBy(options.filter(
+        (o) => o.dataSource === FilterParamDataSource.FarmOnboarding
+      ), 'key'),
+    [options]
+  );
+  const statOptions = useMemo(
+    () =>
+      sortBy(options.filter(
+        (o) => o.dataSource === FilterParamDataSource.Values
+      ), 'key'),
+    [options]
+  );
 
   const handleChange = (event: SelectChangeEvent<string[]>) => {
     const {
@@ -88,113 +120,38 @@ export const FilterParamSelector = ({
 
   return (
     <Select
-      labelId="demo-multiple-name-label"
-      id="demo-multiple-name"
+      label="Filter Properties"
       multiple
+      placeholder="Select Filter Properties..."
       value={params.filter((p) => p.active).map((p) => p.key)}
       onChange={handleChange}
-      input={<OutlinedInput label="Name" />}
+      input={<OutlinedInput />}
       MenuProps={MenuProps}
+      displayEmpty
+      renderValue={(selected) => {
+        console.log("selected", selected);
+        if (selected.length === 0) {
+          return <em>Select a filter property...</em>;
+        }
+
+        return selected.join(", ");
+      }}
     >
-      {options.map((option) => (
-        <MenuItem key={option.key} value={option.key}>
-          {prettyKey(option.key)}
-        </MenuItem>
+      <MenuItem disabled value="">
+        <em>Farm properties:</em>
+      </MenuItem>
+
+      {farmOptions.map((option) => (
+        <OptionListItem key={option.key} option={option} />
+      ))}
+      <Divider light />
+
+      <MenuItem disabled value="">
+        <em>Statistical properties:</em>
+      </MenuItem>
+      {statOptions.map((option) => (
+        <OptionListItem key={option.key} option={option} />
       ))}
     </Select>
   );
-
-  // const renderOption = (option: Filterable) => {
-  //   const active = params.some((p) => p.key === option.key);
-  //   return (
-  //     <Box
-  //       direction="row"
-  //       align="center"
-  //       pad="xsmall"
-  //       flex={false}
-  //       background={active ? "" : ""}
-  //     >
-  //       {option.type === "numeric" ? (
-  //         <Time size="medium" />
-  //       ) : (
-  //         <BlockQuote size="medium" />
-  //       )}
-  //       <Text
-  //         size="medium"
-  //         weight={active ? "bold" : "normal"}
-  //         style={{ marginLeft: "4px" }}
-  //       >
-  //         {prettyKey(option.key)}
-  //       </Text>
-  //     </Box>
-  //   );
-  // };
-
-  // return (
-  //   <Select
-
-  //   css={css`
-  //   height: 0px;
-  // `}
-  //     multiple
-  //     // clear={{ label: "Remove all" }}
-  //     size="small"
-  //     // dropHeight="medium"
-  //     // plain
-  //     // messages={{ multiple: label }}
-  //     // placeholder={label}
-  //     options={options}
-  //     // valueLabel={<Text>{label}</Text>}
-  //     value={params.filter((p) => p.active).map((p) => p.key)}
-  //     valueKey={{ key: "key", reduce: true }}
-  //     // labelKey={(option) => renderOption(option)}
-
-  //     labelKey={(option) => option.key}
-  //     onChange={({ value: selectedKeys }) => {
-  //       const currentKeys = params.map((p) => p.key);
-  //       // add new filter params
-  //       without(selectedKeys as string[], ...currentKeys)
-  //         .map((key) => filterables.find((f) => f.key === key))
-  //         .filter((f): f is Filterable => !!f)
-  //         .map(
-  //           (filterable): FilterParam => ({
-  //             __typename: "FilterParam",
-  //             key: filterable.key,
-  //             active: true,
-  //             dataSource: filterable.dataSource,
-  //             value:
-  //               filterable.type === "numeric"
-  //                 ? {
-  //                     __typename: "FilterValueRange",
-  //                     min: Math.min(...filterable.values),
-  //                     max: Math.max(...filterable.values),
-  //                   }
-  //                 : {
-  //                     __typename: "FilterValueOption",
-  //                     options: [],
-  //                   },
-  //           })
-  //         )
-  //         .map((p) => addFilterParam(filterId, p));
-
-  //       // remove removed params
-  //       without(currentKeys, ...selectedKeys).map((key) =>
-  //         removeFilterParam(filterId, key)
-  //       );
-  //     }}
-  //     closeOnChange={false}
-  //     onClose={() => setOptions(filterables)}
-  //     // onSearch={(text) => {
-  //     //   // The line below escapes regular expression special characters:
-  //     //   // [ \ ^ $ . | ? * + ( )
-  //     //   const escapedText = text.replace(/[-\\^$*+?.()|[\]{}]/g, "\\$&");
-
-  //     //   // Create the regular expression with modified value which
-  //     //   // handles escaping special characters. Without escaping special
-  //     //   // characters, errors will appear in the console
-  //     //   const exp = new RegExp(escapedText, "i");
-  //     //   setOptions(filterables.filter((p) => exp.test(p.key)));
-  //     // }}
-  //   />
-  // );
 };

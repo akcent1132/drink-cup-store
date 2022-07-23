@@ -122,6 +122,7 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
     return null;
   }
 
+
   return (
     <Root>
       <Header color={filter.color}>

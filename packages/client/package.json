@@ -10,7 +10,7 @@
     "@emotion/styled": "11.8.1",
     "@graphql-codegen/typescript-apollo-client-helpers": "^2.1.15",
     "@graphql-tools/schema": "^8.5.0",
-    "@mui/icons-material": "^5.3.1",
+    "@mui/icons-material": "^5.8.4",
     "@mui/material": "^5.3.1",
     "@react-hook/intersection-observer": "^3.1.1",
     "@react-hook/resize-observer": "^1.2.5",
