@@ -15,8 +15,8 @@ const colors = {
   // orange: "#ff8500",
   // red: "#f40000",
   // violet: "#c42687",
-  primary: '#7cb342',
-  secondary: '#ffea00',
+  primary: "#7cb342",
+  secondary: "#ffea00",
   darkTransparent: "rgba(23,23,23,.5)",
   bg: "#181818",
   bgTab: "#212121",
@@ -27,7 +27,7 @@ const colors = {
   treeTitlePrimary: "#444444",
   treeTitleSecondary: "#333333",
   treeBgPrimary: "#444444",
-  treeBgSecondary: "#333333"
+  treeBgSecondary: "#333333",
 };
 
 interface IDictionary {
@@ -42,11 +42,18 @@ const fonts = {
 };
 
 const muiTheme = createTheme({
-  status: {
-    danger: 'red',
+  palette: {
+    mode: "dark",
+
+    primary: {
+      main: "#7cb342",
+    },
+    secondary: {
+      main: "#ffea00",
+    },
   },
-})
-console.log("MUI THEME", muiTheme)
+});
+console.log("MUI THEME", muiTheme);
 
 export const theme = {
   color(color: string) {
@@ -61,7 +68,7 @@ export const theme = {
   valueDistribution: valueDistributionTheme,
   filterLabel: filterLabelTheme,
   useBackgroundImage: true,
-  ...muiTheme
+  ...muiTheme,
 };
 
 export const regularColor = (t: typeof theme, color: string) =>

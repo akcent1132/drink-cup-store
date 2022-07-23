@@ -8,14 +8,11 @@ import {
 import { onError } from "@apollo/client/link/error";
 import {
   eventDetailsMap,
-  farmProfiles,
-  filters,
   highlightedFilterId,
   highlightedPlantingId,
   isDemo,
   loadEventDetails,
   openEventCardIds,
-  producers,
   selectedCropType,
   selectedFilterId,
   selectedProducerId,
