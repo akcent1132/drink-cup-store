@@ -8,6 +8,7 @@ const getLabeledValues = (
   filters: NestedRowsQuery["filters"],
   plantings: NestedRowsQuery["plantings"]
 ) => {
+  console.time(`Get labeled values`)
   const matchedPlantingIds = filters
     .map((f) => f.plantings.map((p) => p.id))
     .flat();
@@ -32,6 +33,8 @@ const getLabeledValues = (
         }))
     )
     .flat();
+
+  console.timeEnd(`Get labeled values`)
   return labeledValues;
 };
 
@@ -102,7 +105,7 @@ export const NestedRows = ({ rows }: { rows: RowData[] }) => {
   } = useNestedRowsQuery();
   const labeledValues = useMemo(
     () => (filters && plantings ? getLabeledValues(filters, plantings) : []),
-    [filters, plantings]
+    [JSON.stringify(filters), plantings]
   );
   const flatRows = useMemo(
     () => flattenRows(rows, labeledValues),

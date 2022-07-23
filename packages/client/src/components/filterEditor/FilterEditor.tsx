@@ -96,7 +96,7 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
   });
   const filterables = useMemo(
     () => getFilterables(plantings || []),
-    [plantings]
+    [plantings && plantings.map(p => p.id).join()]
   );
   // const handleApply = useCallback(
   //   () => {}, //filter && applyDraftFilter(filter.id),

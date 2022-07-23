@@ -31,8 +31,39 @@ import {
 import { authState } from "./auth";
 import "./server";
 import { getPlantingsOfFilterVar } from "./processors/filter";
+import { memoize } from "lodash";
 
 const typeDefs = loader("./local.graphql");
+
+const keyHashMemoize = (...args: Parameters<typeof memoize>) => {
+  const [func, resolver] = args;
+  const memoized = memoize(func, resolver);
+  const map = new Map<string, [string, any]>();
+  memoized.cache = {
+    clear: () => map.clear(),
+    delete: ([key, _]: [string, string]) => map.delete(key),
+    get: ([key, hash]: [string, string]) => {
+      console.log("*GET", key, hash);
+      const record = map.get(key);
+      if (record && record[0] === hash) {
+        return record[1];
+      }
+    },
+    has: ([key, hash]: [string, string]) => {
+      console.log("*HAS", key, hash);
+      return map.has(key) && map.get(key)![0] === hash;
+    },
+    set: ([key, hash]: [string, string], value: any) => {
+      console.log("*SET", key, hash);
+      return map.set(key, [hash, value]);
+    },
+  };
+  return memoized;
+};
+
+// const keyHashMemo = <T impt, K>(fn: (...args: T) => K, key, hash) => {
+
+// }
 
 const typePolicies: StrictTypedTypePolicies = {
   Query: {
@@ -102,7 +133,7 @@ const typePolicies: StrictTypedTypePolicies = {
         read(_, { readField }) {
           const id = readField<string>("id") || "";
           const cropType = readField<string>("cropType") || "";
-          return getPlantingsOfFilterVar(id, cropType)().plantings
+          return getPlantingsOfFilterVar(id, cropType)().plantings;
         },
       },
       isHighlighted: {

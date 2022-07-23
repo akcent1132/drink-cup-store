@@ -3,6 +3,7 @@ import { defaultTheme as valueDistributionTheme } from "../components/ValueDistr
 import { defaultTheme as eventsCardTheme } from "../components/EventsCard";
 import { defaultTheme as valuePopupTheme } from "../components/ValuePopup";
 import { defaultTheme as filterLabelTheme } from "../components/FilterLabel";
+import createTheme from "@mui/material/styles/createTheme";
 
 const colors = {
   // purple: "#5d54af",
@@ -40,6 +41,13 @@ const fonts = {
   baseBoldItalic: "Acumin Pro Bold Italic",
 };
 
+const muiTheme = createTheme({
+  status: {
+    danger: 'red',
+  },
+})
+console.log("MUI THEME", muiTheme)
+
 export const theme = {
   color(color: string) {
     return (this.colors as IDictionary)[color] || color;
@@ -53,6 +61,7 @@ export const theme = {
   valueDistribution: valueDistributionTheme,
   filterLabel: filterLabelTheme,
   useBackgroundImage: true,
+  ...muiTheme
 };
 
 export const regularColor = (t: typeof theme, color: string) =>

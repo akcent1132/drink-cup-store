@@ -23,6 +23,7 @@ export type Filterable = FilterableNumeric | FilterableOption;
 export const getFilterables = (
   plantings: FilterEditorQuery["plantings"]
 ): Filterable[] => {
+  console.log("!!!!!!!!!Get filterables")
   const values: FilterableNumeric[] = Object.values(
     plantings
       .map((p) => p.values)
@@ -87,6 +88,8 @@ export const getFilterables = (
     }
   }).filter(isSomething);
   console.log("farmValues", farmValues);
+
+  console.log("###########Get filterables")
   return sortBy([...values, ...farmValues], 'key');
 };
 

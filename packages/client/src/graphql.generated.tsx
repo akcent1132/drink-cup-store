@@ -75,13 +75,6 @@ export type FilterValueRange = {
   min: Scalars['Float'];
 };
 
-export type GroupedValues = {
-  __typename: 'GroupedValues';
-  filter: Maybe<Filter>;
-  id: Scalars['String'];
-  values: Array<PlantingValue>;
-};
-
 export type Planting = {
   __typename: 'Planting';
   cropType: Scalars['String'];
@@ -233,12 +226,6 @@ export type FilterValueRangeFieldPolicy = {
 	max?: FieldPolicy<any> | FieldReadFunction<any>,
 	min?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type GroupedValuesKeySpecifier = ('filter' | 'id' | 'values' | GroupedValuesKeySpecifier)[];
-export type GroupedValuesFieldPolicy = {
-	filter?: FieldPolicy<any> | FieldReadFunction<any>,
-	id?: FieldPolicy<any> | FieldReadFunction<any>,
-	values?: FieldPolicy<any> | FieldReadFunction<any>
-};
 export type PlantingKeySpecifier = ('cropType' | 'events' | 'farmOnboarding' | 'id' | 'isHighlighted' | 'matchingFilters' | 'params' | 'producer' | 'title' | 'values' | PlantingKeySpecifier)[];
 export type PlantingFieldPolicy = {
 	cropType?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -338,10 +325,6 @@ export type StrictTypedTypePolicies = {
 	FilterValueRange?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | FilterValueRangeKeySpecifier | (() => undefined | FilterValueRangeKeySpecifier),
 		fields?: FilterValueRangeFieldPolicy,
-	},
-	GroupedValues?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | GroupedValuesKeySpecifier | (() => undefined | GroupedValuesKeySpecifier),
-		fields?: GroupedValuesFieldPolicy,
 	},
 	Planting?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | PlantingKeySpecifier | (() => undefined | PlantingKeySpecifier),

@@ -36,6 +36,7 @@ const isMatchingFarmOnboardingValue = (planting: Planting, param: Param) => {
 //   - if the planting has a matching value (with the given key) with the selected option
 export const getPlantingsOfFilterVar = memoize(
   (filterId: string, cropType: string) => {
+    console.time(`Create new filtered planting var ${{filterId, cropType}}`)
     const plantingsVar = makeVar<FilterResult>({ hash: "", plantings: [] });
     client
       .watchQuery({
@@ -43,6 +44,7 @@ export const getPlantingsOfFilterVar = memoize(
         variables: { cropType, filterId },
       })
       .subscribe((observer) => {
+        console.time(`getPlantingsOfFilterVar ${filterId}`)
         const { plantings, filter } = (observer.data || {}) as PlantingsQuery;
         if (!filter) {
           return;
@@ -78,6 +80,9 @@ export const getPlantingsOfFilterVar = memoize(
             }
           }
         }
+        
+        
+        console.timeEnd(`getPlantingsOfFilterVar ${filterId}`)
         plantingsVar({ hash, plantings: filteredPlantings });
       });
     return plantingsVar;

@@ -49,11 +49,6 @@ type Filter {
   isHighlighted: Boolean!
 }
 
-type GroupedValues {
-  id: String!
-  filter: Filter
-  values: [PlantingValue!]!
-}
 
 type AuthUser { 
   id: String!

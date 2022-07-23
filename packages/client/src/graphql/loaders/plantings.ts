@@ -57,6 +57,7 @@ const fixEventType = (type: string): string => {
 };
 
 export const loadPlantings = pMemoize(async () => {
+  console.log("!!!!!!!!!!!!Loads plantings")
   const externalPlantings: externalData.Planting[] = await fetch(
     "https://app.surveystack.io/static/coffeeshop/plantings"
   ).then((result) => result.json());

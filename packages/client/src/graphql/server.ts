@@ -6,6 +6,7 @@ import jsonSchema from "./schema.server.generated.json";
 import { loadPlantings } from "./loaders/plantings";
 import seedrandom from "seedrandom";
 import { loadFarmOnboardings } from "./loaders/farmOnboardings";
+import { memoize } from "lodash"
 
 // Construct a schema, using GraphQL schema language
 // @ts-ignore
@@ -17,7 +18,8 @@ const resolvers: Resolvers = {
     async allPlantings() {
       return await loadPlantings();
     },
-    async plantings(_, { cropType }) {
+    plantings: async (_, { cropType }) => {
+      console.log("SERVER: get plantings of", cropType)
       const plantings = await loadPlantings();
       return plantings.filter((p) => p.cropType === cropType);
     },
