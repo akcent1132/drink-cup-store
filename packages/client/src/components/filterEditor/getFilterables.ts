@@ -1,4 +1,4 @@
-import { countBy, isEmpty, map, mapValues, sortBy, uniq } from "lodash";
+import { countBy, filter, isEmpty, map, mapValues, sortBy, uniq } from "lodash";
 import { FilterParamDataSource, Maybe } from "../../graphql.generated";
 import { FilterEditorQuery } from "./FilterEditor.generated";
 
@@ -41,7 +41,8 @@ export const getFilterables = (
         acc[value.name].values.push(value.value);
         return acc;
       }, {} as { [key: string]: FilterableNumeric })
-  );
+  )
+  .map(filterable => ({...filterable, values: uniq(filterable.values)}));
 
   const isSomething = <T>(x: T | null | undefined): x is T =>
     x !== undefined && x !== null;

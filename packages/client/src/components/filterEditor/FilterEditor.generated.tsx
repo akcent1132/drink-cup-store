@@ -4,17 +4,15 @@ import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
 export type FilterEditorQueryVariables = Types.Exact<{
-  filterId: Types.Scalars['String'];
   cropType?: Types.Scalars['String'];
 }>;
 
 
-export type FilterEditorQuery = { __typename?: 'Query', selectedCropType: string, plantings: Array<{ __typename?: 'Planting', id: string, values: Array<{ __typename?: 'PlantingValue', name: string, value: number, modusId?: string | null }>, farmOnboarding?: { __typename?: 'FarmOnboarding', values: Array<{ __typename?: 'FarmOnboardingValue', key: string, values: Array<string> }> } | null }>, filter?: { __typename?: 'Filter', id: string, color: string, name: string, params: Array<{ __typename?: 'FilterParam', key: string, active: boolean, dataSource?: Types.FilterParamDataSource | null, value: { __typename: 'FilterValueOption', options: Array<string> } | { __typename: 'FilterValueRange', min: number, max: number } }> } | null };
+export type FilterEditorQuery = { __typename?: 'Query', plantings: Array<{ __typename?: 'Planting', id: string, values: Array<{ __typename?: 'PlantingValue', name: string, value: number, modusId?: string | null }>, farmOnboarding?: { __typename?: 'FarmOnboarding', values: Array<{ __typename?: 'FarmOnboardingValue', key: string, values: Array<string> }> } | null }> };
 
 
 export const FilterEditorDocument = gql`
-    query FilterEditor($filterId: String!, $cropType: String! = "") {
-  selectedCropType @client @export(as: "cropType")
+    query FilterEditor($cropType: String! = "") {
   plantings(cropType: $cropType) {
     id
     values {
@@ -26,26 +24,6 @@ export const FilterEditorDocument = gql`
       values {
         key
         values
-      }
-    }
-  }
-  filter(id: $filterId) @client {
-    id
-    color
-    name
-    params {
-      key
-      active
-      dataSource
-      value {
-        __typename
-        ... on FilterValueRange {
-          min
-          max
-        }
-        ... on FilterValueOption {
-          options
-        }
       }
     }
   }
@@ -64,12 +42,11 @@ export const FilterEditorDocument = gql`
  * @example
  * const { data, loading, error } = useFilterEditorQuery({
  *   variables: {
- *      filterId: // value for 'filterId'
  *      cropType: // value for 'cropType'
  *   },
  * });
  */
-export function useFilterEditorQuery(baseOptions: Apollo.QueryHookOptions<FilterEditorQuery, FilterEditorQueryVariables>) {
+export function useFilterEditorQuery(baseOptions?: Apollo.QueryHookOptions<FilterEditorQuery, FilterEditorQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<FilterEditorQuery, FilterEditorQueryVariables>(FilterEditorDocument, options);
       }

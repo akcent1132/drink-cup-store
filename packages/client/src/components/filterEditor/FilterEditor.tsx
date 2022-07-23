@@ -19,6 +19,7 @@ import { FilterValueOption, FilterValueRange } from "../../graphql.generated";
 import { FilterParamSelector } from "./FilterParamSelector";
 import { RangeSlider } from "./RangeSlider";
 import { getFilterables } from "./getFilterables";
+import { useFilters } from "../../contexts/FiltersCtx";
 
 const Root = withTheme(styled.div`
   background-color: ${(p) => p.theme.colors.bgSidePanel};
@@ -91,13 +92,20 @@ interface Props {
  * Primary UI component for user interaction
  */
 export const FilterEditor = ({ selectedFilterId }: Props) => {
-  const { data: { filter, plantings } = {} } = useFilterEditorQuery({
-    variables: { filterId: selectedFilterId },
+  const filtersCtx = useFilters();
+  const filter = useMemo(
+    () => filtersCtx.filters.find((filter) => filter.id === selectedFilterId),
+    [selectedFilterId, filtersCtx.filters]
+  );
+  const { data: { plantings } = {} } = useFilterEditorQuery({
+    variables: { cropType: filter?.cropType },
   });
+
   const filterables = useMemo(
     () => getFilterables(plantings || []),
-    [plantings && plantings.map(p => p.id).join()]
+    [plantings && plantings.map((p) => p.id).join()]
   );
+  console.log({ filterables });
   // const handleApply = useCallback(
   //   () => {}, //filter && applyDraftFilter(filter.id),
   //   [filter?.id]

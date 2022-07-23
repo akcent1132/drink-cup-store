@@ -1,5 +1,4 @@
-query FilterEditor($filterId: String!, $cropType: String! = "") {
-  selectedCropType @client @export(as: "cropType")
+query FilterEditor($cropType: String! = "") {
   plantings(cropType: $cropType) {
     id
     values {
@@ -15,24 +14,24 @@ query FilterEditor($filterId: String!, $cropType: String! = "") {
     }
   }
 
-  filter(id: $filterId) @client {
-    id
-    color
-    name
-    params {
-      key
-      active
-      dataSource
-      value {
-        __typename
-        ... on FilterValueRange {
-          min
-          max
-        }
-        ... on FilterValueOption {
-          options
-        }
-      }
-    }
-  }
+  # filter(id: $filterId) @client {
+  #   id
+  #   color
+  #   name
+  #   params {
+  #     key
+  #     active
+  #     dataSource
+  #     value {
+  #       __typename
+  #       ... on FilterValueRange {
+  #         min
+  #         max
+  #       }
+  #       ... on FilterValueOption {
+  #         options
+  #       }
+  #     }
+  #   }
+  # }
 }

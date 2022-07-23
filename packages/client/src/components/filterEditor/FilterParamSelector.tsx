@@ -1,4 +1,3 @@
-import { BlockQuote, Time } from "grommet-icons";
 import { startCase, without } from "lodash";
 import { useState } from "react";
 import {
@@ -6,17 +5,13 @@ import {
   removeFilterParam,
 } from "../../contexts/FiltersContext";
 import { Filterable } from "./getFilterables";
-import { FilterEditorQuery } from "./FilterEditor.generated";
 import { FilterParam } from "../../graphql.generated";
-import { css } from "@emotion/react";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import Box from "@mui/material/Box";
-import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
 import { OutlinedInput, Theme } from "@mui/material";
+import { Filter } from "../../contexts/FiltersCtx";
 
-type Param = NonNullable<FilterEditorQuery["filter"]>["params"][number];
+type Param = Filter["params"][number];
 type Props = {
   filterables: Filterable[];
   filterId: string;
