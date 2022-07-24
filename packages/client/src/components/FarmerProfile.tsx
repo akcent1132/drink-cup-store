@@ -8,13 +8,14 @@ import { EventsCard, Spacer } from "./EventsCard";
 import CloseIcon from "@mui/icons-material/Close";
 import { IconButton } from "./filterEditor/FilterEditor";
 import { useCallback, useMemo, useState } from "react";
-import { selectProducer } from "../contexts/FiltersContext";
 import { sortBy, take } from "lodash";
 import { Tabs } from "./Tabs";
 import CopyAllIcon from "@mui/icons-material/CopyAll";
 import CheckIcon from "@mui/icons-material/Check";
 import useCopy from "use-copy";
-import { DashboardQuery } from "../stories/Dashboard.generated";
+import { useFarmerProfileQuery } from "./FarmerProfile.generated";
+import { useShowPlantingCards } from "../states/sidePanelContent";
+import LinearProgress from "@mui/material/LinearProgress";
 
 const LS_SHOW_PRODUCER_NAME = "show-producer-name";
 
@@ -59,8 +60,12 @@ const LOREM =
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec non congue ex, ac tempus eros. Pellentesque varius finibus velit, in auctor sem tristique eu. Sed blandit luctus blandit. In sollicitudin malesuada ullamcorper. Pellentesque porttitor, lectus id auctor fermentum, leo neque pulvinar ipsum, vel sagittis ipsum eros non nisi.";
 
 const EMAIL = "684c9b3930413fdab7c6425ec01c878d@comm.surveystack.org";
-type Props = { producer: NonNullable<DashboardQuery["selectedProducer"]> };
-export const FarmerProfile = ({ producer }: Props) => {
+type Props = { producerId: string };
+export const FarmerProfile = ({ producerId }: Props) => {
+  const { data: { producer } = {} } = useFarmerProfileQuery({
+    variables: { producerId },
+  });
+  const showPlantingCards = useShowPlantingCards();
   const [tabIndex, setTabIndex] = useState(0);
 
   const [copied, copy, setCopied] = useCopy(EMAIL);
@@ -73,117 +78,112 @@ export const FarmerProfile = ({ producer }: Props) => {
     }, 3000);
   }, [copy, setCopied]);
 
-  const handleClose = useCallback(() => selectProducer(null), []);
+  const handleClose = useCallback(() => showPlantingCards(), []);
 
-  // const plantings = useMemo(
-  //   () =>
-  //     range(1 + Math.random() * 5).map((id) =>
-  //       createFakePlantingCardData(id.toString(), "")
-  //     ),
-  //   []
-  // );
-  // const fields = useMemo(
-  //   () =>
-  //     range(1 + Math.random() * 5).map((id) =>
-  //       createFakePlantingCardData(id.toString(), "")
-  //     ),
-  //   []
-  // );
   return (
     <Root>
-      <Box direction="row">
-        <Box direction="column" flex={{ grow: 1 }} justify="start">
-          <Box
-            direction="row"
-            align="center"
-            css={css`
-              padding-right: 12px;
-            `}
-          >
-            <NameContainer>
-              <NameLabel>Producer ID</NameLabel>
-              <Name>
-                {localStorage[LS_SHOW_PRODUCER_NAME] === "true"
-                  ? producer.id
-                  : producer.code}
-              </Name>
-            </NameContainer>
-            {/* <Box
+      {!producer ? (
+        <LinearProgress />
+      ) : (
+        <>
+          <Box direction="row">
+            <Box direction="column" flex={{ grow: 1 }} justify="start">
+              <Box
+                direction="row"
+                align="center"
+                css={css`
+                  padding-right: 12px;
+                `}
+              >
+                <NameContainer>
+                  <NameLabel>Producer ID</NameLabel>
+                  <Name>
+                    {localStorage[LS_SHOW_PRODUCER_NAME] === "true"
+                      ? producer.id
+                      : producer.code}
+                  </Name>
+                </NameContainer>
+                {/* <Box
               align="end"
               css={css`
                 padding: 0 12px;
               `}
             > */}
-            <Button
-              size="small"
-              css={css`
-                align-self: flex-end;
-                font-weight: bold;
-              `}
-              // primary
-              // color="rgb(13, 195, 159)"
-              onClick={copyData}
-              label="Contact"
-              icon={copied ? <CheckIcon /> : <CopyAllIcon />}
-              reverse
-            />
-            {/* </Box> */}
-            <Spacer />
-            <IconButton
-              onClick={handleClose}
-              css={css`
-                font-size: 19px;
-              `}
-            >
-              <CloseIcon fontSize="inherit" color="inherit" />
-            </IconButton>
+                <Button
+                  size="small"
+                  css={css`
+                    align-self: flex-end;
+                    font-weight: bold;
+                  `}
+                  // primary
+                  // color="rgb(13, 195, 159)"
+                  onClick={copyData}
+                  label="Contact"
+                  icon={copied ? <CheckIcon /> : <CopyAllIcon />}
+                  reverse
+                />
+                {/* </Box> */}
+                <Spacer />
+                <IconButton
+                  onClick={handleClose}
+                  css={css`
+                    font-size: 19px;
+                  `}
+                >
+                  <CloseIcon fontSize="inherit" color="inherit" />
+                </IconButton>
+              </Box>
+            </Box>
           </Box>
-        </Box>
-      </Box>
-      <Tabs
-        css={css`
-          grid-area: values;
-          /* header_height - tabs-height */
-          margin-top: 30px;
-        `}
-        pages={[
-          {
-            label: "Plantings",
-            renderPanel: () => (
-              <CardContainer>
-                {take(
-                  sortBy(producer.plantings, (p) => p.events.length).reverse(),
-                  5
-                ).map((p) => (
-                  <EventsCard
-                    key={p.id}
-                    plantingId={p.id}
-                    hideName
-                    hideColorBorder
-                  />
-                ))}
-              </CardContainer>
-            ),
-          },
-          {
-            label: "Fields",
-            renderPanel: () => (
-              <CardContainer>
-                {producer.plantings.map((p) => (
-                  <EventsCard
-                    key={p.id}
-                    plantingId={p.id}
-                    hideName
-                    hideColorBorder
-                  />
-                ))}
-              </CardContainer>
-            ),
-          },
-        ]}
-        index={tabIndex}
-        onChange={setTabIndex}
-      />
+          <Tabs
+            css={css`
+              grid-area: values;
+              /* header_height - tabs-height */
+              margin-top: 30px;
+            `}
+            pages={[
+              {
+                label: "Plantings",
+                renderPanel: () => (
+                  <CardContainer>
+                    {take(
+                      sortBy(
+                        producer.plantings,
+                        (p) => p.events.length
+                      ).reverse(),
+                      5
+                    ).map((p) => (
+                      <EventsCard
+                        key={p.id}
+                        plantingId={p.id}
+                        hideName
+                        hideColorBorder
+                      />
+                    ))}
+                  </CardContainer>
+                ),
+              },
+              {
+                label: "Fields",
+                renderPanel: () => (
+                  <CardContainer>
+                    {producer.plantings.map((p) => (
+                      <EventsCard
+                        key={p.id}
+                        plantingId={p.id}
+                        hideName
+                        hideColorBorder
+                      />
+                    ))}
+                  </CardContainer>
+                ),
+              },
+            ]}
+            index={tabIndex}
+            onChange={setTabIndex}
+          />
+        </>
+      )}
     </Root>
   );
 };

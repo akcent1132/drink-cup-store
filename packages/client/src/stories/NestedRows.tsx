@@ -4,7 +4,7 @@ import { ValueDistribution } from "../components/ValueDistribution";
 import { Filter, useFilters } from "../contexts/FiltersCtx";
 import { RowData } from "../contexts/rows";
 import { FilterParamDataSource } from "../graphql.generated";
-import { useHightlightedPlantingId } from "../states/ui";
+import { useHightlightedPlantingId } from "../states/highlightedPlantingId";
 import { NestedRowsQuery, useNestedRowsQuery } from "./NestedRows.generated";
 
 type Planting = NestedRowsQuery["plantings"][number];

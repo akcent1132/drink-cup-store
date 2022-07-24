@@ -9,9 +9,7 @@ import { TagSelect } from "./TagSelect";
 import CloseIcon from "@mui/icons-material/Close";
 import { Spacer } from "../EventsCard";
 import {
-  applyDraftFilter,
   editFilterParam,
-  selectFilter,
   updateFilterName,
 } from "../../contexts/FiltersContext";
 import { useFilterEditorQuery } from "./FilterEditor.generated";
@@ -20,6 +18,7 @@ import { FilterParamSelector } from "./FilterParamSelector";
 import { RangeSlider } from "./RangeSlider";
 import { getFilterables } from "./getFilterables";
 import { useFilters } from "../../contexts/FiltersCtx";
+import { useShowPlantingCards } from "../../states/sidePanelContent";
 
 const Root = withTheme(styled.div`
   background-color: ${(p) => p.theme.colors.bgSidePanel};
@@ -93,6 +92,7 @@ interface Props {
  */
 export const FilterEditor = ({ selectedFilterId }: Props) => {
   const filtersCtx = useFilters();
+  const showPlantingCards = useShowPlantingCards();
   const filter = useMemo(
     () => filtersCtx.filters.find((filter) => filter.id === selectedFilterId),
     [selectedFilterId, filtersCtx.filters]
@@ -110,7 +110,7 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
   //   () => {}, //filter && applyDraftFilter(filter.id),
   //   [filter?.id]
   // );
-  const handleClose = useCallback(() => filter && selectFilter(null), []);
+  const handleClose = useCallback(() => filter && showPlantingCards(), []);
   const updateName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) =>
       filter && updateFilterName(filter.id, event.target.value),
@@ -121,7 +121,6 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
   if (!params) {
     return null;
   }
-
 
   return (
     <Root>

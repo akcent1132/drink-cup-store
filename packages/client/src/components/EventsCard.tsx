@@ -7,20 +7,17 @@ import "../index.css";
 import { IconEventsBar, FarmEvent } from "./IconEventsBar";
 import CloseIcon from "@mui/icons-material/Close";
 import tinycolor from "tinycolor2";
-import { useFetch } from "usehooks-ts";
-import {
-  closeEventCard,
-  // hightlightPlanting,
-  selectProducer,
-  // unhightlightPlanting,
-} from "../contexts/FiltersContext";
 import InvertColorsIcon from "@mui/icons-material/InvertColors";
 import ThermostatIcon from "@mui/icons-material/Thermostat";
 import PublicIcon from "@mui/icons-material/Public";
 import { Tip } from "grommet";
 import ContactPageIcon from "@mui/icons-material/ContactPage";
 import { useEventsCardQuery } from "./EventsCard.generated";
-import { useHightlightedPlantingId } from "../states/ui";
+import { useHightlightedPlantingId } from "../states/highlightedPlantingId";
+import {
+  useRemovePlantingCard,
+  useShowProfile,
+} from "../states/sidePanelContent";
 
 export const defaultTheme = {
   sidePad: 10,
@@ -122,16 +119,18 @@ export const EventsCard = ({
   hideName = false,
   hideColorBorder = false,
 }: Props) => {
+  const { hightlightPlanting, unhightlightPlanting, highlightedPlantingId } =
+    useHightlightedPlantingId();
+  const removePlantingCard = useRemovePlantingCard();
+  const showProfile = useShowProfile();
   const { data: { planting } = {} } = useEventsCardQuery({
     variables: { plantingId },
   });
 
   const onClose = useCallback(
-    () => planting && closeEventCard(planting.id),
+    () => planting && removePlantingCard(planting.id),
     [planting?.id]
   );
-  const { hightlightPlanting, unhightlightPlanting, highlightedPlantingId } =
-    useHightlightedPlantingId();
   const onHoverData = useCallback(
     () => planting && hightlightPlanting(planting.id),
     [planting?.id]
@@ -156,7 +155,7 @@ export const EventsCard = ({
         <Spacer />
         {!hideName ? (
           <Tip content="Producer profile">
-            <Name onClick={() => selectProducer(planting.producer.id)}>
+            <Name onClick={() => showProfile(planting.producer.id)}>
               <ContactPageIcon fontSize="inherit" />
               {planting.producer.code}
             </Name>

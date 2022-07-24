@@ -2,9 +2,9 @@ extend type Query {
   # highlightedPlantingId: String
   highlightedFilterId: String
   selectedCropType: String!
-  openEventCardIds(cropType: String!): [String!]!
-  selectedFilterId: String
-  selectedProducerId: String
+  # openEventCardIds(cropType: String!): [String!]!
+  # selectedFilterId: String
+  # selectedProducerId: String
   auth: AuthState,
 }
 # extend type Planting {

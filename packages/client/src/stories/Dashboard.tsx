@@ -8,7 +8,8 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { RecoilRoot } from "recoil"
+import { RecoilRoot } from "recoil";
+import { useShowFilterEditor, useSidePanelContent } from "../states/sidePanelContent";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { ClassNames } from "@emotion/core";
 import styled from "@emotion/styled";
@@ -27,10 +28,8 @@ import { NestedRows } from "./NestedRows";
 import { schemeTableau10 } from "d3-scale-chromatic";
 import {
   addFilter,
-  removeAllFilters,
   highlightFilter,
   unhighlightFilter,
-  selectFilter,
 } from "../contexts/FiltersContext";
 import { ROWS } from "../contexts/rows";
 import { Button } from "../components/Button";
@@ -40,12 +39,10 @@ import { CropSelector } from "./CropSelector";
 import { Spacer } from "../components/EventsCard";
 import { client } from "../graphql/client";
 import { ApolloProvider } from "@apollo/client";
-import {
-  useDashboardQuery,
-  useRandomContentQuery,
-} from "./Dashboard.generated";
+import { usePreloadDataQuery, useRandomContentQuery } from "./Dashboard.generated";
 import { Box, Layer, Spinner } from "grommet";
 import { FiltersProvider, useFilters } from "../contexts/FiltersCtx";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -115,6 +112,7 @@ const COLORS = schemeTableau10.slice(0, 9);
 let filterNamePostfix = 1;
 const RandomContent = () => {
   const { data: { selectedCropType } = {} } = useRandomContentQuery();
+  const showFilterEditor = useShowFilterEditor()
   const filtersCtx = useFilters();
   const filters = useMemo(
     () =>
@@ -135,16 +133,10 @@ const RandomContent = () => {
         `New Filter ${filterNamePostfix++}`,
         selectedCropType || "corn"
       );
-      selectFilter(filter.id);
+      showFilterEditor(filter.id);
     },
     [filters]
   );
-
-  useEffect(() => {
-    removeAllFilters();
-    addFilter(schemeTableau10[4], "Produce Corn, Beef", "corn");
-    addFilter(schemeTableau10[0], "General Mills - KS", "corn");
-  }, []);
 
   return (
     <RowContainer>
@@ -203,9 +195,8 @@ interface Props {
 }
 
 export const Dashboard = ({ iframeSrc }: Props) => {
-  const { data: { selectedFilterId, selectedProducer } = {}, loading } =
-    useDashboardQuery();
-    
+  const { loading } = usePreloadDataQuery();
+  const sidePanelContent = useSidePanelContent();
   const [tabIndex, setTabIndex] = useState(0);
   const rightSide = useRef<HTMLDivElement>(null);
   const pages = useMemo(
@@ -224,15 +215,23 @@ export const Dashboard = ({ iframeSrc }: Props) => {
 
   const [SideContent, sideContentKey] = useMemo(
     () =>
-      selectedFilterId
-        ? [<FilterEditor selectedFilterId={selectedFilterId} />, "FilterEditor"]
-        : selectedProducer
+      sidePanelContent.type === "FilterEditor"
         ? [
-            <FarmerProfile producer={selectedProducer} />,
-            `FarmerProfile-${selectedProducer.id}`,
+            <FilterEditor selectedFilterId={sidePanelContent.filterId} />,
+            "FilterEditor",
           ]
-        : [<PlantingCardList />, `Events`],
-    [selectedFilterId, selectedProducer?.id]
+        : sidePanelContent.type === "Profile"
+        ? [
+            <FarmerProfile producerId={sidePanelContent.producerId} />,
+            `FarmerProfile-${sidePanelContent.producerId}`,
+          ]
+        : [
+            <PlantingCardList
+              openEventCardIds={sidePanelContent.plantingIds}
+            />,
+            `PlantingCards`,
+          ],
+    [sidePanelContent]
   );
 
   return (
@@ -240,7 +239,7 @@ export const Dashboard = ({ iframeSrc }: Props) => {
       {loading ? (
         <Layer full background="rgba(255,255,255,0.3)" animate={false}>
           <Box fill align="center" justify="center">
-            <Spinner />
+            <CircularProgress />
           </Box>
         </Layer>
       ) : null}
@@ -306,9 +305,9 @@ export const Dashboard = ({ iframeSrc }: Props) => {
 export const App = (props: ComponentProps<typeof Dashboard>) => (
   <ApolloProvider client={client}>
     <RecoilRoot>
-    <FiltersProvider>
-      <Dashboard {...props} />
-    </FiltersProvider>
+      <FiltersProvider>
+        <Dashboard {...props} />
+      </FiltersProvider>
     </RecoilRoot>
   </ApolloProvider>
 );

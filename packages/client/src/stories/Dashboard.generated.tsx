@@ -10,17 +10,10 @@ export type RandomContentQueryVariables = Types.Exact<{
 
 export type RandomContentQuery = { __typename?: 'Query', selectedCropType: string };
 
-export type DashboardQueryVariables = Types.Exact<{
-  producerId?: Types.InputMaybe<Types.Scalars['String']>;
-}>;
-
-
-export type DashboardQuery = { __typename?: 'Query', selectedFilterId?: string | null, selectedProducerId?: string | null, selectedProducer?: { __typename?: 'Producer', id: string, code: string, plantings: Array<{ __typename?: 'Planting', id: string, title: string, producer: { __typename?: 'Producer', id: string, code: string }, params: { __typename?: 'PlantingParams', precipitation: string, temperature: string, texture: string, zone: string }, events: Array<{ __typename?: 'PlantingEvent', id: string, date: string, type: string, detailsKey?: string | null, details?: Array<{ __typename?: 'PlantingEventDetail', id: string, name: string, value?: string | null, valueList?: Array<string> | null }> | null }> }> } | null, allPlantings: Array<{ __typename?: 'Planting', id: string }> };
-
 export type PreloadDataQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type PreloadDataQuery = { __typename?: 'Query', allFarmOnboardings: Array<{ __typename?: 'FarmOnboarding', farmDomain?: string | null, values: Array<{ __typename?: 'FarmOnboardingValue', key: string, values: Array<string> }> }> };
+export type PreloadDataQuery = { __typename?: 'Query', allFarmOnboardings: Array<{ __typename?: 'FarmOnboarding', farmDomain?: string | null, values: Array<{ __typename?: 'FarmOnboardingValue', key: string, values: Array<string> }> }>, allPlantings: Array<{ __typename?: 'Planting', id: string }> };
 
 
 export const RandomContentDocument = gql`
@@ -56,73 +49,6 @@ export function useRandomContentLazyQuery(baseOptions?: Apollo.LazyQueryHookOpti
 export type RandomContentQueryHookResult = ReturnType<typeof useRandomContentQuery>;
 export type RandomContentLazyQueryHookResult = ReturnType<typeof useRandomContentLazyQuery>;
 export type RandomContentQueryResult = Apollo.QueryResult<RandomContentQuery, RandomContentQueryVariables>;
-export const DashboardDocument = gql`
-    query Dashboard($producerId: String) {
-  selectedFilterId @client
-  selectedProducerId @client @export(as: "producerId")
-  selectedProducer: producer(id: $producerId) {
-    id
-    code
-    plantings {
-      id
-      producer {
-        id
-        code
-      }
-      title
-      params {
-        precipitation
-        temperature
-        texture
-        zone
-      }
-      events {
-        id
-        date
-        type
-        detailsKey
-        details {
-          id
-          name
-          value
-          valueList
-        }
-      }
-    }
-  }
-  allPlantings {
-    id
-  }
-}
-    `;
-
-/**
- * __useDashboardQuery__
- *
- * To run a query within a React component, call `useDashboardQuery` and pass it any options that fit your needs.
- * When your component renders, `useDashboardQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useDashboardQuery({
- *   variables: {
- *      producerId: // value for 'producerId'
- *   },
- * });
- */
-export function useDashboardQuery(baseOptions?: Apollo.QueryHookOptions<DashboardQuery, DashboardQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<DashboardQuery, DashboardQueryVariables>(DashboardDocument, options);
-      }
-export function useDashboardLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<DashboardQuery, DashboardQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<DashboardQuery, DashboardQueryVariables>(DashboardDocument, options);
-        }
-export type DashboardQueryHookResult = ReturnType<typeof useDashboardQuery>;
-export type DashboardLazyQueryHookResult = ReturnType<typeof useDashboardLazyQuery>;
-export type DashboardQueryResult = Apollo.QueryResult<DashboardQuery, DashboardQueryVariables>;
 export const PreloadDataDocument = gql`
     query PreloadData {
   allFarmOnboardings {
@@ -131,6 +57,9 @@ export const PreloadDataDocument = gql`
       key
       values
     }
+  }
+  allPlantings {
+    id
   }
 }
     `;

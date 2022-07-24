@@ -1,5 +1,5 @@
 import { useReactiveVar } from "@apollo/client";
-import React, { useContext } from "react";
+import React, { useCallback, useContext } from "react";
 import { filters as filtersVar } from "./FiltersContext";
 
 export type Filter = ReturnType<typeof filtersVar>[number]

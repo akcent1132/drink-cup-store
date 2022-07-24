@@ -6,7 +6,6 @@ import { ClassNames } from "@emotion/react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import React, { useEffect, useMemo, useState } from "react";
 import { EventsCard } from "./EventsCard";
-import { usePlantingCardListQuery } from "./PlantingCardList.generated";
 
 const Events = styled.div`
   display: flex;
@@ -33,8 +32,7 @@ const hiddenStyles = {
   maxHeight: "0px",
 };
 
-export const PlantingCardList = () => {
-  const { data: { openEventCardIds } = {} } = usePlantingCardListQuery();
+export const PlantingCardList = ({openEventCardIds} : {openEventCardIds: string[]}) => {
 
   if (!openEventCardIds || openEventCardIds.length === 0) {
     return null;

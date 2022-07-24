@@ -499,25 +499,25 @@ export const producers = makeVar<Producer[]>(
       }))
     : []
 );
-export const selectedFilterId = makeVar<string | null>(null);
-export const selectedProducerId = makeVar<string | null>(null);
+// export const selectedFilterId = makeVar<string | null>(null);
+// export const selectedProducerId = makeVar<string | null>(null);
 // TODO save in ls
 export const selectedCropType = makeVar(isDemo() ? "corn" : "wheat");
 export const eventDetailsMap: {
   [key: string]: ReactiveVar<PlantingEventDetail[] | null>;
 } = {};
 
-export const openEventCardIds = makeVar<string[]>([]);
-export const openEventCard = (plantingId: string) => {
-  if (!openEventCardIds().includes(plantingId)) {
-    openEventCardIds([plantingId, ...openEventCardIds()]);
-  }
-  selectedFilterId(null);
-  selectedProducerId(null);
-};
-export const closeEventCard = (plantingId: string) => {
-  openEventCardIds(openEventCardIds().filter((id) => id !== plantingId));
-};
+// export const openEventCardIds = makeVar<string[]>([]);
+// export const openEventCard = (plantingId: string) => {
+//   if (!openEventCardIds().includes(plantingId)) {
+//     openEventCardIds([plantingId, ...openEventCardIds()]);
+//   }
+//   selectedFilterId(null);
+//   selectedProducerId(null);
+// };
+// export const closeEventCard = (plantingId: string) => {
+//   openEventCardIds(openEventCardIds().filter((id) => id !== plantingId));
+// };
 
 // export const highlightedPlantingId = makeVar<string | null>(null);
 // export const hightlightPlanting = (plantingId: string) => {
@@ -546,15 +546,15 @@ export const addFilter = (color: string, name: string, cropType: string) => {
 };
 
 // TODO combine right panel content type into one state
-export const selectFilter = (filterId: string | null) => {
-  selectedFilterId(filterId);
-  selectedProducerId(null);
-};
+// export const selectFilter = (filterId: string | null) => {
+//   selectedFilterId(filterId);
+//   selectedProducerId(null);
+// };
 
-export const selectProducer = (producerId: string | null) => {
-  selectedProducerId(producerId);
-  selectedFilterId(null);
-};
+// export const selectProducer = (producerId: string | null) => {
+//   selectedProducerId(producerId);
+//   selectedFilterId(null);
+// };
 
 export const applyDraftFilter = (filterId: string) => {};
 // filters(
@@ -568,13 +568,9 @@ export const updateFilterName = (filterId: string, name: string) =>
 
 export const removeFilter = (filterId: string) => {
   filters(filters().filter((f) => f.id !== filterId));
-  selectedFilterId(selectedFilterId() === filterId ? null : selectedFilterId());
+  // selectedFilterId(selectedFilterId() === filterId ? null : selectedFilterId()); //TODO
 };
 
-export const removeAllFilters = () => {
-  filters([]);
-  selectedFilterId(null);
-};
 
 export const editFilterParam = (
   filterId: string,

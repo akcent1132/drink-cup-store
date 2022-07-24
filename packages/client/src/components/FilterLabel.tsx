@@ -1,14 +1,12 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import styled from "@emotion/styled";
 import { withTheme } from "@emotion/react";
 import "../index.css";
 import tinycolor from "tinycolor2";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import {
-  removeFilter,
-  selectFilter,
-} from "../contexts/FiltersContext";
+import { useShowFilterEditor } from "../states/sidePanelContent";
+import { removeFilter } from "../contexts/FiltersContext";
 
 export const defaultTheme = {
   height: 30,
@@ -112,6 +110,7 @@ export const FilterLabel = ({
   isWide = false,
   showActions,
 }: Props) => {
+  const showFilterEditor = useShowFilterEditor();
   const [isHovered, setIsHovered] = useState(false);
   const handleHover = useCallback(() => {
     setIsHovered(true);
@@ -122,7 +121,7 @@ export const FilterLabel = ({
     onMouseLeave && onMouseLeave();
   }, [onMouseLeave]);
   const handleDelete = useCallback(() => removeFilter(filterId), []);
-  const handleSelect = useCallback(() => {selectFilter(filterId)}, []);
+  const handleSelect = useCallback(() => {showFilterEditor(filterId)}, []);
   return (
     <Root
       {...{ color, onClick, className }}

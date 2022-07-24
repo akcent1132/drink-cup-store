@@ -1,4 +1,0 @@
-query PlantingCardList($cropType: String! = "") {
-  selectedCropType @client @export(as: "cropType")
-  openEventCardIds(cropType: $cropType) @client
-}

@@ -2,44 +2,6 @@ query RandomContent($cropType: String! = "") {
   selectedCropType @client @export(as: "cropType")
 }
 
-query Dashboard($producerId: String) {
-  selectedFilterId @client
-  selectedProducerId @client @export(as: "producerId") 
-  selectedProducer: producer(id: $producerId) {
-    id
-    code
-    plantings {
-      id
-      producer {
-        id
-        code
-      }
-      title
-      params {
-        precipitation
-        temperature
-        texture
-        zone
-      }
-      events {
-        id
-        date
-        type
-        detailsKey
-        details {
-          id
-          name
-          value
-          valueList
-        }
-      }
-    }
-  }
-  allPlantings {
-    id
-  }
-}
-
 query PreloadData {
   allFarmOnboardings {
     farmDomain
@@ -47,5 +9,8 @@ query PreloadData {
       key
       values
     }
+  }
+  allPlantings {
+    id
   }
 }

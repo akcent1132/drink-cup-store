@@ -12,10 +12,7 @@ import {
   // highlightedPlantingId,
   isDemo,
   loadEventDetails,
-  openEventCardIds,
   selectedCropType,
-  selectedFilterId,
-  selectedProducerId,
 } from "../contexts/FiltersContext";
 import { loader } from "graphql.macro";
 import {
@@ -82,28 +79,28 @@ const typePolicies: StrictTypedTypePolicies = {
           return highlightedFilterId();
         },
       },
-      openEventCardIds: {
-        read(_, options) {
-          return openEventCardIds();
-          // // @ts-ignore
-          // const cropType: string = options.args.cropType;
-          // if (!cropType) {
-          //   return null;
-          // }
-          // const cropPlantings = plantings().filter(
-          //   (planting) => planting.cropType === cropType
-          // );
-          // return openEventCardIds()
-          //   .map((id) => cropPlantings.find((p) => p.id === id))
-          //   .filter(Boolean);
-        },
-      },
-      selectedFilterId() {
-        return selectedFilterId();
-      },
-      selectedProducerId() {
-        return selectedProducerId();
-      },
+      // openEventCardIds: {
+      //   read(_, options) {
+      //     return openEventCardIds();
+      //     // // @ts-ignore
+      //     // const cropType: string = options.args.cropType;
+      //     // if (!cropType) {
+      //     //   return null;
+      //     // }
+      //     // const cropPlantings = plantings().filter(
+      //     //   (planting) => planting.cropType === cropType
+      //     // );
+      //     // return openEventCardIds()
+      //     //   .map((id) => cropPlantings.find((p) => p.id === id))
+      //     //   .filter(Boolean);
+      //   },
+      // },
+      // selectedFilterId() {
+      //   return selectedFilterId();
+      // },
+      // selectedProducerId() {
+      //   return selectedProducerId();
+      // },
     },
   },
   Filter: {

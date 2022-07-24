@@ -11,14 +11,8 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import tinycolor from "tinycolor2";
 import { ValuePopup } from "./ValuePopup";
 import { format } from "d3-format";
-import {
-  // hightlightPlanting,
-  openEventCard,
-  // unhightlightPlanting,
-} from "../contexts/FiltersContext";
-import { useEffectDebugger } from "../utils/useEffectDebugger";
-import { useNestedRowsQuery } from "../stories/NestedRows.generated";
-import { useHightlightedPlantingId } from "../states/ui";
+import { useHightlightedPlantingId } from "../states/highlightedPlantingId";
+import { useAddPlantingCard, useShowPlantingCards } from "../states/sidePanelContent";
 
 // TODO read height from props
 
@@ -182,6 +176,8 @@ export const ValueDistribution = ({
   const { colors } = useTheme();
   const [isHovering, setIsHovering] = useState(false);
   const {hightlightPlanting, unhightlightPlanting} = useHightlightedPlantingId()
+  const showPlantingCards = useShowPlantingCards()
+  const addPlantingCard = useAddPlantingCard()
   const onHoverData = useCallback(
     (planting: string) => hightlightPlanting(planting),
     []
@@ -259,7 +255,8 @@ export const ValueDistribution = ({
   }, [localHoveredValue]);
   const handlePlotMouseClick = useCallback(() => {
     if (localHoveredValue && localHoveredValue.matchingFilters[0]) {
-      openEventCard(localHoveredValue.plantingId);
+      addPlantingCard(localHoveredValue.plantingId);
+      showPlantingCards();
     }
   }, [localHoveredValue]);
 

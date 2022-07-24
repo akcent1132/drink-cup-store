@@ -1,0 +1,34 @@
+
+
+query FarmerProfile($producerId: String!) {
+  producer(id: $producerId) {
+    id
+    code
+    plantings {
+      id
+      producer {
+        id
+        code
+      }
+      title
+      params {
+        precipitation
+        temperature
+        texture
+        zone
+      }
+      events {
+        id
+        date
+        type
+        detailsKey
+        details {
+          id
+          name
+          value
+          valueList
+        }
+      }
+    }
+  }
+}
