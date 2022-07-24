@@ -89,6 +89,8 @@ export type Planting = {
 
 export type PlantingEvent = {
   __typename: 'PlantingEvent';
+  _planting_id_for_details_request: Scalars['String'];
+  _producer_key_for_details_request: Scalars['String'];
   date: Scalars['String'];
   details: Maybe<Array<PlantingEventDetail>>;
   detailsKey: Maybe<Scalars['String']>;
@@ -212,8 +214,10 @@ export type PlantingFieldPolicy = {
 	title?: FieldPolicy<any> | FieldReadFunction<any>,
 	values?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type PlantingEventKeySpecifier = ('date' | 'details' | 'detailsKey' | 'id' | 'type' | PlantingEventKeySpecifier)[];
+export type PlantingEventKeySpecifier = ('_planting_id_for_details_request' | '_producer_key_for_details_request' | 'date' | 'details' | 'detailsKey' | 'id' | 'type' | PlantingEventKeySpecifier)[];
 export type PlantingEventFieldPolicy = {
+	_planting_id_for_details_request?: FieldPolicy<any> | FieldReadFunction<any>,
+	_producer_key_for_details_request?: FieldPolicy<any> | FieldReadFunction<any>,
 	date?: FieldPolicy<any> | FieldReadFunction<any>,
 	details?: FieldPolicy<any> | FieldReadFunction<any>,
 	detailsKey?: FieldPolicy<any> | FieldReadFunction<any>,

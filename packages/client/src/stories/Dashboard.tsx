@@ -18,7 +18,7 @@ import bgCorn from "../assets/images/Background-corngrains.jpg";
 import logoImage from "../assets/images/Farmers-coffeeshop-logo-white_transparent.png";
 import { Tabs } from "../components/Tabs";
 import { css, useTheme, withTheme } from "@emotion/react";
-import { getFarmEvent, randomZone } from "../utils/random";
+import {  randomZone } from "../utils/random";
 import { FilterLabel } from "../components/FilterLabel";
 import faker from "faker";
 import { memoize, range, sample, sum, without } from "lodash";
@@ -166,26 +166,26 @@ const RandomContent = () => {
   );
 };
 
-export const createFakePlantingCardData = memoize(
-  (id: string, color: string) => {
-    let texture = [Math.random(), Math.random()];
-    texture = texture.map((t) => Math.round((t / sum(texture)) * 100));
-    const zone = randomZone();
-    return {
-      id,
-      title: "Corn " + (2017 + Math.floor(Math.random() * 6)),
-      name: Math.random().toString(32).slice(-7), //`${faker.name.firstName()} ${faker.name.lastName()}`,
-      color,
-      params: {
-        zone: zone.name,
-        temperature: zone.temp.toString() + "°",
-        precipitation: `${32 + Math.floor(32 * Math.random())}″`,
-        texture: `Sand: ${texture[0]}% | Clay ${texture[1]}%`,
-      },
-      events: range(6 + 6 * Math.random()).map(() => getFarmEvent()),
-    };
-  }
-);
+// export const createFakePlantingCardData = memoize(
+//   (id: string, color: string) => {
+//     let texture = [Math.random(), Math.random()];
+//     texture = texture.map((t) => Math.round((t / sum(texture)) * 100));
+//     const zone = randomZone();
+//     return {
+//       id,
+//       title: "Corn " + (2017 + Math.floor(Math.random() * 6)),
+//       name: Math.random().toString(32).slice(-7), //`${faker.name.firstName()} ${faker.name.lastName()}`,
+//       color,
+//       params: {
+//         zone: zone.name,
+//         temperature: zone.temp.toString() + "°",
+//         precipitation: `${32 + Math.floor(32 * Math.random())}″`,
+//         texture: `Sand: ${texture[0]}% | Clay ${texture[1]}%`,
+//       },
+//       events: range(6 + 6 * Math.random()).map(() => getFarmEvent()),
+//     };
+//   }
+// );
 
 interface Props {
   /**

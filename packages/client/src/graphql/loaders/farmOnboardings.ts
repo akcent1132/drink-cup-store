@@ -82,7 +82,6 @@ declare module externalData {
 
 export const loadFarmOnboardings = pMemoize(
   async (): Promise<FarmOnboarding[]> => {
-    console.log("!!!!!!!!!!!Loads farms")
     const externalData: externalData.FarmOnboarding[] = await fetch(
       "https://app.surveystack.io/static/coffeeshop/farm_profiles"
     ).then((result) => result.json());

@@ -126,6 +126,7 @@ export const EventsCard = ({
   const { data: { planting } = {} } = useEventsCardQuery({
     variables: { plantingId },
   });
+  console.log("card plantng", planting)
 
   const onClose = useCallback(
     () => planting && removePlantingCard(planting.id),

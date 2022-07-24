@@ -36,7 +36,6 @@ import {
   Producer,
 } from "../graphql.generated";
 import { schemeTableau10 } from "d3-scale-chromatic";
-import { getFarmEvent, randomZone } from "../utils/random";
 import _ from "lodash";
 window._ = _;
 
@@ -164,44 +163,44 @@ declare module externalData {
   }
 }
 
-const fixEventType = (type: string): string => {
-  type = type.toLowerCase();
-  switch (type) {
-    case "weed_control":
-      return "weeding";
-    default:
-      return type;
-  }
-};
+// const fixEventType = (type: string): string => {
+//   type = type.toLowerCase();
+//   switch (type) {
+//     case "weed_control":
+//       return "weeding";
+//     default:
+//       return type;
+//   }
+// };
 
-const cachedLoad = async <T,>(
-  url: string,
-  updateVars: (data: T) => void,
-  lsKey: string
-) => {
-  // if (localStorage[lsKey]) {
-  //   console.log("loading plantings from local storage...");
-  //   try {
-  //     updateVars(JSON.parse(localStorage[lsKey]));
-  //   } catch (e) {
-  //     console.error(
-  //       `Failed to update data from localStorage["${lsKey}"]\n${e}`
-  //     );
-  //   }
-  // }
+// const cachedLoad = async <T,>(
+//   url: string,
+//   updateVars: (data: T) => void,
+//   lsKey: string
+// ) => {
+//   // if (localStorage[lsKey]) {
+//   //   console.log("loading plantings from local storage...");
+//   //   try {
+//   //     updateVars(JSON.parse(localStorage[lsKey]));
+//   //   } catch (e) {
+//   //     console.error(
+//   //       `Failed to update data from localStorage["${lsKey}"]\n${e}`
+//   //     );
+//   //   }
+//   // }
 
-  const data = await fetch(url).then((result) => result.json());
-  try {
-    updateVars(data);
-    try {
-      localStorage[lsKey] = JSON.stringify(data);
-    } catch (e) {
-      console.log(`Failed to cache data (${lsKey})`, e);
-    }
-  } catch (e) {
-    console.error(`Failed to update vars from fresh data (${lsKey})\n${e}`);
-  }
-};
+//   const data = await fetch(url).then((result) => result.json());
+//   try {
+//     updateVars(data);
+//     try {
+//       localStorage[lsKey] = JSON.stringify(data);
+//     } catch (e) {
+//       console.log(`Failed to cache data (${lsKey})`, e);
+//     }
+//   } catch (e) {
+//     console.error(`Failed to update vars from fresh data (${lsKey})\n${e}`);
+//   }
+// };
 
 export const farmProfiles = makeVar<Dictionary<externalData.FarmProfile>>({});
 export const getEventDetailsVar = (key: string) => {
@@ -210,78 +209,78 @@ export const getEventDetailsVar = (key: string) => {
   }
   return eventDetailsMap[key];
 };
-const _loadingEventDetails: { [key: string]: boolean } = {};
-export const loadEventDetails = async (
-  producerKey: string,
-  plantingId: string
-) => {
-  const LS_KEY = `data.eventDetails.${producerKey}.${plantingId}`;
-  if (_loadingEventDetails[LS_KEY]) {
-    return;
-  }
-  _loadingEventDetails[LS_KEY] = true;
+// const _loadingEventDetails: { [key: string]: boolean } = {};
+// export const loadEventDetails = async (
+//   producerKey: string,
+//   plantingId: string
+// ) => {
+//   const LS_KEY = `data.eventDetails.${producerKey}.${plantingId}`;
+//   if (_loadingEventDetails[LS_KEY]) {
+//     return;
+//   }
+//   _loadingEventDetails[LS_KEY] = true;
 
-  const updateVars = (eventDetails: { [key: string]: string | string[] }[]) => {
-    for (const details of eventDetails) {
-      const { id, uuid, ...data } = details;
-      const key = `${producerKey}/${plantingId}/${id}`;
-      const list: PlantingEventDetail[] = map(data, (value, name) => ({
-        id: `${uuid}/${key}/${name}`,
-        valueList: Array.isArray(value) ? value : null,
-        value: Array.isArray(value) ? null : value,
-        name,
-        __typename: "PlantingEventDetail" as "PlantingEventDetail",
-      })).filter((d) => d.value || d.valueList);
+//   const updateVars = (eventDetails: { [key: string]: string | string[] }[]) => {
+//     for (const details of eventDetails) {
+//       const { id, uuid, ...data } = details;
+//       const key = `${producerKey}/${plantingId}/${id}`;
+//       const list: PlantingEventDetail[] = map(data, (value, name) => ({
+//         id: `${uuid}/${key}/${name}`,
+//         valueList: Array.isArray(value) ? value : null,
+//         value: Array.isArray(value) ? null : value,
+//         name,
+//         __typename: "PlantingEventDetail" as "PlantingEventDetail",
+//       })).filter((d) => d.value || d.valueList);
 
-      const eventDetailsVar = getEventDetailsVar(key);
-      if (!isEqual(eventDetailsVar(), list)) {
-        eventDetailsVar(list);
-      }
-    }
-  };
+//       const eventDetailsVar = getEventDetailsVar(key);
+//       if (!isEqual(eventDetailsVar(), list)) {
+//         eventDetailsVar(list);
+//       }
+//     }
+//   };
 
-  try {
-    if (localStorage[LS_KEY]) {
-      console.log("loading event details from local storage...");
-      try {
-        updateVars(JSON.parse(localStorage[LS_KEY]));
-      } catch (e) {
-        console.error(
-          `Failed to update event details from localStorage["${LS_KEY}"]\n${e}`
-        );
-      }
-    }
+//   try {
+//     if (localStorage[LS_KEY]) {
+//       console.log("loading event details from local storage...");
+//       try {
+//         updateVars(JSON.parse(localStorage[LS_KEY]));
+//       } catch (e) {
+//         console.error(
+//           `Failed to update event details from localStorage["${LS_KEY}"]\n${e}`
+//         );
+//       }
+//     }
 
-    console.log("load data...");
+//     console.log("load data...");
 
-    const url = `https://app.surveystack.io/static/coffeeshop/events/${producerKey}/${plantingId}`;
-    let externalData: { [key: string]: string | string[] }[] = await fetch(url)
-      .then((result) => result.json())
-      .catch((e) => {
-        console.error(
-          "Failed to load eventDetails from server. Reverting to fix data",
-          e
-        );
-        return [];
-      });
+//     const url = `https://app.surveystack.io/static/coffeeshop/events/${producerKey}/${plantingId}`;
+//     let externalData: { [key: string]: string | string[] }[] = await fetch(url)
+//       .then((result) => result.json())
+//       .catch((e) => {
+//         console.error(
+//           "Failed to load eventDetails from server. Reverting to fix data",
+//           e
+//         );
+//         return [];
+//       });
 
-    console.log("Got data", externalData);
-    try {
-      updateVars(externalData);
-      try {
-        localStorage[LS_KEY] = JSON.stringify(externalData);
-      } catch (e) {
-        console.log("Failed to cache data", e);
-      }
-    } catch (e) {
-      console.error(`Failed to update event details from fresh data\n${e}`);
-    }
+//     console.log("Got data", externalData);
+//     try {
+//       updateVars(externalData);
+//       try {
+//         localStorage[LS_KEY] = JSON.stringify(externalData);
+//       } catch (e) {
+//         console.log("Failed to cache data", e);
+//       }
+//     } catch (e) {
+//       console.error(`Failed to update event details from fresh data\n${e}`);
+//     }
 
-    console.log("finised loading data");
-  } finally {
-    _loadingEventDetails[LS_KEY] = false;
-  }
-};
+//     console.log("finised loading data");
+//   } finally {
+//     _loadingEventDetails[LS_KEY] = false;
+//   }
+// };
 
 // const createFilterParams = (): FilterParams => {
 //   return {

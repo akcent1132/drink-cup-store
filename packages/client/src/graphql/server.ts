@@ -6,7 +6,7 @@ import jsonSchema from "./schema.server.generated.json";
 import { loadPlantings } from "./loaders/plantings";
 import seedrandom from "seedrandom";
 import { loadFarmOnboardings } from "./loaders/farmOnboardings";
-import { memoize } from "lodash"
+import { loadEventDetails } from "./loaders/farmEvents";
 
 // Construct a schema, using GraphQL schema language
 // @ts-ignore
@@ -19,7 +19,7 @@ const resolvers: Resolvers = {
       return await loadPlantings();
     },
     plantings: async (_, { cropType }) => {
-      console.log("SERVER: get plantings of", cropType)
+      console.log("SERVER: get plantings of", cropType);
       const plantings = await loadPlantings();
       return plantings.filter((p) => p.cropType === cropType);
     },
@@ -55,6 +55,20 @@ const resolvers: Resolvers = {
           (f) => f.farmDomain && f.farmDomain === producer.id
         ) || null
       );
+    },
+  },
+  PlantingEvent: {
+    async details({
+      _producer_key_for_details_request,
+      _planting_id_for_details_request,
+      id,
+    }) {
+      const details = await loadEventDetails(
+        _producer_key_for_details_request,
+        _planting_id_for_details_request
+      );
+      console.log({details, id})
+      return details.find((d) => d.id === id)?.details || [];
     },
   },
 };

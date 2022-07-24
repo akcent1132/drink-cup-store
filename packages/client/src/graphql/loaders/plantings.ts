@@ -57,7 +57,6 @@ const fixEventType = (type: string): string => {
 };
 
 export const loadPlantings = pMemoize(async () => {
-  console.log("!!!!!!!!!!!!Loads plantings")
   const externalPlantings: externalData.Planting[] = await fetch(
     "https://app.surveystack.io/static/coffeeshop/plantings"
   ).then((result) => result.json());
@@ -99,9 +98,9 @@ export const loadPlantings = pMemoize(async () => {
           ...e,
           id: e.id.toString(),
           type: fixEventType(e.type || ""),
-          detailsKey: `${planting.producer.id.split(".")[0]}/${
-            planting.drupal_internal__id
-          }/${e.id.toString()}`,
+          _planting_id_for_details_request: planting.drupal_internal__id.toString(),
+          _producer_key_for_details_request: planting.producer.id.split(".")[0],
+          detailsKey: 'TODO remove me',
           details: [],
           __typename: "PlantingEvent",
         })),

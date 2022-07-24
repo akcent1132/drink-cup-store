@@ -7,11 +7,7 @@ import {
 } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
 import {
-  eventDetailsMap,
   highlightedFilterId,
-  // highlightedPlantingId,
-  isDemo,
-  loadEventDetails,
   selectedCropType,
 } from "../contexts/FiltersContext";
 import { loader } from "graphql.macro";
@@ -123,42 +119,42 @@ const typePolicies: StrictTypedTypePolicies = {
   //     },
   //   },
   // },
-  PlantingEvent: {
-    fields: {
-      details: {
-        read(_, { readField }) {
-          if (isDemo()) {
-            return FAKE_PLANTING_DETAILS;
-          }
-          const detailsKey = readField<string | null>("detailsKey");
-          const [producerKey, plantingId] = (detailsKey || "").split("/");
-          loadEventDetails(producerKey, plantingId);
-          // console.log("ED", detailsKey, eventDetailsMap()[detailsKey || ""]);
-          const details = eventDetailsMap[detailsKey || ""];
-          return (details && details()) || null;
-        },
-      },
-    },
-  },
+  // PlantingEvent: {
+  //   fields: {
+  //     details: {
+  //       read(_, { readField }) {
+  //         if (isDemo()) {
+  //           return FAKE_PLANTING_DETAILS;
+  //         }
+  //         const detailsKey = readField<string | null>("detailsKey");
+  //         const [producerKey, plantingId] = (detailsKey || "").split("/");
+  //         loadEventDetails(producerKey, plantingId);
+  //         // console.log("ED", detailsKey, eventDetailsMap()[detailsKey || ""]);
+  //         const details = eventDetailsMap[detailsKey || ""];
+  //         return (details && details()) || null;
+  //       },
+  //     },
+  //   },
+  // },
 };
 
-const FAKE_PLANTING_DETAILS = [
-  { name: "Name", value: "Herbicide Spark 65P 30 liter_acre" },
-  {
-    name: "Notes",
-    value:
-      "Added 300 liters of Spark total but diluted it with extra water for this field.",
-  },
-  { name: "Quantity 1", value: "Spark 65P (rate) 30 litre_acre" },
-  { name: "Quantity 2", value: "Spark 65P (quantity) 300 litre" },
-  { name: "Material 1", valueList: ["Spark 65P"] },
-  { name: "Flags", value: null, valueList: ["Greenhouse", "Organic"] },
-].map((d) => ({
-  value: null,
-  valueList: null,
-  ...d,
-  __typename: "PlantingEventDetail",
-}));
+// const FAKE_PLANTING_DETAILS = [
+//   { name: "Name", value: "Herbicide Spark 65P 30 liter_acre" },
+//   {
+//     name: "Notes",
+//     value:
+//       "Added 300 liters of Spark total but diluted it with extra water for this field.",
+//   },
+//   { name: "Quantity 1", value: "Spark 65P (rate) 30 litre_acre" },
+//   { name: "Quantity 2", value: "Spark 65P (quantity) 300 litre" },
+//   { name: "Material 1", valueList: ["Spark 65P"] },
+//   { name: "Flags", value: null, valueList: ["Greenhouse", "Organic"] },
+// ].map((d) => ({
+//   value: null,
+//   valueList: null,
+//   ...d,
+//   __typename: "PlantingEventDetail",
+// }));
 
 const cache = new InMemoryCache({
   typePolicies,

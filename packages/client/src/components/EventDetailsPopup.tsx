@@ -67,13 +67,10 @@ export const EventDetailsPopup = ({
   onMouseEnter,
   onMouseLeave,
   debugInfo,
+  eventDetails
 }: Props) => {
   const [target, setTarget] = useState(null);
   const ref = useCallback((node) => setTarget(node), []);
-  const eventDetailsVar = getEventDetailsVar(debugInfo.detailsKey);
-  const eventDetails = useReactiveVar(eventDetailsVar);
-
-  console.log("POPUP", { eventDetails });
   const data = mapValues(
     keyBy(eventDetails, "name"),
     (d) => d.value || d.valueList || "N/A"

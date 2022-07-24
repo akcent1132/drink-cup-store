@@ -16,7 +16,6 @@ query EventsCard($plantingId: String!) {
       id
       date
       type
-      detailsKey
       details {
         id
         name

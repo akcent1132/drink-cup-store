@@ -58,29 +58,29 @@ export const getFarmEvents = () => {
   ];
 };
 
-export const getFarmEvent = (seed?: string): PlantingEvent => {
-  const rnd = seedrandom(seed);
-  const eventTypes = [
-    "amendments",
-    "weeding",
-    "harvest",
-    "seeding",
-    "tillage",
-    "irrigation",
-  ];
-  const type = eventTypes[Math.floor(eventTypes.length * rnd())]!;
-  const date = new Date("2022");
+// export const getFarmEvent = (seed?: string): PlantingEvent => {
+//   const rnd = seedrandom(seed);
+//   const eventTypes = [
+//     "amendments",
+//     "weeding",
+//     "harvest",
+//     "seeding",
+//     "tillage",
+//     "irrigation",
+//   ];
+//   const type = eventTypes[Math.floor(eventTypes.length * rnd())]!;
+//   const date = new Date("2022");
 
-  date.setDate(365 * randomBates.source(rnd)(2)());
-  return {
-    __typename: "PlantingEvent",
-    type,
-    date: date.toString(),
-    id: uniqueId(),
-    details: [],
-    detailsKey: null,
-  };
-};
+//   date.setDate(365 * randomBates.source(rnd)(2)());
+//   return {
+//     __typename: "PlantingEvent",
+//     type,
+//     date: date.toString(),
+//     id: uniqueId(),
+//     details: [],
+//     detailsKey: null,
+//   };
+// };
 
 const ZONES = [
   { name: "4a", minF: 45, maxF: 50 },
