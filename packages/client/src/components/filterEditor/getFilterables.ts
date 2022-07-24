@@ -23,7 +23,7 @@ export type Filterable = FilterableNumeric | FilterableOption;
 export const getFilterables = (
   plantings: FilterEditorQuery["plantings"]
 ): Filterable[] => {
-  console.log("!!!!!!!!!Get filterables")
+  console.time("Get filterables")
   const values: FilterableNumeric[] = Object.values(
     plantings
       .map((p) => p.values)
@@ -58,7 +58,6 @@ export const getFilterables = (
       acc[key].push(...values);
       return acc;
     }, {} as { [key: string]: string[] });
-  console.log("farmValuesRaw", farmValuesRaw);
   const farmValues: Filterable[] = map(farmValuesRaw, (values, key) => {
     values = values.filter((x) => !isEmpty(x));
 
@@ -90,7 +89,7 @@ export const getFilterables = (
   }).filter(isSomething);
   console.log("farmValues", farmValues);
 
-  console.log("###########Get filterables")
+  console.timeEnd("Get filterables")
   return sortBy([...values, ...farmValues], 'key');
 };
 

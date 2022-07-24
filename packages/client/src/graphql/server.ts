@@ -67,7 +67,6 @@ const resolvers: Resolvers = {
         _producer_key_for_details_request,
         _planting_id_for_details_request
       );
-      console.log({details, id})
       return details.find((d) => d.id === id)?.details || [];
     },
   },

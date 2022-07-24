@@ -19,6 +19,7 @@ import { RangeSlider } from "./RangeSlider";
 import { getFilterables } from "./getFilterables";
 import { useFilters } from "../../contexts/FiltersCtx";
 import { useShowPlantingCards } from "../../states/sidePanelContent";
+import { LinearProgress } from "@mui/material";
 
 const Root = withTheme(styled.div`
   background-color: ${(p) => p.theme.colors.bgSidePanel};
@@ -105,11 +106,6 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
     () => getFilterables(plantings || []),
     [plantings && plantings.map((p) => p.id).join()]
   );
-  console.log({ filterables });
-  // const handleApply = useCallback(
-  //   () => {}, //filter && applyDraftFilter(filter.id),
-  //   [filter?.id]
-  // );
   const handleClose = useCallback(() => filter && showPlantingCards(), []);
   const updateName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) =>
@@ -118,83 +114,86 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
   );
 
   const params = filter?.params;
-  if (!params) {
-    return null;
-  }
 
   return (
     <Root>
-      <Header color={filter.color}>
-        <Title>Filter options</Title>
-        <Spacer />
-        <IconButton onClick={handleClose}>
-          <CloseIcon fontSize="inherit" color="inherit" />
-        </IconButton>
-      </Header>
-      <Body>
-        <FilterParamSelector
-          filterId={filter.id}
-          filterables={filterables}
-          params={params}
-        />
-        <Label label="Name">
-          <TextInput
-            placeholder="Filter name"
-            value={filter.name}
-            onChange={updateName}
-          />
-        </Label>
-        {params.map((param) => {
-          const filterable = filterables.find(
-            (f) => f.key === param.key && f.dataSource === param.dataSource
-          );
-          return (
-            <Label label={capitalize(param.key)} key={param.key}>
-              {param.value.__typename === "FilterValueOption" ? (
-                <TagSelect
-                  onChange={(options) =>
-                    editFilterParam(filter.id, param.key, {
-                      ...(param.value as FilterValueOption),
-                      options,
-                    })
-                  }
-                  value={param.value.options}
-                  options={
-                    (filterable?.type === "option" &&
-                      filterable.options.map(({ value, occurences }) => ({
-                        value,
-                        label: `${value} (${occurences})`,
-                      }))) ||
-                    []
-                  }
-                  allowSearch
-                />
-              ) : (
-                <RangeSlider
-                  value={[param.value.min, param.value.max]}
-                  allValues={
-                    (filterable?.type === "numeric" &&
-                      filterable.values.length > 1 &&
-                      filterable.values) || [
-                      param.value.min / 2,
-                      param.value.max * 2,
-                    ]
-                  }
-                  onChange={throttle(
-                    ([min, max]) =>
-                      editFilterParam(filter.id, param.key, {
-                        ...(param.value as FilterValueRange),
-                        min,
-                        max,
-                      }),
-                    128
-                  )}
-                />
-              )}
+      {!params ? (
+        <LinearProgress />
+      ) : (
+        <>
+          <Header color={filter.color}>
+            <Title>Filter options</Title>
+            <Spacer />
+            <IconButton onClick={handleClose}>
+              <CloseIcon fontSize="inherit" color="inherit" />
+            </IconButton>
+          </Header>
+          <Body>
+            <FilterParamSelector
+              filterId={filter.id}
+              filterables={filterables}
+              params={params}
+            />
+            <Label label="Name">
+              <TextInput
+                placeholder="Filter name"
+                value={filter.name}
+                onChange={updateName}
+              />
             </Label>
-          );
-        })}
-      </Body>
+            {params.map((param) => {
+              const filterable = filterables.find(
+                (f) => f.key === param.key && f.dataSource === param.dataSource
+              );
+              return (
+                <Label label={capitalize(param.key)} key={param.key}>
+                  {param.value.__typename === "FilterValueOption" ? (
+                    <TagSelect
+                      onChange={(options) =>
+                        editFilterParam(filter.id, param.key, {
+                          ...(param.value as FilterValueOption),
+                          options,
+                        })
+                      }
+                      value={param.value.options}
+                      options={
+                        (filterable?.type === "option" &&
+                          filterable.options.map(({ value, occurences }) => ({
+                            value,
+                            label: `${value} (${occurences})`,
+                          }))) ||
+                        []
+                      }
+                      allowSearch
+                    />
+                  ) : (
+                    <RangeSlider
+                      value={[param.value.min, param.value.max]}
+                      allValues={
+                        (filterable?.type === "numeric" &&
+                          filterable.values.length > 1 &&
+                          filterable.values) || [
+                          param.value.min / 2,
+                          param.value.max * 2,
+                        ]
+                      }
+                      onChange={throttle(
+                        ([min, max]) =>
+                          editFilterParam(filter.id, param.key, {
+                            ...(param.value as FilterValueRange),
+                            min,
+                            max,
+                          }),
+                        128
+                      )}
+                    />
+                  )}
+                </Label>
+              );
+            })}
+          </Body>
+        </>
+      )}
     </Root>
   );
 };

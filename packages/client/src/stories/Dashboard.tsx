@@ -218,7 +218,7 @@ export const Dashboard = ({ iframeSrc }: Props) => {
       sidePanelContent.type === "FilterEditor"
         ? [
             <FilterEditor selectedFilterId={sidePanelContent.filterId} />,
-            "FilterEditor",
+            `FilterEditor-${sidePanelContent.filterId}`,
           ]
         : sidePanelContent.type === "Profile"
         ? [

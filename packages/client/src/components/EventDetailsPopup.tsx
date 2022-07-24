@@ -21,8 +21,6 @@ import { Spacer } from "./EventsCard";
 import useCopy from "use-copy";
 import { EventsCardQuery } from "./EventsCard.generated";
 import { keyBy, mapValues } from "lodash";
-import { getEventDetailsVar } from "../contexts/FiltersContext";
-import { makeVar, useReactiveVar } from "@apollo/client";
 
 export const defaultTheme = {
   borderColor: "rgba(255,255,255,.4)",
@@ -67,7 +65,7 @@ export const EventDetailsPopup = ({
   onMouseEnter,
   onMouseLeave,
   debugInfo,
-  eventDetails
+  eventDetails,
 }: Props) => {
   const [target, setTarget] = useState(null);
   const ref = useCallback((node) => setTarget(node), []);
@@ -75,18 +73,7 @@ export const EventDetailsPopup = ({
     keyBy(eventDetails, "name"),
     (d) => d.value || d.valueList || "N/A"
   );
-  // const data = useMemo(
-  //   () => ({
-  //     Name: "Herbicide Spark 65P 30 liter_acre",
-  //     Notes:
-  //       "Added 300 liters of Spark total but diluted it with extra water for this field.",
-  //     "Quantity 1": "Spark 65P (rate) 30 litre_acre",
-  //     "Quantity 2": "Spark 65P (quantity) 300 litre",
-  //     "Material 1": ["Spark 65P"],
-  //     Flags: ["Greenhouse", "Organic"],
-  //   }),
-  //   []
-  // );
+
   const [copied, copy, setCopied] = useCopy(
     JSON.stringify({ title, date, debugInfo, ...data }, null, 2)
   );
@@ -222,6 +209,3 @@ export const EventDetailsPopup = ({
     </>
   );
 };
-function useFetch<T>(url: any): { data: any; error: any } {
-  throw new Error("Function not implemented.");
-}

@@ -1,22 +1,7 @@
-import { randomNormal } from "d3-random";
+
 import {
-  countBy,
   Dictionary,
-  get,
-  isEqual,
-  isNumber,
-  isString,
-  keyBy,
-  map,
-  omitBy,
   range,
-  sample,
-  startCase,
-  sum,
-  toNumber,
-  toString,
-  uniq,
-  uniqBy,
   uniqueId,
 } from "lodash";
 import React from "react";
@@ -202,13 +187,13 @@ declare module externalData {
 //   }
 // };
 
-export const farmProfiles = makeVar<Dictionary<externalData.FarmProfile>>({});
-export const getEventDetailsVar = (key: string) => {
-  if (!eventDetailsMap[key]) {
-    eventDetailsMap[key] = makeVar<PlantingEventDetail[] | null>(null);
-  }
-  return eventDetailsMap[key];
-};
+// export const farmProfiles = makeVar<Dictionary<externalData.FarmProfile>>({});
+// export const getEventDetailsVar = (key: string) => {
+//   if (!eventDetailsMap[key]) {
+//     eventDetailsMap[key] = makeVar<PlantingEventDetail[] | null>(null);
+//   }
+//   return eventDetailsMap[key];
+// };
 // const _loadingEventDetails: { [key: string]: boolean } = {};
 // export const loadEventDetails = async (
 //   producerKey: string,
@@ -488,23 +473,11 @@ export const filters = makeVar<Filter[]>(
       ]
     : []
 );
-export const producers = makeVar<Producer[]>(
-  isDemo()
-    ? range(128).map(() => ({
-        __typename: "Producer",
-        id: uniqueId(),
-        code: Math.random().toString(32).slice(-7),
-        plantings: [],
-      }))
-    : []
-);
+
 // export const selectedFilterId = makeVar<string | null>(null);
 // export const selectedProducerId = makeVar<string | null>(null);
 // TODO save in ls
 export const selectedCropType = makeVar(isDemo() ? "corn" : "wheat");
-export const eventDetailsMap: {
-  [key: string]: ReactiveVar<PlantingEventDetail[] | null>;
-} = {};
 
 // export const openEventCardIds = makeVar<string[]>([]);
 // export const openEventCard = (plantingId: string) => {

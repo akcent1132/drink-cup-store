@@ -18,6 +18,7 @@ import {
   useRemovePlantingCard,
   useShowProfile,
 } from "../states/sidePanelContent";
+import {  LinearProgress } from "@mui/material";
 
 export const defaultTheme = {
   sidePad: 10,
@@ -50,6 +51,7 @@ const Root = withTheme(styled.div<{
       : "100%"};
   transition: all 0.1s ease-out;
   margin-bottom: 20px;
+  min-height: 70px;
 `);
 
 const Head = withTheme(styled.div`
@@ -126,7 +128,6 @@ export const EventsCard = ({
   const { data: { planting } = {} } = useEventsCardQuery({
     variables: { plantingId },
   });
-  console.log("card plantng", planting)
 
   const onClose = useCallback(
     () => planting && removePlantingCard(planting.id),
@@ -140,53 +141,61 @@ export const EventsCard = ({
     () => planting && unhightlightPlanting(planting.id),
     [planting?.id]
   );
-  if (!planting) {
-    return null;
-  }
+
   return (
     <Root
       color={"grey"}
-      isHighlighted={planting.id === highlightedPlantingId}
+      isHighlighted={planting?.id === highlightedPlantingId}
       onMouseEnter={onHoverData}
       onMouseLeave={onLeaveData}
       hideColorBorder={hideColorBorder}
     >
-      <Head>
-        <Title>{planting.title}</Title>
-        <Spacer />
-        {!hideName ? (
-          <Tip content="Producer profile">
-            <Name onClick={() => showProfile(planting.producer.id)}>
-              <ContactPageIcon fontSize="inherit" />
-              {planting.producer.code}
-            </Name>
-          </Tip>
-        ) : null}
+      {!planting ? (
+        <LinearProgress />
+      ) : (
+        <>
+          <Head>
+            <Title>{planting.title}</Title>
+            <Spacer />
+            {!hideName ? (
+              <Tip content="Producer profile">
+                <Name onClick={() => showProfile(planting.producer.id)}>
+                  <ContactPageIcon fontSize="inherit" />
+                  {planting.producer.code}
+                </Name>
+              </Tip>
+            ) : null}
 
-        {onClose ? (
-          <IconButton onClick={onClose}>
-            <CloseIcon fontSize="inherit" onClick={onClose} color="inherit" />
-          </IconButton>
-        ) : null}
-      </Head>
+            {onClose ? (
+              <IconButton onClick={onClose}>
+                <CloseIcon
+                  fontSize="inherit"
+                  onClick={onClose}
+                  color="inherit"
+                />
+              </IconButton>
+            ) : null}
+          </Head>
 
-      <Params>
-        <MiniInfo>
-          <ThermostatIcon fontSize="inherit" />
-          <ParamValue>{planting.params.temperature}</ParamValue>
-        </MiniInfo>
-        <MiniInfo>
-          <InvertColorsIcon fontSize="inherit" />
-          <ParamValue>{planting.params.precipitation}</ParamValue>
-        </MiniInfo>
-        <MiniInfo>
-          <PublicIcon fontSize="inherit" />
-          <ParamValue>{planting.params.zone}</ParamValue>
-        </MiniInfo>
-        <Spacer />
-        <ParamValue>{planting.params.texture}</ParamValue>
-      </Params>
-      <IconEventsBar events={planting.events} />
+          <Params>
+            <MiniInfo>
+              <ThermostatIcon fontSize="inherit" />
+              <ParamValue>{planting.params.temperature}</ParamValue>
+            </MiniInfo>
+            <MiniInfo>
+              <InvertColorsIcon fontSize="inherit" />
+              <ParamValue>{planting.params.precipitation}</ParamValue>
+            </MiniInfo>
+            <MiniInfo>
+              <PublicIcon fontSize="inherit" />
+              <ParamValue>{planting.params.zone}</ParamValue>
+            </MiniInfo>
+            <Spacer />
+            <ParamValue>{planting.params.texture}</ParamValue>
+          </Params>
+          <IconEventsBar events={planting.events} />
+        </>
+      )}
     </Root>
   );
 };
