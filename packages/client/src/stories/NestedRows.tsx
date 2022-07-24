@@ -57,8 +57,15 @@ const getPlantingIdsOfFilter = (filter: Filter, plantings: Planting[]) => {
         const paramValue = param.value;
         if (paramValue.__typename === "FilterValueRange") {
           filteredPlantings = filteredPlantings.filter((planting) => {
-            return planting.values.some(
-              ({ value }) => value >= paramValue.min && value <= paramValue.max
+            const values = planting.values.filter(
+              (value) => value.name === param.key
+            );
+            return (
+              values.length === 0 ||
+              values.some(
+                ({ value }) =>
+                  value >= paramValue.min && value <= paramValue.max
+              )
             );
           });
         }
@@ -183,13 +190,8 @@ const flattenRows = (
     .flat();
 
 export const NestedRows = ({ rows }: { rows: RowData[] }) => {
-  const {
-    data: {
-      selectedCropType,
-      plantings,
-      highlightedFilterId,
-    } = {},
-  } = useNestedRowsQuery();
+  const { data: { selectedCropType, plantings, highlightedFilterId } = {} } =
+    useNestedRowsQuery();
   const filtersCtx = useFilters();
   const filters = useMemo(
     () => filtersCtx.filters.filter((f) => f.cropType === selectedCropType),
