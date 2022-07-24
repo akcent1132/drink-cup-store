@@ -15,6 +15,5 @@ query NestedRows($cropType: String! = "") {
       }
     }
   }
-  highlightedPlantingId @client
   highlightedFilterId @client 
 }

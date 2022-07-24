@@ -8,6 +8,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { RecoilRoot } from "recoil"
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { ClassNames } from "@emotion/core";
 import styled from "@emotion/styled";
@@ -304,8 +305,10 @@ export const Dashboard = ({ iframeSrc }: Props) => {
 
 export const App = (props: ComponentProps<typeof Dashboard>) => (
   <ApolloProvider client={client}>
+    <RecoilRoot>
     <FiltersProvider>
       <Dashboard {...props} />
     </FiltersProvider>
+    </RecoilRoot>
   </ApolloProvider>
 );

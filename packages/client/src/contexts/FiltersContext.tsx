@@ -519,13 +519,13 @@ export const closeEventCard = (plantingId: string) => {
   openEventCardIds(openEventCardIds().filter((id) => id !== plantingId));
 };
 
-export const highlightedPlantingId = makeVar<string | null>(null);
-export const hightlightPlanting = (plantingId: string) => {
-  highlightedPlantingId(plantingId);
-};
-export const unhightlightPlanting = (plantingId: string) => {
-  if (plantingId === highlightedPlantingId()) highlightedPlantingId(null);
-};
+// export const highlightedPlantingId = makeVar<string | null>(null);
+// export const hightlightPlanting = (plantingId: string) => {
+//   highlightedPlantingId(plantingId);
+// };
+// export const unhightlightPlanting = (plantingId: string) => {
+//   if (plantingId === highlightedPlantingId()) highlightedPlantingId(null);
+// };
 
 export const highlightedFilterId = makeVar<string | null>(null);
 export const highlightFilter = (filterId: string) => {

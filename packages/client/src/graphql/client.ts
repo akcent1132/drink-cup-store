@@ -9,7 +9,7 @@ import { onError } from "@apollo/client/link/error";
 import {
   eventDetailsMap,
   highlightedFilterId,
-  highlightedPlantingId,
+  // highlightedPlantingId,
   isDemo,
   loadEventDetails,
   openEventCardIds,
@@ -72,11 +72,11 @@ const typePolicies: StrictTypedTypePolicies = {
           return selectedCropType();
         },
       },
-      highlightedPlantingId: {
-        read() {
-          return highlightedPlantingId();
-        },
-      },
+      // highlightedPlantingId: {
+      //   read() {
+      //     return highlightedPlantingId();
+      //   },
+      // },
       highlightedFilterId: {
         read() {
           return highlightedFilterId();
@@ -116,16 +116,16 @@ const typePolicies: StrictTypedTypePolicies = {
       },
     },
   },
-  Planting: {
-    fields: {
-      isHighlighted: {
-        read(_, { readField }) {
-          const id = readField<string>("id");
-          return id === highlightedPlantingId();
-        },
-      },
-    },
-  },
+  // Planting: {
+  //   fields: {
+  //     isHighlighted: {
+  //       read(_, { readField }) {
+  //         const id = readField<string>("id");
+  //         return id === highlightedPlantingId();
+  //       },
+  //     },
+  //   },
+  // },
   PlantingEvent: {
     fields: {
       details: {

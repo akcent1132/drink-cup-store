@@ -1,5 +1,5 @@
 extend type Query {
-  highlightedPlantingId: String
+  # highlightedPlantingId: String
   highlightedFilterId: String
   selectedCropType: String!
   openEventCardIds(cropType: String!): [String!]!
@@ -7,9 +7,9 @@ extend type Query {
   selectedProducerId: String
   auth: AuthState,
 }
-extend type Planting {
-  isHighlighted: Boolean!
-}
+# extend type Planting {
+#   isHighlighted: Boolean!
+# }
 type FilterValueOption {
   options: [String!]!
 }

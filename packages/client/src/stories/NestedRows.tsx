@@ -4,6 +4,7 @@ import { ValueDistribution } from "../components/ValueDistribution";
 import { Filter, useFilters } from "../contexts/FiltersCtx";
 import { RowData } from "../contexts/rows";
 import { FilterParamDataSource } from "../graphql.generated";
+import { useHightlightedPlantingId } from "../states/ui";
 import { NestedRowsQuery, useNestedRowsQuery } from "./NestedRows.generated";
 
 type Planting = NestedRowsQuery["plantings"][number];
@@ -187,7 +188,6 @@ export const NestedRows = ({ rows }: { rows: RowData[] }) => {
       selectedCropType,
       plantings,
       highlightedFilterId,
-      highlightedPlantingId,
     } = {},
   } = useNestedRowsQuery();
   const filtersCtx = useFilters();
@@ -195,6 +195,7 @@ export const NestedRows = ({ rows }: { rows: RowData[] }) => {
     () => filtersCtx.filters.filter((f) => f.cropType === selectedCropType),
     [filtersCtx.filters, selectedCropType]
   );
+  const { highlightedPlantingId } = useHightlightedPlantingId();
   const labeledValues = useMemo(
     () => (filters && plantings ? getLabeledValues(filters, plantings) : []),
     [filters, plantings]

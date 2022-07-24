@@ -12,13 +12,13 @@ import tinycolor from "tinycolor2";
 import { ValuePopup } from "./ValuePopup";
 import { format } from "d3-format";
 import {
-  highlightedPlantingId,
-  hightlightPlanting,
+  // hightlightPlanting,
   openEventCard,
-  unhightlightPlanting,
+  // unhightlightPlanting,
 } from "../contexts/FiltersContext";
 import { useEffectDebugger } from "../utils/useEffectDebugger";
 import { useNestedRowsQuery } from "../stories/NestedRows.generated";
+import { useHightlightedPlantingId } from "../states/ui";
 
 // TODO read height from props
 
@@ -181,6 +181,7 @@ export const ValueDistribution = ({
   );
   const { colors } = useTheme();
   const [isHovering, setIsHovering] = useState(false);
+  const {hightlightPlanting, unhightlightPlanting} = useHightlightedPlantingId()
   const onHoverData = useCallback(
     (planting: string) => hightlightPlanting(planting),
     []

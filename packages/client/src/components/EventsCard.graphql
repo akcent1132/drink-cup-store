@@ -1,7 +1,6 @@
 query EventsCard($plantingId: String!) {
   planting(id: $plantingId) {
     id
-    isHighlighted @client
     producer {
       id
       code

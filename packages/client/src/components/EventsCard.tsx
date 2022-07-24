@@ -7,12 +7,12 @@ import "../index.css";
 import { IconEventsBar, FarmEvent } from "./IconEventsBar";
 import CloseIcon from "@mui/icons-material/Close";
 import tinycolor from "tinycolor2";
-import { useFetch } from 'usehooks-ts'
+import { useFetch } from "usehooks-ts";
 import {
   closeEventCard,
-  hightlightPlanting,
+  // hightlightPlanting,
   selectProducer,
-  unhightlightPlanting,
+  // unhightlightPlanting,
 } from "../contexts/FiltersContext";
 import InvertColorsIcon from "@mui/icons-material/InvertColors";
 import ThermostatIcon from "@mui/icons-material/Thermostat";
@@ -20,6 +20,7 @@ import PublicIcon from "@mui/icons-material/Public";
 import { Tip } from "grommet";
 import ContactPageIcon from "@mui/icons-material/ContactPage";
 import { useEventsCardQuery } from "./EventsCard.generated";
+import { useHightlightedPlantingId } from "../states/ui";
 
 export const defaultTheme = {
   sidePad: 10,
@@ -129,6 +130,8 @@ export const EventsCard = ({
     () => planting && closeEventCard(planting.id),
     [planting?.id]
   );
+  const { hightlightPlanting, unhightlightPlanting, highlightedPlantingId } =
+    useHightlightedPlantingId();
   const onHoverData = useCallback(
     () => planting && hightlightPlanting(planting.id),
     [planting?.id]
@@ -143,7 +146,7 @@ export const EventsCard = ({
   return (
     <Root
       color={"grey"}
-      isHighlighted={planting.isHighlighted}
+      isHighlighted={planting.id === highlightedPlantingId}
       onMouseEnter={onHoverData}
       onMouseLeave={onLeaveData}
       hideColorBorder={hideColorBorder}
@@ -183,9 +186,7 @@ export const EventsCard = ({
         <Spacer />
         <ParamValue>{planting.params.texture}</ParamValue>
       </Params>
-      <IconEventsBar
-        events={planting.events}
-      />
+      <IconEventsBar events={planting.events} />
     </Root>
   );
 };

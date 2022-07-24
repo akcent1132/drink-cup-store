@@ -10,7 +10,6 @@ query Dashboard($producerId: String) {
     code
     plantings {
       id
-      isHighlighted @client
       producer {
         id
         code
