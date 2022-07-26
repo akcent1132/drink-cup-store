@@ -461,7 +461,6 @@ const createFilter = (
     color,
     plantings: [],
     params: [],
-    isHighlighted: false,
   };
 };
 
@@ -499,15 +498,15 @@ export const filters = makeVar<Filter[]>(
 //   if (plantingId === highlightedPlantingId()) highlightedPlantingId(null);
 // };
 
-export const highlightedFilterId = makeVar<string | null>(null);
-export const highlightFilter = (filterId: string) => {
-  highlightedFilterId(filterId);
-};
-export const unhighlightFilter = (filterId: string) => {
-  if (filterId === highlightedFilterId()) {
-    highlightedFilterId(null);
-  }
-};
+// export const highlightedFilterId = makeVar<string | null>(null);
+// export const highlightFilter = (filterId: string) => {
+//   highlightedFilterId(filterId);
+// };
+// export const unhighlightFilter = (filterId: string) => {
+//   if (filterId === highlightedFilterId()) {
+//     highlightedFilterId(null);
+//   }
+// };
 
 console.log("is demo:", isDemo());
 

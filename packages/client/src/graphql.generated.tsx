@@ -33,7 +33,6 @@ export type Filter = {
   color: Scalars['String'];
   cropType: Scalars['String'];
   id: Scalars['String'];
-  isHighlighted: Scalars['Boolean'];
   name: Scalars['String'];
   params: Array<FilterParam>;
   plantings: Array<Planting>;
@@ -124,7 +123,6 @@ export type Query = {
   __typename: 'Query';
   allFarmOnboardings: Array<FarmOnboarding>;
   allPlantings: Array<Planting>;
-  highlightedFilterId: Maybe<Scalars['String']>;
   planting: Maybe<Planting>;
   plantings: Array<Planting>;
   producer: Maybe<Producer>;
@@ -158,12 +156,11 @@ export type FarmOnboardingValueFieldPolicy = {
 	key?: FieldPolicy<any> | FieldReadFunction<any>,
 	values?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type FilterKeySpecifier = ('color' | 'cropType' | 'id' | 'isHighlighted' | 'name' | 'params' | 'plantings' | FilterKeySpecifier)[];
+export type FilterKeySpecifier = ('color' | 'cropType' | 'id' | 'name' | 'params' | 'plantings' | FilterKeySpecifier)[];
 export type FilterFieldPolicy = {
 	color?: FieldPolicy<any> | FieldReadFunction<any>,
 	cropType?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
-	isHighlighted?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	params?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>
@@ -233,11 +230,10 @@ export type ProducerFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('allFarmOnboardings' | 'allPlantings' | 'highlightedFilterId' | 'planting' | 'plantings' | 'producer' | QueryKeySpecifier)[];
+export type QueryKeySpecifier = ('allFarmOnboardings' | 'allPlantings' | 'planting' | 'plantings' | 'producer' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
 	allFarmOnboardings?: FieldPolicy<any> | FieldReadFunction<any>,
 	allPlantings?: FieldPolicy<any> | FieldReadFunction<any>,
-	highlightedFilterId?: FieldPolicy<any> | FieldReadFunction<any>,
 	planting?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>,
 	producer?: FieldPolicy<any> | FieldReadFunction<any>

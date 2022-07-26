@@ -4,6 +4,7 @@ import { ValueDistribution } from "../components/ValueDistribution";
 import { Filter, useFilters } from "../contexts/FiltersCtx";
 import { RowData } from "../contexts/rows";
 import { FilterParamDataSource } from "../graphql.generated";
+import { useHightlightedFilterId } from "../states/highlightedFilterId";
 import { useHightlightedPlantingId } from "../states/highlightedPlantingId";
 import { useSelectedCropType } from "../states/selectedCropType";
 import { NestedRowsQuery, useNestedRowsQuery } from "./NestedRows.generated";
@@ -171,7 +172,7 @@ const flattenRows = (
 export const NestedRows = ({ rows }: { rows: RowData[] }) => {
   const selectedCropType = useSelectedCropType()
   console.log("NESTED ROWS", {selectedCropType})
-  const { data: { plantings, highlightedFilterId } = {} } =
+  const { data: { plantings } = {} } =
     useNestedRowsQuery({ variables: { cropType: selectedCropType }});
     console.log({plantings})
   const filtersCtx = useFilters();
@@ -180,6 +181,7 @@ export const NestedRows = ({ rows }: { rows: RowData[] }) => {
     [filtersCtx.filters, selectedCropType]
   );
   const { highlightedPlantingId } = useHightlightedPlantingId();
+  const highlightedFilterId = useHightlightedFilterId();
   const labeledValues = useMemo(
     () => (filters && plantings ? getLabeledValues(filters, plantings) : []),
     [filters, plantings]

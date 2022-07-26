@@ -6,9 +6,9 @@ import {
   HttpLink,
 } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
-import {
-  highlightedFilterId,
-} from "../contexts/FiltersContext";
+// import {
+//   highlightedFilterId,
+// } from "../contexts/FiltersContext";
 import { loader } from "graphql.macro";
 import {
   StrictTypedTypePolicies,
@@ -67,11 +67,11 @@ const typePolicies: StrictTypedTypePolicies = {
       //     return highlightedPlantingId();
       //   },
       // },
-      highlightedFilterId: {
-        read() {
-          return highlightedFilterId();
-        },
-      },
+      // highlightedFilterId: {
+      //   read() {
+      //     return highlightedFilterId();
+      //   },
+      // },
       // openEventCardIds: {
       //   read(_, options) {
       //     return openEventCardIds();
@@ -96,16 +96,16 @@ const typePolicies: StrictTypedTypePolicies = {
       // },
     },
   },
-  Filter: {
-    fields: {
-      isHighlighted: {
-        read(_, { readField }) {
-          const id = readField<string>("id");
-          return id === highlightedFilterId();
-        },
-      },
-    },
-  },
+  // Filter: {
+  //   fields: {
+  //     isHighlighted: {
+  //       read(_, { readField }) {
+  //         const id = readField<string>("id");
+  //         return id === highlightedFilterId();
+  //       },
+  //     },
+  //   },
+  // },
   // Planting: {
   //   fields: {
   //     isHighlighted: {

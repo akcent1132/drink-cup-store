@@ -1,12 +1,12 @@
-extend type Query {
-  # highlightedPlantingId: String
-  highlightedFilterId: String
-  # selectedCropType: String!
-  # openEventCardIds(cropType: String!): [String!]!
-  # selectedFilterId: String
-  # selectedProducerId: String
-  # auth: AuthState,
-}
+# extend type Query {
+#   # highlightedPlantingId: String
+#   # highlightedFilterId: String
+#   # selectedCropType: String!
+#   # openEventCardIds(cropType: String!): [String!]!
+#   # selectedFilterId: String
+#   # selectedProducerId: String
+#   # auth: AuthState,
+# }
 # extend type Planting {
 #   isHighlighted: Boolean!
 # }
@@ -38,7 +38,7 @@ type Filter {
   cropType: String!
   plantings: [Planting!]!
   params: [FilterParam!]!
-  isHighlighted: Boolean!
+  # isHighlighted: Boolean!
 }
 
 
