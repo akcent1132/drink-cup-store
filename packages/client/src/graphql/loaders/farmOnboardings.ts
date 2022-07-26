@@ -5,7 +5,7 @@ import { isArray, isEmpty, isFinite, isNumber, map, toString } from "lodash";
 declare module externalData {
   export interface FarmOnboarding {
     farmDomain: string;
-    title: Title;
+    title: string;
     surveystack_id: string;
     animals_detail: null;
     animals_total: number;
@@ -15,11 +15,11 @@ declare module externalData {
     average_annual_rainfall: number | null;
     average_annual_temperature: number | null;
     bio: null | string;
-    certifications_current: CertificationsCurrent;
+    certifications_current: string;
     certifications_current_detail: string[];
-    certifications_future: CertificationsCurrent | null;
+    certifications_future: null | string;
     certifications_future_detail: string[];
-    climate_zone: ClimateZone | null;
+    climate_zone: null | string;
     county: null | string;
     equity_practices: string[];
     farm_leadership_experience: number | null;
@@ -28,7 +28,7 @@ declare module externalData {
     goal_2: null | string;
     goal_3: null | string;
     hardiness_zone: null | string;
-    immediate_data_source: ImmediateDataSource;
+    immediate_data_source: string;
     indigenous_territory: string[];
     interest: string[];
     land_other: string[];
@@ -40,9 +40,9 @@ declare module externalData {
     location_country_code: null | string;
     location_locality: null | string;
     location_postal_code: null | string;
-    management_plans_current: CertificationsCurrent;
+    management_plans_current: string;
     management_plans_current_detail: string[];
-    management_plans_future: CertificationsCurrent | null;
+    management_plans_future: null | string;
     management_plans_future_detail: string[];
     motivations: string[];
     name: string;
@@ -50,15 +50,15 @@ declare module externalData {
     organization_id: null | string;
     preferred: null | string;
     products_animals: any[];
-    products_categories: ProductsCategory[];
+    products_categories: string[];
     products_detail: string[];
     products_value_added: string[];
     records_software: any[];
-    records_system: RecordsSystem[];
+    records_system: string[];
     role: null | string;
     schema_version: null;
     social: null | string;
-    types: Type[];
+    types: string[];
     unique_id: null;
     units: null | string;
   }
@@ -74,62 +74,6 @@ declare module externalData {
     bottom: number;
     geohash: string;
     latlon: string;
-  }
-
-  export enum CertificationsCurrent {
-    No = "no",
-    Yes = "yes",
-  }
-
-  export enum ClimateZone {
-    BSk = "BSk",
-    Cfa = "Cfa",
-    Cfb = "Cfb",
-    Csa = "Csa",
-    Csb = "Csb",
-    DFA = "Dfa",
-    Dfb = "Dfb",
-    Dsb = "Dsb",
-  }
-
-  export enum ImmediateDataSource {
-    Surveystack = "surveystack",
-  }
-
-  export enum ProductsCategory {
-    Agroforestry = "agroforestry",
-    Berries = "berries",
-    Dairy = "dairy",
-    GrainsOther = "grains_other",
-    HayAlfalfa = "hay_alfalfa",
-    NativeHabitat = "native_habitat",
-    OrchardVine = "orchard_vine",
-    Pasture = "pasture",
-    Rangeland = "rangeland",
-    Vegetables = "vegetables",
-  }
-
-  export enum RecordsSystem {
-    None = "none",
-    Paper = "paper",
-    Software = "software",
-    Spreadsheets = "spreadsheets",
-  }
-
-  export enum Title {
-    FarmProfile = "Farm Profile",
-  }
-
-  export enum Type {
-    CommunityGarden = "community_garden",
-    CooperativeFarm = "cooperative_farm",
-    DirectsaleFarm = "directsale_farm",
-    EducationFarm = "education_farm",
-    HomeGarden = "home_garden",
-    MarketGarden = "market_garden",
-    NonprofitFarm = "nonprofit_farm",
-    ResearchFarm = "research_farm",
-    WholesaleFarm = "wholesale_farm",
   }
 }
 
