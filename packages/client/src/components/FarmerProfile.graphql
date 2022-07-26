@@ -12,16 +12,13 @@ query FarmerProfile($producerId: String!) {
       }
       title
       params {
-        precipitation
-        temperature
-        texture
-        zone
+        clayPercentage
+        sandPercentage
       }
       events {
         id
         date
         type
-        detailsKey
         details {
           id
           name

@@ -1,28 +1,29 @@
 import { Planting } from "../resolvers.generated";
 import pMemoize from "p-memoize";
-import { isNumber, sum } from "lodash";
+import { isNumber, toString } from "lodash";
 import seedrandom from "seedrandom";
 
 declare module externalData {
   export interface Planting {
     _id: string;
+    cropType: null | string;
     drupal_internal__id: number;
-    flag: string[];
-    values: Value[];
-    params: Params;
-    title: string;
     events: Event[];
-    cropType: string;
+    flag: string[];
+    params: Params;
     producer: Producer;
+    title: string;
+    values: ValueElement[];
   }
 
-  export interface Value {
-    name: string;
-    modus_test_id?: string;
-    value: any;
+  export interface Event {
+    id: number;
+    type: null | string;
+    date: string;
   }
 
   export interface Params {
+    texture: string;
     soil_group?: string;
     soil_suborder?: string;
     soil_order?: string;
@@ -35,14 +36,14 @@ declare module externalData {
     precipitation?: number;
   }
 
-  export interface Event {
-    id: number;
-    type?: string;
-    date: string;
-  }
-
   export interface Producer {
     id: string;
+  }
+
+  export interface ValueElement {
+    name: string;
+    modus_test_id?: string;
+    value?: string[] | number | null | string;
   }
 }
 
@@ -64,15 +65,16 @@ export const loadPlantings = pMemoize(async () => {
   const clientPlantings: Planting[] = externalPlantings
     .filter((p) => p.cropType !== null)
     .map((planting) => {
-      let texture = [Math.random(), Math.random()];
-      texture = texture.map((t) => Math.round((t / sum(texture)) * 100));
       return {
         ...planting,
         __typename: "Planting",
+        cropType: planting.cropType!,
         isHighlighted: false,
         id: planting._id,
         values: planting.values
-          .filter((v) => isNumber(v.value))
+          .filter((v): v is externalData.ValueElement & { value: number } =>
+            isNumber(v.value)
+          )
           .map((v) => {
             return {
               ...v,
@@ -83,10 +85,12 @@ export const loadPlantings = pMemoize(async () => {
           }),
         params: {
           __typename: "PlantingParams",
-          zone: "??",
-          temperature: "?°",
-          precipitation: `${32 + Math.floor(32 * Math.random())}″`,
-          texture: `Sand: ${texture[0]}% | Clay ${texture[1]}%`,
+          sandPercentage: planting.params.sand_percentage,
+          clayPercentage: planting.params.clay_percentage,
+          soilGroup: planting.params.soil_group,
+          soilOrder: planting.params.soil_order,
+          soilSuborder: planting.params.soil_suborder,
+          soilTexture: planting.params.soil_texture,
         },
         producer: {
           ...planting.producer,
@@ -98,9 +102,9 @@ export const loadPlantings = pMemoize(async () => {
           ...e,
           id: e.id.toString(),
           type: fixEventType(e.type || ""),
-          _planting_id_for_details_request: planting.drupal_internal__id.toString(),
+          _planting_id_for_details_request:
+            planting.drupal_internal__id.toString(),
           _producer_key_for_details_request: planting.producer.id.split(".")[0],
-          detailsKey: 'TODO remove me',
           details: [],
           __typename: "PlantingEvent",
         })),

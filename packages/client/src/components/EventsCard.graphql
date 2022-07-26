@@ -7,10 +7,8 @@ query EventsCard($plantingId: String!) {
     }
     title
     params {
-      precipitation
-      temperature
-      texture
-      zone
+      clayPercentage,
+      sandPercentage,
     }
     events {
       id

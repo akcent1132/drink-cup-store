@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import styled from "@emotion/styled";
 import { withTheme } from "@emotion/react";
 import "../index.css";
@@ -18,7 +18,7 @@ import {
   useRemovePlantingCard,
   useShowProfile,
 } from "../states/sidePanelContent";
-import {  LinearProgress } from "@mui/material";
+import { LinearProgress } from "@mui/material";
 
 export const defaultTheme = {
   sidePad: 10,
@@ -128,7 +128,13 @@ export const EventsCard = ({
   const { data: { planting } = {} } = useEventsCardQuery({
     variables: { plantingId },
   });
-  console.log("planting.farmOnboarding", planting?.farmOnboarding)
+  const texture = useMemo(
+    () =>
+      [planting?.params.sandPercentage, planting?.params.clayPercentage]
+        .map((p) => `${p}%`)
+        .join(" | "),
+    [planting?.params.sandPercentage, planting?.params.clayPercentage]
+  );
 
   const onClose = useCallback(
     () => planting && removePlantingCard(planting.id),
@@ -181,18 +187,24 @@ export const EventsCard = ({
           <Params>
             <MiniInfo>
               <ThermostatIcon fontSize="inherit" />
-              <ParamValue>{planting.farmOnboarding?.averageAnnualTemperature || 'n/a'}</ParamValue>
+              <ParamValue>
+                {planting.farmOnboarding?.averageAnnualTemperature || "n/a"}
+              </ParamValue>
             </MiniInfo>
             <MiniInfo>
               <InvertColorsIcon fontSize="inherit" />
-              <ParamValue>{planting.farmOnboarding?.averageAnnualRainfall || 'n/a'}</ParamValue>
+              <ParamValue>
+                {planting.farmOnboarding?.averageAnnualRainfall || "n/a"}
+              </ParamValue>
             </MiniInfo>
             <MiniInfo>
               <PublicIcon fontSize="inherit" />
-              <ParamValue>{planting.farmOnboarding?.climateZone || 'n/a'}</ParamValue>
+              <ParamValue>
+                {planting.farmOnboarding?.climateZone || "n/a"}
+              </ParamValue>
             </MiniInfo>
             <Spacer />
-            <ParamValue>{planting.params.texture}</ParamValue>
+            <ParamValue>{texture}</ParamValue>
           </Params>
           <IconEventsBar events={planting.events} />
         </>

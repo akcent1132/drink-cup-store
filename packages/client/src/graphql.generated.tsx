@@ -96,7 +96,6 @@ export type PlantingEvent = {
   _producer_key_for_details_request: Scalars['String'];
   date: Scalars['String'];
   details: Maybe<Array<PlantingEventDetail>>;
-  detailsKey: Maybe<Scalars['String']>;
   id: Scalars['String'];
   type: Scalars['String'];
 };
@@ -111,10 +110,12 @@ export type PlantingEventDetail = {
 
 export type PlantingParams = {
   __typename: 'PlantingParams';
-  precipitation: Scalars['String'];
-  temperature: Scalars['String'];
-  texture: Scalars['String'];
-  zone: Scalars['String'];
+  clayPercentage: Maybe<Scalars['Int']>;
+  sandPercentage: Maybe<Scalars['Int']>;
+  soilGroup: Maybe<Scalars['String']>;
+  soilOrder: Maybe<Scalars['String']>;
+  soilSuborder: Maybe<Scalars['String']>;
+  soilTexture: Maybe<Scalars['Int']>;
 };
 
 export type PlantingValue = {
@@ -220,13 +221,12 @@ export type PlantingFieldPolicy = {
 	title?: FieldPolicy<any> | FieldReadFunction<any>,
 	values?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type PlantingEventKeySpecifier = ('_planting_id_for_details_request' | '_producer_key_for_details_request' | 'date' | 'details' | 'detailsKey' | 'id' | 'type' | PlantingEventKeySpecifier)[];
+export type PlantingEventKeySpecifier = ('_planting_id_for_details_request' | '_producer_key_for_details_request' | 'date' | 'details' | 'id' | 'type' | PlantingEventKeySpecifier)[];
 export type PlantingEventFieldPolicy = {
 	_planting_id_for_details_request?: FieldPolicy<any> | FieldReadFunction<any>,
 	_producer_key_for_details_request?: FieldPolicy<any> | FieldReadFunction<any>,
 	date?: FieldPolicy<any> | FieldReadFunction<any>,
 	details?: FieldPolicy<any> | FieldReadFunction<any>,
-	detailsKey?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	type?: FieldPolicy<any> | FieldReadFunction<any>
 };
@@ -237,12 +237,14 @@ export type PlantingEventDetailFieldPolicy = {
 	value?: FieldPolicy<any> | FieldReadFunction<any>,
 	valueList?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type PlantingParamsKeySpecifier = ('precipitation' | 'temperature' | 'texture' | 'zone' | PlantingParamsKeySpecifier)[];
+export type PlantingParamsKeySpecifier = ('clayPercentage' | 'sandPercentage' | 'soilGroup' | 'soilOrder' | 'soilSuborder' | 'soilTexture' | PlantingParamsKeySpecifier)[];
 export type PlantingParamsFieldPolicy = {
-	precipitation?: FieldPolicy<any> | FieldReadFunction<any>,
-	temperature?: FieldPolicy<any> | FieldReadFunction<any>,
-	texture?: FieldPolicy<any> | FieldReadFunction<any>,
-	zone?: FieldPolicy<any> | FieldReadFunction<any>
+	clayPercentage?: FieldPolicy<any> | FieldReadFunction<any>,
+	sandPercentage?: FieldPolicy<any> | FieldReadFunction<any>,
+	soilGroup?: FieldPolicy<any> | FieldReadFunction<any>,
+	soilOrder?: FieldPolicy<any> | FieldReadFunction<any>,
+	soilSuborder?: FieldPolicy<any> | FieldReadFunction<any>,
+	soilTexture?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type PlantingValueKeySpecifier = ('modusId' | 'name' | 'plantingId' | 'value' | PlantingValueKeySpecifier)[];
 export type PlantingValueFieldPolicy = {

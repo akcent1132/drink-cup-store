@@ -47,7 +47,6 @@ export type PlantingEvent = {
   _producer_key_for_details_request: Scalars['String'];
   date: Scalars['String'];
   details?: Maybe<Array<PlantingEventDetail>>;
-  detailsKey?: Maybe<Scalars['String']>;
   id: Scalars['String'];
   type: Scalars['String'];
 };
@@ -62,10 +61,12 @@ export type PlantingEventDetail = {
 
 export type PlantingParams = {
   __typename?: 'PlantingParams';
-  precipitation: Scalars['String'];
-  temperature: Scalars['String'];
-  texture: Scalars['String'];
-  zone: Scalars['String'];
+  clayPercentage?: Maybe<Scalars['Int']>;
+  sandPercentage?: Maybe<Scalars['Int']>;
+  soilGroup?: Maybe<Scalars['String']>;
+  soilOrder?: Maybe<Scalars['String']>;
+  soilSuborder?: Maybe<Scalars['String']>;
+  soilTexture?: Maybe<Scalars['Int']>;
 };
 
 export type PlantingValue = {
@@ -181,6 +182,7 @@ export type ResolversTypes = ResolversObject<{
   FarmOnboarding: ResolverTypeWrapper<FarmOnboarding>;
   FarmOnboardingValue: ResolverTypeWrapper<FarmOnboardingValue>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
+  Int: ResolverTypeWrapper<Scalars['Int']>;
   Planting: ResolverTypeWrapper<Planting>;
   PlantingEvent: ResolverTypeWrapper<PlantingEvent>;
   PlantingEventDetail: ResolverTypeWrapper<PlantingEventDetail>;
@@ -197,6 +199,7 @@ export type ResolversParentTypes = ResolversObject<{
   FarmOnboarding: FarmOnboarding;
   FarmOnboardingValue: FarmOnboardingValue;
   Float: Scalars['Float'];
+  Int: Scalars['Int'];
   Planting: Planting;
   PlantingEvent: PlantingEvent;
   PlantingEventDetail: PlantingEventDetail;
@@ -239,7 +242,6 @@ export type PlantingEventResolvers<ContextType = any, ParentType extends Resolve
   _producer_key_for_details_request?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   date?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   details?: Resolver<Maybe<Array<ResolversTypes['PlantingEventDetail']>>, ParentType, ContextType>;
-  detailsKey?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -254,10 +256,12 @@ export type PlantingEventDetailResolvers<ContextType = any, ParentType extends R
 }>;
 
 export type PlantingParamsResolvers<ContextType = any, ParentType extends ResolversParentTypes['PlantingParams'] = ResolversParentTypes['PlantingParams']> = ResolversObject<{
-  precipitation?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  temperature?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  texture?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  zone?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  clayPercentage?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  sandPercentage?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  soilGroup?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  soilOrder?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  soilSuborder?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  soilTexture?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

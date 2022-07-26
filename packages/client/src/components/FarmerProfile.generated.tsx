@@ -8,7 +8,7 @@ export type FarmerProfileQueryVariables = Types.Exact<{
 }>;
 
 
-export type FarmerProfileQuery = { __typename?: 'Query', producer?: { __typename?: 'Producer', id: string, code: string, plantings: Array<{ __typename?: 'Planting', id: string, title: string, producer: { __typename?: 'Producer', id: string, code: string }, params: { __typename?: 'PlantingParams', precipitation: string, temperature: string, texture: string, zone: string }, events: Array<{ __typename?: 'PlantingEvent', id: string, date: string, type: string, detailsKey?: string | null, details?: Array<{ __typename?: 'PlantingEventDetail', id: string, name: string, value?: string | null, valueList?: Array<string> | null }> | null }> }> } | null };
+export type FarmerProfileQuery = { __typename?: 'Query', producer?: { __typename?: 'Producer', id: string, code: string, plantings: Array<{ __typename?: 'Planting', id: string, title: string, producer: { __typename?: 'Producer', id: string, code: string }, params: { __typename?: 'PlantingParams', clayPercentage?: number | null, sandPercentage?: number | null }, events: Array<{ __typename?: 'PlantingEvent', id: string, date: string, type: string, details?: Array<{ __typename?: 'PlantingEventDetail', id: string, name: string, value?: string | null, valueList?: Array<string> | null }> | null }> }> } | null };
 
 
 export const FarmerProfileDocument = gql`
@@ -24,16 +24,13 @@ export const FarmerProfileDocument = gql`
       }
       title
       params {
-        precipitation
-        temperature
-        texture
-        zone
+        clayPercentage
+        sandPercentage
       }
       events {
         id
         date
         type
-        detailsKey
         details {
           id
           name

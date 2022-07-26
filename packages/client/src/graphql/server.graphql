@@ -22,17 +22,18 @@ type PlantingValue {
   modusId: String
 }
 type PlantingParams {
-  zone: String!
-  temperature: String!
-  precipitation: String!
-  texture: String!
+  sandPercentage: Int,
+  clayPercentage: Int,
+  soilGroup: String,
+  soilOrder: String,
+  soilSuborder: String,
+  soilTexture: Int,
 }
 
 type PlantingEvent {
   id: String!
   type: String!
   date: String!
-  detailsKey: String
   details: [PlantingEventDetail!]
   _planting_id_for_details_request: String!
   _producer_key_for_details_request: String!
