@@ -13,19 +13,6 @@ export type Scalars = {
   Float: number;
 };
 
-export type AuthState = {
-  __typename: 'AuthState';
-  isLoggedIn: Scalars['Boolean'];
-  user: Maybe<AuthUser>;
-};
-
-export type AuthUser = {
-  __typename: 'AuthUser';
-  email: Scalars['String'];
-  id: Scalars['String'];
-  name: Scalars['String'];
-};
-
 export type FarmOnboarding = {
   __typename: 'FarmOnboarding';
   averageAnnualRainfall: Maybe<Scalars['Float']>;
@@ -137,12 +124,10 @@ export type Query = {
   __typename: 'Query';
   allFarmOnboardings: Array<FarmOnboarding>;
   allPlantings: Array<Planting>;
-  auth: Maybe<AuthState>;
   highlightedFilterId: Maybe<Scalars['String']>;
   planting: Maybe<Planting>;
   plantings: Array<Planting>;
   producer: Maybe<Producer>;
-  selectedCropType: Scalars['String'];
 };
 
 
@@ -160,17 +145,6 @@ export type QueryProducerArgs = {
   id: InputMaybe<Scalars['String']>;
 };
 
-export type AuthStateKeySpecifier = ('isLoggedIn' | 'user' | AuthStateKeySpecifier)[];
-export type AuthStateFieldPolicy = {
-	isLoggedIn?: FieldPolicy<any> | FieldReadFunction<any>,
-	user?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type AuthUserKeySpecifier = ('email' | 'id' | 'name' | AuthUserKeySpecifier)[];
-export type AuthUserFieldPolicy = {
-	email?: FieldPolicy<any> | FieldReadFunction<any>,
-	id?: FieldPolicy<any> | FieldReadFunction<any>,
-	name?: FieldPolicy<any> | FieldReadFunction<any>
-};
 export type FarmOnboardingKeySpecifier = ('averageAnnualRainfall' | 'averageAnnualTemperature' | 'climateZone' | 'farmDomain' | 'values' | FarmOnboardingKeySpecifier)[];
 export type FarmOnboardingFieldPolicy = {
 	averageAnnualRainfall?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -259,26 +233,16 @@ export type ProducerFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('allFarmOnboardings' | 'allPlantings' | 'auth' | 'highlightedFilterId' | 'planting' | 'plantings' | 'producer' | 'selectedCropType' | QueryKeySpecifier)[];
+export type QueryKeySpecifier = ('allFarmOnboardings' | 'allPlantings' | 'highlightedFilterId' | 'planting' | 'plantings' | 'producer' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
 	allFarmOnboardings?: FieldPolicy<any> | FieldReadFunction<any>,
 	allPlantings?: FieldPolicy<any> | FieldReadFunction<any>,
-	auth?: FieldPolicy<any> | FieldReadFunction<any>,
 	highlightedFilterId?: FieldPolicy<any> | FieldReadFunction<any>,
 	planting?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>,
-	producer?: FieldPolicy<any> | FieldReadFunction<any>,
-	selectedCropType?: FieldPolicy<any> | FieldReadFunction<any>
+	producer?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type StrictTypedTypePolicies = {
-	AuthState?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | AuthStateKeySpecifier | (() => undefined | AuthStateKeySpecifier),
-		fields?: AuthStateFieldPolicy,
-	},
-	AuthUser?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | AuthUserKeySpecifier | (() => undefined | AuthUserKeySpecifier),
-		fields?: AuthUserFieldPolicy,
-	},
 	FarmOnboarding?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | FarmOnboardingKeySpecifier | (() => undefined | FarmOnboardingKeySpecifier),
 		fields?: FarmOnboardingFieldPolicy,

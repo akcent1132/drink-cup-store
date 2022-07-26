@@ -32,15 +32,23 @@ const hiddenStyles = {
   maxHeight: "0px",
 };
 
-export const PlantingCardList = ({openEventCardIds} : {openEventCardIds: string[]}) => {
-
+export const PlantingCardList = ({
+  openEventCardIds,
+}: {
+  openEventCardIds: string[];
+}) => {
   if (!openEventCardIds || openEventCardIds.length === 0) {
     return null;
   }
 
   return (
     <Events>
-      <ClassNames>
+      {openEventCardIds.map((plantingId) => (
+        <CardWrapper>
+          <EventsCard key={plantingId} plantingId={plantingId} />
+        </CardWrapper>
+      ))}
+      {/* <ClassNames>
         {({ css }) =>
           !openEventCardIds ? null : (
             <TransitionGroup>
@@ -72,7 +80,7 @@ export const PlantingCardList = ({openEventCardIds} : {openEventCardIds: string[
             </TransitionGroup>
           )
         }
-      </ClassNames>
+      </ClassNames> */}
     </Events>
   );
 };

@@ -1,11 +1,11 @@
 extend type Query {
   # highlightedPlantingId: String
   highlightedFilterId: String
-  selectedCropType: String!
+  # selectedCropType: String!
   # openEventCardIds(cropType: String!): [String!]!
   # selectedFilterId: String
   # selectedProducerId: String
-  auth: AuthState,
+  # auth: AuthState,
 }
 # extend type Planting {
 #   isHighlighted: Boolean!
@@ -42,14 +42,14 @@ type Filter {
 }
 
 
-type AuthUser { 
-  id: String!
-  name: String!
-  email: String!
-}
+# type AuthUser { 
+#   id: String!
+#   name: String!
+#   email: String!
+# }
 
-type AuthState {
-  isLoggedIn: Boolean!
-  user: AuthUser
-}
+# type AuthState {
+#   isLoggedIn: Boolean!
+#   user: AuthUser
+# }
 

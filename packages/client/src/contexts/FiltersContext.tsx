@@ -477,7 +477,7 @@ export const filters = makeVar<Filter[]>(
 // export const selectedFilterId = makeVar<string | null>(null);
 // export const selectedProducerId = makeVar<string | null>(null);
 // TODO save in ls
-export const selectedCropType = makeVar(isDemo() ? "corn" : "wheat");
+// export const selectedCropType = makeVar(isDemo() ? "corn" : "wheat");
 
 // export const openEventCardIds = makeVar<string[]>([]);
 // export const openEventCard = (plantingId: string) => {

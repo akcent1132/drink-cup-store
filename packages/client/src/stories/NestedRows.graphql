@@ -1,5 +1,4 @@
-query NestedRows($cropType: String! = "") {
-  selectedCropType @client @export(as: "cropType")
+query NestedRows($cropType: String!) {
   plantings(cropType: $cropType) {
     id
     values {

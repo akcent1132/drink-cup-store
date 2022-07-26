@@ -3,13 +3,15 @@
 import React, {
   ComponentProps,
   useCallback,
-  useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
 import { RecoilRoot } from "recoil";
-import { useShowFilterEditor, useSidePanelContent } from "../states/sidePanelContent";
+import {
+  useShowFilterEditor,
+  useSidePanelContent,
+} from "../states/sidePanelContent";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { ClassNames } from "@emotion/core";
 import styled from "@emotion/styled";
@@ -18,10 +20,9 @@ import bgCorn from "../assets/images/Background-corngrains.jpg";
 import logoImage from "../assets/images/Farmers-coffeeshop-logo-white_transparent.png";
 import { Tabs } from "../components/Tabs";
 import { css, useTheme, withTheme } from "@emotion/react";
-import {  randomZone } from "../utils/random";
 import { FilterLabel } from "../components/FilterLabel";
 import faker from "faker";
-import { memoize, range, sample, sum, without } from "lodash";
+import { sample, without } from "lodash";
 import { HyloBox } from "./HyloBox";
 import { FilterEditor } from "../components/filterEditor/FilterEditor";
 import { NestedRows } from "./NestedRows";
@@ -39,10 +40,13 @@ import { CropSelector } from "./CropSelector";
 import { Spacer } from "../components/EventsCard";
 import { client } from "../graphql/client";
 import { ApolloProvider } from "@apollo/client";
-import { usePreloadDataQuery, useRandomContentQuery } from "./Dashboard.generated";
-import { Box, Layer, Spinner } from "grommet";
+import {
+  usePreloadDataQuery,
+} from "./Dashboard.generated";
+import { Box, Layer } from "grommet";
 import { FiltersProvider, useFilters } from "../contexts/FiltersCtx";
 import CircularProgress from "@mui/material/CircularProgress";
+import { useSelectedCropType } from "../states/selectedCropType";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -111,8 +115,8 @@ const RightFlipContainer = styled.div`
 const COLORS = schemeTableau10.slice(0, 9);
 let filterNamePostfix = 1;
 const RandomContent = () => {
-  const { data: { selectedCropType } = {} } = useRandomContentQuery();
-  const showFilterEditor = useShowFilterEditor()
+  const selectedCropType = useSelectedCropType();
+  const showFilterEditor = useShowFilterEditor();
   const filtersCtx = useFilters();
   const filters = useMemo(
     () =>

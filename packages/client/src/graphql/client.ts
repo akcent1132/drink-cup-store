@@ -8,14 +8,11 @@ import {
 import { onError } from "@apollo/client/link/error";
 import {
   highlightedFilterId,
-  selectedCropType,
 } from "../contexts/FiltersContext";
 import { loader } from "graphql.macro";
 import {
-  Filter,
   StrictTypedTypePolicies,
 } from "../graphql.generated";
-import { authState } from "./auth";
 import "./server";
 import { memoize } from "lodash";
 
@@ -54,17 +51,17 @@ const keyHashMemoize = (...args: Parameters<typeof memoize>) => {
 const typePolicies: StrictTypedTypePolicies = {
   Query: {
     fields: {
-      auth: {
-        read() {
-          return authState();
-        },
-      },
-      selectedCropType: {
-        read(): string {
-          console.log("read selectedCropType", selectedCropType());
-          return selectedCropType();
-        },
-      },
+      // auth: {
+      //   read() {
+      //     return authState();
+      //   },
+      // },
+      // selectedCropType: {
+      //   read(): string {
+      //     console.log("read selectedCropType", selectedCropType());
+      //     return selectedCropType();
+      //   },
+      // },
       // highlightedPlantingId: {
       //   read() {
       //     return highlightedPlantingId();

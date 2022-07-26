@@ -1,15 +1,17 @@
 /** @jsxImportSource @emotion/react */
 
-import React, { useMemo, useState } from "react";
-import { Box, Select, Text } from "grommet";
+import React, { useMemo } from "react";
+import { Select } from "grommet";
 import { css } from "@emotion/react";
-import { selectedCropType } from "../contexts/FiltersContext";
 import { useCropSelectorQuery } from "./CropSelector.generated";
-import { capitalize, find, groupBy, map, sortBy, startCase } from "lodash";
+import { groupBy, map, sortBy, startCase } from "lodash";
+import { useSelectedCropType, useSetSelectedCropType } from "../states/selectedCropType";
 
 export const CropSelector = () => {
-  const { data: { allPlantings, selectedCropType: value } = {} } = useCropSelectorQuery();
-  console.log("CROP SELECTOR", value)
+  const { data: { allPlantings } = {} } = useCropSelectorQuery();
+  const value = useSelectedCropType();
+  const setSelectedCropType = useSetSelectedCropType();
+
   const crops = useMemo(
     () =>
       sortBy(
@@ -49,7 +51,7 @@ export const CropSelector = () => {
       valueKey={{ key: "value", reduce: true }}
       labelKey="label"
       options={options}
-      onChange={({ value }) => selectedCropType(value)}
+      onChange={({ value }) => setSelectedCropType(value)}
     />
   );
 };

@@ -4,16 +4,15 @@ import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
 export type NestedRowsQueryVariables = Types.Exact<{
-  cropType?: Types.Scalars['String'];
+  cropType: Types.Scalars['String'];
 }>;
 
 
-export type NestedRowsQuery = { __typename?: 'Query', selectedCropType: string, highlightedFilterId?: string | null, plantings: Array<{ __typename?: 'Planting', id: string, values: Array<{ __typename?: 'PlantingValue', name: string, value: number, plantingId: string, modusId?: string | null }>, farmOnboarding?: { __typename?: 'FarmOnboarding', values?: Array<{ __typename?: 'FarmOnboardingValue', key: string, values: Array<string> }> | null } | null }> };
+export type NestedRowsQuery = { __typename?: 'Query', highlightedFilterId?: string | null, plantings: Array<{ __typename?: 'Planting', id: string, values: Array<{ __typename?: 'PlantingValue', name: string, value: number, plantingId: string, modusId?: string | null }>, farmOnboarding?: { __typename?: 'FarmOnboarding', values?: Array<{ __typename?: 'FarmOnboardingValue', key: string, values: Array<string> }> | null } | null }> };
 
 
 export const NestedRowsDocument = gql`
-    query NestedRows($cropType: String! = "") {
-  selectedCropType @client @export(as: "cropType")
+    query NestedRows($cropType: String!) {
   plantings(cropType: $cropType) {
     id
     values {
@@ -49,7 +48,7 @@ export const NestedRowsDocument = gql`
  *   },
  * });
  */
-export function useNestedRowsQuery(baseOptions?: Apollo.QueryHookOptions<NestedRowsQuery, NestedRowsQueryVariables>) {
+export function useNestedRowsQuery(baseOptions: Apollo.QueryHookOptions<NestedRowsQuery, NestedRowsQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<NestedRowsQuery, NestedRowsQueryVariables>(NestedRowsDocument, options);
       }

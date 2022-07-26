@@ -1,5 +1,4 @@
 query CropSelector {
-    selectedCropType @client
     allPlantings {
         id
         cropType

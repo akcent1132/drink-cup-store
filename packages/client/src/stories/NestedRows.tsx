@@ -5,6 +5,7 @@ import { Filter, useFilters } from "../contexts/FiltersCtx";
 import { RowData } from "../contexts/rows";
 import { FilterParamDataSource } from "../graphql.generated";
 import { useHightlightedPlantingId } from "../states/highlightedPlantingId";
+import { useSelectedCropType } from "../states/selectedCropType";
 import { NestedRowsQuery, useNestedRowsQuery } from "./NestedRows.generated";
 
 type Planting = NestedRowsQuery["plantings"][number];
@@ -168,8 +169,11 @@ const flattenRows = (
     .flat();
 
 export const NestedRows = ({ rows }: { rows: RowData[] }) => {
-  const { data: { selectedCropType, plantings, highlightedFilterId } = {} } =
-    useNestedRowsQuery();
+  const selectedCropType = useSelectedCropType()
+  console.log("NESTED ROWS", {selectedCropType})
+  const { data: { plantings, highlightedFilterId } = {} } =
+    useNestedRowsQuery({ variables: { cropType: selectedCropType }});
+    console.log({plantings})
   const filtersCtx = useFilters();
   const filters = useMemo(
     () => filtersCtx.filters.filter((f) => f.cropType === selectedCropType),

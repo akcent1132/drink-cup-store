@@ -1,7 +1,3 @@
-query RandomContent($cropType: String! = "") {
-  selectedCropType @client @export(as: "cropType")
-}
-
 query PreloadData {
   allFarmOnboardings {
     farmDomain
