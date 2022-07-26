@@ -215,11 +215,7 @@ export const ValueDistribution = ({
   >(null);
   const handlePlotMouseMove = useCallback(
     (e: React.MouseEvent) => {
-      //TODO memo
-      const allSelectableData = allData.filter(
-        (v) => v.matchingFilters.length > 0
-      );
-      const allSelectableValues = allSelectableData.map((d) => d.value);
+      const allSelectableValues = allData.map((d) => d.value);
       if (allSelectableValues.length === 0) {
         return;
       }
@@ -232,7 +228,7 @@ export const ValueDistribution = ({
       const mouseX = e.nativeEvent.offsetX;
       const targetValue = scale.invert(mouseX);
       const closestData =
-        allSelectableData[
+        allData[
           minIndex(allSelectableValues, (v) => Math.abs(v - targetValue))
         ];
       const closestValueX = scale(closestData.value);
@@ -254,7 +250,7 @@ export const ValueDistribution = ({
     setLocalHoveredValue(null);
   }, [localHoveredValue]);
   const handlePlotMouseClick = useCallback(() => {
-    if (localHoveredValue && localHoveredValue.matchingFilters[0]) {
+    if (localHoveredValue) {
       addPlantingCard(localHoveredValue.plantingId);
       showPlantingCards();
     }

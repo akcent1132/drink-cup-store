@@ -87,28 +87,6 @@ const getLabeledValues = (
   const plantingIdsOfFilters = filters.map((filter) =>
     getPlantingIdsOfFilter(filter, plantings)
   );
-  const matchedPlantingIds = plantingIdsOfFilters.flat();
-  const unmatchedPlantings = plantings.filter(
-    (p) => !matchedPlantingIds.includes(p.id)
-  );
-
-  const _labeledValues = [
-    { id: "unmatched_values", color: null, plantings: unmatchedPlantings },
-    ...filters,
-  ]
-    .map(({ id, color, plantings }) =>
-      plantings
-        .map((planting) => planting.values)
-        .flat()
-        .map((value) => ({
-          ...value,
-          filter: {
-            id,
-            color,
-          },
-        }))
-    )
-    .flat();
 
   // flat list of values from all plantings tagged with the matching filters
   const labeledValues = plantings
