@@ -128,6 +128,7 @@ export const EventsCard = ({
   const { data: { planting } = {} } = useEventsCardQuery({
     variables: { plantingId },
   });
+  console.log("planting.farmOnboarding", planting?.farmOnboarding)
 
   const onClose = useCallback(
     () => planting && removePlantingCard(planting.id),
@@ -180,15 +181,15 @@ export const EventsCard = ({
           <Params>
             <MiniInfo>
               <ThermostatIcon fontSize="inherit" />
-              <ParamValue>{planting.params.temperature}</ParamValue>
+              <ParamValue>{planting.farmOnboarding?.averageAnnualTemperature || 'n/a'}</ParamValue>
             </MiniInfo>
             <MiniInfo>
               <InvertColorsIcon fontSize="inherit" />
-              <ParamValue>{planting.params.precipitation}</ParamValue>
+              <ParamValue>{planting.farmOnboarding?.averageAnnualRainfall || 'n/a'}</ParamValue>
             </MiniInfo>
             <MiniInfo>
               <PublicIcon fontSize="inherit" />
-              <ParamValue>{planting.params.zone}</ParamValue>
+              <ParamValue>{planting.farmOnboarding?.climateZone || 'n/a'}</ParamValue>
             </MiniInfo>
             <Spacer />
             <ParamValue>{planting.params.texture}</ParamValue>

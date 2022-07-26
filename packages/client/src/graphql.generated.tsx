@@ -28,6 +28,9 @@ export type AuthUser = {
 
 export type FarmOnboarding = {
   __typename: 'FarmOnboarding';
+  averageAnnualRainfall: Maybe<Scalars['Float']>;
+  averageAnnualTemperature: Maybe<Scalars['Float']>;
+  climateZone: Maybe<Scalars['String']>;
   farmDomain: Maybe<Scalars['String']>;
   values: Array<FarmOnboardingValue>;
 };
@@ -167,8 +170,11 @@ export type AuthUserFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type FarmOnboardingKeySpecifier = ('farmDomain' | 'values' | FarmOnboardingKeySpecifier)[];
+export type FarmOnboardingKeySpecifier = ('averageAnnualRainfall' | 'averageAnnualTemperature' | 'climateZone' | 'farmDomain' | 'values' | FarmOnboardingKeySpecifier)[];
 export type FarmOnboardingFieldPolicy = {
+	averageAnnualRainfall?: FieldPolicy<any> | FieldReadFunction<any>,
+	averageAnnualTemperature?: FieldPolicy<any> | FieldReadFunction<any>,
+	climateZone?: FieldPolicy<any> | FieldReadFunction<any>,
 	farmDomain?: FieldPolicy<any> | FieldReadFunction<any>,
 	values?: FieldPolicy<any> | FieldReadFunction<any>
 };

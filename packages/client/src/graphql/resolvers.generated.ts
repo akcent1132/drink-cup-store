@@ -16,6 +16,9 @@ export type Scalars = {
 
 export type FarmOnboarding = {
   __typename?: 'FarmOnboarding';
+  averageAnnualRainfall?: Maybe<Scalars['Float']>;
+  averageAnnualTemperature?: Maybe<Scalars['Float']>;
+  climateZone?: Maybe<Scalars['String']>;
   farmDomain?: Maybe<Scalars['String']>;
   values: Array<FarmOnboardingValue>;
 };
@@ -205,6 +208,9 @@ export type ResolversParentTypes = ResolversObject<{
 }>;
 
 export type FarmOnboardingResolvers<ContextType = any, ParentType extends ResolversParentTypes['FarmOnboarding'] = ResolversParentTypes['FarmOnboarding']> = ResolversObject<{
+  averageAnnualRainfall?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  averageAnnualTemperature?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
+  climateZone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   farmDomain?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   values?: Resolver<Array<ResolversTypes['FarmOnboardingValue']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

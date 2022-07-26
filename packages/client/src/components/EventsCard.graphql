@@ -23,5 +23,10 @@ query EventsCard($plantingId: String!) {
         valueList
       }
     }
+    farmOnboarding {
+      climateZone
+      averageAnnualTemperature
+      averageAnnualRainfall
+    }
   }
 }
