@@ -8,18 +8,13 @@ import { capitalize, range, throttle, zipWith } from "lodash";
 import { TagSelect } from "./TagSelect";
 import CloseIcon from "@mui/icons-material/Close";
 import { Spacer } from "../EventsCard";
-import {
-  editFilterParam,
-  updateFilterName,
-} from "../../contexts/FiltersContext";
 import { useFilterEditorQuery } from "./FilterEditor.generated";
-import { FilterValueOption, FilterValueRange } from "../../graphql.generated";
 import { FilterParamSelector } from "./FilterParamSelector";
 import { RangeSlider } from "./RangeSlider";
 import { getFilterables } from "./getFilterables";
-import { useFilters } from "../../contexts/FiltersCtx";
 import { useShowPlantingCards } from "../../states/sidePanelContent";
 import { LinearProgress } from "@mui/material";
+import { FilterValueOption, FilterValueRange, useEditFilterParam, useFilters, useUpdateFilterName } from "../../states/filters";
 
 const Root = withTheme(styled.div`
   background-color: ${(p) => p.theme.colors.bgSidePanel};
@@ -92,12 +87,14 @@ interface Props {
  * Primary UI component for user interaction
  */
 export const FilterEditor = ({ selectedFilterId }: Props) => {
-  const filtersCtx = useFilters();
+  const filters = useFilters();
   const showPlantingCards = useShowPlantingCards();
   const filter = useMemo(
-    () => filtersCtx.filters.find((filter) => filter.id === selectedFilterId),
-    [selectedFilterId, filtersCtx.filters]
+    () => filters.find((filter) => filter.id === selectedFilterId),
+    [selectedFilterId, filters]
   );
+  const updateFilterName = useUpdateFilterName();
+  const editFilterParam = useEditFilterParam();
   const { data: { plantings } = {} } = useFilterEditorQuery({
     variables: { cropType: filter?.cropType },
   });

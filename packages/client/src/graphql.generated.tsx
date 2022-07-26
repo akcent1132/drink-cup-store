@@ -28,42 +28,6 @@ export type FarmOnboardingValue = {
   values: Array<Scalars['String']>;
 };
 
-export type Filter = {
-  __typename: 'Filter';
-  color: Scalars['String'];
-  cropType: Scalars['String'];
-  id: Scalars['String'];
-  name: Scalars['String'];
-  params: Array<FilterParam>;
-  plantings: Array<Planting>;
-};
-
-export type FilterParam = {
-  __typename: 'FilterParam';
-  active: Scalars['Boolean'];
-  dataSource: Maybe<FilterParamDataSource>;
-  key: Scalars['String'];
-  value: FilterValue;
-};
-
-export enum FilterParamDataSource {
-  FarmOnboarding = 'FARM_ONBOARDING',
-  Values = 'VALUES'
-}
-
-export type FilterValue = FilterValueOption | FilterValueRange;
-
-export type FilterValueOption = {
-  __typename: 'FilterValueOption';
-  options: Array<Scalars['String']>;
-};
-
-export type FilterValueRange = {
-  __typename: 'FilterValueRange';
-  max: Scalars['Float'];
-  min: Scalars['Float'];
-};
-
 export type Planting = {
   __typename: 'Planting';
   cropType: Scalars['String'];
@@ -156,31 +120,6 @@ export type FarmOnboardingValueFieldPolicy = {
 	key?: FieldPolicy<any> | FieldReadFunction<any>,
 	values?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type FilterKeySpecifier = ('color' | 'cropType' | 'id' | 'name' | 'params' | 'plantings' | FilterKeySpecifier)[];
-export type FilterFieldPolicy = {
-	color?: FieldPolicy<any> | FieldReadFunction<any>,
-	cropType?: FieldPolicy<any> | FieldReadFunction<any>,
-	id?: FieldPolicy<any> | FieldReadFunction<any>,
-	name?: FieldPolicy<any> | FieldReadFunction<any>,
-	params?: FieldPolicy<any> | FieldReadFunction<any>,
-	plantings?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type FilterParamKeySpecifier = ('active' | 'dataSource' | 'key' | 'value' | FilterParamKeySpecifier)[];
-export type FilterParamFieldPolicy = {
-	active?: FieldPolicy<any> | FieldReadFunction<any>,
-	dataSource?: FieldPolicy<any> | FieldReadFunction<any>,
-	key?: FieldPolicy<any> | FieldReadFunction<any>,
-	value?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type FilterValueOptionKeySpecifier = ('options' | FilterValueOptionKeySpecifier)[];
-export type FilterValueOptionFieldPolicy = {
-	options?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type FilterValueRangeKeySpecifier = ('max' | 'min' | FilterValueRangeKeySpecifier)[];
-export type FilterValueRangeFieldPolicy = {
-	max?: FieldPolicy<any> | FieldReadFunction<any>,
-	min?: FieldPolicy<any> | FieldReadFunction<any>
-};
 export type PlantingKeySpecifier = ('cropType' | 'events' | 'farmOnboarding' | 'id' | 'params' | 'producer' | 'title' | 'values' | PlantingKeySpecifier)[];
 export type PlantingFieldPolicy = {
 	cropType?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -246,22 +185,6 @@ export type StrictTypedTypePolicies = {
 	FarmOnboardingValue?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | FarmOnboardingValueKeySpecifier | (() => undefined | FarmOnboardingValueKeySpecifier),
 		fields?: FarmOnboardingValueFieldPolicy,
-	},
-	Filter?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | FilterKeySpecifier | (() => undefined | FilterKeySpecifier),
-		fields?: FilterFieldPolicy,
-	},
-	FilterParam?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | FilterParamKeySpecifier | (() => undefined | FilterParamKeySpecifier),
-		fields?: FilterParamFieldPolicy,
-	},
-	FilterValueOption?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | FilterValueOptionKeySpecifier | (() => undefined | FilterValueOptionKeySpecifier),
-		fields?: FilterValueOptionFieldPolicy,
-	},
-	FilterValueRange?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | FilterValueRangeKeySpecifier | (() => undefined | FilterValueRangeKeySpecifier),
-		fields?: FilterValueRangeFieldPolicy,
 	},
 	Planting?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | PlantingKeySpecifier | (() => undefined | PlantingKeySpecifier),

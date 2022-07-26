@@ -1,5 +1,5 @@
-import { countBy, filter, isEmpty, map, mapValues, sortBy, uniq } from "lodash";
-import { FilterParamDataSource, Maybe } from "../../graphql.generated";
+import { countBy, isEmpty, map, sortBy, uniq } from "lodash";
+import { FilterParamDataSource } from "../../states/filters";
 import { FilterEditorQuery } from "./FilterEditor.generated";
 
 type FilterableNumeric = {
@@ -23,7 +23,7 @@ export type Filterable = FilterableNumeric | FilterableOption;
 export const getFilterables = (
   plantings: FilterEditorQuery["plantings"]
 ): Filterable[] => {
-  console.time("Get filterables")
+  console.time("Get filterables");
   const values: FilterableNumeric[] = Object.values(
     plantings
       .map((p) => p.values)
@@ -41,8 +41,7 @@ export const getFilterables = (
         acc[value.name].values.push(value.value);
         return acc;
       }, {} as { [key: string]: FilterableNumeric })
-  )
-  .map(filterable => ({...filterable, values: uniq(filterable.values)}));
+  ).map((filterable) => ({ ...filterable, values: uniq(filterable.values) }));
 
   const isSomething = <T>(x: T | null | undefined): x is T =>
     x !== undefined && x !== null;
@@ -89,8 +88,8 @@ export const getFilterables = (
   }).filter(isSomething);
   console.log("farmValues", farmValues);
 
-  console.timeEnd("Get filterables")
-  return sortBy([...values, ...farmValues], 'key');
+  console.timeEnd("Get filterables");
+  return sortBy([...values, ...farmValues], "key");
 };
 
 //   let filterId = 0;

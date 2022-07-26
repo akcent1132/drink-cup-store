@@ -27,9 +27,6 @@ import { HyloBox } from "./HyloBox";
 import { FilterEditor } from "../components/filterEditor/FilterEditor";
 import { NestedRows } from "./NestedRows";
 import { schemeTableau10 } from "d3-scale-chromatic";
-import {
-  addFilter,
-} from "../contexts/FiltersContext";
 import { ROWS } from "../contexts/rows";
 import { Button } from "../components/Button";
 import { FarmerProfile } from "../components/FarmerProfile";
@@ -38,14 +35,15 @@ import { CropSelector } from "./CropSelector";
 import { Spacer } from "../components/EventsCard";
 import { client } from "../graphql/client";
 import { ApolloProvider } from "@apollo/client";
-import {
-  usePreloadDataQuery,
-} from "./Dashboard.generated";
+import { usePreloadDataQuery } from "./Dashboard.generated";
 import { Box, Layer } from "grommet";
-import { FiltersProvider, useFilters } from "../contexts/FiltersCtx";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useSelectedCropType } from "../states/selectedCropType";
-import { useHighlightFilter, useUnhighlightFilter } from "../states/highlightedFilterId";
+import {
+  useHighlightFilter,
+  useUnhighlightFilter,
+} from "../states/highlightedFilterId";
+import { useAddFilter, useFilters } from "../states/filters";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -118,14 +116,8 @@ const RandomContent = () => {
   const showFilterEditor = useShowFilterEditor();
   const highlightFilter = useHighlightFilter();
   const unhighlightFilter = useUnhighlightFilter();
-  const filtersCtx = useFilters();
-  const filters = useMemo(
-    () =>
-      filtersCtx.filters.filter(
-        (filter) => filter.cropType === selectedCropType
-      ),
-    [selectedCropType, filtersCtx.filters]
-  );
+  const addFilter = useAddFilter();
+  const filters = useFilters();
   const { colors } = useTheme();
   const handleAddFilter = useCallback(
     (name?: string, color?: string) => {
@@ -310,9 +302,7 @@ export const Dashboard = ({ iframeSrc }: Props) => {
 export const App = (props: ComponentProps<typeof Dashboard>) => (
   <ApolloProvider client={client}>
     <RecoilRoot>
-      <FiltersProvider>
         <Dashboard {...props} />
-      </FiltersProvider>
     </RecoilRoot>
   </ApolloProvider>
 );

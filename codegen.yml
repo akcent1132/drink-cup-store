@@ -1,17 +1,3 @@
-# overwrite: true
-# schema: "packages/client/src/graphql/{server,local}.graphql"
-# documents: "packages/client/src/{stories,components}/**/!(*.generated).graphql"
-# generates:
-#   src/generated/graphql.tsx:
-#     plugins:
-#       - "typescript"
-#       - "typescript-operations"
-#       - "typescript-resolvers"
-#       - "typescript-react-apollo"
-#   ./graphql.schema.json:
-#     plugins:
-#       - "introspection"
-
 overwrite: true
 
 watch: true
@@ -34,9 +20,9 @@ generates:
     plugins:
       - introspection
   
-  # generate the types for the server+local graphql API
+  # generate the types for the graphql API
   packages/client/src/graphql.generated.tsx:
-    schema: "packages/client/src/graphql/{server,local}.graphql"
+    schema: "packages/client/src/graphql/server.graphql"
     plugins:
       - "typescript"
       - "typescript-apollo-client-helpers"
@@ -46,7 +32,7 @@ generates:
 
   # generate the types for the React component queries
   packages/client/src/:
-    schema: "packages/client/src/graphql/{server,local}.graphql"
+    schema: "packages/client/src/graphql/server.graphql"
     documents: 
      - "packages/client/src/{stories,components,graphql/processors}/**/!(*.generated).graphql"
     preset: near-operation-file
@@ -58,7 +44,7 @@ generates:
       - typescript-react-apollo
 
   ./graphql.schema.json:
-    schema: "packages/client/src/graphql/{server,local}.graphql"
+    schema: "packages/client/src/graphql/server.graphql"
     plugins:
       - "introspection"
 

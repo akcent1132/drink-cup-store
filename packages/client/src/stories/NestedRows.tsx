@@ -1,9 +1,13 @@
 import { findLastIndex, last, remove } from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
 import { ValueDistribution } from "../components/ValueDistribution";
-import { Filter, useFilters } from "../contexts/FiltersCtx";
 import { RowData } from "../contexts/rows";
-import { FilterParamDataSource } from "../graphql.generated";
+import {
+  Filter,
+  FilterParam,
+  FilterParamDataSource,
+  useFilters,
+} from "../states/filters";
 import { useHighlightedFilterId } from "../states/highlightedFilterId";
 import { useHighlightedPlantingId } from "../states/highlightedPlantingId";
 import { useSelectedCropType } from "../states/selectedCropType";
@@ -14,7 +18,7 @@ type Planting = NestedRowsQuery["plantings"][number];
 // TODO caching
 const isMatchingFarmOnboardingValue = (
   planting: Planting,
-  param: Filter["params"][number]
+  param: FilterParam
 ) => {
   // values of this planting
   const values =
@@ -170,16 +174,11 @@ const flattenRows = (
     .flat();
 
 export const NestedRows = ({ rows }: { rows: RowData[] }) => {
-  const selectedCropType = useSelectedCropType()
-  console.log("NESTED ROWS", {selectedCropType})
-  const { data: { plantings } = {} } =
-    useNestedRowsQuery({ variables: { cropType: selectedCropType }});
-    console.log({plantings})
-  const filtersCtx = useFilters();
-  const filters = useMemo(
-    () => filtersCtx.filters.filter((f) => f.cropType === selectedCropType),
-    [filtersCtx.filters, selectedCropType]
-  );
+  const selectedCropType = useSelectedCropType();
+  const { data: { plantings } = {} } = useNestedRowsQuery({
+    variables: { cropType: selectedCropType },
+  });
+  const filters = useFilters();
   const highlightedPlantingId = useHighlightedPlantingId();
   const highlightedFilterId = useHighlightedFilterId();
   const labeledValues = useMemo(

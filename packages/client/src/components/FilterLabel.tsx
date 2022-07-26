@@ -6,7 +6,7 @@ import tinycolor from "tinycolor2";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { useShowFilterEditor } from "../states/sidePanelContent";
-import { removeFilter } from "../contexts/FiltersContext";
+import { useRemoveFilter } from "../states/filters";
 
 export const defaultTheme = {
   height: 30,
@@ -111,6 +111,7 @@ export const FilterLabel = ({
   showActions,
 }: Props) => {
   const showFilterEditor = useShowFilterEditor();
+  const removeFilter = useRemoveFilter();
   const [isHovered, setIsHovered] = useState(false);
   const handleHover = useCallback(() => {
     setIsHovered(true);

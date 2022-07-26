@@ -1,27 +1,24 @@
 import { sortBy, startCase, without } from "lodash";
-import { useCallback, useMemo, useState } from "react";
-import {
-  addFilterParam,
-  removeFilterParam,
-} from "../../contexts/FiltersContext";
+import { useCallback, useMemo } from "react";
 import { Filterable } from "./getFilterables";
-import { FilterParam, FilterParamDataSource } from "../../graphql.generated";
 import MenuItem from "@mui/material/MenuItem";
-import OutlinedInput from "@mui/material/Input";
-import { Filter } from "../../contexts/FiltersCtx";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import JoinInnerIcon from "@mui/icons-material/JoinInner";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import Divider from "@mui/material/Divider";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
+import {
+  FilterParam,
+  FilterParamDataSource,
+  useAddFilterParam,
+  useRemoveFilterParam,
+} from "../../states/filters";
 
-type Param = Filter["params"][number];
 type Props = {
   filterables: Filterable[];
   filterId: string;
-  params: Param[];
+  params: FilterParam[];
 };
 
 const prettyKey = (key: string) =>
@@ -60,9 +57,10 @@ const MenuProps = {
 export const FilterParamSelector = ({
   filterId,
   params,
-  filterables,
+  filterables: options,
 }: Props) => {
-  const [options, setOptions] = useState(filterables);
+  const addFilterParam = useAddFilterParam();
+  const removeFilterParam = useRemoveFilterParam();
   const sortedOptions = useMemo(
     () => sortBy(options, ["dataSource", "key"]),
     [options]
@@ -82,7 +80,6 @@ export const FilterParamSelector = ({
       without(newSelection, ...currentOptions)
         .map(
           (filterable): FilterParam => ({
-            __typename: "FilterParam",
             key: filterable.key,
             active: true,
             dataSource: filterable.dataSource,
