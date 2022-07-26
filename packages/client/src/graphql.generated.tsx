@@ -32,7 +32,7 @@ export type FarmOnboarding = {
   averageAnnualTemperature: Maybe<Scalars['Float']>;
   climateZone: Maybe<Scalars['String']>;
   farmDomain: Maybe<Scalars['String']>;
-  values: Array<FarmOnboardingValue>;
+  values: Maybe<Array<FarmOnboardingValue>>;
 };
 
 export type FarmOnboardingValue = {

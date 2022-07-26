@@ -13,7 +13,7 @@ export type RandomContentQuery = { __typename?: 'Query', selectedCropType: strin
 export type PreloadDataQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type PreloadDataQuery = { __typename?: 'Query', allFarmOnboardings: Array<{ __typename?: 'FarmOnboarding', farmDomain?: string | null, values: Array<{ __typename?: 'FarmOnboardingValue', key: string, values: Array<string> }> }>, allPlantings: Array<{ __typename?: 'Planting', id: string }> };
+export type PreloadDataQuery = { __typename?: 'Query', allFarmOnboardings: Array<{ __typename?: 'FarmOnboarding', farmDomain?: string | null, values?: Array<{ __typename?: 'FarmOnboardingValue', key: string, values: Array<string> }> | null }>, allPlantings: Array<{ __typename?: 'Planting', id: string }> };
 
 
 export const RandomContentDocument = gql`
