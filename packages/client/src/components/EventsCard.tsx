@@ -131,6 +131,7 @@ export const EventsCard = ({
   const texture = useMemo(
     () =>
       [planting?.params.sandPercentage, planting?.params.clayPercentage]
+        .filter(Boolean)
         .map((p) => `${p}%`)
         .join(" | "),
     [planting?.params.sandPercentage, planting?.params.clayPercentage]
