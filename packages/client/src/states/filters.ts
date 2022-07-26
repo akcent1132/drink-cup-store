@@ -3,7 +3,6 @@ import { atom, useRecoilValue, useSetRecoilState } from "recoil";
 
 export type Filter = {
   color: string;
-  cropType: string;
   id: string;
   name: string;
   params: FilterParam[];
@@ -55,12 +54,11 @@ export const useUpdateFilterName = () => {
 let filterId = 0;
 export const useAddFilter = () => {
   const set = useSetRecoilState(filters);
-  return useCallback((color: string, name: string, cropType: string) => {
+  return useCallback((color: string, name: string) => {
     const id = (++filterId).toString();
     const filter: Filter = {
       id,
       name,
-      cropType,
       color,
       params: [],
     };

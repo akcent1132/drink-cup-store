@@ -53,10 +53,7 @@ export const RangeSlider = ({
           max={max}
           step={step}
           values={value}
-          onChange={(values) => {
-            console.log(values);
-            onChange(values);
-          }}
+          onChange={(values) => onChange(values)}
         />
       </Stack>
       <Box align="center">

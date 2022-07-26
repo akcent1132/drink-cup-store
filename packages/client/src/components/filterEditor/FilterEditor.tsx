@@ -15,6 +15,7 @@ import { getFilterables } from "./getFilterables";
 import { useShowPlantingCards } from "../../states/sidePanelContent";
 import { LinearProgress } from "@mui/material";
 import { FilterValueOption, FilterValueRange, useEditFilterParam, useFilters, useUpdateFilterName } from "../../states/filters";
+import { useSelectedCropType } from "../../states/selectedCropType";
 
 const Root = withTheme(styled.div`
   background-color: ${(p) => p.theme.colors.bgSidePanel};
@@ -89,6 +90,7 @@ interface Props {
 export const FilterEditor = ({ selectedFilterId }: Props) => {
   const filters = useFilters();
   const showPlantingCards = useShowPlantingCards();
+  const selectedCropType = useSelectedCropType()
   const filter = useMemo(
     () => filters.find((filter) => filter.id === selectedFilterId),
     [selectedFilterId, filters]
@@ -96,7 +98,7 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
   const updateFilterName = useUpdateFilterName();
   const editFilterParam = useEditFilterParam();
   const { data: { plantings } = {} } = useFilterEditorQuery({
-    variables: { cropType: filter?.cropType },
+    variables: { cropType: selectedCropType },
   });
 
   const filterables = useMemo(
