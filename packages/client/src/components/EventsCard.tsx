@@ -4,7 +4,7 @@ import React, { useCallback } from "react";
 import styled from "@emotion/styled";
 import { withTheme } from "@emotion/react";
 import "../index.css";
-import { IconEventsBar, FarmEvent } from "./IconEventsBar";
+import { IconEventsBar } from "./IconEventsBar";
 import CloseIcon from "@mui/icons-material/Close";
 import tinycolor from "tinycolor2";
 import InvertColorsIcon from "@mui/icons-material/InvertColors";

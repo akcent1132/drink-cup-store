@@ -5,7 +5,7 @@ import styled from "@emotion/styled";
 import "../index.css";
 import { css, useTheme, withTheme } from "@emotion/react";
 import { timeFormat } from "d3-time-format";
-import { timeYear } from "d3-time";
+import { timeMonth, timeYear } from "d3-time";
 import { ScaleTime, scaleTime } from "d3-scale";
 import { extent, minIndex } from "d3-array";
 import { ReactComponent as IconAmendments } from "../assets/foodIcons/noun-cooperative-4476250.svg";
@@ -16,7 +16,6 @@ import { ReactComponent as IconTillage } from "../assets/foodIcons/noun-till-amo
 import { ReactComponent as IconIrrigation } from "../assets/foodIcons/noun-water-drop-4476116.svg";
 import { ReactComponent as IconJoker } from "../assets/foodIcons/noun-indigenous-knowledge-4476235.svg";
 import useSize from "@react-hook/size";
-import { forceCollide, forceSimulation, forceY } from "d3-force";
 import { useXOverlap } from "../utils/useOverlap";
 import { capitalize, uniqBy } from "lodash";
 import { EventDetailsPopup } from "./EventDetailsPopup";
@@ -32,6 +31,7 @@ export const defaultTheme = {
   timelineColor: "rgba(255, 255, 255, 0.5)",
   timelineMouseMaxDistance: 6,
   timelineTopMargin: 4,
+  timeFormat: "%b %Y"
 };
 
 export const getEventIcon = (type: string) => {
@@ -158,24 +158,6 @@ type Props = {
   events: NonNullable<EventsCardQuery["planting"]>["events"];
 };
 
-const createDateForce = () => {
-  let nodes: IconNode[] = [];
-  let scale: ScaleTime<number, number, never>;
-  const force = (alpha: number) => {
-    if (!scale) return;
-
-    nodes.map((node) => {
-      node.vx += (scale(node.event.date) - node.x) * alpha * 0.2;
-      const [left, right] = scale.range();
-      node.x = Math.max(left, Math.min(right, node.x));
-      node.y = Math.min(node.y, 30);
-      node.targetX = scale(node.event.date);
-    });
-  };
-  force.initialize = (n: IconNode[]) => (nodes = n);
-  force.setScale = (n: ScaleTime<number, number, never>) => (scale = n);
-  return force;
-};
 
 const useStateLater = <T,>(initialValue: T) => {
   const [value, setValue] = useState(initialValue);
@@ -236,25 +218,20 @@ export const IconEventsBar = (props: Props) => {
   const hideEndDate = useXOverlap(refDate, refDateEnd, [hoveredEvent]);
   const [width, height] = useSize(ref);
   const { iconEventsBar: theme, colors } = useTheme();
-  const dateForce = useMemo(() => createDateForce(), []);
-  const simulation = useMemo(
-    () =>
-      forceSimulation<IconNode>([])
-        .force("y", forceY(30).strength(0.6))
-        .force("date", dateForce)
-        .force("radius", forceCollide(theme.iconSize * 0.55)),
-    []
-  );
+
   const scale = useMemo(() => {
-    const [first, last] = extent(events.map((e) => e.date));
-    const start = timeYear.floor(first || new Date());
-    const end = timeYear.ceil(last || new Date());
+    let [start, end] = extent(events.map((e) => e.date));
+    if (!start || !end) {
+      start = timeYear.floor(new Date())
+      end = timeYear.ceil(new Date())
+    }
+    // pad the scale with one month
+    start = timeMonth.offset(start, -1);
+    end = timeMonth.offset(end, 1);
 
     const xStart = theme.middleLineMargin + theme.iconSize / 2;
     const xEnd = (width || 100) - theme.middleLineMargin - theme.iconSize / 2;
     const scale = scaleTime().domain([start, end]).range([xStart, xEnd]);
-    dateForce.setScale(scale);
-    simulation.alpha(1).tick(500).restart();
     return scale;
   }, [width, theme.middleLineMargin]);
 
@@ -332,7 +309,7 @@ export const IconEventsBar = (props: Props) => {
       <DateContainer>
         {/* {hoveredEvent ? (
           <DateText left={scale(hoveredEvent.date)}>
-            <div ref={refDate}>{timeFormat("%b %-d")(hoveredEvent.date)}</div>
+            <div ref={refDate}>{timeFormat(theme.timeFormat)(hoveredEvent.date)}</div>
           </DateText>
         ) : null} */}
 
@@ -342,7 +319,7 @@ export const IconEventsBar = (props: Props) => {
             opacity: ${hideStartDate ? 0 : 1};
           `}
         >
-          {timeFormat("%b %-d")(scale.domain()[0])}
+          {timeFormat(theme.timeFormat)(scale.domain()[0])}
         </div>
 
         <div
@@ -351,7 +328,7 @@ export const IconEventsBar = (props: Props) => {
             opacity: ${hideEndDate ? 0 : 1};
           `}
         >
-          {timeFormat("%b %-d")(new Date(scale.domain()[1].getTime() - 1))}
+          {timeFormat(theme.timeFormat)(new Date(scale.domain()[1].getTime() - 1))}
         </div>
       </DateContainer>
       <div
