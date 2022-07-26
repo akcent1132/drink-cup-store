@@ -45,7 +45,7 @@ import { Box, Layer } from "grommet";
 import { FiltersProvider, useFilters } from "../contexts/FiltersCtx";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useSelectedCropType } from "../states/selectedCropType";
-import { useHightlightFilter, useUnhightlightFilter } from "../states/highlightedFilterId";
+import { useHighlightFilter, useUnhighlightFilter } from "../states/highlightedFilterId";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -116,8 +116,8 @@ let filterNamePostfix = 1;
 const RandomContent = () => {
   const selectedCropType = useSelectedCropType();
   const showFilterEditor = useShowFilterEditor();
-  const highlightFilter = useHightlightFilter();
-  const unhighlightFilter = useUnhightlightFilter();
+  const highlightFilter = useHighlightFilter();
+  const unhighlightFilter = useUnhighlightFilter();
   const filtersCtx = useFilters();
   const filters = useMemo(
     () =>

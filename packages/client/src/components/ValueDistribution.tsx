@@ -11,8 +11,15 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import tinycolor from "tinycolor2";
 import { ValuePopup } from "./ValuePopup";
 import { format } from "d3-format";
-import { useHightlightedPlantingId } from "../states/highlightedPlantingId";
-import { useAddPlantingCard, useShowPlantingCards } from "../states/sidePanelContent";
+import {
+  useHighlightedPlantingId,
+  useHighlightPlanting,
+  useUnhighlightPlanting,
+} from "../states/highlightedPlantingId";
+import {
+  useAddPlantingCard,
+  useShowPlantingCards,
+} from "../states/sidePanelContent";
 
 // TODO read height from props
 
@@ -175,15 +182,16 @@ export const ValueDistribution = ({
   );
   const { colors } = useTheme();
   const [isHovering, setIsHovering] = useState(false);
-  const {hightlightPlanting, unhightlightPlanting} = useHightlightedPlantingId()
-  const showPlantingCards = useShowPlantingCards()
-  const addPlantingCard = useAddPlantingCard()
+  const highlightPlanting = useHighlightPlanting();
+  const unhighlightPlanting = useUnhighlightPlanting();
+  const showPlantingCards = useShowPlantingCards();
+  const addPlantingCard = useAddPlantingCard();
   const onHoverData = useCallback(
-    (planting: string) => hightlightPlanting(planting),
+    (planting: string) => highlightPlanting(planting),
     []
   );
   const onLeaveData = useCallback(
-    (planting: string) => unhightlightPlanting(planting),
+    (planting: string) => unhighlightPlanting(planting),
     []
   );
   const theme = useTheme();

@@ -1,25 +1,24 @@
 import { useCallback } from "react";
-import { atom, useRecoilState } from "recoil";
+import { atom, useRecoilValue, useSetRecoilState } from "recoil";
 
 const highlightedPlantingId = atom<null | string>({
   key: "highlighted-planting-id",
   default: null,
 });
 
-export const useHightlightedPlantingId = () => {
-  const [state, setState] = useRecoilState(highlightedPlantingId);
-  const hightlightPlanting = useCallback((plantingId: string) => {
-    setState(plantingId);
-  }, []);
-  const unhightlightPlanting = useCallback(
-    (plantingId: string) => {
-      if (plantingId === state) setState(null);
-    },
-    [state]
+export const useHighlightedPlantingId = () =>
+  useRecoilValue(highlightedPlantingId);
+
+export const useHighlightPlanting = () => {
+  const set = useSetRecoilState(highlightedPlantingId);
+  return useCallback((plantingId: string) => set(plantingId), []);
+};
+
+export const useUnhighlightPlanting = () => {
+  const set = useSetRecoilState(highlightedPlantingId);
+  return useCallback(
+    (plantingId: string) =>
+      set((current) => (current === plantingId ? null : current)),
+    []
   );
-  return {
-    highlightedPlantingId: state,
-    hightlightPlanting,
-    unhightlightPlanting,
-  };
 };

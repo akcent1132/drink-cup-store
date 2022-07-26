@@ -6,15 +6,15 @@ const highlightedFilterId = atom<null | string>({
   default: null,
 });
 
-export const useHightlightedFilterId = () =>
+export const useHighlightedFilterId = () =>
   useRecoilValue(highlightedFilterId);
 
-export const useHightlightFilter = () => {
+export const useHighlightFilter = () => {
   const set = useSetRecoilState(highlightedFilterId);
   return useCallback((filterId: string) => set(filterId), []);
 };
 
-export const useUnhightlightFilter = () => {
+export const useUnhighlightFilter = () => {
   const set = useSetRecoilState(highlightedFilterId);
   return useCallback(
     (filterId: string) =>

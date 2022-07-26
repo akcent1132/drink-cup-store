@@ -13,7 +13,7 @@ import PublicIcon from "@mui/icons-material/Public";
 import { Tip } from "grommet";
 import ContactPageIcon from "@mui/icons-material/ContactPage";
 import { useEventsCardQuery } from "./EventsCard.generated";
-import { useHightlightedPlantingId } from "../states/highlightedPlantingId";
+import { useHighlightedPlantingId, useHighlightPlanting, useUnhighlightPlanting } from "../states/highlightedPlantingId";
 import {
   useRemovePlantingCard,
   useShowProfile,
@@ -121,8 +121,9 @@ export const EventsCard = ({
   hideName = false,
   hideColorBorder = false,
 }: Props) => {
-  const { hightlightPlanting, unhightlightPlanting, highlightedPlantingId } =
-    useHightlightedPlantingId();
+  const highlightedPlantingId = useHighlightedPlantingId();
+  const unhighlightPlanting = useUnhighlightPlanting()
+  const highlightPlanting = useHighlightPlanting();
   const removePlantingCard = useRemovePlantingCard();
   const showProfile = useShowProfile();
   const { data: { planting } = {} } = useEventsCardQuery({
@@ -142,11 +143,11 @@ export const EventsCard = ({
     [planting?.id]
   );
   const onHoverData = useCallback(
-    () => planting && hightlightPlanting(planting.id),
+    () => planting && highlightPlanting(planting.id),
     [planting?.id]
   );
   const onLeaveData = useCallback(
-    () => planting && unhightlightPlanting(planting.id),
+    () => planting && unhighlightPlanting(planting.id),
     [planting?.id]
   );
 

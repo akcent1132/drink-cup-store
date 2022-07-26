@@ -491,10 +491,10 @@ export const filters = makeVar<Filter[]>(
 // };
 
 // export const highlightedPlantingId = makeVar<string | null>(null);
-// export const hightlightPlanting = (plantingId: string) => {
+// export const highlightPlanting = (plantingId: string) => {
 //   highlightedPlantingId(plantingId);
 // };
-// export const unhightlightPlanting = (plantingId: string) => {
+// export const unhighlightPlanting = (plantingId: string) => {
 //   if (plantingId === highlightedPlantingId()) highlightedPlantingId(null);
 // };
 
