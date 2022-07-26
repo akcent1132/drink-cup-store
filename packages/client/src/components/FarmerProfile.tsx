@@ -163,21 +163,21 @@ export const FarmerProfile = ({ producerId }: Props) => {
                   </CardContainer>
                 ),
               },
-              {
-                label: "Fields",
-                renderPanel: () => (
-                  <CardContainer>
-                    {producer.plantings.map((p) => (
-                      <EventsCard
-                        key={p.id}
-                        plantingId={p.id}
-                        hideName
-                        hideColorBorder
-                      />
-                    ))}
-                  </CardContainer>
-                ),
-              },
+              // {
+              //   label: "Fields",
+              //   renderPanel: () => (
+              //     <CardContainer>
+              //       {producer.plantings.map((p) => (
+              //         <EventsCard
+              //           key={p.id}
+              //           plantingId={p.id}
+              //           hideName
+              //           hideColorBorder
+              //         />
+              //       ))}
+              //     </CardContainer>
+              //   ),
+              // },
             ]}
             index={tabIndex}
             onChange={setTabIndex}
