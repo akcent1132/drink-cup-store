@@ -1,27 +1,29 @@
 /** @jsxImportSource @emotion/react */
 
 import styled from "@emotion/styled";
-import { Box, RangeSelector, Stack, TextInput, Text } from "grommet";
+import { TextInput, Text } from "grommet";
 import { css, withTheme } from "@emotion/react";
 import React, { useCallback, useMemo } from "react";
-import { capitalize, range, throttle, zipWith } from "lodash";
+import { throttle } from "lodash";
 import { TagSelect } from "./TagSelect";
 import CloseIcon from "@mui/icons-material/Close";
 import { Spacer } from "../EventsCard";
 import { useFilterEditorQuery } from "./FilterEditor.generated";
 import { FilterParamSelector } from "./FilterParamSelector";
 import { RangeSlider } from "./RangeSlider";
-import { getFilterables } from "./getFilterables";
+import { Filterable, FilterableOption, getFilterables } from "./getFilterables";
 import { useShowPlantingCards } from "../../states/sidePanelContent";
-import { LinearProgress } from "@mui/material";
 import {
-  FilterValueOption,
   FilterValueRange,
+  isOptionFilterParam,
+  isRangeFilterParam,
   useEditFilterParam,
   useFilters,
   useUpdateFilterName,
 } from "../../states/filters";
 import { useSelectedCropType } from "../../states/selectedCropType";
+import LinearProgress from "@mui/material/LinearProgress";
+import { prettyKey } from "./prettyKey";
 
 const Root = withTheme(styled.div`
   background-color: ${(p) => p.theme.colors.bgSidePanel};
@@ -89,6 +91,11 @@ export const IconButton = styled.div`
 interface Props {
   selectedFilterId: string;
 }
+const isOptionFilterable = (
+  filterable: Filterable
+): filterable is FilterableOption => {
+  return filterable.type === "option";
+};
 
 /**
  * Primary UI component for user interaction
@@ -145,51 +152,37 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
               const filterable = filterables.find(
                 (f) => f.key === param.key && f.dataSource === param.dataSource
               );
-              return (
-                <Label label={capitalize(param.key)} key={param.key}>
-                  {param.value.__typename === "FilterValueOption" ? (
-                    <TagSelect
-                      onChange={(options) =>
+              return isOptionFilterParam(param) &&
+                (!filterable || isOptionFilterable(filterable)) ? (
+                <TagSelect
+                  filterId={selectedFilterId}
+                  filterable={filterable}
+                  param={param}
+                />
+              ) : isRangeFilterParam(param) ? (
+                <Label label={prettyKey(param.key)} key={param.key}>
+                  <RangeSlider
+                    value={[param.value.min, param.value.max]}
+                    allValues={
+                      (filterable?.type === "numeric" &&
+                        filterable.values.length > 1 &&
+                        filterable.values) || [
+                        param.value.min / 2,
+                        param.value.max * 2,
+                      ]
+                    }
+                    onChange={throttle(
+                      ([min, max]) =>
                         editFilterParam(filter.id, param.key, {
-                          ...(param.value as FilterValueOption),
-                          options,
-                        })
-                      }
-                      value={param.value.options}
-                      options={
-                        (filterable?.type === "option" &&
-                          filterable.options.map(({ value, occurences }) => ({
-                            value,
-                            label: `${value} (${occurences})`,
-                          }))) ||
-                        []
-                      }
-                      allowSearch
-                    />
-                  ) : (
-                    <RangeSlider
-                      value={[param.value.min, param.value.max]}
-                      allValues={
-                        (filterable?.type === "numeric" &&
-                          filterable.values.length > 1 &&
-                          filterable.values) || [
-                          param.value.min / 2,
-                          param.value.max * 2,
-                        ]
-                      }
-                      onChange={throttle(
-                        ([min, max]) =>
-                          editFilterParam(filter.id, param.key, {
-                            ...(param.value as FilterValueRange),
-                            min,
-                            max,
-                          }),
-                        128
-                      )}
-                    />
-                  )}
+                          ...(param.value as FilterValueRange),
+                          min,
+                          max,
+                        }),
+                      128
+                    )}
+                  />
                 </Label>
-              );
+              ) : null;
             })}
 
             <FilterParamSelector

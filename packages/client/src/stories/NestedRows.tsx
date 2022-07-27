@@ -6,6 +6,8 @@ import {
   Filter,
   FilterParam,
   FilterParamDataSource,
+  isOptionFilterParam,
+  isRangeFilterParam,
   useFilters,
 } from "../states/filters";
 import { useHighlightedFilterId } from "../states/highlightedFilterId";
@@ -24,10 +26,10 @@ const isMatchingFarmOnboardingValue = (
   const values =
     (planting.farmOnboarding?.values || []).find((v) => v.key === param.key)
       ?.values || [];
-  const paramValue = param.value;
-  if (paramValue.__typename === "FilterValueOption") {
-    return paramValue.options.some((option) => values.includes(option));
-  } else {
+
+  if (isOptionFilterParam(param)) {
+    return param.value.options.some((option) => values.includes(option));
+  } else if (isRangeFilterParam(param)){
     const numValues = values
       .map((v) => Number.parseFloat(v))
       .filter((v) => Number.isFinite(v));
@@ -35,7 +37,7 @@ const isMatchingFarmOnboardingValue = (
     if (numValues.length === 0) {
       return true;
     }
-    return numValues.some((v) => v >= paramValue.min && v <= paramValue.max);
+    return numValues.some((v) => v >= param.value.min && v <= param.value.max);
   }
 };
 
@@ -60,8 +62,7 @@ const getPlantingIdsOfFilter = (filter: Filter, plantings: Planting[]) => {
           isMatchingFarmOnboardingValue(planting, param)
         );
       } else {
-        const paramValue = param.value;
-        if (paramValue.__typename === "FilterValueRange") {
+        if (isRangeFilterParam(param)) {
           filteredPlantings = filteredPlantings.filter((planting) => {
             const values = planting.values.filter(
               (value) => value.name === param.key
@@ -70,7 +71,7 @@ const getPlantingIdsOfFilter = (filter: Filter, plantings: Planting[]) => {
               values.length === 0 ||
               values.some(
                 ({ value }) =>
-                  value >= paramValue.min && value <= paramValue.max
+                  value >= param.value.min && value <= param.value.max
               )
             );
           });

@@ -23,14 +23,24 @@ export enum FilterParamDataSource {
 export type FilterValue = FilterValueOption | FilterValueRange;
 
 export type FilterValueOption = {
-  __typename: "FilterValueOption";
   options: string[];
 };
 
 export type FilterValueRange = {
-  __typename: "FilterValueRange";
   max: number;
   min: number;
+};
+
+export const isOptionFilterParam = (
+  param: FilterParam
+): param is FilterParam & { value: FilterValueOption } => {
+  return "options" in param.value;
+};
+
+export const isRangeFilterParam = (
+  param: FilterParam
+): param is FilterParam & { value: FilterValueRange } => {
+  return "min" in param.value;
 };
 
 const filters = atom<Filter[]>({

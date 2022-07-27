@@ -1,4 +1,4 @@
-import { sortBy, startCase, without } from "lodash";
+import { sortBy, without } from "lodash";
 import { useCallback, useMemo } from "react";
 import { Filterable } from "./getFilterables";
 import MenuItem from "@mui/material/MenuItem";
@@ -14,44 +14,12 @@ import {
   useAddFilterParam,
   useRemoveFilterParam,
 } from "../../states/filters";
+import { prettyKey } from "./prettyKey";
 
 type Props = {
   filterables: Filterable[];
   filterId: string;
   params: FilterParam[];
-};
-
-const prettyKey = (key: string) =>
-  key.length <= 3 ? key : startCase(key.toLowerCase());
-
-const OptionListItem = ({
-  option,
-  selected,
-}: {
-  option: Filterable;
-  selected: boolean;
-}) => (
-  <MenuItem key={option.key} value={option.key} selected={selected}>
-    <ListItemText>{prettyKey(option.key)}</ListItemText>
-    <ListItemIcon>
-      {option.type === "numeric" ? (
-        <BarChartIcon fontSize="small" />
-      ) : (
-        <JoinInnerIcon fontSize="small" />
-      )}
-    </ListItemIcon>
-  </MenuItem>
-);
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
 };
 
 export const FilterParamSelector = ({
@@ -86,12 +54,10 @@ export const FilterParamSelector = ({
             value:
               filterable.type === "numeric"
                 ? {
-                    __typename: "FilterValueRange",
                     min: Math.min(...filterable.values),
                     max: Math.max(...filterable.values),
                   }
                 : {
-                    __typename: "FilterValueOption",
                     options: [],
                   },
           })
@@ -114,11 +80,7 @@ export const FilterParamSelector = ({
       value={currentOptions}
       onChange={handleChange}
       renderInput={(params) => (
-        <TextField
-          {...params}
-          variant="standard"
-          label="Select filters"
-        />
+        <TextField {...params} variant="standard" label="Select Filters" />
       )}
       noOptionsText="Can't find  filter properties"
       groupBy={(option) =>
