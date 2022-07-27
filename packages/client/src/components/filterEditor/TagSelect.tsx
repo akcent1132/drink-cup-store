@@ -58,6 +58,7 @@ export const TagSelect = ({
 
   return (
     <Autocomplete
+      disabled={!filterable}
       multiple
       onChange={handleChange}
       options={options}
