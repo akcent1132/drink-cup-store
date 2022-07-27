@@ -11,17 +11,17 @@ import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import { prettyKey } from "./prettyKey";
 
-const TickedSlider = styled(Slider)`
-  & .MuiSlider-mark: {
+const TickedSlider = styled(Slider)({
+  "& .MuiSlider-mark": {
     height: 4,
     width: 2,
     opacity: 0.4,
   },
-`;
+});
 
-const Label = styled(Typography)`
-  color: rgba(255, 255, 255, 0.7)
-`
+const Label = styled(Typography)({
+  color: "rgba(255, 255, 255, 0.17)",
+});
 
 export const RangeSlider = ({
   filterable,
