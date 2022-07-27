@@ -1,5 +1,5 @@
 import { sortBy, without } from "lodash";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Filterable } from "./getFilterables";
 import MenuItem from "@mui/material/MenuItem";
 import BarChartIcon from "@mui/icons-material/BarChart";
@@ -29,6 +29,7 @@ export const FilterParamSelector = ({
   params,
   filterables: options,
 }: Props) => {
+  const [open, setOpen] = useState(params.length === 0)
   const addFilterParam = useAddFilterParam();
   const removeFilterParam = useRemoveFilterParam();
   const sortedOptions = useMemo(
@@ -79,6 +80,9 @@ export const FilterParamSelector = ({
       multiple
       disableCloseOnSelect
       limitTags={3}
+      open={open}
+      onOpen={() => setOpen(true)}
+      onClose={() => setOpen(false)}
       options={sortedOptions}
       value={currentOptions}
       onChange={handleChange}
