@@ -7,6 +7,7 @@ import { loadPlantings } from "./loaders/plantings";
 import seedrandom from "seedrandom";
 import { loadFarmOnboardings } from "./loaders/farmOnboardings";
 import { loadEventDetails } from "./loaders/farmEvents";
+import { loadAvailableCropTypes } from "./loaders/availableCropTypes";
 
 // Construct a schema, using GraphQL schema language
 // @ts-ignore
@@ -37,10 +38,12 @@ const resolvers: Resolvers = {
         plantings: [],
       };
     },
-
     async allFarmOnboardings() {
       return await loadFarmOnboardings();
     },
+    async availableCropTypes() {
+      return await loadAvailableCropTypes();
+    }
   },
   Producer: {
     async plantings({ id }) {

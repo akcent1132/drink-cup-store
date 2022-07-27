@@ -4,6 +4,7 @@ extend type Query {
   planting(id: String): Planting
   producer(id: String): Producer
   allFarmOnboardings: [FarmOnboarding!]!
+  availableCropTypes: [AvailableCropType!]!
 }
 type Planting {
   id: String!
@@ -63,4 +64,10 @@ type FarmOnboarding {
   averageAnnualTemperature: Float
   averageAnnualRainfall: Float
   values: [FarmOnboardingValue!]
+}
+
+type AvailableCropType {
+  id: String!
+  cropType: String!
+  plantingCount: Int!
 }

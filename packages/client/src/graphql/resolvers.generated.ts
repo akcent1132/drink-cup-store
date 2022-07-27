@@ -14,6 +14,13 @@ export type Scalars = {
   Float: number;
 };
 
+export type AvailableCropType = {
+  __typename?: 'AvailableCropType';
+  cropType: Scalars['String'];
+  id: Scalars['String'];
+  plantingCount: Scalars['Int'];
+};
+
 export type FarmOnboarding = {
   __typename?: 'FarmOnboarding';
   averageAnnualRainfall?: Maybe<Scalars['Float']>;
@@ -88,6 +95,7 @@ export type Query = {
   __typename?: 'Query';
   allFarmOnboardings: Array<FarmOnboarding>;
   allPlantings: Array<Planting>;
+  availableCropTypes: Array<AvailableCropType>;
   planting?: Maybe<Planting>;
   plantings: Array<Planting>;
   producer?: Maybe<Producer>;
@@ -178,6 +186,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
+  AvailableCropType: ResolverTypeWrapper<AvailableCropType>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   FarmOnboarding: ResolverTypeWrapper<FarmOnboarding>;
   FarmOnboardingValue: ResolverTypeWrapper<FarmOnboardingValue>;
@@ -195,6 +204,7 @@ export type ResolversTypes = ResolversObject<{
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
+  AvailableCropType: AvailableCropType;
   Boolean: Scalars['Boolean'];
   FarmOnboarding: FarmOnboarding;
   FarmOnboardingValue: FarmOnboardingValue;
@@ -208,6 +218,13 @@ export type ResolversParentTypes = ResolversObject<{
   Producer: Producer;
   Query: {};
   String: Scalars['String'];
+}>;
+
+export type AvailableCropTypeResolvers<ContextType = any, ParentType extends ResolversParentTypes['AvailableCropType'] = ResolversParentTypes['AvailableCropType']> = ResolversObject<{
+  cropType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  plantingCount?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type FarmOnboardingResolvers<ContextType = any, ParentType extends ResolversParentTypes['FarmOnboarding'] = ResolversParentTypes['FarmOnboarding']> = ResolversObject<{
@@ -283,12 +300,14 @@ export type ProducerResolvers<ContextType = any, ParentType extends ResolversPar
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   allFarmOnboardings?: Resolver<Array<ResolversTypes['FarmOnboarding']>, ParentType, ContextType>;
   allPlantings?: Resolver<Array<ResolversTypes['Planting']>, ParentType, ContextType>;
+  availableCropTypes?: Resolver<Array<ResolversTypes['AvailableCropType']>, ParentType, ContextType>;
   planting?: Resolver<Maybe<ResolversTypes['Planting']>, ParentType, ContextType, Partial<QueryPlantingArgs>>;
   plantings?: Resolver<Array<ResolversTypes['Planting']>, ParentType, ContextType, RequireFields<QueryPlantingsArgs, 'cropType'>>;
   producer?: Resolver<Maybe<ResolversTypes['Producer']>, ParentType, ContextType, Partial<QueryProducerArgs>>;
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{
+  AvailableCropType?: AvailableCropTypeResolvers<ContextType>;
   FarmOnboarding?: FarmOnboardingResolvers<ContextType>;
   FarmOnboardingValue?: FarmOnboardingValueResolvers<ContextType>;
   Planting?: PlantingResolvers<ContextType>;

@@ -1,6 +1,7 @@
 query CropSelector {
-    allPlantings {
+    availableCropTypes {
         id
         cropType
+        plantingCount
     }
 }
