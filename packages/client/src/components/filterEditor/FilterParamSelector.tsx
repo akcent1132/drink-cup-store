@@ -8,6 +8,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
+import SearchIcon from '@mui/icons-material/Search';
 import {
   FilterParam,
   FilterParamDataSource,
@@ -15,6 +16,7 @@ import {
   useRemoveFilterParam,
 } from "../../states/filters";
 import { prettyKey } from "./prettyKey";
+import { Typography } from "@mui/material";
 
 type Props = {
   filterables: Filterable[];
@@ -30,7 +32,7 @@ export const FilterParamSelector = ({
   const addFilterParam = useAddFilterParam();
   const removeFilterParam = useRemoveFilterParam();
   const sortedOptions = useMemo(
-    () => sortBy(options, ["dataSource", "key"]),
+    () => sortBy(options, ["dataSource", (o) => prettyKey(o.key)]),
     [options]
   );
   const currentOptions = useMemo(
@@ -76,11 +78,12 @@ export const FilterParamSelector = ({
     <Autocomplete
       multiple
       disableCloseOnSelect
+      limitTags={3}
       options={sortedOptions}
       value={currentOptions}
       onChange={handleChange}
       renderInput={(params) => (
-        <TextField {...params} variant="standard" label="Select Filters" />
+        <TextField {...params} variant="standard" label="Select Filters" placeholder="Search..."/>
       )}
       noOptionsText="Can't find  filter properties"
       groupBy={(option) =>

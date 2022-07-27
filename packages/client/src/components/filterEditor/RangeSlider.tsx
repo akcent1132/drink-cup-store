@@ -10,6 +10,8 @@ import { FilterableNumeric } from "./getFilterables";
 import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
 import { prettyKey } from "./prettyKey";
+import { sortBy } from "lodash";
+import Box from "@mui/material/Box";
 
 const TickedSlider = styled(Slider)({
   "& .MuiSlider-mark": {
@@ -20,7 +22,7 @@ const TickedSlider = styled(Slider)({
 });
 
 const Label = styled(Typography)({
-  color: "rgba(255, 255, 255, 0.17)",
+  color: "rgba(255, 255, 255, 0.7)",
 });
 
 export const RangeSlider = ({
@@ -45,7 +47,7 @@ export const RangeSlider = ({
   );
 
   const allValues = useMemo(
-    () => filterable?.values || [],
+    () => sortBy(filterable?.values || []),
     [filterable?.values]
   );
   const intMode = useMemo(
@@ -65,17 +67,24 @@ export const RangeSlider = ({
     [intMode]
   );
   const step = intMode ? 1 : 0.01;
+  console.log({ allValues });
   const marks = useMemo(
-    () => allValues.map((value) => ({ value })),
+    () =>
+      allValues.map((value, i) =>
+        i === 0 || i === allValues.length - 1
+          ? { value, label: formatter(value) }
+          : { value }
+      ),
     [allValues]
   );
 
   return (
-    <>
+    <Box ml={1}>
       <Label variant="caption">{prettyKey(param.key)}</Label>
       <TickedSlider
         disabled={!filterable}
-        getAriaLabel={() => "Temperature range"}
+        getAriaLabel={() => prettyKey(param.key)}
+        getAriaValueText={formatter}
         value={[param.value.min, param.value.max]}
         onChange={handleChange}
         valueLabelDisplay="auto"
@@ -84,6 +93,6 @@ export const RangeSlider = ({
         max={max}
         marks={marks}
       />
-    </>
+    </Box>
   );
 };
