@@ -6,7 +6,4 @@ query PreloadData {
       values
     }
   }
-  allPlantings {
-    id
-  }
 }

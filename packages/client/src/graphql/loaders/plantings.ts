@@ -57,6 +57,52 @@ const fixEventType = (type: string): string => {
   }
 };
 
+const convertExternalPlanting = (planting: externalData.Planting): Planting => {
+  return {
+    ...planting,
+    __typename: "Planting",
+    cropType: planting.cropType!,
+    id: planting._id,
+    values: planting.values
+      .filter((v): v is externalData.ValueElement & { value: number } =>
+        isNumber(v.value)
+      )
+      .map((v) => {
+        return {
+          ...v,
+          modusId: v.modus_test_id || null,
+          __typename: "PlantingValue",
+          plantingId: planting._id,
+        };
+      }),
+    params: {
+      __typename: "PlantingParams",
+      sandPercentage: planting.params.sand_percentage,
+      clayPercentage: planting.params.clay_percentage,
+      soilGroup: planting.params.soil_group,
+      soilOrder: planting.params.soil_order,
+      soilSuborder: planting.params.soil_suborder,
+      soilTexture: planting.params.soil_texture,
+    },
+    producer: {
+      ...planting.producer,
+      __typename: "Producer",
+      code: seedrandom(planting.producer.id)().toString(32).slice(-7),
+      plantings: [],
+    },
+    events: planting.events.map((e) => ({
+      ...e,
+      id: e.id.toString(),
+      type: fixEventType(e.type || ""),
+      _planting_id_for_details_request:
+        planting.drupal_internal__id.toString(),
+      _producer_key_for_details_request: planting.producer.id.split(".")[0],
+      details: [],
+      __typename: "PlantingEvent",
+    })),
+  };
+}
+
 export const loadPlantings = pMemoize(async () => {
   const externalPlantings: externalData.Planting[] = await fetch(
     "https://app.surveystack.io/static/coffeeshop/plantings"
@@ -64,53 +110,18 @@ export const loadPlantings = pMemoize(async () => {
 
   const clientPlantings: Planting[] = externalPlantings
     .filter((p) => p.cropType !== null)
-    .map((planting) => {
-      return {
-        ...planting,
-        __typename: "Planting",
-        cropType: planting.cropType!,
-        isHighlighted: false,
-        id: planting._id,
-        values: planting.values
-          .filter((v): v is externalData.ValueElement & { value: number } =>
-            isNumber(v.value)
-          )
-          .map((v) => {
-            return {
-              ...v,
-              modusId: v.modus_test_id || null,
-              __typename: "PlantingValue",
-              plantingId: planting._id,
-            };
-          }),
-        params: {
-          __typename: "PlantingParams",
-          sandPercentage: planting.params.sand_percentage,
-          clayPercentage: planting.params.clay_percentage,
-          soilGroup: planting.params.soil_group,
-          soilOrder: planting.params.soil_order,
-          soilSuborder: planting.params.soil_suborder,
-          soilTexture: planting.params.soil_texture,
-        },
-        producer: {
-          ...planting.producer,
-          __typename: "Producer",
-          code: seedrandom(planting.producer.id)().toString(32).slice(-7),
-          plantings: [],
-        },
-        events: planting.events.map((e) => ({
-          ...e,
-          id: e.id.toString(),
-          type: fixEventType(e.type || ""),
-          _planting_id_for_details_request:
-            planting.drupal_internal__id.toString(),
-          _producer_key_for_details_request: planting.producer.id.split(".")[0],
-          details: [],
-          __typename: "PlantingEvent",
-        })),
-        matchingFilters: [],
-      };
-    });
+    .map(convertExternalPlanting);
+  return clientPlantings;
+});
+
+export const loadPlantingsOfCrop = pMemoize(async (cropType) => {
+  const externalPlantings: externalData.Planting[] = await fetch(
+    `https://app.surveystack.io/static/coffeeshop/species_plantings/${cropType}`
+  ).then((result) => result.json());
+
+  const clientPlantings: Planting[] = externalPlantings
+    .filter((p) => p.cropType !== null)
+    .map(convertExternalPlanting);
   return clientPlantings;
 });
 
