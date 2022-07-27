@@ -16,7 +16,6 @@ import {
   useRemoveFilterParam,
 } from "../../states/filters";
 import { prettyKey } from "./prettyKey";
-import { Typography } from "@mui/material";
 
 type Props = {
   filterables: Filterable[];

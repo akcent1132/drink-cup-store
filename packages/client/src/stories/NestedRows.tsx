@@ -184,7 +184,7 @@ export const NestedRows = ({ rows }: { rows: RowData[] }) => {
   const highlightedFilterId = useHighlightedFilterId();
   const labeledValues = useMemo(
     () => (filters && plantings ? getLabeledValues(filters, plantings) : []),
-    [filters, plantings]
+    [...filters.map(f => f.params), plantings]
   );
   const flatRows = useMemo(
     () => flattenRows(rows, labeledValues),

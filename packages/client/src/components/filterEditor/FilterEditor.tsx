@@ -1,10 +1,9 @@
 /** @jsxImportSource @emotion/react */
 
 import styled from "@emotion/styled";
-import { TextInput, Text } from "grommet";
+import { Text } from "grommet";
 import { css, withTheme } from "@emotion/react";
 import React, { useCallback, useMemo } from "react";
-import { throttle } from "lodash";
 import { TagSelect } from "./TagSelect";
 import CloseIcon from "@mui/icons-material/Close";
 import { Spacer } from "../EventsCard";
@@ -12,15 +11,12 @@ import { useFilterEditorQuery } from "./FilterEditor.generated";
 import { FilterParamSelector } from "./FilterParamSelector";
 import { RangeSlider } from "./RangeSlider";
 import {
-  Filterable,
-  FilterableOption,
   getFilterables,
   isNumericFilterable,
   isOptionFilterable,
 } from "./getFilterables";
 import { useShowPlantingCards } from "../../states/sidePanelContent";
 import {
-  FilterValueRange,
   isOptionFilterParam,
   isRangeFilterParam,
   useEditFilterParam,
@@ -31,6 +27,7 @@ import { useSelectedCropType } from "../../states/selectedCropType";
 import LinearProgress from "@mui/material/LinearProgress";
 import { prettyKey } from "./prettyKey";
 import { InputActionsWrap } from "./InputActionsWrap";
+import TextField from "@mui/material/TextField";
 
 const Root = withTheme(styled.div`
   background-color: ${(p) => p.theme.colors.bgSidePanel};
@@ -143,13 +140,12 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
             </IconButton>
           </Header>
           <Body>
-            <Label label="Name">
-              <TextInput
-                placeholder="Filter name"
-                value={filter.name}
-                onChange={updateName}
-              />
-            </Label>
+            <TextField
+              label="Filter Name"
+              variant="outlined"
+              value={filter.name}
+              onChange={updateName}
+            />
             {params.map((param) => {
               const filterable = filterables.find(
                 (f) => f.key === param.key && f.dataSource === param.dataSource
