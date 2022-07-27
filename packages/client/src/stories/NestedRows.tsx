@@ -1,3 +1,5 @@
+import LinearProgress from "@mui/material/LinearProgress";
+import Box from "@mui/material/Box"
 import { findLastIndex, last, remove } from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
 import { ValueDistribution } from "../components/ValueDistribution";
@@ -176,7 +178,7 @@ const flattenRows = (
 
 export const NestedRows = ({ rows }: { rows: RowData[] }) => {
   const selectedCropType = useSelectedCropType();
-  const { data: { plantings } = {} } = useNestedRowsQuery({
+  const { data: { plantings } = {}, loading } = useNestedRowsQuery({
     variables: { cropType: selectedCropType },
   });
   const filters = useFilters();
@@ -226,7 +228,8 @@ export const NestedRows = ({ rows }: { rows: RowData[] }) => {
   }, [flatRows, isClosed]);
 
   return (
-    <React.Fragment>
+    <>
+    {loading ? <Box mt={1}><LinearProgress /></Box>: null}
       {flatRows.map(
         (
           {
@@ -256,6 +259,6 @@ export const NestedRows = ({ rows }: { rows: RowData[] }) => {
           />
         )
       )}
-    </React.Fragment>
+    </>
   );
 };
