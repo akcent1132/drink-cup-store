@@ -117,8 +117,7 @@ export const FilterParamSelector = ({
         <TextField
           {...params}
           variant="standard"
-          label="Filter Properties"
-          placeholder="Select Filter Properties..."
+          label="Select filters"
         />
       )}
       noOptionsText="Can't find  filter properties"

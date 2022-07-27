@@ -22,12 +22,12 @@ type PlantingValue {
   modusId: String
 }
 type PlantingParams {
-  sandPercentage: Int,
-  clayPercentage: Int,
-  soilGroup: String,
-  soilOrder: String,
-  soilSuborder: String,
-  soilTexture: Int,
+  sandPercentage: Int
+  clayPercentage: Int
+  soilGroup: String
+  soilOrder: String
+  soilSuborder: String
+  soilTexture: Int
 }
 
 type PlantingEvent {

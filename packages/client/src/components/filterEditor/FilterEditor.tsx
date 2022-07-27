@@ -14,7 +14,13 @@ import { RangeSlider } from "./RangeSlider";
 import { getFilterables } from "./getFilterables";
 import { useShowPlantingCards } from "../../states/sidePanelContent";
 import { LinearProgress } from "@mui/material";
-import { FilterValueOption, FilterValueRange, useEditFilterParam, useFilters, useUpdateFilterName } from "../../states/filters";
+import {
+  FilterValueOption,
+  FilterValueRange,
+  useEditFilterParam,
+  useFilters,
+  useUpdateFilterName,
+} from "../../states/filters";
 import { useSelectedCropType } from "../../states/selectedCropType";
 
 const Root = withTheme(styled.div`
@@ -90,7 +96,7 @@ interface Props {
 export const FilterEditor = ({ selectedFilterId }: Props) => {
   const filters = useFilters();
   const showPlantingCards = useShowPlantingCards();
-  const selectedCropType = useSelectedCropType()
+  const selectedCropType = useSelectedCropType();
   const filter = useMemo(
     () => filters.find((filter) => filter.id === selectedFilterId),
     [selectedFilterId, filters]
@@ -128,11 +134,6 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
             </IconButton>
           </Header>
           <Body>
-            <FilterParamSelector
-              filterId={filter.id}
-              filterables={filterables}
-              params={params}
-            />
             <Label label="Name">
               <TextInput
                 placeholder="Filter name"
@@ -190,6 +191,12 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
                 </Label>
               );
             })}
+
+            <FilterParamSelector
+              filterId={filter.id}
+              filterables={filterables}
+              params={params}
+            />
           </Body>
         </>
       )}
