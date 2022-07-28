@@ -8,10 +8,20 @@ import seedrandom from "seedrandom";
 import { loadFarmOnboardings } from "./loaders/farmOnboardings";
 import { loadEventDetails } from "./loaders/farmEvents";
 import { loadAvailableCropTypes } from "./loaders/availableCropTypes";
+import { z } from "zod";
 
 // Construct a schema, using GraphQL schema language
 // @ts-ignore
 const typeDefs = buildClientSchema(jsonSchema);
+
+const SURVEY_STACK_API = "https://app.surveystack.io/api/";
+
+const UserPayload = z.object({
+  email: z.string(),
+  name: z.string(),
+  token: z.string(),
+  _id: z.string(),
+});
 
 // The root provides a resolver function for each API endpoint
 const resolvers: Resolvers = {
@@ -41,7 +51,7 @@ const resolvers: Resolvers = {
     },
     async availableCropTypes() {
       return await loadAvailableCropTypes();
-    }
+    },
   },
   Producer: {
     async plantings({ id }) {
@@ -69,6 +79,36 @@ const resolvers: Resolvers = {
         _planting_id_for_details_request
       );
       return details.find((d) => d.id === id)?.details || [];
+    },
+  },
+  Mutation: {
+    async login(_, { email, password }) {
+      return await fetch(SURVEY_STACK_API + "auth/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+        headers: {
+          "Content-Type": "application/json;charset=utf-8",
+        },
+      })
+        .then((res) =>
+          res.ok
+            ? res.json()
+            : res.json().then((e) => {
+                throw e?.message || JSON.stringify(e);
+              })
+        )
+        .then((res) => UserPayload.parse(res))
+        .then(({ _id, email, name, token }) => ({
+          success: true,
+          payload: { userId: _id, token, email, name },
+        }))
+        .catch((e) => {
+          console.error("LOgin error:", e);
+          return {
+            success: false,
+            error: e.toString(),
+          };
+        });
     },
   },
 };

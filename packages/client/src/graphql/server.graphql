@@ -1,4 +1,4 @@
-extend type Query {
+type Query {
   plantings(cropType: String!): [Planting!]!
   allPlantings: [Planting!]!
   planting(id: String): Planting
@@ -6,6 +6,24 @@ extend type Query {
   allFarmOnboardings: [FarmOnboarding!]!
   availableCropTypes: [AvailableCropType!]!
 }
+
+type Mutation {
+  login(email: String! password: String!): LoginResponse
+}
+
+type LoginResponse {
+  success: Boolean!
+  payload: AuthPayload
+  error: String
+}
+
+type AuthPayload {
+  userId: String!
+  email: String!
+  name: String
+  token: String!
+}
+
 type Planting {
   id: String!
   cropType: String!

@@ -13,6 +13,14 @@ export type Scalars = {
   Float: number;
 };
 
+export type AuthPayload = {
+  __typename: 'AuthPayload';
+  email: Scalars['String'];
+  name: Maybe<Scalars['String']>;
+  token: Scalars['String'];
+  userId: Scalars['String'];
+};
+
 export type AvailableCropType = {
   __typename: 'AvailableCropType';
   cropType: Scalars['String'];
@@ -33,6 +41,24 @@ export type FarmOnboardingValue = {
   __typename: 'FarmOnboardingValue';
   key: Scalars['String'];
   values: Array<Scalars['String']>;
+};
+
+export type LoginResponse = {
+  __typename: 'LoginResponse';
+  error: Maybe<Scalars['String']>;
+  payload: Maybe<AuthPayload>;
+  success: Scalars['Boolean'];
+};
+
+export type Mutation = {
+  __typename: 'Mutation';
+  login: Maybe<LoginResponse>;
+};
+
+
+export type MutationLoginArgs = {
+  email: Scalars['String'];
+  password: Scalars['String'];
 };
 
 export type Planting = {
@@ -115,6 +141,13 @@ export type QueryProducerArgs = {
   id: InputMaybe<Scalars['String']>;
 };
 
+export type AuthPayloadKeySpecifier = ('email' | 'name' | 'token' | 'userId' | AuthPayloadKeySpecifier)[];
+export type AuthPayloadFieldPolicy = {
+	email?: FieldPolicy<any> | FieldReadFunction<any>,
+	name?: FieldPolicy<any> | FieldReadFunction<any>,
+	token?: FieldPolicy<any> | FieldReadFunction<any>,
+	userId?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type AvailableCropTypeKeySpecifier = ('cropType' | 'id' | 'plantingCount' | AvailableCropTypeKeySpecifier)[];
 export type AvailableCropTypeFieldPolicy = {
 	cropType?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -133,6 +166,16 @@ export type FarmOnboardingValueKeySpecifier = ('key' | 'values' | FarmOnboarding
 export type FarmOnboardingValueFieldPolicy = {
 	key?: FieldPolicy<any> | FieldReadFunction<any>,
 	values?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type LoginResponseKeySpecifier = ('error' | 'payload' | 'success' | LoginResponseKeySpecifier)[];
+export type LoginResponseFieldPolicy = {
+	error?: FieldPolicy<any> | FieldReadFunction<any>,
+	payload?: FieldPolicy<any> | FieldReadFunction<any>,
+	success?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type MutationKeySpecifier = ('login' | MutationKeySpecifier)[];
+export type MutationFieldPolicy = {
+	login?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type PlantingKeySpecifier = ('cropType' | 'events' | 'farmOnboarding' | 'id' | 'params' | 'producer' | 'title' | 'values' | PlantingKeySpecifier)[];
 export type PlantingFieldPolicy = {
@@ -193,6 +236,10 @@ export type QueryFieldPolicy = {
 	producer?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type StrictTypedTypePolicies = {
+	AuthPayload?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | AuthPayloadKeySpecifier | (() => undefined | AuthPayloadKeySpecifier),
+		fields?: AuthPayloadFieldPolicy,
+	},
 	AvailableCropType?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | AvailableCropTypeKeySpecifier | (() => undefined | AvailableCropTypeKeySpecifier),
 		fields?: AvailableCropTypeFieldPolicy,
@@ -204,6 +251,14 @@ export type StrictTypedTypePolicies = {
 	FarmOnboardingValue?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | FarmOnboardingValueKeySpecifier | (() => undefined | FarmOnboardingValueKeySpecifier),
 		fields?: FarmOnboardingValueFieldPolicy,
+	},
+	LoginResponse?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | LoginResponseKeySpecifier | (() => undefined | LoginResponseKeySpecifier),
+		fields?: LoginResponseFieldPolicy,
+	},
+	Mutation?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | MutationKeySpecifier | (() => undefined | MutationKeySpecifier),
+		fields?: MutationFieldPolicy,
 	},
 	Planting?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | PlantingKeySpecifier | (() => undefined | PlantingKeySpecifier),
