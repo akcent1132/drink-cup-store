@@ -95,7 +95,7 @@ export default function Login() {
             loading={isLoginInProgress}
           >
             Sign In
-          </Button>
+          </LoadingButton>
           {error ? (
             <Alert severity="error">{error}</Alert>
           ) : null}
