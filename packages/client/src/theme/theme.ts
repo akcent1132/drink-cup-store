@@ -53,7 +53,6 @@ const muiTheme = createTheme({
     },
   },
 });
-console.log("MUI THEME", muiTheme);
 
 export const theme = {
   color(color: string) {

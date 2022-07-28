@@ -13,12 +13,12 @@ export type Scalars = {
   Float: number;
 };
 
-export type AuthPayload = {
-  __typename: 'AuthPayload';
+export type AuthUser = {
+  __typename: 'AuthUser';
   email: Scalars['String'];
+  id: Scalars['String'];
   name: Maybe<Scalars['String']>;
   token: Scalars['String'];
-  userId: Scalars['String'];
 };
 
 export type AvailableCropType = {
@@ -46,8 +46,8 @@ export type FarmOnboardingValue = {
 export type LoginResponse = {
   __typename: 'LoginResponse';
   error: Maybe<Scalars['String']>;
-  payload: Maybe<AuthPayload>;
   success: Scalars['Boolean'];
+  user: Maybe<AuthUser>;
 };
 
 export type Mutation = {
@@ -121,6 +121,7 @@ export type Query = {
   allFarmOnboardings: Array<FarmOnboarding>;
   allPlantings: Array<Planting>;
   availableCropTypes: Array<AvailableCropType>;
+  connectedFarmIds: Array<Scalars['String']>;
   planting: Maybe<Planting>;
   plantings: Array<Planting>;
   producer: Maybe<Producer>;
@@ -141,12 +142,12 @@ export type QueryProducerArgs = {
   id: InputMaybe<Scalars['String']>;
 };
 
-export type AuthPayloadKeySpecifier = ('email' | 'name' | 'token' | 'userId' | AuthPayloadKeySpecifier)[];
-export type AuthPayloadFieldPolicy = {
+export type AuthUserKeySpecifier = ('email' | 'id' | 'name' | 'token' | AuthUserKeySpecifier)[];
+export type AuthUserFieldPolicy = {
 	email?: FieldPolicy<any> | FieldReadFunction<any>,
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
-	token?: FieldPolicy<any> | FieldReadFunction<any>,
-	userId?: FieldPolicy<any> | FieldReadFunction<any>
+	token?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type AvailableCropTypeKeySpecifier = ('cropType' | 'id' | 'plantingCount' | AvailableCropTypeKeySpecifier)[];
 export type AvailableCropTypeFieldPolicy = {
@@ -167,11 +168,11 @@ export type FarmOnboardingValueFieldPolicy = {
 	key?: FieldPolicy<any> | FieldReadFunction<any>,
 	values?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type LoginResponseKeySpecifier = ('error' | 'payload' | 'success' | LoginResponseKeySpecifier)[];
+export type LoginResponseKeySpecifier = ('error' | 'success' | 'user' | LoginResponseKeySpecifier)[];
 export type LoginResponseFieldPolicy = {
 	error?: FieldPolicy<any> | FieldReadFunction<any>,
-	payload?: FieldPolicy<any> | FieldReadFunction<any>,
-	success?: FieldPolicy<any> | FieldReadFunction<any>
+	success?: FieldPolicy<any> | FieldReadFunction<any>,
+	user?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type MutationKeySpecifier = ('login' | MutationKeySpecifier)[];
 export type MutationFieldPolicy = {
@@ -226,19 +227,20 @@ export type ProducerFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('allFarmOnboardings' | 'allPlantings' | 'availableCropTypes' | 'planting' | 'plantings' | 'producer' | QueryKeySpecifier)[];
+export type QueryKeySpecifier = ('allFarmOnboardings' | 'allPlantings' | 'availableCropTypes' | 'connectedFarmIds' | 'planting' | 'plantings' | 'producer' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
 	allFarmOnboardings?: FieldPolicy<any> | FieldReadFunction<any>,
 	allPlantings?: FieldPolicy<any> | FieldReadFunction<any>,
 	availableCropTypes?: FieldPolicy<any> | FieldReadFunction<any>,
+	connectedFarmIds?: FieldPolicy<any> | FieldReadFunction<any>,
 	planting?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>,
 	producer?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type StrictTypedTypePolicies = {
-	AuthPayload?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | AuthPayloadKeySpecifier | (() => undefined | AuthPayloadKeySpecifier),
-		fields?: AuthPayloadFieldPolicy,
+	AuthUser?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | AuthUserKeySpecifier | (() => undefined | AuthUserKeySpecifier),
+		fields?: AuthUserFieldPolicy,
 	},
 	AvailableCropType?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | AvailableCropTypeKeySpecifier | (() => undefined | AvailableCropTypeKeySpecifier),

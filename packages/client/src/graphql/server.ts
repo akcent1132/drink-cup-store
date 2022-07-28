@@ -9,6 +9,7 @@ import { loadFarmOnboardings } from "./loaders/farmOnboardings";
 import { loadEventDetails } from "./loaders/farmEvents";
 import { loadAvailableCropTypes } from "./loaders/availableCropTypes";
 import { z } from "zod";
+import { loadConnectedFarmIds } from "./loaders/connectedFarms";
 
 // Construct a schema, using GraphQL schema language
 // @ts-ignore
@@ -22,6 +23,10 @@ const UserPayload = z.object({
   token: z.string(),
   _id: z.string(),
 });
+
+type Context = {
+  authorization?: string
+}
 
 // The root provides a resolver function for each API endpoint
 const resolvers: Resolvers = {
@@ -52,6 +57,9 @@ const resolvers: Resolvers = {
     async availableCropTypes() {
       return await loadAvailableCropTypes();
     },
+    async connectedFarmIds(_: any, {}, { authorization }: Context) {
+      return loadConnectedFarmIds(authorization)
+    }
   },
   Producer: {
     async plantings({ id }) {
@@ -98,9 +106,9 @@ const resolvers: Resolvers = {
               })
         )
         .then((res) => UserPayload.parse(res))
-        .then(({ _id, email, name, token }) => ({
+        .then(({ _id: id, email, name, token }) => ({
           success: true,
-          payload: { userId: _id, token, email, name },
+          user: { id, token, email, name },
         }))
         .catch((e) => {
           console.error("LOgin error:", e);
@@ -134,6 +142,9 @@ const worker = setupWorker(
       source: query,
       variableValues: variables,
       operationName,
+      contextValue: {
+        authorization: req.headers.get('authorization')
+      }
     });
     return res(ctx.json(result));
   })

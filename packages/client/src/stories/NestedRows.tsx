@@ -176,17 +176,16 @@ const flattenRows = (
     })
     .flat();
 
-export const NestedRows = ({ rows }: { rows: RowData[] }) => {
+export const NestedRows = ({ rows, filters }: { rows: RowData[], filters: Filter[] }) => {
   const selectedCropType = useSelectedCropType();
   const { data: { plantings } = {}, loading } = useNestedRowsQuery({
     variables: { cropType: selectedCropType },
   });
-  const filters = useFilters();
   const highlightedPlantingId = useHighlightedPlantingId();
   const highlightedFilterId = useHighlightedFilterId();
   const labeledValues = useMemo(
     () => (filters && plantings ? getLabeledValues(filters, plantings) : []),
-    [...filters.map(f => f.params), plantings]
+    [JSON.stringify(filters.map(f => f.params)), plantings]
   );
   const flatRows = useMemo(
     () => flattenRows(rows, labeledValues),

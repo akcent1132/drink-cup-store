@@ -38,12 +38,12 @@ import { ApolloProvider } from "@apollo/client";
 import { usePreloadDataQuery } from "./Dashboard.generated";
 import { Box, Layer } from "grommet";
 import CircularProgress from "@mui/material/CircularProgress";
-import { useSelectedCropType } from "../states/selectedCropType";
 import {
   useHighlightFilter,
   useUnhighlightFilter,
 } from "../states/highlightedFilterId";
 import { useAddFilter, useFilters } from "../states/filters";
+import { MyDataTab } from "../components/myData/MyDataTab";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -111,7 +111,7 @@ const RightFlipContainer = styled.div`
 
 const COLORS = schemeTableau10.slice(0, 9);
 let filterNamePostfix = 1;
-const RandomContent = () => {
+const CompareTab = () => {
   const showFilterEditor = useShowFilterEditor();
   const highlightFilter = useHighlightFilter();
   const unhighlightFilter = useUnhighlightFilter();
@@ -156,31 +156,12 @@ const RandomContent = () => {
           onClick={() => handleAddFilter()}
         />
       </PaneHead>
-      <NestedRows rows={ROWS} />
+      <NestedRows rows={ROWS} filters={filters} />
     </RowContainer>
   );
 };
 
-// export const createFakePlantingCardData = memoize(
-//   (id: string, color: string) => {
-//     let texture = [Math.random(), Math.random()];
-//     texture = texture.map((t) => Math.round((t / sum(texture)) * 100));
-//     const zone = randomZone();
-//     return {
-//       id,
-//       title: "Corn " + (2017 + Math.floor(Math.random() * 6)),
-//       name: Math.random().toString(32).slice(-7), //`${faker.name.firstName()} ${faker.name.lastName()}`,
-//       color,
-//       params: {
-//         zone: zone.name,
-//         temperature: zone.temp.toString() + "°",
-//         precipitation: `${32 + Math.floor(32 * Math.random())}″`,
-//         texture: `Sand: ${texture[0]}% | Clay ${texture[1]}%`,
-//       },
-//       events: range(6 + 6 * Math.random()).map(() => getFarmEvent()),
-//     };
-//   }
-// );
+
 
 interface Props {
   /**
@@ -198,11 +179,11 @@ export const Dashboard = ({ iframeSrc }: Props) => {
     () => [
       {
         label: "Compare",
-        renderPanel: () => <RandomContent />,
+        renderPanel: () => <CompareTab />,
       },
       {
         label: "My Data",
-        renderPanel: () => <RandomContent />,
+        renderPanel: () => <RowContainer><MyDataTab /></RowContainer>,
       },
     ],
     []

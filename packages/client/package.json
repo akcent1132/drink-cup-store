@@ -11,6 +11,7 @@
     "@graphql-codegen/typescript-apollo-client-helpers": "^2.1.15",
     "@graphql-tools/schema": "^8.5.0",
     "@mui/icons-material": "^5.8.4",
+    "@mui/lab": "^5.0.0-alpha.92",
     "@mui/material": "^5.3.1",
     "@react-hook/intersection-observer": "^3.1.1",
     "@react-hook/resize-observer": "^1.2.5",

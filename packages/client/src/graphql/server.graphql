@@ -5,6 +5,7 @@ type Query {
   producer(id: String): Producer
   allFarmOnboardings: [FarmOnboarding!]!
   availableCropTypes: [AvailableCropType!]!
+  connectedFarmIds: [String!]! 
 }
 
 type Mutation {
@@ -13,12 +14,12 @@ type Mutation {
 
 type LoginResponse {
   success: Boolean!
-  payload: AuthPayload
+  user: AuthUser
   error: String
 }
 
-type AuthPayload {
-  userId: String!
+type AuthUser {
+  id: String!
   email: String!
   name: String
   token: String!

@@ -14,12 +14,12 @@ export type Scalars = {
   Float: number;
 };
 
-export type AuthPayload = {
-  __typename?: 'AuthPayload';
+export type AuthUser = {
+  __typename?: 'AuthUser';
   email: Scalars['String'];
+  id: Scalars['String'];
   name?: Maybe<Scalars['String']>;
   token: Scalars['String'];
-  userId: Scalars['String'];
 };
 
 export type AvailableCropType = {
@@ -47,8 +47,8 @@ export type FarmOnboardingValue = {
 export type LoginResponse = {
   __typename?: 'LoginResponse';
   error?: Maybe<Scalars['String']>;
-  payload?: Maybe<AuthPayload>;
   success: Scalars['Boolean'];
+  user?: Maybe<AuthUser>;
 };
 
 export type Mutation = {
@@ -122,6 +122,7 @@ export type Query = {
   allFarmOnboardings: Array<FarmOnboarding>;
   allPlantings: Array<Planting>;
   availableCropTypes: Array<AvailableCropType>;
+  connectedFarmIds: Array<Scalars['String']>;
   planting?: Maybe<Planting>;
   plantings: Array<Planting>;
   producer?: Maybe<Producer>;
@@ -212,7 +213,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = ResolversObject<{
-  AuthPayload: ResolverTypeWrapper<AuthPayload>;
+  AuthUser: ResolverTypeWrapper<AuthUser>;
   AvailableCropType: ResolverTypeWrapper<AvailableCropType>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
   FarmOnboarding: ResolverTypeWrapper<FarmOnboarding>;
@@ -233,7 +234,7 @@ export type ResolversTypes = ResolversObject<{
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
-  AuthPayload: AuthPayload;
+  AuthUser: AuthUser;
   AvailableCropType: AvailableCropType;
   Boolean: Scalars['Boolean'];
   FarmOnboarding: FarmOnboarding;
@@ -252,11 +253,11 @@ export type ResolversParentTypes = ResolversObject<{
   String: Scalars['String'];
 }>;
 
-export type AuthPayloadResolvers<ContextType = any, ParentType extends ResolversParentTypes['AuthPayload'] = ResolversParentTypes['AuthPayload']> = ResolversObject<{
+export type AuthUserResolvers<ContextType = any, ParentType extends ResolversParentTypes['AuthUser'] = ResolversParentTypes['AuthUser']> = ResolversObject<{
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  userId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -284,8 +285,8 @@ export type FarmOnboardingValueResolvers<ContextType = any, ParentType extends R
 
 export type LoginResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['LoginResponse'] = ResolversParentTypes['LoginResponse']> = ResolversObject<{
   error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  payload?: Resolver<Maybe<ResolversTypes['AuthPayload']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes['AuthUser']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -352,13 +353,14 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   allFarmOnboardings?: Resolver<Array<ResolversTypes['FarmOnboarding']>, ParentType, ContextType>;
   allPlantings?: Resolver<Array<ResolversTypes['Planting']>, ParentType, ContextType>;
   availableCropTypes?: Resolver<Array<ResolversTypes['AvailableCropType']>, ParentType, ContextType>;
+  connectedFarmIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   planting?: Resolver<Maybe<ResolversTypes['Planting']>, ParentType, ContextType, Partial<QueryPlantingArgs>>;
   plantings?: Resolver<Array<ResolversTypes['Planting']>, ParentType, ContextType, RequireFields<QueryPlantingsArgs, 'cropType'>>;
   producer?: Resolver<Maybe<ResolversTypes['Producer']>, ParentType, ContextType, Partial<QueryProducerArgs>>;
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{
-  AuthPayload?: AuthPayloadResolvers<ContextType>;
+  AuthUser?: AuthUserResolvers<ContextType>;
   AvailableCropType?: AvailableCropTypeResolvers<ContextType>;
   FarmOnboarding?: FarmOnboardingResolvers<ContextType>;
   FarmOnboardingValue?: FarmOnboardingValueResolvers<ContextType>;

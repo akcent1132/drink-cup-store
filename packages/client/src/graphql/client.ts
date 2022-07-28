@@ -4,8 +4,21 @@ import {
   ApolloLink,
   HttpLink,
 } from "@apollo/client";
+import { setContext } from '@apollo/client/link/context';
 import { onError } from "@apollo/client/link/error";
+import { readUserFromStore } from "../states/auth";
 import "./server";
+
+
+const authLink = setContext((_, { headers }) => {
+  const user = readUserFromStore();
+  return {
+    headers: {
+      ...headers,
+      authorization: user ? `${user.email} ${user.token}` : "",
+    }
+  }
+});
 
 export const client = new ApolloClient({
   cache: new InMemoryCache(),
@@ -23,6 +36,7 @@ export const client = new ApolloClient({
         );
       }
     }),
+    authLink,
     new HttpLink({ uri: "/graphql" }),
   ]),
   connectToDevTools: true,

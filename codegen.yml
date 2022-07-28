@@ -34,7 +34,7 @@ generates:
   packages/client/src/:
     schema: "packages/client/src/graphql/server.graphql"
     documents: 
-     - "packages/client/src/{stories,components,graphql/processors}/**/!(*.generated).graphql"
+     - "packages/client/src/{stories,components,states,graphql/processors}/**/!(*.generated).graphql"
     preset: near-operation-file
     presetConfig:
       extension: .generated.tsx
