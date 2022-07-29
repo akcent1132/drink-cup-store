@@ -1,3 +1,5 @@
+import { schemeTableau10 } from "d3-scale-chromatic";
+import { sample } from "lodash";
 import { useCallback } from "react";
 import { atom, useRecoilValue, useSetRecoilState } from "recoil";
 
@@ -45,7 +47,19 @@ export const isRangeFilterParam = (
 
 const filters = atom<Filter[]>({
   key: "filters",
-  default: [],
+  default: [{
+    color: sample(schemeTableau10)!,
+    id: Math.random().toString(),
+    name: "Vilicus Farms",
+    params: [
+      {
+        active: true,
+        dataSource: FilterParamDataSource.FarmOnboarding,
+        key: "organization",
+        value: { options: ['Vilicus Farms'] },
+      },
+    ],
+  }],
 });
 
 export const useFilters = () => useRecoilValue(filters);
