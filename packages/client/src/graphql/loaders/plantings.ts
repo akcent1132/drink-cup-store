@@ -94,14 +94,17 @@ const convertExternalPlanting = (planting: externalData.Planting): Planting => {
       ...e,
       id: e.id.toString(),
       type: fixEventType(e.type || ""),
-      _planting_id_for_details_request:
-        planting.drupal_internal__id.toString(),
+      _planting_id_for_details_request: planting.drupal_internal__id.toString(),
       _producer_key_for_details_request: planting.producer.id.split(".")[0],
       details: [],
       __typename: "PlantingEvent",
     })),
   };
-}
+};
+
+const plantingMap = new Map<string, Planting>();
+const addPlantingsToMap = (plantings: Planting[]) =>
+  plantings.forEach((planting) => plantingMap.set(planting.id, planting));
 
 export const loadPlantings = pMemoize(async () => {
   const externalPlantings: externalData.Planting[] = await fetch(
@@ -111,6 +114,7 @@ export const loadPlantings = pMemoize(async () => {
   const clientPlantings: Planting[] = externalPlantings
     .filter((p) => p.cropType !== null)
     .map(convertExternalPlanting);
+  addPlantingsToMap(clientPlantings);
   return clientPlantings;
 });
 
@@ -122,8 +126,22 @@ export const loadPlantingsOfCrop = pMemoize(async (cropType) => {
   const clientPlantings: Planting[] = externalPlantings
     .filter((p) => p.cropType !== null)
     .map(convertExternalPlanting);
+  addPlantingsToMap(clientPlantings);
   return clientPlantings;
 });
+
+export const loadPlanting = async (
+  plantingId: string,
+): Promise<Planting | null> => {
+  const planting = plantingMap.get(plantingId);
+  if (!planting) {
+    // TODO ask for a per planting endpoint
+    const plantings = await loadPlantings()
+    return plantings.find(planting => planting.id === plantingId) || null
+  }
+  console.log("Got planting from map", plantingId);
+  return planting;
+};
 
 // const createFakePlantings = (
 //   cropType: string,

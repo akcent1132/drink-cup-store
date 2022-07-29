@@ -3,7 +3,7 @@ import { buildClientSchema, graphql } from "graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { Resolvers } from "./resolvers.generated";
 import jsonSchema from "./schema.server.generated.json";
-import { loadPlantings, loadPlantingsOfCrop } from "./loaders/plantings";
+import { loadPlanting, loadPlantings, loadPlantingsOfCrop } from "./loaders/plantings";
 import seedrandom from "seedrandom";
 import { loadFarmOnboardings } from "./loaders/farmOnboardings";
 import { loadEventDetails } from "./loaders/farmEvents";
@@ -37,9 +37,8 @@ const resolvers: Resolvers = {
     plantings: async (_, { cropType }) => {
       return await loadPlantingsOfCrop(cropType);
     },
-    async planting(_, { id }) {
-      const plantings = await loadPlantings();
-      return plantings.find((p) => p.id === id) || null;
+    async planting(_, {  id }) {
+      return await loadPlanting(id);
     },
     async producer(_, { id }) {
       if (!id) {

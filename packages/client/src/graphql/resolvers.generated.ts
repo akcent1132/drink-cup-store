@@ -130,7 +130,7 @@ export type Query = {
 
 
 export type QueryPlantingArgs = {
-  id?: InputMaybe<Scalars['String']>;
+  id: Scalars['String'];
 };
 
 
@@ -140,7 +140,7 @@ export type QueryPlantingsArgs = {
 
 
 export type QueryProducerArgs = {
-  id?: InputMaybe<Scalars['String']>;
+  id: Scalars['String'];
 };
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
@@ -354,9 +354,9 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   allPlantings?: Resolver<Array<ResolversTypes['Planting']>, ParentType, ContextType>;
   availableCropTypes?: Resolver<Array<ResolversTypes['AvailableCropType']>, ParentType, ContextType>;
   connectedFarmIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
-  planting?: Resolver<Maybe<ResolversTypes['Planting']>, ParentType, ContextType, Partial<QueryPlantingArgs>>;
+  planting?: Resolver<Maybe<ResolversTypes['Planting']>, ParentType, ContextType, RequireFields<QueryPlantingArgs, 'id'>>;
   plantings?: Resolver<Array<ResolversTypes['Planting']>, ParentType, ContextType, RequireFields<QueryPlantingsArgs, 'cropType'>>;
-  producer?: Resolver<Maybe<ResolversTypes['Producer']>, ParentType, ContextType, Partial<QueryProducerArgs>>;
+  producer?: Resolver<Maybe<ResolversTypes['Producer']>, ParentType, ContextType, RequireFields<QueryProducerArgs, 'id'>>;
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{

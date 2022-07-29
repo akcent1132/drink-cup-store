@@ -129,7 +129,7 @@ export type Query = {
 
 
 export type QueryPlantingArgs = {
-  id: InputMaybe<Scalars['String']>;
+  id: Scalars['String'];
 };
 
 
@@ -139,7 +139,7 @@ export type QueryPlantingsArgs = {
 
 
 export type QueryProducerArgs = {
-  id: InputMaybe<Scalars['String']>;
+  id: Scalars['String'];
 };
 
 export type AuthUserKeySpecifier = ('email' | 'id' | 'name' | 'token' | AuthUserKeySpecifier)[];

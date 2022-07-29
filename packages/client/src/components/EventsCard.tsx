@@ -196,7 +196,7 @@ export const EventsCard = ({
             <MiniInfo>
               <InvertColorsIcon fontSize="inherit" />
               <ParamValue>
-                {planting.farmOnboarding?.averageAnnualRainfall || "n/a"}
+                {`${planting.farmOnboarding?.averageAnnualRainfall}%` || "n/a"}
               </ParamValue>
             </MiniInfo>
             <MiniInfo>

@@ -1,8 +1,8 @@
 type Query {
   plantings(cropType: String!): [Planting!]!
   allPlantings: [Planting!]!
-  planting(id: String): Planting
-  producer(id: String): Producer
+  planting(id: String!): Planting
+  producer(id: String!): Producer
   allFarmOnboardings: [FarmOnboarding!]!
   availableCropTypes: [AvailableCropType!]!
   connectedFarmIds: [String!]! 
