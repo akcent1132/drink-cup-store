@@ -2,6 +2,7 @@ type Query {
   plantings(cropType: String!): [Planting!]!
   allPlantings: [Planting!]!
   planting(id: String!): Planting
+  plantingsById(ids: [String!]!): [Planting!]!
   producer(id: String!): Producer
   allFarmOnboardings: [FarmOnboarding!]!
   availableCropTypes: [AvailableCropType!]!

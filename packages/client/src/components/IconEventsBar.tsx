@@ -31,7 +31,7 @@ export const defaultTheme = {
   timelineColor: "rgba(255, 255, 255, 0.5)",
   timelineMouseMaxDistance: 6,
   timelineTopMargin: 4,
-  timeFormat: "%b %Y"
+  timeFormat: "%b %Y",
 };
 
 export const getEventIcon = (type: string) => {
@@ -145,19 +145,11 @@ export type FarmEvent = {
   date: Date;
 };
 
-type IconNode = {
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
-  targetX?: number;
-  event: FarmEvent;
-};
-
 type Props = {
   events: NonNullable<EventsCardQuery["planting"]>["events"];
+  minEventDate?: Date;
+  maxEventDate?: Date;
 };
-
 
 const useStateLater = <T,>(initialValue: T) => {
   const [value, setValue] = useState(initialValue);
@@ -188,10 +180,9 @@ const useLastNonNull = <T,>(value: T) => {
  * Primary UI component for user interaction
  */
 export const IconEventsBar = (props: Props) => {
-  const [_events, setEvents] = useState(props.events || []);
   const events = useMemo(
-    () => _events.map((e) => ({ ...e, date: new Date(e.date) })),
-    [_events]
+    () => (props.events || []).map((e) => ({ ...e, date: new Date(e.date) })),
+    [props.events]
   );
   const [hoveredEventType, setHoveredEventType] = useState<string | null>(null);
   const [selectedEventType, setSelectedEventType] = useState<string | null>(
@@ -220,10 +211,14 @@ export const IconEventsBar = (props: Props) => {
   const { iconEventsBar: theme, colors } = useTheme();
 
   const scale = useMemo(() => {
-    let [start, end] = extent(events.map((e) => e.date));
+    let [start, end] = extent(
+      [props.minEventDate, props.maxEventDate, ...events.map((e) => e.date)].filter(
+        (d): d is Date => !!d
+      )
+    );
     if (!start || !end) {
-      start = timeYear.floor(new Date())
-      end = timeYear.ceil(new Date())
+      start = timeYear.floor(new Date());
+      end = timeYear.ceil(new Date());
     }
     // pad the scale with one month
     start = timeMonth.offset(start, -1);
@@ -233,7 +228,7 @@ export const IconEventsBar = (props: Props) => {
     const xEnd = (width || 100) - theme.middleLineMargin - theme.iconSize / 2;
     const scale = scaleTime().domain([start, end]).range([xStart, xEnd]);
     return scale;
-  }, [width, theme.middleLineMargin]);
+  }, [width, theme.middleLineMargin, props.minEventDate, props.maxEventDate]);
 
   const closestEventToMouse = useCallback(
     (mouseEvent: React.MouseEvent) => {
@@ -328,7 +323,9 @@ export const IconEventsBar = (props: Props) => {
             opacity: ${hideEndDate ? 0 : 1};
           `}
         >
-          {timeFormat(theme.timeFormat)(new Date(scale.domain()[1].getTime() - 1))}
+          {timeFormat(theme.timeFormat)(
+            new Date(scale.domain()[1].getTime() - 1)
+          )}
         </div>
       </DateContainer>
       <div

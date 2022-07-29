@@ -13,12 +13,17 @@ import PublicIcon from "@mui/icons-material/Public";
 import { Tip } from "grommet";
 import ContactPageIcon from "@mui/icons-material/ContactPage";
 import { useEventsCardQuery } from "./EventsCard.generated";
-import { useHighlightedPlantingId, useHighlightPlanting, useUnhighlightPlanting } from "../states/highlightedPlantingId";
+import {
+  useHighlightedPlantingId,
+  useHighlightPlanting,
+  useUnhighlightPlanting,
+} from "../states/highlightedPlantingId";
 import {
   useRemovePlantingCard,
   useShowProfile,
 } from "../states/sidePanelContent";
 import { LinearProgress } from "@mui/material";
+import { isNil } from "lodash";
 
 export const defaultTheme = {
   sidePad: 10,
@@ -114,29 +119,33 @@ interface Props {
   plantingId: string;
   hideName?: boolean;
   hideColorBorder?: boolean;
+  minEventDate?: Date;
+  maxEventDate?: Date;
 }
 
 export const EventsCard = ({
   plantingId,
   hideName = false,
   hideColorBorder = false,
+  minEventDate,
+  maxEventDate,
 }: Props) => {
   const highlightedPlantingId = useHighlightedPlantingId();
-  const unhighlightPlanting = useUnhighlightPlanting()
+  const unhighlightPlanting = useUnhighlightPlanting();
   const highlightPlanting = useHighlightPlanting();
   const removePlantingCard = useRemovePlantingCard();
   const showProfile = useShowProfile();
   const { data: { planting } = {} } = useEventsCardQuery({
     variables: { plantingId },
   });
-  const texture = useMemo(
-    () =>
-      [planting?.params.sandPercentage, planting?.params.clayPercentage]
-        .filter(Boolean)
-        .map((p) => `${p}%`)
-        .join(" | "),
-    [planting?.params.sandPercentage, planting?.params.clayPercentage]
-  );
+  const { averageAnnualTemperature, averageAnnualRainfall, climateZone } =
+    planting?.farmOnboarding || {};
+  const texture = useMemo(() => {
+    const { sandPercentage, clayPercentage } = planting?.params || {};
+    const sand = isNil(sandPercentage) ? null : `Sand ${sandPercentage}%`;
+    const clay = isNil(clayPercentage) ? null : `Clay ${clayPercentage}%`;
+    return [sand, clay].filter(Boolean).join(" | ");
+  }, [planting?.params.sandPercentage, planting?.params.clayPercentage]);
 
   const onClose = useCallback(
     () => planting && removePlantingCard(planting.id),
@@ -190,25 +199,33 @@ export const EventsCard = ({
             <MiniInfo>
               <ThermostatIcon fontSize="inherit" />
               <ParamValue>
-                {planting.farmOnboarding?.averageAnnualTemperature || "n/a"}
+                {isNil(averageAnnualTemperature)
+                  ? "n/a"
+                  : `${averageAnnualTemperature}℃`}
               </ParamValue>
             </MiniInfo>
             <MiniInfo>
               <InvertColorsIcon fontSize="inherit" />
               <ParamValue>
-                {`${planting.farmOnboarding?.averageAnnualRainfall}%` || "n/a"}
+                {isNil(averageAnnualRainfall)
+                  ? "n/a"
+                  : `${averageAnnualRainfall}%`}
               </ParamValue>
             </MiniInfo>
             <MiniInfo>
               <PublicIcon fontSize="inherit" />
               <ParamValue>
-                {planting.farmOnboarding?.climateZone || "n/a"}
+                {isNil(climateZone) ? "n/a" : climateZone}
               </ParamValue>
             </MiniInfo>
             <Spacer />
             <ParamValue>{texture}</ParamValue>
           </Params>
-          <IconEventsBar events={planting.events} />
+          <IconEventsBar
+            minEventDate={minEventDate}
+            maxEventDate={maxEventDate}
+            events={planting.events}
+          />
         </>
       )}
     </Root>

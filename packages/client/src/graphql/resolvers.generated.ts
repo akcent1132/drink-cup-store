@@ -125,6 +125,7 @@ export type Query = {
   connectedFarmIds: Array<Scalars['String']>;
   planting?: Maybe<Planting>;
   plantings: Array<Planting>;
+  plantingsById: Array<Planting>;
   producer?: Maybe<Producer>;
 };
 
@@ -136,6 +137,11 @@ export type QueryPlantingArgs = {
 
 export type QueryPlantingsArgs = {
   cropType: Scalars['String'];
+};
+
+
+export type QueryPlantingsByIdArgs = {
+  ids: Array<Scalars['String']>;
 };
 
 
@@ -356,6 +362,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   connectedFarmIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   planting?: Resolver<Maybe<ResolversTypes['Planting']>, ParentType, ContextType, RequireFields<QueryPlantingArgs, 'id'>>;
   plantings?: Resolver<Array<ResolversTypes['Planting']>, ParentType, ContextType, RequireFields<QueryPlantingsArgs, 'cropType'>>;
+  plantingsById?: Resolver<Array<ResolversTypes['Planting']>, ParentType, ContextType, RequireFields<QueryPlantingsByIdArgs, 'ids'>>;
   producer?: Resolver<Maybe<ResolversTypes['Producer']>, ParentType, ContextType, RequireFields<QueryProducerArgs, 'id'>>;
 }>;
 

@@ -1,9 +1,13 @@
 import { setupWorker, rest } from "msw";
 import { buildClientSchema, graphql } from "graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import { Resolvers } from "./resolvers.generated";
+import { Planting, Resolvers } from "./resolvers.generated";
 import jsonSchema from "./schema.server.generated.json";
-import { loadPlanting, loadPlantings, loadPlantingsOfCrop } from "./loaders/plantings";
+import {
+  loadPlanting,
+  loadPlantings,
+  loadPlantingsOfCrop,
+} from "./loaders/plantings";
 import seedrandom from "seedrandom";
 import { loadFarmOnboardings } from "./loaders/farmOnboardings";
 import { loadEventDetails } from "./loaders/farmEvents";
@@ -25,8 +29,8 @@ const UserPayload = z.object({
 });
 
 type Context = {
-  authorization?: string
-}
+  authorization?: string;
+};
 
 // The root provides a resolver function for each API endpoint
 const resolvers: Resolvers = {
@@ -37,8 +41,13 @@ const resolvers: Resolvers = {
     plantings: async (_, { cropType }) => {
       return await loadPlantingsOfCrop(cropType);
     },
-    async planting(_, {  id }) {
+    async planting(_, { id }) {
       return await loadPlanting(id);
+    },
+    async plantingsById(_, { ids }) {
+      return (await Promise.all(ids.map((id) => loadPlanting(id)))).filter(
+        (p): p is Planting => !!p
+      );
     },
     async producer(_, { id }) {
       if (!id) {
@@ -57,8 +66,8 @@ const resolvers: Resolvers = {
       return await loadAvailableCropTypes();
     },
     async connectedFarmIds(_: any, {}, { authorization }: Context) {
-      return loadConnectedFarmIds(authorization)
-    }
+      return loadConnectedFarmIds(authorization);
+    },
   },
   Producer: {
     async plantings({ id }) {
@@ -142,8 +151,8 @@ const worker = setupWorker(
       variableValues: variables,
       operationName,
       contextValue: {
-        authorization: req.headers.get('authorization')
-      }
+        authorization: req.headers.get("authorization"),
+      },
     });
     return res(ctx.json(result));
   })

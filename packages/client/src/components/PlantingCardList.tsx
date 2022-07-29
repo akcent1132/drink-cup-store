@@ -6,6 +6,8 @@ import { ClassNames } from "@emotion/react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import React, { useEffect, useMemo, useState } from "react";
 import { EventsCard } from "./EventsCard";
+import { usePlantingCardListQuery } from "./PlantingCardList.generated";
+import { extent } from "d3-array";
 
 const Events = styled.div`
   display: flex;
@@ -37,6 +39,17 @@ export const PlantingCardList = ({
 }: {
   openEventCardIds: string[];
 }) => {
+  const { data: { plantings } = {} } = usePlantingCardListQuery({
+    variables: { plantingIds: openEventCardIds },
+  });
+  const [minDate, maxDate] = useMemo(() => {
+    const dates = (plantings || [])
+      .map((p) => p.events)
+      .flat()
+      .map((e) => new Date(e.date));
+    return extent(dates);
+  }, [plantings]);
+  console.log({minDate, maxDate, plantings})
   if (!openEventCardIds || openEventCardIds.length === 0) {
     return null;
   }
@@ -44,8 +57,13 @@ export const PlantingCardList = ({
   return (
     <Events>
       {openEventCardIds.map((plantingId) => (
-        <CardWrapper>
-          <EventsCard key={plantingId} plantingId={plantingId} />
+        <CardWrapper key={plantingId}>
+          <EventsCard
+            key={plantingId}
+            plantingId={plantingId}
+            minEventDate={minDate}
+            maxEventDate={maxDate}
+          />
         </CardWrapper>
       ))}
       {/* <ClassNames>
