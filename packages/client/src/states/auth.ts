@@ -98,5 +98,6 @@ export const useLogout = () => {
     setAuth({
       isAuthenticated: false,
     });
+    localStorage[STORE_KEY] = undefined
   }, []);
 };

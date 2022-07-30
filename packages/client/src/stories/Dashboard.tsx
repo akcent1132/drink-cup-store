@@ -28,6 +28,8 @@ import { usePreloadDataQuery } from "./Dashboard.generated";
 import { Box, Layer } from "grommet";
 import CircularProgress from "@mui/material/CircularProgress";
 import { CompareTab } from "../components/compareTab/CompareTab";
+import { AuthMenu } from "../components/auth/AuthMenu";
+import { LoginDialog } from "../components/auth/LoginDialog";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -137,6 +139,7 @@ export const Dashboard = ({ iframeSrc }: Props) => {
         </Layer>
       ) : null}
       <Header>
+        <AuthMenu></AuthMenu>
         <img
           css={css`
             height: 72%;
@@ -191,6 +194,7 @@ export const Dashboard = ({ iframeSrc }: Props) => {
 
         <HyloBox container={rightSide} src={iframeSrc} />
       </RightSide>
+      <LoginDialog />
     </Root>
   );
 };

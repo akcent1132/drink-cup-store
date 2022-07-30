@@ -10,6 +10,9 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useAuth, useLogin } from "../../states/auth";
 import Alert from "@mui/material/Alert";
+import { Dialog } from "@mui/material";
+import { useIsAuthDialogOpen, useSetIsAuthDialogOpen } from "../../states/ui";
+import { useCallback } from "react";
 
 function Copyright(props: any) {
   return (
@@ -29,28 +32,30 @@ function Copyright(props: any) {
   );
 }
 
-export default function Login() {
+export const LoginDialog = () => {
   const { login, isLoginInProgress } = useLogin();
+  const isAuthDialogOpen = useIsAuthDialogOpen()
+  const setIsAuthDialogOpen = useSetIsAuthDialogOpen()
   const { error } = useAuth();
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     console.log({
       email: data.get("email"),
       password: data.get("password"),
     });
-    login(
+    await login(
       data.get("email")?.toString() || "",
       data.get("password")?.toString() || ""
     );
-  };
+    setIsAuthDialogOpen(false)
+  }, []);
 
   return (
-    <Container component="main" maxWidth="xs">
-      <CssBaseline />
+    <Dialog onClose={() => setIsAuthDialogOpen(false)} open={isAuthDialogOpen}>
       <Box
         sx={{
-          marginTop: 8,
+          padding: 4,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -114,6 +119,6 @@ export default function Login() {
         </Box>
       </Box>
       {/* <Copyright sx={{ mt: 8, mb: 4 }} /> */}
-    </Container>
+      </Dialog>
   );
 }
