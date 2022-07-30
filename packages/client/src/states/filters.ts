@@ -1,5 +1,5 @@
 import { schemeTableau10 } from "d3-scale-chromatic";
-import { sample } from "lodash";
+import { sample, without } from "lodash";
 import { useCallback } from "react";
 import { atom, useRecoilValue, useSetRecoilState } from "recoil";
 
@@ -47,19 +47,21 @@ export const isRangeFilterParam = (
 
 const filters = atom<Filter[]>({
   key: "filters",
-  default: [{
-    color: sample(schemeTableau10)!,
-    id: Math.random().toString(),
-    name: "Vilicus Farms",
-    params: [
-      {
-        active: true,
-        dataSource: FilterParamDataSource.FarmOnboarding,
-        key: "organization",
-        value: { options: ['Vilicus Farms'] },
-      },
-    ],
-  }],
+  default: [
+    {
+      color: sample(schemeTableau10)!,
+      id: Math.random().toString(),
+      name: "Vilicus Farms",
+      params: [
+        {
+          active: true,
+          dataSource: FilterParamDataSource.FarmOnboarding,
+          key: "organization",
+          value: { options: ["Vilicus Farms"] },
+        },
+      ],
+    },
+  ],
 });
 
 export const useFilters = () => useRecoilValue(filters);
@@ -76,18 +78,26 @@ export const useUpdateFilterName = () => {
 };
 
 let filterId = 0;
+let filterNamePostfix = 1;
+const COLORS = schemeTableau10.slice(0, 9);
 export const useAddFilter = () => {
   const set = useSetRecoilState(filters);
-  return useCallback((color: string, name: string) => {
-    const id = (++filterId).toString();
-    const filter: Filter = {
-      id,
-      name,
-      color,
-      params: [],
-    };
-    set((filters) => [...filters, filter]);
-    return filter;
+  return useCallback((filter: Partial<Filter> = {}) => {
+    const id = (filterId++).toString();
+    set((filters) => {
+      const name = `New Filter ${filterNamePostfix++}`;
+      const freeColors = without(COLORS, ...filters.map((g) => g.color));
+      const color = sample(freeColors.length > 0 ? freeColors : COLORS)!;
+      const newFilter: Filter = {
+        id,
+        name,
+        color,
+        params: [],
+        ...filter,
+      };
+      return [...filters, newFilter];
+    });
+    return id;
   }, []);
 };
 

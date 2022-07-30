@@ -283,13 +283,7 @@ async function getResponse(event, client, requestId) {
     }
 
     case 'INTERNAL_ERROR': {
-      let parsedBody
-      try {
-        parsedBody=  JSON.parse(clientMessage.payload.body)
-      }
-      catch (e) {
-        console.error("failed to parse error body", clientMessage, e)
-      }
+      const parsedBody = JSON.parse(clientMessage.payload.body)
 
       console.error(
         `\

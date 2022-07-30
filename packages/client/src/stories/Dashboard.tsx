@@ -2,14 +2,12 @@
 
 import React, {
   ComponentProps,
-  useCallback,
   useMemo,
   useRef,
   useState,
 } from "react";
 import { RecoilRoot } from "recoil";
 import {
-  useShowFilterEditor,
   useSidePanelContent,
 } from "../states/sidePanelContent";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
@@ -19,31 +17,17 @@ import "../index.css";
 import bgCorn from "../assets/images/Background-corngrains.jpg";
 import logoImage from "../assets/images/Farmers-coffeeshop-logo-white_transparent.png";
 import { Tabs } from "../components/Tabs";
-import { css, useTheme, withTheme } from "@emotion/react";
-import { FilterLabel } from "../components/FilterLabel";
-import faker from "faker";
-import { sample, without } from "lodash";
+import { css, withTheme } from "@emotion/react";
 import { HyloBox } from "./HyloBox";
 import { FilterEditor } from "../components/filterEditor/FilterEditor";
-import { NestedRows } from "./NestedRows";
-import { schemeTableau10 } from "d3-scale-chromatic";
-import { ROWS } from "../contexts/rows";
-import { Button } from "../components/Button";
 import { FarmerProfile } from "../components/FarmerProfile";
 import { PlantingCardList } from "../components/PlantingCardList";
-import { CropSelector } from "./CropSelector";
-import { Spacer } from "../components/EventsCard";
 import { client } from "../graphql/client";
 import { ApolloProvider } from "@apollo/client";
 import { usePreloadDataQuery } from "./Dashboard.generated";
 import { Box, Layer } from "grommet";
 import CircularProgress from "@mui/material/CircularProgress";
-import {
-  useHighlightFilter,
-  useUnhighlightFilter,
-} from "../states/highlightedFilterId";
-import { useAddFilter, useFilters } from "../states/filters";
-import { MyDataTab } from "../components/myData/MyDataTab";
+import { CompareTab } from "../components/compareTab/CompareTab";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -84,19 +68,6 @@ const Header = styled.div`
   padding: 0 12px;
 `;
 
-const PaneHead = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  gap: 15px;
-  margin-top: 12px;
-`;
-
-const RowContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 12px 20px 20px 20px;
-`;
-
 const RightSide = styled.div`
   grid-area: events;
   position: relative;
@@ -109,57 +80,7 @@ const RightFlipContainer = styled.div`
   width: 100%;
 `;
 
-const COLORS = schemeTableau10.slice(0, 9);
-let filterNamePostfix = 1;
-const CompareTab = () => {
-  const showFilterEditor = useShowFilterEditor();
-  const highlightFilter = useHighlightFilter();
-  const unhighlightFilter = useUnhighlightFilter();
-  const addFilter = useAddFilter();
-  const filters = useFilters();
-  const { colors } = useTheme();
-  const handleAddFilter = useCallback(
-    (name?: string, color?: string) => {
-      const freeColors = without(COLORS, ...filters.map((g) => g.color));
-      name = name || faker.company.companyName();
-      const _color =
-        color || sample(freeColors.length > 0 ? freeColors : COLORS)!;
-      const filter = addFilter(
-        _color,
-        `New Filter ${filterNamePostfix++}`
-      );
-      showFilterEditor(filter.id);
-    },
-    [filters]
-  );
 
-  return (
-    <RowContainer>
-      <PaneHead>
-        <CropSelector />
-        <Spacer />
-        {[...filters].reverse().map((filter) => (
-          <FilterLabel
-            key={filter.id}
-            filterId={filter.id}
-            label={filter.name}
-            color={filter.color}
-            onMouseEnter={() => highlightFilter(filter.id)}
-            onMouseLeave={() => unhighlightFilter(filter.id)}
-            isWide
-            showActions
-          />
-        ))}
-        <Button
-          label="+ Add"
-          color={colors.bgSidePanel}
-          onClick={() => handleAddFilter()}
-        />
-      </PaneHead>
-      <NestedRows rows={ROWS} filters={filters} />
-    </RowContainer>
-  );
-};
 
 
 
@@ -180,10 +101,6 @@ export const Dashboard = ({ iframeSrc }: Props) => {
       {
         label: "Compare",
         renderPanel: () => <CompareTab />,
-      },
-      {
-        label: "My Data",
-        renderPanel: () => <RowContainer><MyDataTab /></RowContainer>,
       },
     ],
     []
