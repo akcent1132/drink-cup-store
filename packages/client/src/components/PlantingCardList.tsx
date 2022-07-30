@@ -20,21 +20,9 @@ const Events = styled.div`
 `;
 
 const CardWrapper = styled.div`
-  zindex: 2;
+  z-index: 2;
   position: relative;
 `;
-
-const visibleStyles = {
-  opacity: 1,
-  transform: "translateX(0%);",
-  maxHeight: "250px",
-};
-
-const hiddenStyles = {
-  opacity: 0,
-  transform: "translateX(-20%);",
-  maxHeight: "0px",
-};
 
 export const PlantingCardList = ({
   openEventCardIds,
@@ -47,6 +35,7 @@ export const PlantingCardList = ({
   // find out which filter colors should we add to a card
   const filters = useFilters();
   const matchingFilterColorsPerPlanting = useMemo(() => {
+    console.log("RECOMPUTE matchingFilterColorsPerPlanting")
     const matchingPlantingIdsPerFilter = filters.map((filter) =>
       getPlantingIdsOfFilter(filter, plantings || [])
     );

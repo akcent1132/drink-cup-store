@@ -42,7 +42,9 @@ const resolvers: Resolvers = {
       return await loadPlantingsOfCrop(cropType);
     },
     async planting(_, { id }) {
-      return await loadPlanting(id);
+      const planting = await loadPlanting(id)
+      console.error(`Can't find planting with ID: ${id}`)
+      return planting;
     },
     async plantingsById(_, { ids }) {
       return (await Promise.all(ids.map((id) => loadPlanting(id)))).filter(

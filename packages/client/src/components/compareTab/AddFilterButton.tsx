@@ -108,9 +108,9 @@ export const AddFilterButton = () => {
         }}
       >
         <MenuItem onClick={handleAddFilter}>New Filter</MenuItem>
-        {connectedFarmIds?.length ? (
-          <>
-            <MenuItem onClick={handleAddFarmDomainsFilter}>
+        {(connectedFarmIds?.length ? 
+          [
+            <MenuItem key="my-params" onClick={handleAddFarmDomainsFilter}>
               Filter My Farms <Box flexGrow={1} />
               <IconButton
                 size="small"
@@ -119,8 +119,8 @@ export const AddFilterButton = () => {
               >
                 {farmDomainsOpen ? <ExpandLess /> : <ExpandMore />}
               </IconButton>
-            </MenuItem>
-            <Collapse in={farmDomainsOpen} timeout="auto" unmountOnExit>
+            </MenuItem>,
+            <Collapse key="farm-domains" in={farmDomainsOpen} timeout="auto" unmountOnExit>
               {connectedFarmIds.map((farmDomain) => (
                 <MenuItem
                   sx={{ pl: 4 }}
@@ -130,8 +130,8 @@ export const AddFilterButton = () => {
                 </MenuItem>
               ))}
             </Collapse>
-          </>
-        ) : null}
+          ]
+         : [])}
       </Menu>
     </>
   );
