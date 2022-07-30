@@ -8,6 +8,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import { EventsCard } from "./EventsCard";
 import { usePlantingCardListQuery } from "./PlantingCardList.generated";
 import { extent } from "d3-array";
+import { useFilters } from "../states/filters";
+import { getPlantingIdsOfFilter } from "../utils/getPlantingsOfFilter";
 
 const Events = styled.div`
   display: flex;
@@ -42,6 +44,20 @@ export const PlantingCardList = ({
   const { data: { plantings } = {} } = usePlantingCardListQuery({
     variables: { plantingIds: openEventCardIds },
   });
+  // find out which filter colors should we add to a card
+  const filters = useFilters();
+  const matchingFilterColorsPerPlanting = useMemo(() => {
+    const matchingPlantingIdsPerFilter = filters.map((filter) =>
+      getPlantingIdsOfFilter(filter, plantings || [])
+    );
+    return (plantings || []).map((planting) =>
+      filters
+        .filter((_, i) =>
+          matchingPlantingIdsPerFilter[i].includes(planting.id)
+        )
+        .map((filter) => filter.color)
+    );
+  }, [filters, plantings]);
   const [minDate, maxDate] = useMemo(() => {
     const dates = (plantings || [])
       .map((p) => p.events)
@@ -49,20 +65,20 @@ export const PlantingCardList = ({
       .map((e) => new Date(e.date));
     return extent(dates);
   }, [plantings]);
-  console.log({minDate, maxDate, plantings})
   if (!openEventCardIds || openEventCardIds.length === 0) {
     return null;
   }
 
   return (
     <Events>
-      {openEventCardIds.map((plantingId) => (
+      {openEventCardIds.map((plantingId, i) => (
         <CardWrapper key={plantingId}>
           <EventsCard
             key={plantingId}
             plantingId={plantingId}
             minEventDate={minDate}
             maxEventDate={maxDate}
+            colors={matchingFilterColorsPerPlanting[i]}
           />
         </CardWrapper>
       ))}

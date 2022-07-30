@@ -30,10 +30,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { Box } from "@mui/material";
 import { useAddFilterButtonQuery } from "./AddFilterButton.generated";
 
-const createOptionFilterParam = (
-  key: string,
-  options: string[]
-) => ({
+const createOptionFilterParam = (key: string, options: string[]) => ({
   active: true,
   dataSource: FilterParamDataSource.FarmOnboarding,
   key,
@@ -46,15 +43,29 @@ export const AddFilterButton = () => {
   const filters = useFilters();
   const showFilterEditor = useShowFilterEditor();
   const handleAddFilter = useCallback(() => {
+    setAnchorEl(null);
     const filterId = addFilter();
     showFilterEditor(filterId);
   }, [filters.map((f) => f.color).join()]);
   const handleAddFarmDomainsFilter = useCallback(() => {
-    connectedFarmIds && addFilter({name: "My Farms", params: [createOptionFilterParam("farmDomain", connectedFarmIds)]});
+    setAnchorEl(null);
+    connectedFarmIds &&
+      addFilter({
+        name: "My Farms",
+        params: [createOptionFilterParam("farmDomain", connectedFarmIds)],
+      });
   }, [connectedFarmIds]);
-  const handleAddSingleFarmDomainFilter = useCallback((farmDomain: string) => {
-    connectedFarmIds && addFilter({name: farmDomain, params: [createOptionFilterParam("farmDomain", [farmDomain])]});
-  }, [connectedFarmIds]);
+  const handleAddSingleFarmDomainFilter = useCallback(
+    (farmDomain: string) => {
+      setAnchorEl(null);
+      connectedFarmIds &&
+        addFilter({
+          name: farmDomain,
+          params: [createOptionFilterParam("farmDomain", [farmDomain])],
+        });
+    },
+    [connectedFarmIds]
+  );
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleOpenClick = useCallback(
@@ -102,8 +113,8 @@ export const AddFilterButton = () => {
             <MenuItem onClick={handleAddFarmDomainsFilter}>
               Filter My Farms <Box flexGrow={1} />
               <IconButton
-              size="small"
-              sx={{ml: 2}}
+                size="small"
+                sx={{ ml: 2 }}
                 onClick={toggleFarmDomainsOpen}
               >
                 {farmDomainsOpen ? <ExpandLess /> : <ExpandMore />}
@@ -111,7 +122,10 @@ export const AddFilterButton = () => {
             </MenuItem>
             <Collapse in={farmDomainsOpen} timeout="auto" unmountOnExit>
               {connectedFarmIds.map((farmDomain) => (
-                <MenuItem sx={{ pl: 4 }} onClick={() => handleAddSingleFarmDomainFilter(farmDomain)}>
+                <MenuItem
+                  sx={{ pl: 4 }}
+                  onClick={() => handleAddSingleFarmDomainFilter(farmDomain)}
+                >
                   Filter {farmDomain}
                 </MenuItem>
               ))}

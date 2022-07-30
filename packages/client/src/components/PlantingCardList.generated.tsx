@@ -8,15 +8,27 @@ export type PlantingCardListQueryVariables = Types.Exact<{
 }>;
 
 
-export type PlantingCardListQuery = { __typename?: 'Query', plantings: Array<{ __typename?: 'Planting', events: Array<{ __typename?: 'PlantingEvent', id: string, date: string }> }> };
+export type PlantingCardListQuery = { __typename?: 'Query', plantings: Array<{ __typename?: 'Planting', id: string, events: Array<{ __typename?: 'PlantingEvent', id: string, date: string }>, values: Array<{ __typename?: 'PlantingValue', name: string, value: number }>, farmOnboarding?: { __typename?: 'FarmOnboarding', id: string, values?: Array<{ __typename?: 'FarmOnboardingValue', key: string, values: Array<string> }> | null } | null }> };
 
 
 export const PlantingCardListDocument = gql`
     query PlantingCardList($plantingIds: [String!]!) {
   plantings: plantingsById(ids: $plantingIds) {
+    id
     events {
       id
       date
+    }
+    values {
+      name
+      value
+    }
+    farmOnboarding {
+      id
+      values {
+        key
+        values
+      }
     }
   }
 }

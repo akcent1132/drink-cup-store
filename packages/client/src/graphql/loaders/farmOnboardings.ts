@@ -86,6 +86,7 @@ export const loadFarmOnboardings = pMemoize(
     ).then((result) => result.json());
 
     return externalData.map((farm) => ({
+      id: [farm.farmDomain,farm.surveystack_id].join(),
       farmDomain: toString(farm.farmDomain) || null,
       climateZone: toString(farm.climate_zone) || null,
       averageAnnualTemperature: floatOrNull(farm.average_annual_temperature),

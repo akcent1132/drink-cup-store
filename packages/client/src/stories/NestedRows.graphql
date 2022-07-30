@@ -8,6 +8,7 @@ query NestedRows($cropType: String!) {
       modusId
     }
     farmOnboarding {
+      id
       values {
         key
         values

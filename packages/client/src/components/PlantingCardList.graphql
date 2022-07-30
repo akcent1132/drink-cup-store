@@ -1,8 +1,20 @@
 query PlantingCardList($plantingIds: [String!]!) {
   plantings: plantingsById(ids: $plantingIds) {
+    id
     events {
       id
       date
+    }
+    values {
+      name
+      value
+    }
+    farmOnboarding {
+      id
+      values {
+        key
+        values
+      }
     }
   }
 }
