@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 
-import React, { useLayoutEffect, useMemo, useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import styled from "@emotion/styled";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
@@ -90,6 +90,12 @@ export const HyloBox = ({
   const [open, setOpen] = useState(false);
   const [hovering, setHovering] = useState(false);
 
+  // Delay loading the Holo frame so it doesn't take up bandwidth from the rest of the app
+  const [isWaiting, setIsWaiting] = useState(true);
+  useEffect(() => {
+    setTimeout(() => setIsWaiting(false), 5000);
+  }, []);
+
   const windowWidth = useWindowWidth();
   const scrollY = useScrollPosition();
 
@@ -116,7 +122,9 @@ export const HyloBox = ({
       open={open}
       hovering={hovering}
     >
-      <HyloIFrame src={src} title="Hylo Group" frameBorder="0"></HyloIFrame>
+      {!isWaiting ? (
+        <HyloIFrame src={src} title="Hylo Group" frameBorder="0"></HyloIFrame>
+      ) : null}
       <HeaderClick
         open={open}
         headerHeight={56}
