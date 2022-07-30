@@ -10,6 +10,7 @@ import { usePlantingCardListQuery } from "./PlantingCardList.generated";
 import { extent } from "d3-array";
 import { useFilters } from "../states/filters";
 import { getPlantingIdsOfFilter } from "../utils/getPlantingsOfFilter";
+import { Backdrop, CircularProgress, LinearProgress } from "@mui/material";
 
 const Events = styled.div`
   display: flex;
@@ -18,6 +19,18 @@ const Events = styled.div`
   flex-direction: column;
   justify-content: flex-start;
 `;
+
+const visibleStyles = {
+  opacity: 1,
+  transform: "translateX(0%);",
+  maxHeight: "250px",
+};
+
+const hiddenStyles = {
+  opacity: 0,
+  transform: "translateX(-20%);",
+  maxHeight: "0px",
+};
 
 const CardWrapper = styled.div`
   z-index: 2;
@@ -29,27 +42,26 @@ export const PlantingCardList = ({
 }: {
   openEventCardIds: string[];
 }) => {
-  const { data: { plantings } = {} } = usePlantingCardListQuery({
+  const query = usePlantingCardListQuery({
     variables: { plantingIds: openEventCardIds },
   });
+  const { plantings } = query.data ?? query.previousData ?? {};
   // find out which filter colors should we add to a card
   const filters = useFilters();
   const matchingFilterColorsPerPlanting = useMemo(() => {
-    console.log("RECOMPUTE matchingFilterColorsPerPlanting")
+    console.log("RECOMPUTE matchingFilterColorsPerPlanting");
     const matchingPlantingIdsPerFilter = filters.map((filter) =>
       getPlantingIdsOfFilter(filter, plantings || [])
     );
     return (plantings || []).map((planting) =>
       filters
-        .filter((_, i) =>
-          matchingPlantingIdsPerFilter[i].includes(planting.id)
-        )
+        .filter((_, i) => matchingPlantingIdsPerFilter[i].includes(planting.id))
         .map((filter) => filter.color)
     );
   }, [filters, plantings]);
   const [minDate, maxDate] = useMemo(() => {
     const dates = (plantings || [])
-      .map((p) => p.events)
+      .map((p) => p.events || [])
       .flat()
       .map((e) => new Date(e.date));
     return extent(dates);
@@ -60,24 +72,31 @@ export const PlantingCardList = ({
 
   return (
     <Events>
-      {openEventCardIds.map((plantingId, i) => (
-        <CardWrapper key={plantingId}>
+      <Backdrop
+      transitionDuration={200}
+      invisible
+        sx={{  zIndex:  3 }}
+        open={query.loading}
+      >
+        <CircularProgress  />
+      </Backdrop>
+      {/* {(plantings||[]).map((planting, i) => (
+        <CardWrapper key={planting.id}>
           <EventsCard
-            key={plantingId}
-            plantingId={plantingId}
+            planting={planting}
             minEventDate={minDate}
             maxEventDate={maxDate}
             colors={matchingFilterColorsPerPlanting[i]}
           />
         </CardWrapper>
-      ))}
-      {/* <ClassNames>
+      ))} */}
+      <ClassNames>
         {({ css }) =>
           !openEventCardIds ? null : (
             <TransitionGroup>
-              {openEventCardIds.map((plantingId) => (
+              {(plantings||[]).map((planting, i) => (
                 <CSSTransition
-                  key={plantingId}
+                  key={planting.id}
                   classNames={{
                     enter: css({
                       zIndex: 3,
@@ -96,14 +115,19 @@ export const PlantingCardList = ({
                   timeout={600}
                 >
                   <CardWrapper>
-                    <EventsCard key={plantingId} plantingId={plantingId} />
+                    <EventsCard
+                      planting={planting}
+                      minEventDate={minDate}
+                      maxEventDate={maxDate}
+                      colors={matchingFilterColorsPerPlanting[i]}
+                    />
                   </CardWrapper>
                 </CSSTransition>
               ))}
             </TransitionGroup>
           )
         }
-      </ClassNames> */}
+      </ClassNames>
     </Events>
   );
 };

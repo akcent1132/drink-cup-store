@@ -7,6 +7,7 @@ query FilterEditor($cropType: String! = "") {
       modusId
     }
     farmOnboarding {
+      id
       values {
         key
         values

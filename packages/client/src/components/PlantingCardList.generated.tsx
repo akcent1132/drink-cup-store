@@ -8,16 +8,32 @@ export type PlantingCardListQueryVariables = Types.Exact<{
 }>;
 
 
-export type PlantingCardListQuery = { __typename?: 'Query', plantings: Array<{ __typename?: 'Planting', id: string, events: Array<{ __typename?: 'PlantingEvent', id: string, date: string }>, values: Array<{ __typename?: 'PlantingValue', name: string, value: number }>, farmOnboarding?: { __typename?: 'FarmOnboarding', id: string, values?: Array<{ __typename?: 'FarmOnboardingValue', key: string, values: Array<string> }> | null } | null }> };
+export type PlantingCardListQuery = { __typename?: 'Query', plantings: Array<{ __typename?: 'Planting', id: string, title: string, producer: { __typename?: 'Producer', id: string, code: string }, events?: Array<{ __typename?: 'PlantingEvent', id: string, date: string, type: string, details?: Array<{ __typename?: 'PlantingEventDetail', id: string, name: string, value?: string | null, valueList?: Array<string> | null }> | null }> | null, params?: { __typename?: 'PlantingParams', clayPercentage?: number | null, sandPercentage?: number | null } | null, values: Array<{ __typename?: 'PlantingValue', name: string, value: number }>, farmOnboarding?: { __typename?: 'FarmOnboarding', id: string, climateZone?: string | null, averageAnnualTemperature?: number | null, averageAnnualRainfall?: number | null, values?: Array<{ __typename?: 'FarmOnboardingValue', key: string, values: Array<string> }> | null } | null }> };
 
 
 export const PlantingCardListDocument = gql`
     query PlantingCardList($plantingIds: [String!]!) {
   plantings: plantingsById(ids: $plantingIds) {
     id
+    producer {
+      id
+      code
+    }
     events {
       id
       date
+      type
+      details {
+        id
+        name
+        value
+        valueList
+      }
+    }
+    title
+    params {
+      clayPercentage
+      sandPercentage
     }
     values {
       name
@@ -25,6 +41,9 @@ export const PlantingCardListDocument = gql`
     }
     farmOnboarding {
       id
+      climateZone
+      averageAnnualTemperature
+      averageAnnualRainfall
       values {
         key
         values

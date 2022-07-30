@@ -66,10 +66,10 @@ export type MutationLoginArgs = {
 export type Planting = {
   __typename?: 'Planting';
   cropType: Scalars['String'];
-  events: Array<PlantingEvent>;
+  events?: Maybe<Array<PlantingEvent>>;
   farmOnboarding?: Maybe<FarmOnboarding>;
   id: Scalars['String'];
-  params: PlantingParams;
+  params?: Maybe<PlantingParams>;
   producer: Producer;
   title: Scalars['String'];
   values: Array<PlantingValue>;
@@ -304,10 +304,10 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 
 export type PlantingResolvers<ContextType = any, ParentType extends ResolversParentTypes['Planting'] = ResolversParentTypes['Planting']> = ResolversObject<{
   cropType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  events?: Resolver<Array<ResolversTypes['PlantingEvent']>, ParentType, ContextType>;
+  events?: Resolver<Maybe<Array<ResolversTypes['PlantingEvent']>>, ParentType, ContextType>;
   farmOnboarding?: Resolver<Maybe<ResolversTypes['FarmOnboarding']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  params?: Resolver<ResolversTypes['PlantingParams'], ParentType, ContextType>;
+  params?: Resolver<Maybe<ResolversTypes['PlantingParams']>, ParentType, ContextType>;
   producer?: Resolver<ResolversTypes['Producer'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   values?: Resolver<Array<ResolversTypes['PlantingValue']>, ParentType, ContextType>;

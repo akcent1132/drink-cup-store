@@ -12,7 +12,6 @@ import ThermostatIcon from "@mui/icons-material/Thermostat";
 import PublicIcon from "@mui/icons-material/Public";
 import { Tip } from "grommet";
 import ContactPageIcon from "@mui/icons-material/ContactPage";
-import { useEventsCardQuery } from "./EventsCard.generated";
 import {
   useHighlightedPlantingId,
   useHighlightPlanting,
@@ -24,6 +23,7 @@ import {
 } from "../states/sidePanelContent";
 import { LinearProgress } from "@mui/material";
 import { isNil } from "lodash";
+import { PlantingCardListQuery } from "./PlantingCardList.generated";
 
 export const defaultTheme = {
   sidePad: 10,
@@ -69,8 +69,12 @@ const ColorBorder = withTheme(styled.div<{
       ${p.colors
         .map((color, i) => [
           `${color} ${i * p.theme.eventsCard.colorBorderStrideWidth}px`,
-          `${color} ${(i + 1) * p.theme.eventsCard.colorBorderStrideWidth - 2}px`,
-          `${p.colors[(i+1)%p.colors.length]} ${(i + 1) * p.theme.eventsCard.colorBorderStrideWidth}px`,
+          `${color} ${
+            (i + 1) * p.theme.eventsCard.colorBorderStrideWidth - 2
+          }px`,
+          `${p.colors[(i + 1) % p.colors.length]} ${
+            (i + 1) * p.theme.eventsCard.colorBorderStrideWidth
+          }px`,
         ])
         .flat()
         .join(",")}
@@ -136,7 +140,7 @@ const MiniInfo = styled.div`
 `;
 
 interface Props {
-  plantingId: string;
+  planting: PlantingCardListQuery["plantings"][number];
   hideName?: boolean;
   hideColorBorder?: boolean;
   minEventDate?: Date;
@@ -145,7 +149,7 @@ interface Props {
 }
 
 export const EventsCard = ({
-  plantingId,
+  planting,
   hideName = false,
   hideColorBorder = false,
   minEventDate,
@@ -157,9 +161,7 @@ export const EventsCard = ({
   const highlightPlanting = useHighlightPlanting();
   const removePlantingCard = useRemovePlantingCard();
   const showProfile = useShowProfile();
-  const { data: { planting } = {} } = useEventsCardQuery({
-    variables: { plantingId },
-  });
+
   const { averageAnnualTemperature, averageAnnualRainfall, climateZone } =
     planting?.farmOnboarding || {};
   const texture = useMemo(() => {
@@ -167,7 +169,7 @@ export const EventsCard = ({
     const sand = isNil(sandPercentage) ? null : `Sand ${sandPercentage}%`;
     const clay = isNil(clayPercentage) ? null : `Clay ${clayPercentage}%`;
     return [sand, clay].filter(Boolean).join(" | ");
-  }, [planting?.params.sandPercentage, planting?.params.clayPercentage]);
+  }, [planting?.params?.sandPercentage, planting?.params?.clayPercentage]);
 
   const onClose = useCallback(
     () => planting && removePlantingCard(planting.id),
@@ -193,70 +195,58 @@ export const EventsCard = ({
       onMouseLeave={onLeaveData}
     >
       <div style={{ flex: 1 }}>
-        {!planting ? (
-          <LinearProgress />
-        ) : (
-          <>
-            <Head>
-              <Title>{planting.title}</Title>
-              <Spacer />
-              {!hideName ? (
-                <Tip content="Producer profile">
-                  <Name onClick={() => showProfile(planting.producer.id)}>
-                    <ContactPageIcon fontSize="inherit" />
-                    {planting.producer.code}
-                  </Name>
-                </Tip>
-              ) : null}
+        <Head>
+          <Title>{planting.title}</Title>
+          <Spacer />
+          {!hideName ? (
+            <Tip content="Producer profile">
+              <Name onClick={() => showProfile(planting.producer.id)}>
+                <ContactPageIcon fontSize="inherit" />
+                {planting.producer.code}
+              </Name>
+            </Tip>
+          ) : null}
 
-              {onClose ? (
-                <IconButton onClick={onClose}>
-                  <CloseIcon
-                    fontSize="inherit"
-                    onClick={onClose}
-                    color="inherit"
-                  />
-                </IconButton>
-              ) : null}
-            </Head>
+          {onClose ? (
+            <IconButton onClick={onClose}>
+              <CloseIcon fontSize="inherit" onClick={onClose} color="inherit" />
+            </IconButton>
+          ) : null}
+        </Head>
 
-            <Params>
-              <MiniInfo>
-                <ThermostatIcon fontSize="inherit" />
-                <ParamValue>
-                  {isNil(averageAnnualTemperature)
-                    ? "n/a"
-                    : `${averageAnnualTemperature}℃`}
-                </ParamValue>
-              </MiniInfo>
-              <MiniInfo>
-                <InvertColorsIcon fontSize="inherit" />
-                <ParamValue>
-                  {isNil(averageAnnualRainfall)
-                    ? "n/a"
-                    : `${averageAnnualRainfall}%`}
-                </ParamValue>
-              </MiniInfo>
-              <MiniInfo>
-                <PublicIcon fontSize="inherit" />
-                <ParamValue>
-                  {isNil(climateZone) ? "n/a" : climateZone}
-                </ParamValue>
-              </MiniInfo>
-              <Spacer />
-              <ParamValue>{texture}</ParamValue>
-            </Params>
-            <IconEventsBar
-              minEventDate={minEventDate}
-              maxEventDate={maxEventDate}
-              events={planting.events}
-            />
-          </>
-        )}
+        <Params>
+          <MiniInfo>
+            <ThermostatIcon fontSize="inherit" />
+            <ParamValue>
+              {isNil(averageAnnualTemperature)
+                ? "n/a"
+                : `${averageAnnualTemperature}℃`}
+            </ParamValue>
+          </MiniInfo>
+          <MiniInfo>
+            <InvertColorsIcon fontSize="inherit" />
+            <ParamValue>
+              {isNil(averageAnnualRainfall)
+                ? "n/a"
+                : `${averageAnnualRainfall}%`}
+            </ParamValue>
+          </MiniInfo>
+          <MiniInfo>
+            <PublicIcon fontSize="inherit" />
+            <ParamValue>{isNil(climateZone) ? "n/a" : climateZone}</ParamValue>
+          </MiniInfo>
+          <Spacer />
+          <ParamValue>{texture}</ParamValue>
+        </Params>
+        <IconEventsBar
+          minEventDate={minEventDate}
+          maxEventDate={maxEventDate}
+          events={planting.events}
+        />
       </div>
       {hideColorBorder ? null : (
         <ColorBorder
-          colors={colors || ["grey"]}
+          colors={colors?.length ? colors : ["grey"]}
           isHighlighted={isHighlighted}
         />
       )}

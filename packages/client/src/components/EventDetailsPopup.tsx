@@ -19,8 +19,8 @@ import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import { Spacer } from "./EventsCard";
 import useCopy from "use-copy";
-import { EventsCardQuery } from "./EventsCard.generated";
 import { keyBy, mapValues } from "lodash";
+import { PlantingCardListQuery } from "./PlantingCardList.generated";
 
 export const defaultTheme = {
   borderColor: "rgba(255,255,255,.4)",
@@ -50,9 +50,9 @@ interface Props {
   onClose?: () => void;
   onMouseEnter?: (e: React.MouseEvent) => void;
   onMouseLeave?: (e: React.MouseEvent) => void;
-  eventDetails?: NonNullable<
-    EventsCardQuery["planting"]
-  >["events"][number]["details"];
+  eventDetails?: NonNullable<NonNullable<
+    PlantingCardListQuery["plantings"][number]
+  >["events"]>[number]["details"];
   debugInfo?: any;
 }
 

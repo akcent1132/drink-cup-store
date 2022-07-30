@@ -8,7 +8,7 @@ export type FarmerProfileQueryVariables = Types.Exact<{
 }>;
 
 
-export type FarmerProfileQuery = { __typename?: 'Query', producer?: { __typename?: 'Producer', id: string, code: string, plantings: Array<{ __typename?: 'Planting', id: string, title: string, producer: { __typename?: 'Producer', id: string, code: string }, params: { __typename?: 'PlantingParams', clayPercentage?: number | null, sandPercentage?: number | null }, events: Array<{ __typename?: 'PlantingEvent', id: string, date: string, type: string, details?: Array<{ __typename?: 'PlantingEventDetail', id: string, name: string, value?: string | null, valueList?: Array<string> | null }> | null }> }> } | null };
+export type FarmerProfileQuery = { __typename?: 'Query', producer?: { __typename?: 'Producer', id: string, code: string, plantings: Array<{ __typename?: 'Planting', id: string, title: string, producer: { __typename?: 'Producer', id: string, code: string }, events?: Array<{ __typename?: 'PlantingEvent', id: string, date: string, type: string, details?: Array<{ __typename?: 'PlantingEventDetail', id: string, name: string, value?: string | null, valueList?: Array<string> | null }> | null }> | null, params?: { __typename?: 'PlantingParams', clayPercentage?: number | null, sandPercentage?: number | null } | null, values: Array<{ __typename?: 'PlantingValue', name: string, value: number }>, farmOnboarding?: { __typename?: 'FarmOnboarding', id: string, climateZone?: string | null, averageAnnualTemperature?: number | null, averageAnnualRainfall?: number | null, values?: Array<{ __typename?: 'FarmOnboardingValue', key: string, values: Array<string> }> | null } | null }> } | null };
 
 
 export const FarmerProfileDocument = gql`
@@ -22,11 +22,6 @@ export const FarmerProfileDocument = gql`
         id
         code
       }
-      title
-      params {
-        clayPercentage
-        sandPercentage
-      }
       events {
         id
         date
@@ -36,6 +31,25 @@ export const FarmerProfileDocument = gql`
           name
           value
           valueList
+        }
+      }
+      title
+      params {
+        clayPercentage
+        sandPercentage
+      }
+      values {
+        name
+        value
+      }
+      farmOnboarding {
+        id
+        climateZone
+        averageAnnualTemperature
+        averageAnnualRainfall
+        values {
+          key
+          values
         }
       }
     }

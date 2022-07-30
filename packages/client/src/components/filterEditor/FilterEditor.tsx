@@ -153,6 +153,7 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
               return isOptionFilterParam(param) &&
                 (!filterable || isOptionFilterable(filterable)) ? (
                 <InputActionsWrap
+                  key={param.key}
                   filterId={selectedFilterId}
                   paramKey={param.key}
                 >
@@ -165,6 +166,7 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
               ) : isRangeFilterParam(param) &&
                 (!filterable || isNumericFilterable(filterable)) ? (
                 <InputActionsWrap
+                  key={param.key}
                   filterId={selectedFilterId}
                   paramKey={param.key}
                 >

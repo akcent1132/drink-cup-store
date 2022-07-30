@@ -149,13 +149,13 @@ export const FarmerProfile = ({ producerId }: Props) => {
                     {take(
                       sortBy(
                         producer.plantings,
-                        (p) => p.events.length
+                        (p) => p.events?.length
                       ).reverse(),
                       5
                     ).map((p) => (
                       <EventsCard
                         key={p.id}
-                        plantingId={p.id}
+                        planting={p}
                         hideName
                         hideColorBorder
                       />

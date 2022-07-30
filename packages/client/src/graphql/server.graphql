@@ -32,8 +32,8 @@ type Planting {
   values: [PlantingValue!]!
   title: String!
   producer: Producer!
-  params: PlantingParams!
-  events: [PlantingEvent!]!
+  params: PlantingParams
+  events: [PlantingEvent!]
   farmOnboarding: FarmOnboarding
 }
 type PlantingValue {

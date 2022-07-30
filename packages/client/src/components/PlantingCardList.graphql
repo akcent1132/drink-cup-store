@@ -1,9 +1,25 @@
 query PlantingCardList($plantingIds: [String!]!) {
   plantings: plantingsById(ids: $plantingIds) {
     id
+    producer {
+      id
+      code
+    }
     events {
       id
       date
+      type
+      details {
+        id
+        name
+        value
+        valueList
+      }
+    }
+    title
+    params {
+      clayPercentage,
+      sandPercentage,
     }
     values {
       name
@@ -11,6 +27,9 @@ query PlantingCardList($plantingIds: [String!]!) {
     }
     farmOnboarding {
       id
+      climateZone
+      averageAnnualTemperature
+      averageAnnualRainfall
       values {
         key
         values

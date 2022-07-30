@@ -65,10 +65,10 @@ export type MutationLoginArgs = {
 export type Planting = {
   __typename: 'Planting';
   cropType: Scalars['String'];
-  events: Array<PlantingEvent>;
+  events: Maybe<Array<PlantingEvent>>;
   farmOnboarding: Maybe<FarmOnboarding>;
   id: Scalars['String'];
-  params: PlantingParams;
+  params: Maybe<PlantingParams>;
   producer: Producer;
   title: Scalars['String'];
   values: Array<PlantingValue>;

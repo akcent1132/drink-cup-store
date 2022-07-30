@@ -1,5 +1,3 @@
-
-
 query FarmerProfile($producerId: String!) {
   producer(id: $producerId) {
     id
@@ -10,11 +8,6 @@ query FarmerProfile($producerId: String!) {
         id
         code
       }
-      title
-      params {
-        clayPercentage
-        sandPercentage
-      }
       events {
         id
         date
@@ -24,6 +17,25 @@ query FarmerProfile($producerId: String!) {
           name
           value
           valueList
+        }
+      }
+      title
+      params {
+        clayPercentage
+        sandPercentage
+      }
+      values {
+        name
+        value
+      }
+      farmOnboarding {
+        id
+        climateZone
+        averageAnnualTemperature
+        averageAnnualRainfall
+        values {
+          key
+          values
         }
       }
     }

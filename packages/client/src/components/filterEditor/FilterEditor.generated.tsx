@@ -8,7 +8,7 @@ export type FilterEditorQueryVariables = Types.Exact<{
 }>;
 
 
-export type FilterEditorQuery = { __typename?: 'Query', plantings: Array<{ __typename?: 'Planting', id: string, values: Array<{ __typename?: 'PlantingValue', name: string, value: number, modusId?: string | null }>, farmOnboarding?: { __typename?: 'FarmOnboarding', values?: Array<{ __typename?: 'FarmOnboardingValue', key: string, values: Array<string> }> | null } | null }> };
+export type FilterEditorQuery = { __typename?: 'Query', plantings: Array<{ __typename?: 'Planting', id: string, values: Array<{ __typename?: 'PlantingValue', name: string, value: number, modusId?: string | null }>, farmOnboarding?: { __typename?: 'FarmOnboarding', id: string, values?: Array<{ __typename?: 'FarmOnboardingValue', key: string, values: Array<string> }> | null } | null }> };
 
 
 export const FilterEditorDocument = gql`
@@ -21,6 +21,7 @@ export const FilterEditorDocument = gql`
       modusId
     }
     farmOnboarding {
+      id
       values {
         key
         values

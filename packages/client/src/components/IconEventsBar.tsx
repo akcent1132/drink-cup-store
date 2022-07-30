@@ -19,7 +19,7 @@ import useSize from "@react-hook/size";
 import { useXOverlap } from "../utils/useOverlap";
 import { capitalize, uniqBy } from "lodash";
 import { EventDetailsPopup } from "./EventDetailsPopup";
-import { EventsCardQuery } from "./EventsCard.generated";
+import { PlantingCardListQuery } from "./PlantingCardList.generated";
 
 export const defaultTheme = {
   iconSize: 26,
@@ -146,7 +146,7 @@ export type FarmEvent = {
 };
 
 type Props = {
-  events: NonNullable<EventsCardQuery["planting"]>["events"];
+  events: NonNullable<PlantingCardListQuery["plantings"][number]>["events"];
   minEventDate?: Date;
   maxEventDate?: Date;
 };
