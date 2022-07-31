@@ -3,15 +3,21 @@ import * as Types from '../../graphql.generated';
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
-export type AddFilterButtonQueryVariables = Types.Exact<{ [key: string]: never; }>;
+export type AddFilterButtonQueryVariables = Types.Exact<{
+  userId?: Types.InputMaybe<Types.Scalars['String']>;
+}>;
 
 
-export type AddFilterButtonQuery = { __typename?: 'Query', connectedFarmIds: Array<string> };
+export type AddFilterButtonQuery = { __typename?: 'Query', connectedFarmIds: Array<string>, surveyStackGroups: Array<{ __typename?: 'SurveyStackGroup', id: string, name: string }> };
 
 
 export const AddFilterButtonDocument = gql`
-    query AddFilterButton {
+    query AddFilterButton($userId: String) {
   connectedFarmIds
+  surveyStackGroups(userId: $userId) {
+    id
+    name
+  }
 }
     `;
 
@@ -27,6 +33,7 @@ export const AddFilterButtonDocument = gql`
  * @example
  * const { data, loading, error } = useAddFilterButtonQuery({
  *   variables: {
+ *      userId: // value for 'userId'
  *   },
  * });
  */

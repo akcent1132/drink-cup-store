@@ -29,6 +29,7 @@ import { AddFilterButton } from "./AddFilterButton";
 const PaneHead = styled.div`
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   gap: 15px;
   margin-top: 12px;
 `;

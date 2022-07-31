@@ -63,7 +63,7 @@ export const TagSelect = ({
       onChange={handleChange}
       options={options}
       value={param.value.options}
-      getOptionLabel={(option) => prettyKey(option)}
+      getOptionLabel={(option) => option}
       disableCloseOnSelect      
       renderOption={(props, option, { selected }) => (
         <li {...props}>
@@ -72,7 +72,7 @@ export const TagSelect = ({
             color="secondary"
             showZero
           >
-            {prettyKey(option)}
+            {option}
           </StyledBadge>
         </li>
       )}
@@ -80,7 +80,7 @@ export const TagSelect = ({
         <TextField
           {...params}
           variant="outlined"
-          label={prettyKey(param.key)}
+          label={param.key}
         />
       )}
     />

@@ -1,24 +1,10 @@
-import { schemeTableau10 } from "d3-scale-chromatic";
-import faker from "faker";
-import { without, sample } from "lodash";
-import { useCallback, useState, MouseEvent } from "react";
-import { ROWS } from "../../contexts/rows";
+import { useCallback, useState, MouseEvent, useMemo } from "react";
 import {
   FilterParamDataSource,
   useAddFilter,
   useFilters,
 } from "../../states/filters";
-import {
-  useHighlightFilter,
-  useUnhighlightFilter,
-} from "../../states/highlightedFilterId";
 import { useShowFilterEditor } from "../../states/sidePanelContent";
-import { CropSelector } from "../../stories/CropSelector";
-import { NestedRows } from "../../stories/NestedRows";
-import { Spacer } from "../EventsCard";
-import { FilterLabel } from "../FilterLabel";
-import SaveAsIcon from "@mui/icons-material/SaveAs";
-import styled from "@emotion/styled";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -29,6 +15,7 @@ import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 import { Box } from "@mui/material";
 import { useAddFilterButtonQuery } from "./AddFilterButton.generated";
+import { useAuth } from "../../states/auth";
 
 const createOptionFilterParam = (key: string, options: string[]) => ({
   active: true,
@@ -38,7 +25,15 @@ const createOptionFilterParam = (key: string, options: string[]) => ({
 });
 
 export const AddFilterButton = () => {
-  const { data: { connectedFarmIds } = {} } = useAddFilterButtonQuery();
+  const auth = useAuth();
+  const { data: { connectedFarmIds, surveyStackGroups } = {} } =
+    useAddFilterButtonQuery({
+      variables: { userId: (auth.isAuthenticated && auth.user.id) || null },
+    });
+  const organizations = useMemo(
+    () => (surveyStackGroups || []).map((g) => g.name),
+    [surveyStackGroups]
+  );
   const addFilter = useAddFilter();
   const filters = useFilters();
   const showFilterEditor = useShowFilterEditor();
@@ -47,6 +42,20 @@ export const AddFilterButton = () => {
     const filterId = addFilter();
     showFilterEditor(filterId);
   }, [filters.map((f) => f.color).join()]);
+
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleOpenClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      setAnchorEl(event.currentTarget);
+    },
+    []
+  );
+  const handleClose = useCallback(() => {
+    setAnchorEl(null);
+  }, []);
+
+  // Farm Domains
   const handleAddFarmDomainsFilter = useCallback(() => {
     setAnchorEl(null);
     connectedFarmIds &&
@@ -66,17 +75,6 @@ export const AddFilterButton = () => {
     },
     [connectedFarmIds]
   );
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const handleOpenClick = useCallback(
-    (event: React.MouseEvent<HTMLButtonElement>) => {
-      setAnchorEl(event.currentTarget);
-    },
-    []
-  );
-  const handleClose = useCallback(() => {
-    setAnchorEl(null);
-  }, []);
   const [farmDomainsOpen, setFarmDomainsOpen] = useState(false);
   const toggleFarmDomainsOpen = useCallback(
     (e) => {
@@ -84,6 +82,37 @@ export const AddFilterButton = () => {
       setFarmDomainsOpen(!farmDomainsOpen);
     },
     [farmDomainsOpen]
+  );
+
+  // Organizations
+  const handleAddOrganizationsFilter = useCallback(() => {
+    setAnchorEl(null);
+    connectedFarmIds &&
+      addFilter({
+        name: "My Organizations",
+        params: [
+          createOptionFilterParam(   "organization",   organizations ),
+        ],
+      });
+  }, [connectedFarmIds]);
+  const handleAddSingleOrganizationFilter = useCallback(
+    (organization: string) => {
+      setAnchorEl(null);
+      connectedFarmIds &&
+        addFilter({
+          name: organization,
+          params: [createOptionFilterParam("organization", [organization])],
+        });
+    },
+    [connectedFarmIds]
+  );
+  const [organizationsOpen, setOrganizationsOpen] = useState(false);
+  const toggleOrganizationsOpen = useCallback(
+    (e) => {
+      e.stopPropagation();
+      setOrganizationsOpen(!organizationsOpen);
+    },
+    [organizationsOpen]
   );
 
   return (
@@ -108,30 +137,66 @@ export const AddFilterButton = () => {
         }}
       >
         <MenuItem onClick={handleAddFilter}>New Filter</MenuItem>
-        {(connectedFarmIds?.length ? 
-          [
-            <MenuItem key="my-params" onClick={handleAddFarmDomainsFilter}>
-              Filter My Farms <Box flexGrow={1} />
-              <IconButton
-                size="small"
-                sx={{ ml: 2 }}
-                onClick={toggleFarmDomainsOpen}
-              >
-                {farmDomainsOpen ? <ExpandLess /> : <ExpandMore />}
-              </IconButton>
-            </MenuItem>,
-            <Collapse key="farm-domains" in={farmDomainsOpen} timeout="auto" unmountOnExit>
-              {connectedFarmIds.map((farmDomain) => (
-                <MenuItem
-                  sx={{ pl: 4 }}
-                  onClick={() => handleAddSingleFarmDomainFilter(farmDomain)}
+        {connectedFarmIds?.length
+          ? [
+              <MenuItem key="my-params" onClick={handleAddFarmDomainsFilter}>
+                Filter My Farms <Box flexGrow={1} />
+                <IconButton
+                  size="small"
+                  sx={{ ml: 2 }}
+                  onClick={toggleFarmDomainsOpen}
                 >
-                  Filter {farmDomain}
-                </MenuItem>
-              ))}
-            </Collapse>
-          ]
-         : [])}
+                  {farmDomainsOpen ? <ExpandLess /> : <ExpandMore />}
+                </IconButton>
+              </MenuItem>,
+              <Collapse
+                key="farm-domains"
+                in={farmDomainsOpen}
+                timeout="auto"
+                unmountOnExit
+              >
+                {connectedFarmIds.map((farmDomain) => (
+                  <MenuItem
+                    sx={{ pl: 4 }}
+                    onClick={() => handleAddSingleFarmDomainFilter(farmDomain)}
+                  >
+                    Filter {farmDomain}
+                  </MenuItem>
+                ))}
+              </Collapse>,
+            ]
+          : []}
+        {organizations.length
+          ? [
+              <MenuItem key="my-params" onClick={handleAddOrganizationsFilter}>
+                Filter My Organizations <Box flexGrow={1} />
+                <IconButton
+                  size="small"
+                  sx={{ ml: 2 }}
+                  onClick={toggleOrganizationsOpen}
+                >
+                  {organizationsOpen ? <ExpandLess /> : <ExpandMore />}
+                </IconButton>
+              </MenuItem>,
+              <Collapse
+                key="organizations"
+                in={organizationsOpen}
+                timeout="auto"
+                unmountOnExit
+              >
+                {organizations.map((organization) => (
+                  <MenuItem
+                    sx={{ pl: 4 }}
+                    onClick={() =>
+                      handleAddSingleOrganizationFilter(organization)
+                    }
+                  >
+                    Filter {organization}
+                  </MenuItem>
+                ))}
+              </Collapse>,
+            ]
+          : []}
       </Menu>
     </>
   );

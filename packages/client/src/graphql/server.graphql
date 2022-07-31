@@ -7,10 +7,16 @@ type Query {
   allFarmOnboardings: [FarmOnboarding!]!
   availableCropTypes: [AvailableCropType!]!
   connectedFarmIds: [String!]! 
+  surveyStackGroups(userId: String): [SurveyStackGroup!]! 
 }
 
 type Mutation {
   login(email: String! password: String!): LoginResponse
+}
+
+type SurveyStackGroup {
+  id: String!
+  name: String!
 }
 
 type LoginResponse {

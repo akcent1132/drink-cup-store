@@ -128,6 +128,7 @@ export type Query = {
   plantings: Array<Planting>;
   plantingsById: Array<Planting>;
   producer?: Maybe<Producer>;
+  surveyStackGroups: Array<SurveyStackGroup>;
 };
 
 
@@ -148,6 +149,17 @@ export type QueryPlantingsByIdArgs = {
 
 export type QueryProducerArgs = {
   id: Scalars['String'];
+};
+
+
+export type QuerySurveyStackGroupsArgs = {
+  userId?: InputMaybe<Scalars['String']>;
+};
+
+export type SurveyStackGroup = {
+  __typename?: 'SurveyStackGroup';
+  id: Scalars['String'];
+  name: Scalars['String'];
 };
 
 export type WithIndex<TObject> = TObject & Record<string, any>;
@@ -237,6 +249,7 @@ export type ResolversTypes = ResolversObject<{
   Producer: ResolverTypeWrapper<Producer>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']>;
+  SurveyStackGroup: ResolverTypeWrapper<SurveyStackGroup>;
 }>;
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -258,6 +271,7 @@ export type ResolversParentTypes = ResolversObject<{
   Producer: Producer;
   Query: {};
   String: Scalars['String'];
+  SurveyStackGroup: SurveyStackGroup;
 }>;
 
 export type AuthUserResolvers<ContextType = any, ParentType extends ResolversParentTypes['AuthUser'] = ResolversParentTypes['AuthUser']> = ResolversObject<{
@@ -366,6 +380,13 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   plantings?: Resolver<Array<ResolversTypes['Planting']>, ParentType, ContextType, RequireFields<QueryPlantingsArgs, 'cropType'>>;
   plantingsById?: Resolver<Array<ResolversTypes['Planting']>, ParentType, ContextType, RequireFields<QueryPlantingsByIdArgs, 'ids'>>;
   producer?: Resolver<Maybe<ResolversTypes['Producer']>, ParentType, ContextType, RequireFields<QueryProducerArgs, 'id'>>;
+  surveyStackGroups?: Resolver<Array<ResolversTypes['SurveyStackGroup']>, ParentType, ContextType, Partial<QuerySurveyStackGroupsArgs>>;
+}>;
+
+export type SurveyStackGroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['SurveyStackGroup'] = ResolversParentTypes['SurveyStackGroup']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type Resolvers<ContextType = any> = ResolversObject<{
@@ -382,5 +403,6 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   PlantingValue?: PlantingValueResolvers<ContextType>;
   Producer?: ProducerResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  SurveyStackGroup?: SurveyStackGroupResolvers<ContextType>;
 }>;
 

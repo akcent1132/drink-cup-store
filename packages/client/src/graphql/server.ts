@@ -14,6 +14,7 @@ import { loadEventDetails } from "./loaders/farmEvents";
 import { loadAvailableCropTypes } from "./loaders/availableCropTypes";
 import { z } from "zod";
 import { loadConnectedFarmIds } from "./loaders/connectedFarms";
+import { loadSurveyStackGroups } from "./loaders/surveyStackGroups";
 
 // Construct a schema, using GraphQL schema language
 // @ts-ignore
@@ -42,8 +43,8 @@ const resolvers: Resolvers = {
       return await loadPlantingsOfCrop(cropType);
     },
     async planting(_, { id }) {
-      const planting = await loadPlanting(id)
-      console.error(`Can't find planting with ID: ${id}`)
+      const planting = await loadPlanting(id);
+      console.error(`Can't find planting with ID: ${id}`);
       return planting;
     },
     async plantingsById(_, { ids }) {
@@ -69,6 +70,9 @@ const resolvers: Resolvers = {
     },
     async connectedFarmIds(_: any, {}, { authorization }: Context) {
       return loadConnectedFarmIds(authorization);
+    },
+    async surveyStackGroups(_: any, { userId }, { authorization }: Context) {
+      return loadSurveyStackGroups(userId, authorization);
     },
   },
   Producer: {

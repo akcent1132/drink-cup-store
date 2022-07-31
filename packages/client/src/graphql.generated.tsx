@@ -127,6 +127,7 @@ export type Query = {
   plantings: Array<Planting>;
   plantingsById: Array<Planting>;
   producer: Maybe<Producer>;
+  surveyStackGroups: Array<SurveyStackGroup>;
 };
 
 
@@ -147,6 +148,17 @@ export type QueryPlantingsByIdArgs = {
 
 export type QueryProducerArgs = {
   id: Scalars['String'];
+};
+
+
+export type QuerySurveyStackGroupsArgs = {
+  userId: InputMaybe<Scalars['String']>;
+};
+
+export type SurveyStackGroup = {
+  __typename: 'SurveyStackGroup';
+  id: Scalars['String'];
+  name: Scalars['String'];
 };
 
 export type AuthUserKeySpecifier = ('email' | 'id' | 'name' | 'token' | AuthUserKeySpecifier)[];
@@ -235,7 +247,7 @@ export type ProducerFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('allFarmOnboardings' | 'allPlantings' | 'availableCropTypes' | 'connectedFarmIds' | 'planting' | 'plantings' | 'plantingsById' | 'producer' | QueryKeySpecifier)[];
+export type QueryKeySpecifier = ('allFarmOnboardings' | 'allPlantings' | 'availableCropTypes' | 'connectedFarmIds' | 'planting' | 'plantings' | 'plantingsById' | 'producer' | 'surveyStackGroups' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
 	allFarmOnboardings?: FieldPolicy<any> | FieldReadFunction<any>,
 	allPlantings?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -244,7 +256,13 @@ export type QueryFieldPolicy = {
 	planting?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantingsById?: FieldPolicy<any> | FieldReadFunction<any>,
-	producer?: FieldPolicy<any> | FieldReadFunction<any>
+	producer?: FieldPolicy<any> | FieldReadFunction<any>,
+	surveyStackGroups?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type SurveyStackGroupKeySpecifier = ('id' | 'name' | SurveyStackGroupKeySpecifier)[];
+export type SurveyStackGroupFieldPolicy = {
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	name?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type StrictTypedTypePolicies = {
 	AuthUser?: Omit<TypePolicy, "fields" | "keyFields"> & {
@@ -298,6 +316,10 @@ export type StrictTypedTypePolicies = {
 	Query?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | QueryKeySpecifier | (() => undefined | QueryKeySpecifier),
 		fields?: QueryFieldPolicy,
+	},
+	SurveyStackGroup?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | SurveyStackGroupKeySpecifier | (() => undefined | SurveyStackGroupKeySpecifier),
+		fields?: SurveyStackGroupFieldPolicy,
 	}
 };
 export type TypedTypePolicies = StrictTypedTypePolicies & TypePolicies;
