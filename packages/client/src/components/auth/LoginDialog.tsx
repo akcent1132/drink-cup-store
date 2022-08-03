@@ -1,18 +1,18 @@
-import * as React from "react";
-import Avatar from "@mui/material/Avatar";
-import LoadingButton from '@mui/lab/LoadingButton';
-import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
-import Box from "@mui/material/Box";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import { useAuth, useLogin } from "../../states/auth";
-import Alert from "@mui/material/Alert";
+import LoadingButton from "@mui/lab/LoadingButton";
 import { Dialog } from "@mui/material";
-import { useIsAuthDialogOpen, useSetIsAuthDialogOpen } from "../../states/ui";
+import Alert from "@mui/material/Alert";
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Link from "@mui/material/Link";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import * as React from "react";
 import { useCallback } from "react";
+import { useAuth, useLogin } from "../../states/auth";
+import { useIsAuthDialogOpen, useSetIsAuthDialogOpen } from "../../states/ui";
 
 function Copyright(props: any) {
   return (
@@ -34,22 +34,25 @@ function Copyright(props: any) {
 
 export const LoginDialog = () => {
   const { login, isLoginInProgress } = useLogin();
-  const isAuthDialogOpen = useIsAuthDialogOpen()
-  const setIsAuthDialogOpen = useSetIsAuthDialogOpen()
+  const isAuthDialogOpen = useIsAuthDialogOpen();
+  const setIsAuthDialogOpen = useSetIsAuthDialogOpen();
   const { error } = useAuth();
-  const handleSubmit = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
-    await login(
-      data.get("email")?.toString() || "",
-      data.get("password")?.toString() || ""
-    );
-    setIsAuthDialogOpen(false)
-  }, []);
+  const handleSubmit = useCallback(
+    async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      console.log({
+        email: data.get("email"),
+        password: data.get("password"),
+      });
+      await login(
+        data.get("email")?.toString() || "",
+        data.get("password")?.toString() || ""
+      );
+      setIsAuthDialogOpen(false);
+    },
+    []
+  );
 
   return (
     <Dialog onClose={() => setIsAuthDialogOpen(false)} open={isAuthDialogOpen}>
@@ -101,9 +104,15 @@ export const LoginDialog = () => {
           >
             Sign In
           </LoadingButton>
-          {error ? (
-            <Alert severity="error">{error}</Alert>
-          ) : null}
+          <Button
+            fullWidth
+            sx={{ mt: 3, mb: 2 }}
+            endIcon={<ArrowForwardIcon />}
+            onClick={() => setIsAuthDialogOpen(false)}
+          >
+            Continue without login
+          </Button>
+          {error ? <Alert severity="error">{error}</Alert> : null}
           {/* <Grid container>
               <Grid item xs>
                 <Link href="#" variant="body2">
@@ -119,6 +128,6 @@ export const LoginDialog = () => {
         </Box>
       </Box>
       {/* <Copyright sx={{ mt: 8, mb: 4 }} /> */}
-      </Dialog>
+    </Dialog>
   );
-}
+};
