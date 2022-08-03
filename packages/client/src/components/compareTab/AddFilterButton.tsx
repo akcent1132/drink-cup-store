@@ -90,9 +90,7 @@ export const AddFilterButton = () => {
     connectedFarmIds &&
       addFilter({
         name: "My Organizations",
-        params: [
-          createOptionFilterParam(   "organization",   organizations ),
-        ],
+        params: [createOptionFilterParam("organization", organizations)],
       });
   }, [connectedFarmIds]);
   const handleAddSingleOrganizationFilter = useCallback(
@@ -118,11 +116,9 @@ export const AddFilterButton = () => {
   return (
     <>
       <Button
+      size="small"
         id="basic-button"
         startIcon={<AddIcon />}
-        aria-controls={open ? "basic-menu" : undefined}
-        aria-haspopup="true"
-        aria-expanded={open ? "true" : undefined}
         onClick={handleOpenClick}
       >
         Add
@@ -157,6 +153,7 @@ export const AddFilterButton = () => {
               >
                 {connectedFarmIds.map((farmDomain) => (
                   <MenuItem
+                    key={farmDomain}
                     sx={{ pl: 4 }}
                     onClick={() => handleAddSingleFarmDomainFilter(farmDomain)}
                   >
@@ -186,6 +183,7 @@ export const AddFilterButton = () => {
               >
                 {organizations.map((organization) => (
                   <MenuItem
+                    key={organization}
                     sx={{ pl: 4 }}
                     onClick={() =>
                       handleAddSingleOrganizationFilter(organization)
