@@ -6,8 +6,8 @@ type Query {
   producer(id: String!): Producer
   allFarmOnboardings: [FarmOnboarding!]!
   availableCropTypes: [AvailableCropType!]!
-  connectedFarmIds: [String!]! 
-  surveyStackGroups(userId: String): [SurveyStackGroup!]! 
+  connectedFarmIds: [String!]
+  surveyStackGroups(userId: String): [SurveyStackGroup!]
 }
 
 type Mutation {

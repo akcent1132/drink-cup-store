@@ -122,12 +122,12 @@ export type Query = {
   allFarmOnboardings: Array<FarmOnboarding>;
   allPlantings: Array<Planting>;
   availableCropTypes: Array<AvailableCropType>;
-  connectedFarmIds: Array<Scalars['String']>;
+  connectedFarmIds: Maybe<Array<Scalars['String']>>;
   planting: Maybe<Planting>;
   plantings: Array<Planting>;
   plantingsById: Array<Planting>;
   producer: Maybe<Producer>;
-  surveyStackGroups: Array<SurveyStackGroup>;
+  surveyStackGroups: Maybe<Array<SurveyStackGroup>>;
 };
 
 

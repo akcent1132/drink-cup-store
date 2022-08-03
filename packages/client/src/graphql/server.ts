@@ -69,10 +69,11 @@ const resolvers: Resolvers = {
       return await loadAvailableCropTypes();
     },
     async connectedFarmIds(_: any, {}, { authorization }: Context) {
-      return loadConnectedFarmIds(authorization);
+      console.log({authorization})
+      return await loadConnectedFarmIds(authorization);
     },
     async surveyStackGroups(_: any, { userId }, { authorization }: Context) {
-      return loadSurveyStackGroups(userId, authorization);
+      return await loadSurveyStackGroups(userId, authorization);
     },
   },
   Producer: {

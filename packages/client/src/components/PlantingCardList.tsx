@@ -46,6 +46,7 @@ export const PlantingCardList = ({
     variables: { plantingIds: openEventCardIds },
   });
   const { plantings } = query.data ?? query.previousData ?? {};
+  console.log({plantings})
   // find out which filter colors should we add to a card
   const filters = useFilters();
   const matchingFilterColorsPerPlanting = useMemo(() => {

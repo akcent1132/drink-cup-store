@@ -34,6 +34,9 @@ const expectedData = z.array(
 
 export const loadSurveyStackGroups = pMemoize(
   async (userId, authorization) => {
+    if (!userId) {
+      return []
+    }
     const data = await fetch(`https://app.surveystack.io/api/memberships?user=${userId}&populate=1`, {
       headers: {
         Authorization: authorization,

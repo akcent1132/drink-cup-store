@@ -11,17 +11,19 @@ const expectedData = z.array(
 );
 
 // Fetch all the event details for a planting
-export const loadConnectedFarmIds = pMemoize(
-  async (authorization) => {
-    const data = await fetch(`https://app.surveystack.io/api/farmos/farms`, {
-      headers: {
-        Authorization: authorization,
-      },
-    })
-      .then((result) => result.json())
-      .then(expectedData.parse);
-
-    // return ["oursci.farmos.net","farmatsunnyside.farmos.net","jimsheppard.farmos.net"]
-    return data.map((d) => d.instanceName);
+export const loadConnectedFarmIds = pMemoize(async (authorization) => {
+  if (!authorization) {
+    return []
   }
-);
+  const data = await fetch(`https://app.surveystack.io/api/farmos/farms`, {
+    headers: {
+      Authorization: authorization,
+    },
+  })
+    .then((result) => result.json())
+    .then(expectedData.parse);
+
+  // return ["oursci.farmos.net","farmatsunnyside.farmos.net","jimsheppard.farmos.net"]
+  console.log("LOAD CONNECTED FARM IDS", data);
+  return data.map((d) => d.instanceName);
+});

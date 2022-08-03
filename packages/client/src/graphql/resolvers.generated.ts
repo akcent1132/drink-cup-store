@@ -123,12 +123,12 @@ export type Query = {
   allFarmOnboardings: Array<FarmOnboarding>;
   allPlantings: Array<Planting>;
   availableCropTypes: Array<AvailableCropType>;
-  connectedFarmIds: Array<Scalars['String']>;
+  connectedFarmIds?: Maybe<Array<Scalars['String']>>;
   planting?: Maybe<Planting>;
   plantings: Array<Planting>;
   plantingsById: Array<Planting>;
   producer?: Maybe<Producer>;
-  surveyStackGroups: Array<SurveyStackGroup>;
+  surveyStackGroups?: Maybe<Array<SurveyStackGroup>>;
 };
 
 
@@ -375,12 +375,12 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   allFarmOnboardings?: Resolver<Array<ResolversTypes['FarmOnboarding']>, ParentType, ContextType>;
   allPlantings?: Resolver<Array<ResolversTypes['Planting']>, ParentType, ContextType>;
   availableCropTypes?: Resolver<Array<ResolversTypes['AvailableCropType']>, ParentType, ContextType>;
-  connectedFarmIds?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  connectedFarmIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   planting?: Resolver<Maybe<ResolversTypes['Planting']>, ParentType, ContextType, RequireFields<QueryPlantingArgs, 'id'>>;
   plantings?: Resolver<Array<ResolversTypes['Planting']>, ParentType, ContextType, RequireFields<QueryPlantingsArgs, 'cropType'>>;
   plantingsById?: Resolver<Array<ResolversTypes['Planting']>, ParentType, ContextType, RequireFields<QueryPlantingsByIdArgs, 'ids'>>;
   producer?: Resolver<Maybe<ResolversTypes['Producer']>, ParentType, ContextType, RequireFields<QueryProducerArgs, 'id'>>;
-  surveyStackGroups?: Resolver<Array<ResolversTypes['SurveyStackGroup']>, ParentType, ContextType, Partial<QuerySurveyStackGroupsArgs>>;
+  surveyStackGroups?: Resolver<Maybe<Array<ResolversTypes['SurveyStackGroup']>>, ParentType, ContextType, Partial<QuerySurveyStackGroupsArgs>>;
 }>;
 
 export type SurveyStackGroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['SurveyStackGroup'] = ResolversParentTypes['SurveyStackGroup']> = ResolversObject<{

@@ -18,17 +18,14 @@ export const Notifications = () => {
 
   const first = notifications[0] || null;
   return first ? (
-    <Snackbar
-      key={first.id}
-      open={true}
-      onClose={() => removeNotification(first.id)}
-    >
+    <Snackbar open={true} onClose={() => removeNotification(first.id)}>
       <Alert
         severity={first.type === NotificationType.ERROR ? "error" : "info"}
         sx={{ width: "100%" }}
         action={[
           notifications.length > 1 ? (
             <Button
+              key="remove-all"
               color="inherit"
               size="small"
               onClick={removeAllNotofocations}
@@ -37,6 +34,7 @@ export const Notifications = () => {
             </Button>
           ) : null,
           <IconButton
+            key="remove"
             color="inherit"
             size="small"
             onClick={() => removeNotification(first.id)}
