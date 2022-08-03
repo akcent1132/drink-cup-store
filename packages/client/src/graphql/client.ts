@@ -34,7 +34,7 @@ export const client = new ApolloClient({
           console.error(
             `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
           )
-          addErrorNotification({message:  `[GraphQL error]: Message: ${message}, Path: ${path}`})
+          addErrorNotification({message:  `[GraphQL error]: ${message}, Path: ${path}`})
         });
       }
     }),

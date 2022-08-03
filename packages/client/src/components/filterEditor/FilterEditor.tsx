@@ -28,6 +28,7 @@ import LinearProgress from "@mui/material/LinearProgress";
 import { prettyKey } from "./prettyKey";
 import { InputActionsWrap } from "./InputActionsWrap";
 import TextField from "@mui/material/TextField";
+import { FilterMenu } from "./FilterMenu";
 
 const Root = withTheme(styled.div`
   background-color: ${(p) => p.theme.colors.bgSidePanel};
@@ -101,7 +102,6 @@ interface Props {
  */
 export const FilterEditor = ({ selectedFilterId }: Props) => {
   const filters = useFilters();
-  const showPlantingCards = useShowPlantingCards();
   const selectedCropType = useSelectedCropType();
   const filter = useMemo(
     () => filters.find((filter) => filter.id === selectedFilterId),
@@ -117,7 +117,7 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
     () => getFilterables(plantings || []),
     [plantings && plantings.map((p) => p.id).join()]
   );
-  const handleClose = useCallback(() => filter && showPlantingCards(), []);
+  
   const updateName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) =>
       filter && updateFilterName(filter.id, event.target.value),
@@ -135,9 +135,7 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
           <Header color={filter.color}>
             <Title>Filter options</Title>
             <Spacer />
-            <IconButton onClick={handleClose}>
-              <CloseIcon fontSize="inherit" color="inherit" />
-            </IconButton>
+            <FilterMenu filterId={filter.id} />
           </Header>
           <Body>
             <TextField
