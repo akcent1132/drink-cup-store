@@ -40,7 +40,11 @@ const resolvers: Resolvers = {
       return await loadPlantings();
     },
     plantings: async (_, { cropType }) => {
-      return await loadPlantingsOfCrop(cropType);
+      const plantings = await loadPlantingsOfCrop(cropType);
+      if (plantings.length === 0) {
+        throw new Error(`Can't find any data with crop type: "${cropType}"`);
+      }
+      return plantings;
     },
     async planting(_, { id }) {
       const planting = await loadPlanting(id);
@@ -69,7 +73,7 @@ const resolvers: Resolvers = {
       return await loadAvailableCropTypes();
     },
     async connectedFarmIds(_: any, {}, { authorization }: Context) {
-      console.log({authorization})
+      console.log({ authorization });
       return await loadConnectedFarmIds(authorization);
     },
     async surveyStackGroups(_: any, { userId }, { authorization }: Context) {
