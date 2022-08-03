@@ -4,12 +4,11 @@ import {
   ApolloLink,
   HttpLink,
 } from "@apollo/client";
-import { setContext } from '@apollo/client/link/context';
+import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 import { readUserFromStore } from "../states/auth";
 import "./server";
-import { addErrorNotification } from '../states/ui'
-
+import { addErrorNotification } from "../states/ui";
 
 const authLink = setContext((_, { headers }) => {
   const user = readUserFromStore();
@@ -17,12 +16,20 @@ const authLink = setContext((_, { headers }) => {
     headers: {
       ...headers,
       authorization: user ? `${user.email} ${user.token}` : "",
-    }
-  }
+    },
+  };
 });
 
 export const client = new ApolloClient({
   cache: new InMemoryCache(),
+  defaultOptions: {
+    query: {
+      errorPolicy: "all",
+    },
+    watchQuery: {
+      errorPolicy: "all",
+    },
+  },
   link: ApolloLink.from([
     onError(({ graphQLErrors, networkError }) => {
       if (networkError) {
@@ -30,11 +37,13 @@ export const client = new ApolloClient({
       }
 
       if (graphQLErrors) {
-        graphQLErrors.forEach(({ message, locations, path }) =>{
+        graphQLErrors.forEach(({ message, locations, path }) => {
           console.error(
             `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
-          )
-          addErrorNotification({message:  `[GraphQL error]: ${message}, Path: ${path}`})
+          );
+          addErrorNotification({
+            message: `[GraphQL error]: ${message}, Path: ${path}`,
+          });
         });
       }
     }),
@@ -43,4 +52,3 @@ export const client = new ApolloClient({
   ]),
   connectToDevTools: true,
 });
-
