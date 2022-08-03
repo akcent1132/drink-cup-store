@@ -8,6 +8,7 @@ import { setContext } from '@apollo/client/link/context';
 import { onError } from "@apollo/client/link/error";
 import { readUserFromStore } from "../states/auth";
 import "./server";
+import { addErrorNotification } from '../states/ui'
 
 
 const authLink = setContext((_, { headers }) => {
@@ -29,11 +30,12 @@ export const client = new ApolloClient({
       }
 
       if (graphQLErrors) {
-        graphQLErrors.forEach(({ message, locations, path }) =>
+        graphQLErrors.forEach(({ message, locations, path }) =>{
           console.error(
             `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
           )
-        );
+          addErrorNotification({message:  `[GraphQL error]: Message: ${message}, Path: ${path}`})
+        });
       }
     }),
     authLink,

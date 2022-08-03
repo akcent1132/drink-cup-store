@@ -1,15 +1,9 @@
 /** @jsxImportSource @emotion/react */
 
-import React, {
-  ComponentProps,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { ComponentProps, useMemo, useRef, useState } from "react";
 import { RecoilRoot } from "recoil";
-import {
-  useSidePanelContent,
-} from "../states/sidePanelContent";
+import RecoilNexus from "recoil-nexus";
+import { useSidePanelContent } from "../states/sidePanelContent";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { ClassNames } from "@emotion/core";
 import styled from "@emotion/styled";
@@ -30,6 +24,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { CompareTab } from "../components/compareTab/CompareTab";
 import { AuthMenu } from "../components/auth/AuthMenu";
 import { LoginDialog } from "../components/auth/LoginDialog";
+import { Notifications } from "../components/Notifications";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -81,10 +76,6 @@ const RightFlipContainer = styled.div`
   left: 0;
   width: 100%;
 `;
-
-
-
-
 
 interface Props {
   /**
@@ -195,6 +186,7 @@ export const Dashboard = ({ iframeSrc }: Props) => {
         <HyloBox container={rightSide} src={iframeSrc} />
       </RightSide>
       <LoginDialog />
+      <Notifications />
     </Root>
   );
 };
@@ -202,7 +194,8 @@ export const Dashboard = ({ iframeSrc }: Props) => {
 export const App = (props: ComponentProps<typeof Dashboard>) => (
   <ApolloProvider client={client}>
     <RecoilRoot>
-        <Dashboard {...props} />
+      <RecoilNexus />
+      <Dashboard {...props} />
     </RecoilRoot>
   </ApolloProvider>
 );
