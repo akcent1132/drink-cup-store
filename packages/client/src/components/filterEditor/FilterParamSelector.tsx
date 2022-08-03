@@ -77,7 +77,6 @@ export const FilterParamSelector = ({
   return (
     <Autocomplete
       multiple
-      disableCloseOnSelect
       limitTags={3}
       open={open}
       onOpen={() => setOpen(true)}
