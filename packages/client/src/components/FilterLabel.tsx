@@ -5,7 +5,7 @@ import { useCallback, useMemo } from "react";
 import "../index.css";
 import {
   useHighlightFilter,
-  useUnhighlightFilter,
+  useUnhighlightFilter
 } from "../states/highlightedFilterId";
 import { useShowFilterEditor } from "../states/sidePanelContent";
 
@@ -36,7 +36,7 @@ export const FilterLabel = ({ label, color = "green", filterId }: Props) => {
         color="primary"
         variant="contained"
         size="small"
-        sx={{ borderRadius: 15 }}
+        sx={{ borderRadius: 30 / 4 }}
         onMouseEnter={() => highlightFilter(filterId)}
         onMouseLeave={() => unhighlightFilter(filterId)}
         onClick={handleSelect}

@@ -2,16 +2,15 @@ import Autocomplete from "@mui/material/Autocomplete";
 import Badge, { BadgeProps } from "@mui/material/Badge";
 import TextField from "@mui/material/TextField";
 import { uniq } from "lodash";
-import React, { useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import {
   FilterParam,
   FilterValueOption,
-  useEditFilterParam,
+  useEditFilterParam
 } from "../../states/filters";
 
-import { FilterableOption } from "./getFilterables";
-import { prettyKey } from "./prettyKey";
 import styled from "@mui/material/styles/styled";
+import { FilterableOption } from "./getFilterables";
 
 const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
   "& .MuiBadge-badge": {

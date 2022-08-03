@@ -116,7 +116,7 @@ export const AddFilterButton = () => {
   return (
     <>
       <Button
-      size="small"
+      size="medium"
         id="basic-button"
         startIcon={<AddIcon />}
         onClick={handleOpenClick}
