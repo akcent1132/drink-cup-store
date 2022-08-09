@@ -8,6 +8,7 @@ declare module externalData {
     _id: string;
     cropType: null | string;
     drupal_internal__id: number;
+    drupal_uid: string;
     events: Event[];
     flag: string[];
     params: Params;
@@ -23,17 +24,18 @@ declare module externalData {
   }
 
   export interface Params {
+    zone: null | string;
+    hardiness_zone: null | string;
+    climate_region: null;
+    temperature: number | null;
+    precipitation: number | null;
     texture: string;
-    soil_group?: string;
-    soil_suborder?: string;
-    soil_order?: string;
-    clay_percentage?: number;
-    sand_percentage?: number;
-    soil_texture?: number;
-    zone?: string;
-    hardiness_zone?: string;
-    temperature?: number;
-    precipitation?: number;
+    soil_group: null | string;
+    soil_suborder: null | string;
+    soil_order: null | string;
+    clay_percentage: number | null;
+    sand_percentage: number | null;
+    soil_texture: number | null;
   }
 
   export interface Producer {
@@ -62,7 +64,7 @@ const convertExternalPlanting = (planting: externalData.Planting): Planting => {
     ...planting,
     __typename: "Planting",
     cropType: planting.cropType!,
-    id: planting._id,
+    id: planting.drupal_uid,
     values: planting.values
       .filter((v): v is externalData.ValueElement & { value: number } =>
         isNumber(v.value)
@@ -72,7 +74,7 @@ const convertExternalPlanting = (planting: externalData.Planting): Planting => {
           ...v,
           modusId: v.modus_test_id || null,
           __typename: "PlantingValue",
-          plantingId: planting._id,
+          plantingId: planting.drupal_uid,
         };
       }),
     params: {
@@ -131,13 +133,13 @@ export const loadPlantingsOfCrop = pMemoize(async (cropType) => {
 });
 
 export const loadPlanting = async (
-  plantingId: string,
+  plantingId: string
 ): Promise<Planting | null> => {
   const planting = plantingMap.get(plantingId);
   if (!planting) {
     // TODO ask for a per planting endpoint
-    const plantings = await loadPlantings()
-    return plantings.find(planting => planting.id === plantingId) || null
+    const plantings = await loadPlantings();
+    return plantings.find((planting) => planting.id === plantingId) || null;
   }
   console.log("Got planting from map", plantingId);
   return planting;
