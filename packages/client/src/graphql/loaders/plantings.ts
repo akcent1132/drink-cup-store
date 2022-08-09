@@ -132,18 +132,20 @@ export const loadPlantingsOfCrop = pMemoize(async (cropType) => {
   return clientPlantings;
 });
 
-export const loadPlanting = async (
-  plantingId: string
-): Promise<Planting | null> => {
-  const planting = plantingMap.get(plantingId);
-  if (!planting) {
-    // TODO ask for a per planting endpoint
-    const plantings = await loadPlantings();
-    return plantings.find((planting) => planting.id === plantingId) || null;
+export const loadPlanting = pMemoize(
+  async (plantingId: string): Promise<Planting | null> => {
+    const planting = plantingMap.get(plantingId);
+    if (planting) {
+      return planting;
+    }
+
+    // Load planting if it wasn't in the cache map
+    const externalPlanting: externalData.Planting = await fetch(
+      `https://app.surveystack.io/static/coffeeshop/planting_details/${plantingId}`
+    ).then((result) => result.json());
+    return convertExternalPlanting(externalPlanting);
   }
-  console.log("Got planting from map", plantingId);
-  return planting;
-};
+);
 
 // const createFakePlantings = (
 //   cropType: string,
