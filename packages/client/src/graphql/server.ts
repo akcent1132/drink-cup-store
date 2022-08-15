@@ -97,12 +97,10 @@ const resolvers: Resolvers = {
   },
   PlantingEvent: {
     async details({
-      _producer_key_for_details_request,
       _planting_id_for_details_request,
       id,
     }) {
       const details = await loadEventDetails(
-        _producer_key_for_details_request,
         _planting_id_for_details_request
       );
       return details.find((d) => d.id === id)?.details || [];

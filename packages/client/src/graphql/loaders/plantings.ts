@@ -60,6 +60,9 @@ const fixEventType = (type: string): string => {
 };
 
 const convertExternalPlanting = (planting: externalData.Planting): Planting => {
+  if (!planting.drupal_uid) {
+    throw Error(`"drupal_uid" is missing in planting {_id: ${planting._id}}`);
+  }
   return {
     ...planting,
     __typename: "Planting",
@@ -96,8 +99,7 @@ const convertExternalPlanting = (planting: externalData.Planting): Planting => {
       ...e,
       id: e.id.toString(),
       type: fixEventType(e.type || ""),
-      _planting_id_for_details_request: planting.drupal_internal__id.toString(),
-      _producer_key_for_details_request: planting.producer.id.split(".")[0],
+      _planting_id_for_details_request: planting.drupal_uid,
       details: [],
       __typename: "PlantingEvent",
     })),
