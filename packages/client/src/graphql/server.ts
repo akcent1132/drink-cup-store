@@ -20,8 +20,6 @@ import { loadSurveyStackGroups } from "./loaders/surveyStackGroups";
 // @ts-ignore
 const typeDefs = buildClientSchema(jsonSchema);
 
-const SURVEY_STACK_API = "https://app.surveystack.io/api/";
-
 const UserPayload = z.object({
   email: z.string(),
   name: z.string(),
@@ -108,7 +106,7 @@ const resolvers: Resolvers = {
   },
   Mutation: {
     async login(_, { email, password }) {
-      return await fetch(SURVEY_STACK_API + "auth/login", {
+      return await fetch(`${process.env.REACT_APP_SURVEY_STACK_API_URL}api/auth/login`, {
         method: "POST",
         body: JSON.stringify({ email, password }),
         headers: {
@@ -135,6 +133,35 @@ const resolvers: Resolvers = {
           };
         });
     },
+
+  //   async loginWithMagicLink(_, { email }) {
+  //     return await fetch(`${process.env.REACT_APP_SURVEY_STACK_API_URL}api/auth/login`, {
+  //       method: "POST",
+  //       body: JSON.stringify({ email, password }),
+  //       headers: {
+  //         "Content-Type": "application/json;charset=utf-8",
+  //       },
+  //     })
+  //       .then((res) =>
+  //         res.ok
+  //           ? res.json()
+  //           : res.json().then((e) => {
+  //               throw e?.message || JSON.stringify(e);
+  //             })
+  //       )
+  //       .then((res) => UserPayload.parse(res))
+  //       .then(({ _id: id, email, name, token }) => ({
+  //         success: true,
+  //         user: { id, token, email, name },
+  //       }))
+  //       .catch((e) => {
+  //         console.error("LOgin error:", e);
+  //         return {
+  //           success: false,
+  //           error: e.toString(),
+  //         };
+  //       });
+  //   },
   },
 };
 

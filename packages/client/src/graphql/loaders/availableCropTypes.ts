@@ -13,7 +13,7 @@ declare module externalData {
 export const loadAvailableCropTypes = pMemoize(
   async (): Promise<AvailableCropType[]> => {
     const data: externalData.Crop[] = await fetch(
-      `https://app.surveystack.io/static/coffeeshop/crops`
+      `${process.env.REACT_APP_SURVEY_STACK_API_URL}static/coffeeshop/crops`
     ).then((result) => result.json());
 
     return data

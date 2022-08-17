@@ -112,7 +112,7 @@ const addPlantingsToMap = (plantings: Planting[]) =>
 
 export const loadPlantings = pMemoize(async () => {
   const externalPlantings: externalData.Planting[] = await fetch(
-    "https://app.surveystack.io/static/coffeeshop/plantings"
+    `${process.env.REACT_APP_SURVEY_STACK_API_URL}static/coffeeshop/plantings`
   ).then((result) => result.json());
 
   const clientPlantings: Planting[] = externalPlantings
@@ -124,7 +124,7 @@ export const loadPlantings = pMemoize(async () => {
 
 export const loadPlantingsOfCrop = pMemoize(async (cropType) => {
   const externalPlantings: externalData.Planting[] = await fetch(
-    `https://app.surveystack.io/static/coffeeshop/species_plantings/${cropType}`
+    `${process.env.REACT_APP_SURVEY_STACK_API_URL}static/coffeeshop/species_plantings/${cropType}`
   ).then((result) => result.json());
 
   const clientPlantings: Planting[] = externalPlantings
@@ -143,7 +143,7 @@ export const loadPlanting = pMemoize(
 
     // Load planting if it wasn't in the cache map
     const externalPlanting: externalData.Planting = await fetch(
-      `https://app.surveystack.io/static/coffeeshop/planting_details/${plantingId}`
+      `${process.env.REACT_APP_SURVEY_STACK_API_URL}/static/coffeeshop/planting_details/${plantingId}`
     ).then((result) => result.json());
     return convertExternalPlanting(externalPlanting);
   }

@@ -17,7 +17,7 @@ export const loadEventDetails = pMemoize(
     plantingId: string
   ): Promise<{ id: string; details: PlantingEventDetail[] }[]> => {
     const externalData: any = await fetch(
-      `https://app.surveystack.io/static/coffeeshop/events_new/${plantingId}`
+      `${process.env.REACT_APP_SURVEY_STACK_API_URL}/static/coffeeshop/events_new/${plantingId}`
     ).then((result) => result.json());
 
     return (Array.isArray(externalData) ? externalData : [externalData])
