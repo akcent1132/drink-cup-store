@@ -104,9 +104,10 @@ const flattenRows = (
 
 export const NestedRows = ({ rows, filters }: { rows: RowData[], filters: Filter[] }) => {
   const selectedCropType = useSelectedCropType();
-  const { data: { plantings } = {}, loading } = useNestedRowsQuery({
+  const { data, loading } = useNestedRowsQuery({
     variables: { cropType: selectedCropType },
   });
+  const { plantings } = data || {};
   const highlightedPlantingId = useHighlightedPlantingId();
   const highlightedFilterId = useHighlightedFilterId();
   const labeledValues = useMemo(

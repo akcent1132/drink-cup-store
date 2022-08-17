@@ -8,6 +8,7 @@ declare module externalData {
     _id: string;
     cropType: null | string;
     drupal_internal__id: number;
+    drupal_uid: string;
     events: Event[];
     flag: string[];
     params: Params;
@@ -23,17 +24,18 @@ declare module externalData {
   }
 
   export interface Params {
+    zone: null | string;
+    hardiness_zone: null | string;
+    climate_region: null;
+    temperature: number | null;
+    precipitation: number | null;
     texture: string;
-    soil_group?: string;
-    soil_suborder?: string;
-    soil_order?: string;
-    clay_percentage?: number;
-    sand_percentage?: number;
-    soil_texture?: number;
-    zone?: string;
-    hardiness_zone?: string;
-    temperature?: number;
-    precipitation?: number;
+    soil_group: null | string;
+    soil_suborder: null | string;
+    soil_order: null | string;
+    clay_percentage: number | null;
+    sand_percentage: number | null;
+    soil_texture: number | null;
   }
 
   export interface Producer {
@@ -58,11 +60,14 @@ const fixEventType = (type: string): string => {
 };
 
 const convertExternalPlanting = (planting: externalData.Planting): Planting => {
+  if (!planting.drupal_uid) {
+    throw Error(`"drupal_uid" is missing in planting {_id: ${planting._id}}`);
+  }
   return {
     ...planting,
     __typename: "Planting",
     cropType: planting.cropType!,
-    id: planting._id,
+    id: planting.drupal_uid,
     values: planting.values
       .filter((v): v is externalData.ValueElement & { value: number } =>
         isNumber(v.value)
@@ -72,7 +77,7 @@ const convertExternalPlanting = (planting: externalData.Planting): Planting => {
           ...v,
           modusId: v.modus_test_id || null,
           __typename: "PlantingValue",
-          plantingId: planting._id,
+          plantingId: planting.drupal_uid,
         };
       }),
     params: {
@@ -94,8 +99,7 @@ const convertExternalPlanting = (planting: externalData.Planting): Planting => {
       ...e,
       id: e.id.toString(),
       type: fixEventType(e.type || ""),
-      _planting_id_for_details_request: planting.drupal_internal__id.toString(),
-      _producer_key_for_details_request: planting.producer.id.split(".")[0],
+      _planting_id_for_details_request: planting.drupal_uid,
       details: [],
       __typename: "PlantingEvent",
     })),
@@ -108,7 +112,7 @@ const addPlantingsToMap = (plantings: Planting[]) =>
 
 export const loadPlantings = pMemoize(async () => {
   const externalPlantings: externalData.Planting[] = await fetch(
-    "https://app.surveystack.io/static/coffeeshop/plantings"
+    `${process.env.REACT_APP_SURVEY_STACK_API_URL}static/coffeeshop/plantings`
   ).then((result) => result.json());
 
   const clientPlantings: Planting[] = externalPlantings
@@ -120,7 +124,7 @@ export const loadPlantings = pMemoize(async () => {
 
 export const loadPlantingsOfCrop = pMemoize(async (cropType) => {
   const externalPlantings: externalData.Planting[] = await fetch(
-    `https://app.surveystack.io/static/coffeeshop/species_plantings/${cropType}`
+    `${process.env.REACT_APP_SURVEY_STACK_API_URL}static/coffeeshop/species_plantings/${cropType}`
   ).then((result) => result.json());
 
   const clientPlantings: Planting[] = externalPlantings
@@ -130,18 +134,20 @@ export const loadPlantingsOfCrop = pMemoize(async (cropType) => {
   return clientPlantings;
 });
 
-export const loadPlanting = async (
-  plantingId: string,
-): Promise<Planting | null> => {
-  const planting = plantingMap.get(plantingId);
-  if (!planting) {
-    // TODO ask for a per planting endpoint
-    const plantings = await loadPlantings()
-    return plantings.find(planting => planting.id === plantingId) || null
+export const loadPlanting = pMemoize(
+  async (plantingId: string): Promise<Planting | null> => {
+    const planting = plantingMap.get(plantingId);
+    if (planting) {
+      return planting;
+    }
+
+    // Load planting if it wasn't in the cache map
+    const externalPlanting: externalData.Planting = await fetch(
+      `${process.env.REACT_APP_SURVEY_STACK_API_URL}/static/coffeeshop/planting_details/${plantingId}`
+    ).then((result) => result.json());
+    return convertExternalPlanting(externalPlanting);
   }
-  console.log("Got planting from map", plantingId);
-  return planting;
-};
+);
 
 // const createFakePlantings = (
 //   cropType: string,

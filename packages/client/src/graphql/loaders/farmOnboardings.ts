@@ -82,7 +82,7 @@ const floatOrNull = (f: any) => (isNumber(f) && isFinite(f) ? f : null);
 export const loadFarmOnboardings = pMemoize(
   async (): Promise<FarmOnboarding[]> => {
     const externalData: externalData.FarmOnboarding[] = await fetch(
-      "https://app.surveystack.io/static/coffeeshop/farm_profiles"
+      `${process.env.REACT_APP_SURVEY_STACK_API_URL}static/coffeeshop/farm_profiles`
     ).then((result) => result.json());
 
     return externalData.map((farm) => ({

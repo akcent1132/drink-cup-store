@@ -186,7 +186,6 @@ export const Dashboard = ({ iframeSrc }: Props) => {
         <HyloBox container={rightSide} src={iframeSrc} />
       </RightSide>
       <LoginDialog />
-      <Notifications />
     </Root>
   );
 };
@@ -196,6 +195,7 @@ export const App = (props: ComponentProps<typeof Dashboard>) => (
     <RecoilRoot>
       <RecoilNexus />
       <Dashboard {...props} />
+      <Notifications />
     </RecoilRoot>
   </ApolloProvider>
 );

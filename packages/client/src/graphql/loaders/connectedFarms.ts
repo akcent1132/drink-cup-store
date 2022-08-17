@@ -15,7 +15,7 @@ export const loadConnectedFarmIds = pMemoize(async (authorization) => {
   if (!authorization) {
     return []
   }
-  const data = await fetch(`https://app.surveystack.io/api/farmos/farms`, {
+  const data = await fetch(`${process.env.REACT_APP_SURVEY_STACK_API_URL}api/farmos/farms`, {
     headers: {
       Authorization: authorization,
     },
