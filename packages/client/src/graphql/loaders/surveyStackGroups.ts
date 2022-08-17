@@ -36,7 +36,7 @@ export const loadSurveyStackGroups = pMemoize(async (userId, authorization) => {
     return [];
   }
   const data = await fetch(
-    `${process.env.REACT_APP_SURVEY_STACK_API_URL}/api/memberships?user=${userId}&populate=1`,
+    `${process.env.REACT_APP_SURVEY_STACK_API_URL}api/memberships?user=${userId}&populate=1`,
     {
       headers: {
         Authorization: authorization,
