@@ -2,6 +2,7 @@ import { Planting } from "../resolvers.generated";
 import pMemoize from "p-memoize";
 import { isNumber, toString } from "lodash";
 import seedrandom from "seedrandom";
+import { z } from "zod";
 
 declare module externalData {
   export interface Planting {
@@ -18,7 +19,7 @@ declare module externalData {
   }
 
   export interface Event {
-    id: number;
+    drupal_id: string;
     type: null | string;
     date: string;
   }
@@ -60,9 +61,20 @@ const fixEventType = (type: string): string => {
 };
 
 const convertExternalPlanting = (planting: externalData.Planting): Planting => {
-  if (!planting.drupal_uid) {
-    throw Error(`"drupal_uid" is missing in planting {_id: ${planting._id}}`);
-  }
+  const minimalExpectedPlantingData = z.object({
+    drupal_uid: z.string(),
+    events: z.array(
+      z.object({
+        drupal_id: z.string({
+          required_error: `Event in planting#${planting.drupal_uid} is missing "drupal_id"`,
+          invalid_type_error: `Event in planting#${planting.drupal_uid} has invalid "drupal_id"`,
+        }),
+      })
+    ),
+    producer: z.object({ id: z.string() }),
+  });
+  minimalExpectedPlantingData.parse(planting);
+
   return {
     ...planting,
     __typename: "Planting",
@@ -97,9 +109,8 @@ const convertExternalPlanting = (planting: externalData.Planting): Planting => {
     },
     events: planting.events.map((e) => ({
       ...e,
-      id: e.id.toString(),
+      id: e.drupal_id,
       type: fixEventType(e.type || ""),
-      _planting_id_for_details_request: planting.drupal_uid,
       details: [],
       __typename: "PlantingEvent",
     })),
@@ -123,10 +134,11 @@ export const loadPlantings = pMemoize(async () => {
 });
 
 export const loadPlantingsOfCrop = pMemoize(async (cropType) => {
+  console.log("loadPlantingsOfCrop");
   const externalPlantings: externalData.Planting[] = await fetch(
     `${process.env.REACT_APP_SURVEY_STACK_API_URL}static/coffeeshop/species_plantings/${cropType}`
   ).then((result) => result.json());
-
+  console.log("externalPlantings", externalPlantings);
   const clientPlantings: Planting[] = externalPlantings
     .filter((p) => p.cropType !== null)
     .map(convertExternalPlanting);

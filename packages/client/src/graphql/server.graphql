@@ -62,7 +62,6 @@ type PlantingEvent {
   type: String!
   date: String!
   details: [PlantingEventDetail!]
-  _planting_id_for_details_request: String!
 }
 
 type PlantingEventDetail {

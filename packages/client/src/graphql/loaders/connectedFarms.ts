@@ -24,6 +24,5 @@ export const loadConnectedFarmIds = pMemoize(async (authorization) => {
     .then(expectedData.parse);
 
   // return ["oursci.farmos.net","farmatsunnyside.farmos.net","jimsheppard.farmos.net"]
-  console.log("LOAD CONNECTED FARM IDS", data);
   return data.map((d) => d.instanceName);
 });

@@ -50,7 +50,6 @@ export const PlantingCardList = ({
   // find out which filter colors should we add to a card
   const filters = useFilters();
   const matchingFilterColorsPerPlanting = useMemo(() => {
-    console.log("RECOMPUTE matchingFilterColorsPerPlanting");
     const matchingPlantingIdsPerFilter = filters.map((filter) =>
       getPlantingIdsOfFilter(filter, plantings || [])
     );

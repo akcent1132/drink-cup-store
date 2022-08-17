@@ -77,7 +77,6 @@ export type Planting = {
 
 export type PlantingEvent = {
   __typename?: 'PlantingEvent';
-  _planting_id_for_details_request: Scalars['String'];
   date: Scalars['String'];
   details?: Maybe<Array<PlantingEventDetail>>;
   id: Scalars['String'];
@@ -328,7 +327,6 @@ export type PlantingResolvers<ContextType = any, ParentType extends ResolversPar
 }>;
 
 export type PlantingEventResolvers<ContextType = any, ParentType extends ResolversParentTypes['PlantingEvent'] = ResolversParentTypes['PlantingEvent']> = ResolversObject<{
-  _planting_id_for_details_request?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   date?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   details?: Resolver<Maybe<Array<ResolversTypes['PlantingEventDetail']>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

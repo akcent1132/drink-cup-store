@@ -94,25 +94,22 @@ const resolvers: Resolvers = {
     },
   },
   PlantingEvent: {
-    async details({
-      _planting_id_for_details_request,
-      id,
-    }) {
-      const details = await loadEventDetails(
-        _planting_id_for_details_request
-      );
-      return details.find((d) => d.id === id)?.details || [];
+    async details({ id }) {
+      return await loadEventDetails(id);
     },
   },
   Mutation: {
     async login(_, { email, password }) {
-      return await fetch(`${process.env.REACT_APP_SURVEY_STACK_API_URL}api/auth/login`, {
-        method: "POST",
-        body: JSON.stringify({ email, password }),
-        headers: {
-          "Content-Type": "application/json;charset=utf-8",
-        },
-      })
+      return await fetch(
+        `${process.env.REACT_APP_SURVEY_STACK_API_URL}api/auth/login`,
+        {
+          method: "POST",
+          body: JSON.stringify({ email, password }),
+          headers: {
+            "Content-Type": "application/json;charset=utf-8",
+          },
+        }
+      )
         .then((res) =>
           res.ok
             ? res.json()
@@ -126,7 +123,7 @@ const resolvers: Resolvers = {
           user: { id, token, email, name },
         }))
         .catch((e) => {
-          console.error("LOgin error:", e);
+          console.error("Login error:", e);
           return {
             success: false,
             error: e.toString(),
@@ -134,34 +131,34 @@ const resolvers: Resolvers = {
         });
     },
 
-  //   async loginWithMagicLink(_, { email }) {
-  //     return await fetch(`${process.env.REACT_APP_SURVEY_STACK_API_URL}api/auth/login`, {
-  //       method: "POST",
-  //       body: JSON.stringify({ email, password }),
-  //       headers: {
-  //         "Content-Type": "application/json;charset=utf-8",
-  //       },
-  //     })
-  //       .then((res) =>
-  //         res.ok
-  //           ? res.json()
-  //           : res.json().then((e) => {
-  //               throw e?.message || JSON.stringify(e);
-  //             })
-  //       )
-  //       .then((res) => UserPayload.parse(res))
-  //       .then(({ _id: id, email, name, token }) => ({
-  //         success: true,
-  //         user: { id, token, email, name },
-  //       }))
-  //       .catch((e) => {
-  //         console.error("LOgin error:", e);
-  //         return {
-  //           success: false,
-  //           error: e.toString(),
-  //         };
-  //       });
-  //   },
+    //   async loginWithMagicLink(_, { email }) {
+    //     return await fetch(`${process.env.REACT_APP_SURVEY_STACK_API_URL}api/auth/login`, {
+    //       method: "POST",
+    //       body: JSON.stringify({ email, password }),
+    //       headers: {
+    //         "Content-Type": "application/json;charset=utf-8",
+    //       },
+    //     })
+    //       .then((res) =>
+    //         res.ok
+    //           ? res.json()
+    //           : res.json().then((e) => {
+    //               throw e?.message || JSON.stringify(e);
+    //             })
+    //       )
+    //       .then((res) => UserPayload.parse(res))
+    //       .then(({ _id: id, email, name, token }) => ({
+    //         success: true,
+    //         user: { id, token, email, name },
+    //       }))
+    //       .catch((e) => {
+    //         console.error("LOgin error:", e);
+    //         return {
+    //           success: false,
+    //           error: e.toString(),
+    //         };
+    //       });
+    //   },
   },
 };
 
