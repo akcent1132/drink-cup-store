@@ -55,12 +55,18 @@ export type LoginResponse = {
 export type Mutation = {
   __typename?: 'Mutation';
   login?: Maybe<LoginResponse>;
+  requestMagicLoginLink?: Maybe<RequestMagicLoginLinkResponse>;
 };
 
 
 export type MutationLoginArgs = {
   email: Scalars['String'];
   password: Scalars['String'];
+};
+
+
+export type MutationRequestMagicLoginLinkArgs = {
+  email: Scalars['String'];
 };
 
 export type Planting = {
@@ -152,6 +158,12 @@ export type QueryProducerArgs = {
 
 export type QuerySurveyStackGroupsArgs = {
   userId?: InputMaybe<Scalars['String']>;
+};
+
+export type RequestMagicLoginLinkResponse = {
+  __typename?: 'RequestMagicLoginLinkResponse';
+  error?: Maybe<Scalars['String']>;
+  success: Scalars['Boolean'];
 };
 
 export type SurveyStackGroup = {
@@ -246,6 +258,7 @@ export type ResolversTypes = ResolversObject<{
   PlantingValue: ResolverTypeWrapper<PlantingValue>;
   Producer: ResolverTypeWrapper<Producer>;
   Query: ResolverTypeWrapper<{}>;
+  RequestMagicLoginLinkResponse: ResolverTypeWrapper<RequestMagicLoginLinkResponse>;
   String: ResolverTypeWrapper<Scalars['String']>;
   SurveyStackGroup: ResolverTypeWrapper<SurveyStackGroup>;
 }>;
@@ -268,6 +281,7 @@ export type ResolversParentTypes = ResolversObject<{
   PlantingValue: PlantingValue;
   Producer: Producer;
   Query: {};
+  RequestMagicLoginLinkResponse: RequestMagicLoginLinkResponse;
   String: Scalars['String'];
   SurveyStackGroup: SurveyStackGroup;
 }>;
@@ -312,6 +326,7 @@ export type LoginResponseResolvers<ContextType = any, ParentType extends Resolve
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   login?: Resolver<Maybe<ResolversTypes['LoginResponse']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'email' | 'password'>>;
+  requestMagicLoginLink?: Resolver<Maybe<ResolversTypes['RequestMagicLoginLinkResponse']>, ParentType, ContextType, RequireFields<MutationRequestMagicLoginLinkArgs, 'email'>>;
 }>;
 
 export type PlantingResolvers<ContextType = any, ParentType extends ResolversParentTypes['Planting'] = ResolversParentTypes['Planting']> = ResolversObject<{
@@ -379,6 +394,12 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   surveyStackGroups?: Resolver<Maybe<Array<ResolversTypes['SurveyStackGroup']>>, ParentType, ContextType, Partial<QuerySurveyStackGroupsArgs>>;
 }>;
 
+export type RequestMagicLoginLinkResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['RequestMagicLoginLinkResponse'] = ResolversParentTypes['RequestMagicLoginLinkResponse']> = ResolversObject<{
+  error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type SurveyStackGroupResolvers<ContextType = any, ParentType extends ResolversParentTypes['SurveyStackGroup'] = ResolversParentTypes['SurveyStackGroup']> = ResolversObject<{
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -399,6 +420,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   PlantingValue?: PlantingValueResolvers<ContextType>;
   Producer?: ProducerResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  RequestMagicLoginLinkResponse?: RequestMagicLoginLinkResponseResolvers<ContextType>;
   SurveyStackGroup?: SurveyStackGroupResolvers<ContextType>;
 }>;
 

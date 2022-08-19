@@ -3,6 +3,7 @@ import pMemoize from "p-memoize";
 import { isNumber, toString } from "lodash";
 import seedrandom from "seedrandom";
 import { z } from "zod";
+import { surveyStackApiUrl } from "../../utils/env";
 
 declare module externalData {
   export interface Planting {
@@ -123,7 +124,7 @@ const addPlantingsToMap = (plantings: Planting[]) =>
 
 export const loadPlantings = pMemoize(async () => {
   const externalPlantings: externalData.Planting[] = await fetch(
-    `${process.env.REACT_APP_SURVEY_STACK_API_URL}static/coffeeshop/plantings`
+    surveyStackApiUrl(`static/coffeeshop/plantings`)
   ).then((result) => result.json());
 
   const clientPlantings: Planting[] = externalPlantings
@@ -136,7 +137,7 @@ export const loadPlantings = pMemoize(async () => {
 export const loadPlantingsOfCrop = pMemoize(async (cropType) => {
   console.log("loadPlantingsOfCrop");
   const externalPlantings: externalData.Planting[] = await fetch(
-    `${process.env.REACT_APP_SURVEY_STACK_API_URL}static/coffeeshop/species_plantings/${cropType}`
+    surveyStackApiUrl(`static/coffeeshop/species_plantings/${cropType}`)
   ).then((result) => result.json());
   console.log("externalPlantings", externalPlantings);
   const clientPlantings: Planting[] = externalPlantings
@@ -155,7 +156,7 @@ export const loadPlanting = pMemoize(
 
     // Load planting if it wasn't in the cache map
     const externalPlanting: externalData.Planting = await fetch(
-      `${process.env.REACT_APP_SURVEY_STACK_API_URL}static/coffeeshop/planting_details/${plantingId}`
+      surveyStackApiUrl(`static/coffeeshop/planting_details/${plantingId}`)
     ).then((result) => result.json());
     return convertExternalPlanting(externalPlanting);
   }

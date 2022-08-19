@@ -54,12 +54,18 @@ export type LoginResponse = {
 export type Mutation = {
   __typename: 'Mutation';
   login: Maybe<LoginResponse>;
+  requestMagicLoginLink: Maybe<RequestMagicLoginLinkResponse>;
 };
 
 
 export type MutationLoginArgs = {
   email: Scalars['String'];
   password: Scalars['String'];
+};
+
+
+export type MutationRequestMagicLoginLinkArgs = {
+  email: Scalars['String'];
 };
 
 export type Planting = {
@@ -153,6 +159,12 @@ export type QuerySurveyStackGroupsArgs = {
   userId: InputMaybe<Scalars['String']>;
 };
 
+export type RequestMagicLoginLinkResponse = {
+  __typename: 'RequestMagicLoginLinkResponse';
+  error: Maybe<Scalars['String']>;
+  success: Scalars['Boolean'];
+};
+
 export type SurveyStackGroup = {
   __typename: 'SurveyStackGroup';
   id: Scalars['String'];
@@ -192,9 +204,10 @@ export type LoginResponseFieldPolicy = {
 	success?: FieldPolicy<any> | FieldReadFunction<any>,
 	user?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type MutationKeySpecifier = ('login' | MutationKeySpecifier)[];
+export type MutationKeySpecifier = ('login' | 'requestMagicLoginLink' | MutationKeySpecifier)[];
 export type MutationFieldPolicy = {
-	login?: FieldPolicy<any> | FieldReadFunction<any>
+	login?: FieldPolicy<any> | FieldReadFunction<any>,
+	requestMagicLoginLink?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type PlantingKeySpecifier = ('cropType' | 'events' | 'farmOnboarding' | 'id' | 'params' | 'producer' | 'title' | 'values' | PlantingKeySpecifier)[];
 export type PlantingFieldPolicy = {
@@ -255,6 +268,11 @@ export type QueryFieldPolicy = {
 	producer?: FieldPolicy<any> | FieldReadFunction<any>,
 	surveyStackGroups?: FieldPolicy<any> | FieldReadFunction<any>
 };
+export type RequestMagicLoginLinkResponseKeySpecifier = ('error' | 'success' | RequestMagicLoginLinkResponseKeySpecifier)[];
+export type RequestMagicLoginLinkResponseFieldPolicy = {
+	error?: FieldPolicy<any> | FieldReadFunction<any>,
+	success?: FieldPolicy<any> | FieldReadFunction<any>
+};
 export type SurveyStackGroupKeySpecifier = ('id' | 'name' | SurveyStackGroupKeySpecifier)[];
 export type SurveyStackGroupFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -312,6 +330,10 @@ export type StrictTypedTypePolicies = {
 	Query?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | QueryKeySpecifier | (() => undefined | QueryKeySpecifier),
 		fields?: QueryFieldPolicy,
+	},
+	RequestMagicLoginLinkResponse?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | RequestMagicLoginLinkResponseKeySpecifier | (() => undefined | RequestMagicLoginLinkResponseKeySpecifier),
+		fields?: RequestMagicLoginLinkResponseFieldPolicy,
 	},
 	SurveyStackGroup?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | SurveyStackGroupKeySpecifier | (() => undefined | SurveyStackGroupKeySpecifier),

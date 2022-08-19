@@ -1,6 +1,7 @@
 import { FarmOnboarding } from "../resolvers.generated";
 import pMemoize from "p-memoize";
 import { isArray, isEmpty, isFinite, isNumber, map, toString } from "lodash";
+import { surveyStackApiUrl } from "../../utils/env";
 
 declare module externalData {
   export interface FarmOnboarding {
@@ -82,11 +83,11 @@ const floatOrNull = (f: any) => (isNumber(f) && isFinite(f) ? f : null);
 export const loadFarmOnboardings = pMemoize(
   async (): Promise<FarmOnboarding[]> => {
     const externalData: externalData.FarmOnboarding[] = await fetch(
-      `${process.env.REACT_APP_SURVEY_STACK_API_URL}static/coffeeshop/farm_profiles`
+      surveyStackApiUrl("static/coffeeshop/farm_profiles")
     ).then((result) => result.json());
 
     return externalData.map((farm) => ({
-      id: [farm.farmDomain,farm.surveystack_id].join(),
+      id: [farm.farmDomain, farm.surveystack_id].join(),
       farmDomain: toString(farm.farmDomain) || null,
       climateZone: toString(farm.climate_zone) || null,
       averageAnnualTemperature: floatOrNull(farm.average_annual_temperature),

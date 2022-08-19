@@ -10,9 +10,10 @@ import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useAuth, useLogin } from "../../states/auth";
 import { useIsAuthDialogOpen, useSetIsAuthDialogOpen } from "../../states/ui";
+import { useRequestMagicLoginLinkMutation } from "./LoginDialog.generated";
 
 function Copyright(props: any) {
   return (
@@ -32,12 +33,35 @@ function Copyright(props: any) {
   );
 }
 
+enum AuthMethod {
+  Password,
+  MagicLink,
+}
+
 export const LoginDialog = () => {
+  const [authMethod, setAuthMethod] = useState(AuthMethod.MagicLink);
   const { login, isLoginInProgress } = useLogin();
+  const [requestMagicLoginLink, { loading: isMagicLinkRequestLoading, data: requestMagicLoginLinkData }] =
+    useRequestMagicLoginLinkMutation();
   const isAuthDialogOpen = useIsAuthDialogOpen();
   const setIsAuthDialogOpen = useSetIsAuthDialogOpen();
-  const { error } = useAuth();
+  const { error: loginError } = useAuth();
+  const error = authMethod === AuthMethod.Password ? loginError : requestMagicLoginLinkData?.requestMagicLoginLink?.error;
+
   const handleSubmit = useCallback(
+    async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      const data = new FormData(event.currentTarget);
+      await login(
+        data.get("email")?.toString() || "",
+        data.get("password")?.toString() || ""
+      );
+      setIsAuthDialogOpen(false);
+    },
+    []
+  );
+
+  const handleRequestMagicLoginLink = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       const data = new FormData(event.currentTarget);
@@ -45,11 +69,15 @@ export const LoginDialog = () => {
         email: data.get("email"),
         password: data.get("password"),
       });
-      await login(
-        data.get("email")?.toString() || "",
-        data.get("password")?.toString() || ""
-      );
-      setIsAuthDialogOpen(false);
+      const result = await requestMagicLoginLink({
+        variables: {
+          email: data.get("email")?.toString() || "",
+        },
+      });
+      console.log({result})
+      if (result.data?.requestMagicLoginLink?.success) {
+        setIsAuthDialogOpen(false);
+      }
     },
     []
   );
@@ -70,62 +98,115 @@ export const LoginDialog = () => {
         <Typography component="h1" variant="h5">
           Sign in with SurveyStack
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-          />
-          {/* <FormControlLabel
+        {authMethod === AuthMethod.Password ? (
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{ mt: 1 }}
+          >
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+              autoFocus
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              type="password"
+              id="password"
+              autoComplete="current-password"
+            />
+            {/* <FormControlLabel
+          control={<Checkbox value="remember" color="primary" />}
+          label="Remember me"
+        /> */}
+            <LoadingButton
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+              loading={isLoginInProgress}
+            >
+              Sign In
+            </LoadingButton>
+            {/* <Grid container>
+            <Grid item xs>
+              <Link href="#" variant="body2">
+                Forgot password?
+              </Link>
+            </Grid>
+            <Grid item>
+              <Link href="#" variant="body2">
+                {"Don't have an account? Sign Up"}
+              </Link>
+            </Grid>
+          </Grid> */}
+          </Box>
+        ) : (
+          <Box
+            component="form"
+            onSubmit={handleRequestMagicLoginLink}
+            noValidate
+            sx={{ mt: 1 }}
+          >
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+              autoFocus
+            />
+            {/* <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
           /> */}
-          <LoadingButton
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-            loading={isLoginInProgress}
-          >
-            Sign In
-          </LoadingButton>
-          <Button
-            fullWidth
-            sx={{ mt: 3, mb: 2 }}
-            endIcon={<ArrowForwardIcon />}
-            onClick={() => setIsAuthDialogOpen(false)}
-          >
-            Continue without login
-          </Button>
-          {error ? <Alert severity="error">{error}</Alert> : null}
-          {/* <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link href="#" variant="body2">
-                  {"Don't have an account? Sign Up"}
-                </Link>
-              </Grid>
-            </Grid> */}
-        </Box>
+            <LoadingButton
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+              loading={isMagicLinkRequestLoading}
+            >
+              Send Link
+            </LoadingButton>
+          </Box>
+        )}
+
+        {error ? <Alert severity="error">{error}</Alert> : null}
+        <Button
+          fullWidth
+          sx={{ mt: 3, mb: 2 }}
+          endIcon={<ArrowForwardIcon />}
+          onClick={() => setIsAuthDialogOpen(false)}
+        >
+          Continue without login
+        </Button>
+        <Button
+          variant="text"
+          onClick={() =>
+            setAuthMethod(
+              authMethod === AuthMethod.Password
+                ? AuthMethod.MagicLink
+                : AuthMethod.Password
+            )
+          }
+        >
+          {authMethod === AuthMethod.Password
+            ? "email me a sign in link instead"
+            : "sign in with password instead"}
+        </Button>
       </Box>
       {/* <Copyright sx={{ mt: 8, mb: 4 }} /> */}
     </Dialog>

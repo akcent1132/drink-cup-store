@@ -1,20 +1,22 @@
-import { setupWorker, rest } from "msw";
-import { buildClientSchema, graphql } from "graphql";
 import { makeExecutableSchema } from "@graphql-tools/schema";
-import { Planting, Resolvers } from "./resolvers.generated";
-import jsonSchema from "./schema.server.generated.json";
+import { buildClientSchema, graphql } from "graphql";
+import { rest, setupWorker } from "msw";
+import seedrandom from "seedrandom";
+import { z } from "zod";
+import urlJoin from "url-join";
+import { loadAvailableCropTypes } from "./loaders/availableCropTypes";
+import { loadConnectedFarmIds } from "./loaders/connectedFarms";
+import { loadEventDetails } from "./loaders/farmEvents";
+import { loadFarmOnboardings } from "./loaders/farmOnboardings";
 import {
   loadPlanting,
   loadPlantings,
   loadPlantingsOfCrop,
 } from "./loaders/plantings";
-import seedrandom from "seedrandom";
-import { loadFarmOnboardings } from "./loaders/farmOnboardings";
-import { loadEventDetails } from "./loaders/farmEvents";
-import { loadAvailableCropTypes } from "./loaders/availableCropTypes";
-import { z } from "zod";
-import { loadConnectedFarmIds } from "./loaders/connectedFarms";
 import { loadSurveyStackGroups } from "./loaders/surveyStackGroups";
+import { Planting, Resolvers } from "./resolvers.generated";
+import jsonSchema from "./schema.server.generated.json";
+import { surveyStackApiUrl } from "../utils/env";
 
 // Construct a schema, using GraphQL schema language
 // @ts-ignore
@@ -100,16 +102,13 @@ const resolvers: Resolvers = {
   },
   Mutation: {
     async login(_, { email, password }) {
-      return await fetch(
-        `${process.env.REACT_APP_SURVEY_STACK_API_URL}api/auth/login`,
-        {
-          method: "POST",
-          body: JSON.stringify({ email, password }),
-          headers: {
-            "Content-Type": "application/json;charset=utf-8",
-          },
-        }
-      )
+      return await fetch(surveyStackApiUrl('api/auth/login'), {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+        headers: {
+          "Content-Type": "application/json;charset=utf-8",
+        },
+      })
         .then((res) =>
           res.ok
             ? res.json()
@@ -131,34 +130,28 @@ const resolvers: Resolvers = {
         });
     },
 
-    //   async loginWithMagicLink(_, { email }) {
-    //     return await fetch(`${process.env.REACT_APP_SURVEY_STACK_API_URL}api/auth/login`, {
-    //       method: "POST",
-    //       body: JSON.stringify({ email, password }),
-    //       headers: {
-    //         "Content-Type": "application/json;charset=utf-8",
-    //       },
-    //     })
-    //       .then((res) =>
-    //         res.ok
-    //           ? res.json()
-    //           : res.json().then((e) => {
-    //               throw e?.message || JSON.stringify(e);
-    //             })
-    //       )
-    //       .then((res) => UserPayload.parse(res))
-    //       .then(({ _id: id, email, name, token }) => ({
-    //         success: true,
-    //         user: { id, token, email, name },
-    //       }))
-    //       .catch((e) => {
-    //         console.error("LOgin error:", e);
-    //         return {
-    //           success: false,
-    //           error: e.toString(),
-    //         };
-    //       });
-    //   },
+    async requestMagicLoginLink(_, { email }) {
+      return await fetch(
+        surveyStackApiUrl("/api/auth/request-magic-link"),
+        {
+          method: "POST",
+          body: JSON.stringify({ email, callbackUrl: urlJoin(window.location.origin, '?accept-magic-link') }),
+          headers: {
+            "Content-Type": "application/json;charset=utf-8",
+          },
+        }
+      )
+        .then(() => ({
+          success: true,
+        }))
+        .catch((e) => {
+          console.error("Login error:", e);
+          return {
+            success: false,
+            error: e.toString(),
+          };
+        });
+    },
   },
 };
 

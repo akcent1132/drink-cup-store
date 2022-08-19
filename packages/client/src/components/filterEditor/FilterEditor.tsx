@@ -108,10 +108,9 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
     [selectedFilterId, filters]
   );
   const updateFilterName = useUpdateFilterName();
-  const editFilterParam = useEditFilterParam();
-  const { data: { plantings } = {} } = useFilterEditorQuery({
+  const { plantings } = useFilterEditorQuery({
     variables: { cropType: selectedCropType },
-  });
+  }).data || {};
 
   const filterables = useMemo(
     () => getFilterables(plantings || []),

@@ -25,6 +25,7 @@ import { CompareTab } from "../components/compareTab/CompareTab";
 import { AuthMenu } from "../components/auth/AuthMenu";
 import { LoginDialog } from "../components/auth/LoginDialog";
 import { Notifications } from "../components/Notifications";
+import { useTryAcceptingMagicLinkLogin } from "../states/auth";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -85,6 +86,7 @@ interface Props {
 }
 
 export const Dashboard = ({ iframeSrc }: Props) => {
+  useTryAcceptingMagicLinkLogin();
   const { loading } = usePreloadDataQuery();
   const sidePanelContent = useSidePanelContent();
   const [tabIndex, setTabIndex] = useState(0);

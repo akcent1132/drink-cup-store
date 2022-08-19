@@ -12,6 +12,7 @@ type Query {
 
 type Mutation {
   login(email: String! password: String!): LoginResponse
+  requestMagicLoginLink(email: String!): RequestMagicLoginLinkResponse
 }
 
 type SurveyStackGroup {
@@ -22,6 +23,11 @@ type SurveyStackGroup {
 type LoginResponse {
   success: Boolean!
   user: AuthUser
+  error: String
+}
+
+type RequestMagicLoginLinkResponse {
+  success: Boolean!
   error: String
 }
 

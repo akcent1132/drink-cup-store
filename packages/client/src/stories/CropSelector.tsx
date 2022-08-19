@@ -24,7 +24,7 @@ const StyledBadge = styled(Badge)<BadgeProps>({
 });
 
 export const CropSelector = () => {
-  const { data: { availableCropTypes } = {} } = useCropSelectorQuery();
+  const { availableCropTypes } = useCropSelectorQuery().data || {};
   const value = useSelectedCropType();
   const setSelectedCropType = useSetSelectedCropType();
   const crops = useMemo(

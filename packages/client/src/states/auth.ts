@@ -1,7 +1,8 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { atom, useRecoilValue, useSetRecoilState } from "recoil";
 import { z } from "zod";
 import { useLoginMutation } from "./auth.generated";
+import { decode as b64Decode } from "js-base64";
 
 const STORE_KEY = "coffeeshop.authentication";
 
@@ -43,10 +44,12 @@ type AuthState =
       error?: string | null;
     };
 
-const _defaultUser = readUserFromStore()
+const _defaultUser = readUserFromStore();
 const auth = atom<AuthState>({
   key: "auth",
-  default: _defaultUser ? {isAuthenticated: true, user: _defaultUser} : { isAuthenticated: false },
+  default: _defaultUser
+    ? { isAuthenticated: true, user: _defaultUser }
+    : { isAuthenticated: false },
 });
 
 export const useAuth = () => useRecoilValue(auth);
@@ -68,7 +71,7 @@ export const useLogin = () => {
         const { login } = data;
         if (login.success) {
           if (login.user) {
-            writeUserToStore(login.user)
+            writeUserToStore(login.user);
             setAuth({
               isAuthenticated: true,
               user: login.user,
@@ -98,6 +101,36 @@ export const useLogout = () => {
     setAuth({
       isAuthenticated: false,
     });
-    localStorage[STORE_KEY] = undefined
+    localStorage[STORE_KEY] = undefined;
   }, []);
+};
+
+const UserPayload = z.object({
+  _id: z.string(),
+  email: z.string(),
+  token: z.string(),
+});
+export const useTryAcceptingMagicLinkLogin = () => {
+  const setAuth = useSetRecoilState(auth);
+
+  // check the query params once when the app loads
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("accept-magic-link")) {
+      if (!params.has("user")) {
+        throw new Error("Failed to authenticate: 'user' param is missing");
+      }
+      const {
+        email,
+        token,
+        _id: id,
+      } = UserPayload.parse(JSON.parse(b64Decode(params.get("user")!)));
+
+      const user = { email, token, id };
+      writeUserToStore(user);
+      setAuth({ isAuthenticated: true, user: user });
+
+      window.location.search = "";
+    }
+  }, [])
 };

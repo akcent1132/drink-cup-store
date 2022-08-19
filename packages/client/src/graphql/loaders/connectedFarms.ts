@@ -1,5 +1,6 @@
 import pMemoize from "p-memoize";
 import { z } from "zod";
+import { surveyStackApiUrl } from "../../utils/env";
 
 const expectedData = z.array(
   z.object({
@@ -13,9 +14,9 @@ const expectedData = z.array(
 // Fetch all the event details for a planting
 export const loadConnectedFarmIds = pMemoize(async (authorization) => {
   if (!authorization) {
-    return []
+    return [];
   }
-  const data = await fetch(`${process.env.REACT_APP_SURVEY_STACK_API_URL}api/farmos/farms`, {
+  const data = await fetch(surveyStackApiUrl("api/farmos/farms"), {
     headers: {
       Authorization: authorization,
     },
