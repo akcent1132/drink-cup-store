@@ -1,7 +1,7 @@
+import { isNil, isObject } from "lodash";
 import pMemoize from "p-memoize";
-import { isObject } from "lodash";
-import { PlantingEventDetail } from "../resolvers.generated";
 import { surveyStackApiUrl } from "../../utils/env";
+import { PlantingEventDetail } from "../resolvers.generated";
 
 // Fetch all the event details for a planting
 export const loadEventDetails = pMemoize(
@@ -16,14 +16,19 @@ export const loadEventDetails = pMemoize(
       );
     }
 
-    return Object.entries(externalData).map(([key, value]) => ({
-      __typename: "PlantingEventDetail" as "PlantingEventDetail",
-      id: `${id}/${key}`,
-      valueList: Array.isArray(value)
-        ? value.map((v) => JSON.stringify(v))
-        : null,
-      value: Array.isArray(value) ? null : JSON.stringify(value),
-      name: key,
-    }));
+    return Object.entries(externalData)
+      .filter(
+        ([_, value]) =>
+          !isNil(value) && (!Array.isArray(value) || value.length > 0)
+      )
+      .map(([key, value]) => ({
+        __typename: "PlantingEventDetail" as "PlantingEventDetail",
+        id: `${id}/${key}`,
+        valueList: Array.isArray(value)
+          ? value.map((v) => JSON.stringify(v))
+          : null,
+        value: Array.isArray(value) ? null : JSON.stringify(value),
+        name: key,
+      }));
   }
 );
