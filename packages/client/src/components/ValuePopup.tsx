@@ -1,6 +1,5 @@
-import React, { useCallback, useEffect, useState } from "react";
-import styled from "@emotion/styled";
 import { withTheme } from "@emotion/react";
+import styled from "@emotion/styled";
 import "../index.css";
 
 export const defaultTheme = {
@@ -9,7 +8,7 @@ export const defaultTheme = {
   textColor: "#ffffff",
   textSize: 16,
   arrowSize: 8,
-  height: 20,
+  height: 28,
 };
 
 const Container = styled.div<{ x: number; y: number }>`
@@ -27,10 +26,8 @@ const Bold = styled.span`
   font-weight: 900;
 `;
 
-
 const Root = withTheme(styled.div`
   font-family: ${(p) => p.theme.font};
-
   position: relative;
   display: flex;
   bottom: ${(p) =>
@@ -41,7 +38,7 @@ const Root = withTheme(styled.div`
   border: solid 1.2px ${(p) => p.theme.valuePopup.borderColor};
   background: ${(p) => p.theme.valuePopup.backgroundColor};
   color: ${(p) => p.theme.valuePopup.textColor};
-  font-size: : ${(p) => p.theme.valuePopup.textSize}px;
+  font-size: ${(p) => p.theme.valuePopup.textSize}px;
   width: fit-content;
   height: ${(p) => p.theme.valuePopup.height}px;
   white-space: nowrap;
@@ -63,22 +60,23 @@ const Root = withTheme(styled.div`
 const Content = withTheme(styled.div`
   margin: auto 12px;
   background: ${(p) => p.theme.valuePopup.backgroundColor};
-  height: ${(p) => p.theme.valuePopup.height}px;
-  line-height: ${(p) => p.theme.valuePopup.height}px;
+  height: ${(p) => p.theme.valuePopup.height-2}px;
+  line-height: ${(p) => p.theme.valuePopup.height-2}px;
 `);
 
 interface Props {
-  modusId?: string;
   value: string;
   x: number;
   y: number;
 }
 
-export const ValuePopup = ({ value, modusId, x, y }: Props) => {
+export const ValuePopup = ({ value, x, y }: Props) => {
   return (
     <Container {...{ x, y }}>
       <Root>
-        <Content>{modusId ? `${modusId}: ` : ''}<Bold>{value}</Bold></Content>
+        <Content>
+          {value}
+        </Content>
       </Root>
     </Container>
   );
