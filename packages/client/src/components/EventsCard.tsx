@@ -228,7 +228,7 @@ export const EventsCard = ({
             <ParamValue>
               {isNil(averageAnnualRainfall)
                 ? "n/a"
-                : `${averageAnnualRainfall}%`}
+                : `${averageAnnualRainfall}″`}
             </ParamValue>
           </MiniInfo>
           <MiniInfo>
