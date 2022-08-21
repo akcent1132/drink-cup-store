@@ -1,28 +1,28 @@
 /** @jsxImportSource @emotion/react */
 
-import React, { useCallback, useMemo } from "react";
-import styled from "@emotion/styled";
 import { withTheme } from "@emotion/react";
-import "../index.css";
-import { IconEventsBar } from "./IconEventsBar";
+import styled from "@emotion/styled";
 import CloseIcon from "@mui/icons-material/Close";
-import tinycolor from "tinycolor2";
-import InvertColorsIcon from "@mui/icons-material/InvertColors";
-import ThermostatIcon from "@mui/icons-material/Thermostat";
-import PublicIcon from "@mui/icons-material/Public";
-import { Tip } from "grommet";
 import ContactPageIcon from "@mui/icons-material/ContactPage";
+import InvertColorsIcon from "@mui/icons-material/InvertColors";
+import PublicIcon from "@mui/icons-material/Public";
+import ThermostatIcon from "@mui/icons-material/Thermostat";
+import Tooltip from "@mui/material/Tooltip";
+import { Tip } from "grommet";
+import { isNil } from "lodash";
+import { useCallback, useMemo } from "react";
+import tinycolor from "tinycolor2";
+import "../index.css";
 import {
   useHighlightedPlantingId,
   useHighlightPlanting,
-  useUnhighlightPlanting,
+  useUnhighlightPlanting
 } from "../states/highlightedPlantingId";
 import {
   useRemovePlantingCard,
-  useShowProfile,
+  useShowProfile
 } from "../states/sidePanelContent";
-import { LinearProgress } from "@mui/material";
-import { isNil } from "lodash";
+import { IconEventsBar } from "./IconEventsBar";
 import { PlantingCardListQuery } from "./PlantingCardList.generated";
 
 export const defaultTheme = {
@@ -133,11 +133,16 @@ const IconButton = styled.div`
   margin-left: 10px;
 `;
 
-const MiniInfo = styled.div`
+const MiniInfoContent = styled.div`
   display: flex;
   align-items: center;
   margin-right: 8px;
 `;
+const MiniInfo: React.FC<{ tooltip: string }> = ({ tooltip, children }) => (
+  <Tooltip title={tooltip} arrow>
+    <MiniInfoContent>{children}</MiniInfoContent>
+  </Tooltip>
+);
 
 interface Props {
   planting: PlantingCardListQuery["plantings"][number];
@@ -215,7 +220,7 @@ export const EventsCard = ({
         </Head>
 
         <Params>
-          <MiniInfo>
+          <MiniInfo tooltip="Yearly average temperature">
             <ThermostatIcon fontSize="inherit" />
             <ParamValue>
               {isNil(averageAnnualTemperature)
@@ -223,7 +228,7 @@ export const EventsCard = ({
                 : `${averageAnnualTemperature}℃`}
             </ParamValue>
           </MiniInfo>
-          <MiniInfo>
+          <MiniInfo tooltip="Yearly average rainfall">
             <InvertColorsIcon fontSize="inherit" />
             <ParamValue>
               {isNil(averageAnnualRainfall)
@@ -231,7 +236,7 @@ export const EventsCard = ({
                 : `${averageAnnualRainfall}″`}
             </ParamValue>
           </MiniInfo>
-          <MiniInfo>
+          <MiniInfo tooltip="Climate region">
             <PublicIcon fontSize="inherit" />
             <ParamValue>{isNil(climateZone) ? "n/a" : climateZone}</ParamValue>
           </MiniInfo>
