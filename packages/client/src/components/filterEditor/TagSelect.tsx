@@ -63,7 +63,8 @@ export const TagSelect = ({
       options={options}
       value={param.value.options}
       getOptionLabel={(option) => option}
-      disableCloseOnSelect      
+      disableCloseOnSelect   
+      disableClearable   
       renderOption={(props, option, { selected }) => (
         <li {...props}>
           <StyledBadge
