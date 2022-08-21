@@ -1,12 +1,11 @@
 import DeleteIcon from "@mui/icons-material/Delete";
 import React, { useCallback } from "react";
-import {
-  useRemoveFilterParam
-} from "../../states/filters";
+import { useRemoveFilterParam } from "../../states/filters";
 
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
+import Tooltip from "@mui/material/Tooltip";
 
 export const InputActionsWrap: React.FC<{
   filterId: string;
@@ -25,9 +24,11 @@ export const InputActionsWrap: React.FC<{
       spacing={0}
     >
       <Box flexGrow={1}>{children}</Box>
-      <IconButton onClick={remove}>
-        <DeleteIcon />
-      </IconButton>
+      <Tooltip title="Remove Filter Parameter">
+        <IconButton onClick={remove}>
+          <DeleteIcon />
+        </IconButton>
+      </Tooltip>
     </Stack>
   );
 };
