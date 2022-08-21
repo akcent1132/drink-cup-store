@@ -79,7 +79,7 @@ export const RangeSlider = ({
   );
 
   return (
-    <Box ml={1}>
+    <Box mx={1}>
       <Label variant="caption">{prettyKey(param.key)}</Label>
       <TickedSlider
         disabled={!filterable}
