@@ -124,8 +124,9 @@ export const NestedRows = ({
     () => flattenRows(rows, labeledValues),
     [rows, labeledValues]
   );
+  // rows at the second level and below are closed by default
   const [isClosed, setIsClosed] = useState<boolean[]>(
-    new Array(rows.length).fill(false)
+    flatRows.map((r) => r.nesting >= 1)
   );
   const toggleOpen = useCallback(
     (rowIndex: number) => {
