@@ -87,12 +87,17 @@ const flattenRows = (
         return [];
       }
 
+      const lastChild = last(children.filter(c => c.nesting === nesting + 1))
+      if (lastChild) {
+        lastChild.isLastChild = true;
+      }
+
       return [
         {
           row,
           nesting,
           childCount,
-          isLastChild: row === last(rows),
+          isLastChild: false,
           hideBranches: 0,
           childRowNames,
           allData,
