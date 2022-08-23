@@ -87,7 +87,7 @@ const flattenRows = (
         return [];
       }
 
-      const lastChild = last(children.filter(c => c.nesting === nesting + 1))
+      const lastChild = last(children.filter((c) => c.nesting === nesting + 1));
       if (lastChild) {
         lastChild.isLastChild = true;
       }
@@ -187,7 +187,6 @@ export const NestedRows = ({
         ) => {
           let row = (
             <ValueDistribution
-              key={`${name}-${i}`}
               label={name}
               valueNames={showAggregation ? childRowNames : name}
               nesting={nesting}
@@ -215,7 +214,7 @@ export const NestedRows = ({
               </TourStop>
             );
           }
-          return row;
+          return <div key={`${name}-${i}`}>{row}</div>;
         }
       )}
     </>
