@@ -1,4 +1,5 @@
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import HelpIcon from "@mui/icons-material/Help";
 import LogoutIcon from "@mui/icons-material/Logout";
 import React, { useCallback, useEffect, useMemo } from "react";
 import IconButton from "@mui/material/IconButton";
@@ -8,8 +9,11 @@ import { useAuth, useLogout } from "../../states/auth";
 import ListItemText from "@mui/material/ListItemText";
 import Divider from "@mui/material/Divider";
 import ListItemIcon from "@mui/material/ListItemIcon";
-import { Box, Button, Stack } from "@mui/material";
 import { useSetIsAuthDialogOpen } from "../../states/ui";
+import { useStartTour } from "../../states/tour";
+import Tooltip from "@mui/material/Tooltip";
+import Stack from "@mui/material/Stack";
+import Button from "@mui/material/Button";
 
 export const AuthMenu = () => {
   const logout = useLogout();
@@ -18,9 +22,9 @@ export const AuthMenu = () => {
   // Open SignIn dialog on start if user is not logged in
   useEffect(() => {
     if (!auth.isAuthenticated) {
-      setIsAuthDialogOpen(true)
+      setIsAuthDialogOpen(true);
     }
-  }, [])
+  }, []);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -34,8 +38,10 @@ export const AuthMenu = () => {
     setAnchorEl(null);
   }, []);
 
+  const startTour = useStartTour();
+
   return (
-    <Stack direction="column" justifyContent="center">
+    <Stack direction="row" alignItems="center">
       {auth.isAuthenticated ? (
         <>
           <IconButton
@@ -74,6 +80,11 @@ export const AuthMenu = () => {
       ) : (
         <Button onClick={handleSignIn}>Sign in</Button>
       )}
+      <Tooltip title="Start Tour">
+        <IconButton onClick={startTour}>
+          <HelpIcon />
+        </IconButton>
+      </Tooltip>
     </Stack>
   );
 };

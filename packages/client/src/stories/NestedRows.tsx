@@ -1,17 +1,17 @@
+import Box from "@mui/material/Box";
 import LinearProgress from "@mui/material/LinearProgress";
-import Box from "@mui/material/Box"
-import { findLastIndex, last, remove } from "lodash";
-import React, { useCallback, useMemo, useState } from "react";
+import { findLastIndex, last } from "lodash";
+import { useCallback, useMemo, useState } from "react";
 import { ValueDistribution } from "../components/ValueDistribution";
 import { RowData } from "../contexts/rows";
-import {
-  Filter,
-} from "../states/filters";
+import { Filter } from "../states/filters";
 import { useHighlightedFilterId } from "../states/highlightedFilterId";
 import { useHighlightedPlantingId } from "../states/highlightedPlantingId";
 import { useSelectedCropType } from "../states/selectedCropType";
-import { NestedRowsQuery, useNestedRowsQuery } from "./NestedRows.generated";
+import { Stop } from "../states/tour";
+import { TourStop } from "../states/TourStop";
 import { getPlantingIdsOfFilter } from "../utils/getPlantingsOfFilter";
+import { NestedRowsQuery, useNestedRowsQuery } from "./NestedRows.generated";
 
 const getLabeledValues = (
   filters: Filter[],
@@ -102,7 +102,13 @@ const flattenRows = (
     })
     .flat();
 
-export const NestedRows = ({ rows, filters }: { rows: RowData[], filters: Filter[] }) => {
+export const NestedRows = ({
+  rows,
+  filters,
+}: {
+  rows: RowData[];
+  filters: Filter[];
+}) => {
   const selectedCropType = useSelectedCropType();
   const { data, loading } = useNestedRowsQuery({
     variables: { cropType: selectedCropType },
@@ -112,7 +118,7 @@ export const NestedRows = ({ rows, filters }: { rows: RowData[], filters: Filter
   const highlightedFilterId = useHighlightedFilterId();
   const labeledValues = useMemo(
     () => (filters && plantings ? getLabeledValues(filters, plantings) : []),
-    [JSON.stringify(filters.map(f => f.params)), plantings]
+    [JSON.stringify(filters.map((f) => f.params)), plantings]
   );
   const flatRows = useMemo(
     () => flattenRows(rows, labeledValues),
@@ -155,7 +161,11 @@ export const NestedRows = ({ rows, filters }: { rows: RowData[], filters: Filter
 
   return (
     <>
-    {loading ? <Box mt={1}><LinearProgress /></Box>: null}
+      {loading ? (
+        <Box mt={1}>
+          <LinearProgress />
+        </Box>
+      ) : null}
       {flatRows.map(
         (
           {
@@ -168,22 +178,39 @@ export const NestedRows = ({ rows, filters }: { rows: RowData[], filters: Filter
             allData,
           },
           i
-        ) => (
-          <ValueDistribution
-            key={`${name}-${i}`}
-            label={name}
-            valueNames={showAggregation ? childRowNames : name}
-            nesting={nesting}
-            childCount={childCount}
-            isLastChild={isLastChild}
-            hideBranches={hideBranches}
-            onToggleChildren={() => toggleOpen(i)}
-            openState={openStates[i]!}
-            highlightedFilterId={highlightedFilterId || undefined}
-            highlightedPlantingId={highlightedPlantingId || undefined}
-            allData={allData}
-          />
-        )
+        ) => {
+          let row = (
+            <ValueDistribution
+              key={`${name}-${i}`}
+              label={name}
+              valueNames={showAggregation ? childRowNames : name}
+              nesting={nesting}
+              childCount={childCount}
+              isLastChild={isLastChild}
+              hideBranches={hideBranches}
+              onToggleChildren={() => toggleOpen(i)}
+              openState={openStates[i]!}
+              highlightedFilterId={highlightedFilterId || undefined}
+              highlightedPlantingId={highlightedPlantingId || undefined}
+              allData={allData}
+            />
+          );
+          if (i === 0) {
+            row = (
+              <TourStop stop={Stop.HOVER_VALUE} placement="right">
+                {row}
+              </TourStop>
+            );
+          }
+          if (i === 1) {
+            row = (
+              <TourStop stop={Stop.OPEN_PLANTING} placement="bottom">
+                {row}
+              </TourStop>
+            );
+          }
+          return row;
+        }
       )}
     </>
   );

@@ -5,11 +5,18 @@ import { z } from "zod";
 const STORE_KEY = "coffeeshop.tour";
 
 export enum Stop {
-  SELECT_CROP = 1,
-  FILTER = 2,
-  HOVER_VALUE = 3,
-  OPEN_PLANTING = 4,
+  SELECT_CROP,
+  FILTER,
+  HOVER_VALUE,
+  OPEN_PLANTING,
 }
+
+export const Stops = [
+  Stop.SELECT_CROP,
+  Stop.FILTER,
+  Stop.HOVER_VALUE,
+  Stop.OPEN_PLANTING,
+];
 
 const StoreSchema = z.object({
   isTourOn: z.boolean(),
@@ -21,10 +28,13 @@ export const readFromStore = () => {
     try {
       return StoreSchema.parse(JSON.parse(localStorage[STORE_KEY]));
     } catch (e) {
-      console.warn("Failed to parse user", e);
+      console.warn("Failed to parse tour data", localStorage[STORE_KEY], e);
     }
   }
-  return null;
+  return {
+    currentStop: Stops[0],
+    isTourOn: true
+  };
 };
 
 const writeToStore = (update: Partial<z.infer<typeof StoreSchema>>) => {
@@ -52,11 +62,49 @@ export const useSetCurrentStop = () => {
     writeToStore({ currentStop });
   }, []);
 };
+
 export const useIsTourOn = () => useRecoilValue(isTourOn);
 export const useSetIsTourOn = () => {
   const set = useSetRecoilState(isTourOn);
   return useCallback((isTourOn: boolean) => {
     set(isTourOn);
     writeToStore({ isTourOn });
+  }, []);
+};
+
+const useStep = () => {
+  const setCurrentStop = useSetCurrentStop();
+  const setIsTourOn = useSetIsTourOn();
+  const currentStop = useCurrentStop();
+  return useCallback(
+    (step: number) => {
+      const currentIndex = Stops.indexOf(currentStop);
+      const index = Math.max(0, currentIndex + step);
+      if (index >= Stops.length) {
+        setCurrentStop(Stops[0]);
+        setIsTourOn(false);
+      } else {
+        setCurrentStop(Stops[index]);
+      }
+    },
+    [currentStop]
+  );
+};
+export const useNext = () => {
+  const step = useStep();
+  return () => step(1);
+};
+export const useBack = () => {
+  const step = useStep();
+  return () => step(-1);
+};
+
+export const useStartTour = () => {
+  const setCurrentStop = useSetCurrentStop();
+  const setIsTourOn = useSetIsTourOn();
+  const currentStop = useCurrentStop();
+  return useCallback(() => {
+    setCurrentStop(Stops[0]);
+    setIsTourOn(true);
   }, []);
 };

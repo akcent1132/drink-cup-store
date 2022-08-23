@@ -1,12 +1,19 @@
+import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Fade from "@mui/material/Fade";
+import MobileStepper from "@mui/material/MobileStepper";
 import Paper from "@mui/material/Paper";
 import MuiPopper from "@mui/material/Popper";
+import Step from "@mui/material/Step";
+import StepLabel from "@mui/material/StepLabel";
+import Stepper from "@mui/material/Stepper";
 import { createTheme, styled, ThemeProvider } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
-import React, { useRef, useState } from "react";
-import { Stop, useCurrentStop } from "./tour";
+import React, { ComponentProps, useCallback, useRef, useState } from "react";
+import { theme } from "../theme/theme";
+import { Stop, Stops, useBack, useCurrentStop, useIsTourOn, useNext, useSetIsTourOn } from "./tour";
 
 const Popper = styled(MuiPopper, {
   shouldForwardProp: (prop) => prop !== "arrow",
@@ -97,32 +104,37 @@ const Arrow = styled("div")({
 const getStopDetails = (stop: Stop) => {
   switch (stop) {
     case Stop.SELECT_CROP:
-      return { text: "select the crop you want to benchmark" };
+      return { text: "Select the crop you want to benchmark" };
     case Stop.FILTER:
       return {
-        text: "filter available plantings to make comparisons between groups, conditions, practices, etc.",
+        text: "Filter available plantings to make comparisons between groups, conditions, practices, etc.",
       };
     case Stop.HOVER_VALUE:
       return {
-        text: "Click it to see details and more plantings from that producer",
+        text: "Hover over a planting to see how it compares to others.",
       };
     case Stop.OPEN_PLANTING:
       return {
-        text: "hover over a planting to see how it compares to others.",
+        text: "Click it to see details and more plantings from that producer",
       };
   }
 };
 
-const lightTheme = createTheme({ palette: { mode: "light"} })
+const lightTheme = createTheme({ palette: { mode: "light" } });
 
-export const TourStop: React.FC<{ stop: Stop }> = ({ stop, children }) => {
+export const TourStop: React.FC<{ stop: Stop, placement?: ComponentProps<typeof Popper>['placement'] }> = ({ stop, placement, children }) => {
   const [arrowRef, setArrowRef] = useState<any>(null);
   const currentStop = useCurrentStop();
+  const isTourOn = useIsTourOn();
+  const setIsTourOn = useSetIsTourOn();
+  const next = useNext()
+  const back = useBack();
 
   const anchorEl = useRef<HTMLDivElement>(null);
 
-  const open = Boolean(anchorEl.current);
+  const open = Boolean(anchorEl.current) && isTourOn && currentStop === stop;
   const id = open ? "simple-popover" : undefined;
+  const activeStep = Stops.indexOf(stop);
 
   return (
     <>
@@ -132,6 +144,7 @@ export const TourStop: React.FC<{ stop: Stop }> = ({ stop, children }) => {
         open={open}
         anchorEl={anchorEl.current}
         transition
+        placement={placement}
         modifiers={[
           {
             name: "flip",
@@ -142,17 +155,17 @@ export const TourStop: React.FC<{ stop: Stop }> = ({ stop, children }) => {
               padding: 8,
             },
           },
-          {
-            name: "preventOverflow",
-            enabled: true,
-            options: {
-              altAxis: true,
-              altBoundary: true,
-              tether: true,
-              rootBoundary: "document",
-              padding: 8,
-            },
-          },
+          // {
+          //   name: "preventOverflow",
+          //   enabled: true,
+          //   options: {
+          //     altAxis: true,
+          //     altBoundary: true,
+          //     tether: true,
+          //     rootBoundary: "document",
+          //     padding: 8,
+          //   },
+          // },
           {
             name: "arrow",
             enabled: !!arrowRef,
@@ -166,16 +179,54 @@ export const TourStop: React.FC<{ stop: Stop }> = ({ stop, children }) => {
           <Fade {...TransitionProps} timeout={350}>
             <div>
               <Arrow ref={setArrowRef} className="MuiPopper-arrow" />
-              
-              <Paper variant="outlined" square sx={{borderColor: 'primary.main', borderWidth: 2}}>
+
+              <Paper
+                variant="outlined"
+                square
+                sx={{ borderColor: "primary.main", borderWidth: 2, maxWidth: 400 }}
+              >
                 <Typography sx={{ p: 2 }}>
-                  {getStopDetails(currentStop).text}
+                  {getStopDetails(stop).text}
                 </Typography>
-                <Box sx={{display: 'flex', pb: 1, px: 1}}>
-                  <Button>Skip Tour</Button><Box sx={{ flexGrow: 1 }}/><Button variant="contained" color="primary">Next</Button>
+                <Box sx={{ display: "flex", px: 1 }}>
+                  <Button size="small" sx={{my: 1}} onClick={() => setIsTourOn(false)}>Skip Tour</Button>
+                  <Box sx={{ flexGrow: 1 }} />
+                  <MobileStepper
+                    variant="dots"
+                    steps={Stops.length}
+                    position="static"
+                    activeStep={activeStep}
+                    nextButton={
+                      <Button
+                        size="small"
+                        onClick={next}
+                      >
+                        {activeStep === Stops.length-1 ? 'Finish' : 'Next'}
+                        {theme.direction === "rtl" ? (
+                          <KeyboardArrowLeft />
+                        ) : (
+                          <KeyboardArrowRight />
+                        )}
+                      </Button>
+                    }
+                    backButton={
+                      <Button
+                        size="small"
+                        onClick={back}
+                        disabled={activeStep === 0}
+                      >
+                        {theme.direction === "rtl" ? (
+                          <KeyboardArrowRight />
+                        ) : (
+                          <KeyboardArrowLeft />
+                        )}
+                        Back
+                      </Button>
+                    }
+                  />
                 </Box>
               </Paper>
-           </div>
+            </div>
           </Fade>
         )}
       </Popper>

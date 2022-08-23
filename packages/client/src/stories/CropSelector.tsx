@@ -35,7 +35,6 @@ export const CropSelector = () => {
       ),
     [availableCropTypes]
   );
-  console.log({ crops });
   return (
     <FormControl sx={{ minWidth: 120 }} size="small">
       <InputLabel id="demo-simple-select-helper-label">Crop Type</InputLabel>

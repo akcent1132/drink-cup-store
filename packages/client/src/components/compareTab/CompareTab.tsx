@@ -29,7 +29,7 @@ export const CompareTab = () => {
   return (
     <RowContainer>
       <PaneHead>
-        <TourStop stop={Stop.SELECT_CROP}>
+        <TourStop stop={Stop.SELECT_CROP} placement="right">
           <CropSelector />
         </TourStop>
         <Spacer />
@@ -41,8 +41,12 @@ export const CompareTab = () => {
             color={filter.color}
           />
         ))}
-        <AddFilterButton />
+
+        <TourStop stop={Stop.FILTER} placement="bottom-start">
+          <AddFilterButton />
+        </TourStop>
       </PaneHead>
+
       <NestedRows rows={ROWS} filters={filters} />
     </RowContainer>
   );
