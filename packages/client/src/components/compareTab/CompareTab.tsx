@@ -1,6 +1,8 @@
 import styled from "@emotion/styled";
 import { ROWS } from "../../contexts/rows";
 import { useFilters } from "../../states/filters";
+import { Stop } from "../../states/tour";
+import { TourStop } from "../../states/TourStop";
 import { CropSelector } from "../../stories/CropSelector";
 import { NestedRows } from "../../stories/NestedRows";
 import { Spacer } from "../EventsCard";
@@ -23,11 +25,13 @@ const RowContainer = styled.div`
 
 export const CompareTab = () => {
   const filters = useFilters();
- 
+
   return (
     <RowContainer>
       <PaneHead>
-        <CropSelector />
+        <TourStop stop={Stop.SELECT_CROP}>
+          <CropSelector />
+        </TourStop>
         <Spacer />
         {[...filters].reverse().map((filter) => (
           <FilterLabel
@@ -37,7 +41,7 @@ export const CompareTab = () => {
             color={filter.color}
           />
         ))}
-        <AddFilterButton/>
+        <AddFilterButton />
       </PaneHead>
       <NestedRows rows={ROWS} filters={filters} />
     </RowContainer>

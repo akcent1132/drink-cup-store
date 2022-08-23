@@ -17,7 +17,6 @@ export const AuthMenu = () => {
   const auth = useAuth();
   // Open SignIn dialog on start if user is not logged in
   useEffect(() => {
-    console.log("sdf", auth)
     if (!auth.isAuthenticated) {
       setIsAuthDialogOpen(true)
     }
