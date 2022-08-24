@@ -66,6 +66,13 @@ const resolvers: Resolvers = {
         plantings: [],
       };
     },
+    async producers(_, { ids }) {
+      return ids.map(id => ({
+        id,
+        code: seedrandom(id)().toString(32).slice(-7),
+        plantings: [],
+      }));
+    },
     async allFarmOnboardings() {
       return await loadFarmOnboardings();
     },

@@ -4,9 +4,10 @@ type Query {
   planting(id: String!): Planting
   plantingsById(ids: [String!]!): [Planting!]!
   producer(id: String!): Producer
+  producers(ids: [String!]!): [Producer]
   allFarmOnboardings: [FarmOnboarding!]!
   availableCropTypes: [AvailableCropType!]!
-  connectedFarmIds: [String!]
+  connectedFarmIds: [String]
   surveyStackGroups(userId: String): [SurveyStackGroup!]
 }
 

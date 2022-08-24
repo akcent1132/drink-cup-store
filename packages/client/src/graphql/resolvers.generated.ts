@@ -127,11 +127,12 @@ export type Query = {
   allFarmOnboardings: Array<FarmOnboarding>;
   allPlantings: Array<Planting>;
   availableCropTypes: Array<AvailableCropType>;
-  connectedFarmIds?: Maybe<Array<Scalars['String']>>;
+  connectedFarmIds?: Maybe<Array<Maybe<Scalars['String']>>>;
   planting?: Maybe<Planting>;
   plantings: Array<Planting>;
   plantingsById: Array<Planting>;
   producer?: Maybe<Producer>;
+  producers?: Maybe<Array<Maybe<Producer>>>;
   surveyStackGroups?: Maybe<Array<SurveyStackGroup>>;
 };
 
@@ -153,6 +154,11 @@ export type QueryPlantingsByIdArgs = {
 
 export type QueryProducerArgs = {
   id: Scalars['String'];
+};
+
+
+export type QueryProducersArgs = {
+  ids: Array<Scalars['String']>;
 };
 
 
@@ -386,11 +392,12 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   allFarmOnboardings?: Resolver<Array<ResolversTypes['FarmOnboarding']>, ParentType, ContextType>;
   allPlantings?: Resolver<Array<ResolversTypes['Planting']>, ParentType, ContextType>;
   availableCropTypes?: Resolver<Array<ResolversTypes['AvailableCropType']>, ParentType, ContextType>;
-  connectedFarmIds?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
+  connectedFarmIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
   planting?: Resolver<Maybe<ResolversTypes['Planting']>, ParentType, ContextType, RequireFields<QueryPlantingArgs, 'id'>>;
   plantings?: Resolver<Array<ResolversTypes['Planting']>, ParentType, ContextType, RequireFields<QueryPlantingsArgs, 'cropType'>>;
   plantingsById?: Resolver<Array<ResolversTypes['Planting']>, ParentType, ContextType, RequireFields<QueryPlantingsByIdArgs, 'ids'>>;
   producer?: Resolver<Maybe<ResolversTypes['Producer']>, ParentType, ContextType, RequireFields<QueryProducerArgs, 'id'>>;
+  producers?: Resolver<Maybe<Array<Maybe<ResolversTypes['Producer']>>>, ParentType, ContextType, RequireFields<QueryProducersArgs, 'ids'>>;
   surveyStackGroups?: Resolver<Maybe<Array<ResolversTypes['SurveyStackGroup']>>, ParentType, ContextType, Partial<QuerySurveyStackGroupsArgs>>;
 }>;
 

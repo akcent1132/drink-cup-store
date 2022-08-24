@@ -126,11 +126,12 @@ export type Query = {
   allFarmOnboardings: Array<FarmOnboarding>;
   allPlantings: Array<Planting>;
   availableCropTypes: Array<AvailableCropType>;
-  connectedFarmIds: Maybe<Array<Scalars['String']>>;
+  connectedFarmIds: Maybe<Array<Maybe<Scalars['String']>>>;
   planting: Maybe<Planting>;
   plantings: Array<Planting>;
   plantingsById: Array<Planting>;
   producer: Maybe<Producer>;
+  producers: Maybe<Array<Maybe<Producer>>>;
   surveyStackGroups: Maybe<Array<SurveyStackGroup>>;
 };
 
@@ -152,6 +153,11 @@ export type QueryPlantingsByIdArgs = {
 
 export type QueryProducerArgs = {
   id: Scalars['String'];
+};
+
+
+export type QueryProducersArgs = {
+  ids: Array<Scalars['String']>;
 };
 
 
@@ -256,7 +262,7 @@ export type ProducerFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('allFarmOnboardings' | 'allPlantings' | 'availableCropTypes' | 'connectedFarmIds' | 'planting' | 'plantings' | 'plantingsById' | 'producer' | 'surveyStackGroups' | QueryKeySpecifier)[];
+export type QueryKeySpecifier = ('allFarmOnboardings' | 'allPlantings' | 'availableCropTypes' | 'connectedFarmIds' | 'planting' | 'plantings' | 'plantingsById' | 'producer' | 'producers' | 'surveyStackGroups' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
 	allFarmOnboardings?: FieldPolicy<any> | FieldReadFunction<any>,
 	allPlantings?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -266,6 +272,7 @@ export type QueryFieldPolicy = {
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantingsById?: FieldPolicy<any> | FieldReadFunction<any>,
 	producer?: FieldPolicy<any> | FieldReadFunction<any>,
+	producers?: FieldPolicy<any> | FieldReadFunction<any>,
 	surveyStackGroups?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type RequestMagicLoginLinkResponseKeySpecifier = ('error' | 'success' | RequestMagicLoginLinkResponseKeySpecifier)[];

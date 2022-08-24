@@ -2,13 +2,14 @@ import AddIcon from "@mui/icons-material/Add";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import { isString } from "lodash";
 import React from "react";
 import { useCallback, useMemo, useState } from "react";
 import { useAuth } from "../../states/auth";
 import {
   FilterParamDataSource,
   useAddFilter,
-  useFilters
+  useFilters,
 } from "../../states/filters";
 import { useShowFilterEditor } from "../../states/sidePanelContent";
 import { useAddFilterButtonQuery } from "./AddFilterButton.generated";
@@ -58,7 +59,12 @@ export const AddFilterButton = React.forwardRef<HTMLButtonElement>((_, ref) => {
     connectedFarmIds &&
       addFilter({
         name: "My Farms",
-        params: [createOptionFilterParam("farmDomain", connectedFarmIds)],
+        params: [
+          createOptionFilterParam(
+            "farmDomain",
+            connectedFarmIds.filter(isString)
+          ),
+        ],
       });
   }, [connectedFarmIds]);
   const handleAddSingleFarmDomainFilter = useCallback(
@@ -97,7 +103,7 @@ export const AddFilterButton = React.forwardRef<HTMLButtonElement>((_, ref) => {
   return (
     <>
       <Button
-      ref={ref}
+        ref={ref}
         size="medium"
         id="basic-button"
         startIcon={<AddIcon />}
@@ -120,7 +126,7 @@ export const AddFilterButton = React.forwardRef<HTMLButtonElement>((_, ref) => {
             onAddMain={handleAddFarmDomainsFilter}
             mainLabel=" Filter My Farms"
             onAddSubmenu={handleAddSingleFarmDomainFilter}
-            submenuValues={connectedFarmIds}
+            submenuValues={connectedFarmIds.filter(isString)}
           />
         ) : null}
 
