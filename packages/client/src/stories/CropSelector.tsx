@@ -23,7 +23,7 @@ const StyledBadge = styled(Badge)<BadgeProps>({
   },
 });
 
-export const CropSelector = () => {
+export const CropSelector = React.forwardRef<HTMLDivElement>((_, ref) => {
   const { availableCropTypes } = useCropSelectorQuery().data || {};
   const value = useSelectedCropType();
   const setSelectedCropType = useSetSelectedCropType();
@@ -36,7 +36,8 @@ export const CropSelector = () => {
     [availableCropTypes]
   );
   return (
-    <FormControl sx={{ minWidth: 120 }} size="small">
+    <div ref={ref}>
+    <FormControl  sx={{ minWidth: 120 }} size="small">
       <InputLabel id="demo-simple-select-helper-label">Crop Type</InputLabel>
       <Select
         labelId="demo-simple-select-helper-label"
@@ -59,7 +60,7 @@ export const CropSelector = () => {
           </MenuItem>
         ))}
       </Select>
-    </FormControl>
+    </FormControl></div>
     // <Select
     //   css={css`
     //     height: 0px;
@@ -72,4 +73,4 @@ export const CropSelector = () => {
     //   onChange={({ value }) => setSelectedCropType(value)}
     // />
   );
-};
+});

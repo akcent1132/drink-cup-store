@@ -2,6 +2,7 @@ import AddIcon from "@mui/icons-material/Add";
 import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import React from "react";
 import { useCallback, useMemo, useState } from "react";
 import { useAuth } from "../../states/auth";
 import {
@@ -20,7 +21,7 @@ const createOptionFilterParam = (key: string, options: string[]) => ({
   value: { options },
 });
 
-export const AddFilterButton = () => {
+export const AddFilterButton = React.forwardRef<HTMLButtonElement>((_, ref) => {
   const auth = useAuth();
   const { data: { connectedFarmIds, surveyStackGroups } = {} } =
     useAddFilterButtonQuery({
@@ -96,6 +97,7 @@ export const AddFilterButton = () => {
   return (
     <>
       <Button
+      ref={ref}
         size="medium"
         id="basic-button"
         startIcon={<AddIcon />}
@@ -133,4 +135,4 @@ export const AddFilterButton = () => {
       </Menu>
     </>
   );
-};
+});

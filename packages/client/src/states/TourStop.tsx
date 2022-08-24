@@ -6,14 +6,20 @@ import Fade from "@mui/material/Fade";
 import MobileStepper from "@mui/material/MobileStepper";
 import Paper from "@mui/material/Paper";
 import MuiPopper from "@mui/material/Popper";
-import Step from "@mui/material/Step";
-import StepLabel from "@mui/material/StepLabel";
-import Stepper from "@mui/material/Stepper";
-import { createTheme, styled, ThemeProvider } from "@mui/material/styles";
+import { createTheme, styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
-import React, { ComponentProps, useCallback, useRef, useState } from "react";
+import React, { ComponentProps, useRef, useState } from "react";
 import { theme } from "../theme/theme";
-import { Stop, Stops, useBack, useCurrentStop, useIsTourOn, useNext, useSetIsTourOn } from "./tour";
+import {
+  Stop,
+  Stops,
+  useBack,
+  useCurrentStop,
+  useIsTourOn,
+  useNext,
+  useSetIsTourOn,
+} from "./tour";
+import { useIsAuthDialogOpen } from "./ui";
 
 const Popper = styled(MuiPopper, {
   shouldForwardProp: (prop) => prop !== "arrow",
@@ -104,7 +110,7 @@ const Arrow = styled("div")({
 const getStopDetails = (stop: Stop) => {
   switch (stop) {
     case Stop.SELECT_CROP:
-      return { text: "Select the crop you want to benchmark" };
+      return { text: "Select the crop you want to benchmark." };
     case Stop.FILTER:
       return {
         text: "Filter available plantings to make comparisons between groups, conditions, practices, etc.",
@@ -115,36 +121,55 @@ const getStopDetails = (stop: Stop) => {
       };
     case Stop.OPEN_PLANTING:
       return {
-        text: "Click it to see details and more plantings from that producer",
+        text: "Click it to see details and more plantings from that producer.",
+      };
+    case Stop.DISCUSS:
+      return {
+        text: "Discuss what you see with your producer groups.",
       };
   }
 };
 
 const lightTheme = createTheme({ palette: { mode: "light" } });
 
-export const TourStop: React.FC<{ stop: Stop, placement?: ComponentProps<typeof Popper>['placement'] }> = ({ stop, placement, children }) => {
+export const TourStop: React.FC<{
+  stop: Stop;
+  placement?: ComponentProps<typeof Popper>["placement"];
+}> = ({ stop, placement, children }) => {
   const [arrowRef, setArrowRef] = useState<any>(null);
+  const isAuthDialogOpen = useIsAuthDialogOpen();
   const currentStop = useCurrentStop();
   const isTourOn = useIsTourOn();
   const setIsTourOn = useSetIsTourOn();
-  const next = useNext()
+  const next = useNext();
   const back = useBack();
 
-  const anchorEl = useRef<HTMLDivElement>(null);
+  // const anchorEl = useRef<HTMLDivElement>(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
 
-  const open = Boolean(anchorEl.current) && isTourOn && currentStop === stop;
+  const open =
+    Boolean(anchorEl) && !isAuthDialogOpen && isTourOn && currentStop === stop;
   const id = open ? "simple-popover" : undefined;
   const activeStep = Stops.indexOf(stop);
 
+  let child = React.Children.only(children);
+  if (React.isValidElement(child)) {
+    child = React.cloneElement(child, { ...child.props, ref: setAnchorEl });
+  } else {
+    throw new Error("Child has to be a ReactElement");
+  }
+
   return (
     <>
-      <div ref={anchorEl}>{children}</div>
+      {child}
+      {/* <div ref={setAnchorEl}>{children}</div> */}
       <Popper
         id={id}
         open={open}
-        anchorEl={anchorEl.current}
+        anchorEl={anchorEl}
         transition
         placement={placement}
+        sx={{zIndex: 3000}}
         modifiers={[
           {
             name: "flip",
@@ -183,13 +208,23 @@ export const TourStop: React.FC<{ stop: Stop, placement?: ComponentProps<typeof 
               <Paper
                 variant="outlined"
                 square
-                sx={{ borderColor: "primary.main", borderWidth: 2, maxWidth: 400 }}
+                sx={{
+                  borderColor: "primary.main",
+                  borderWidth: 2,
+                  maxWidth: 400,
+                }}
               >
                 <Typography sx={{ p: 2 }}>
                   {getStopDetails(stop).text}
                 </Typography>
                 <Box sx={{ display: "flex", px: 1 }}>
-                  <Button size="small" sx={{my: 1}} onClick={() => setIsTourOn(false)}>Skip Tour</Button>
+                  <Button
+                    size="small"
+                    sx={{ my: 1 }}
+                    onClick={() => setIsTourOn(false)}
+                  >
+                    Skip Tour
+                  </Button>
                   <Box sx={{ flexGrow: 1 }} />
                   <MobileStepper
                     variant="dots"
@@ -197,11 +232,8 @@ export const TourStop: React.FC<{ stop: Stop, placement?: ComponentProps<typeof 
                     position="static"
                     activeStep={activeStep}
                     nextButton={
-                      <Button
-                        size="small"
-                        onClick={next}
-                      >
-                        {activeStep === Stops.length-1 ? 'Finish' : 'Next'}
+                      <Button size="small" onClick={next}>
+                        {activeStep === Stops.length - 1 ? "Finish" : "Next"}
                         {theme.direction === "rtl" ? (
                           <KeyboardArrowLeft />
                         ) : (

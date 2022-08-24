@@ -26,6 +26,8 @@ import { AuthMenu } from "../components/auth/AuthMenu";
 import { LoginDialog } from "../components/auth/LoginDialog";
 import { Notifications } from "../components/Notifications";
 import { useTryAcceptingMagicLinkLogin } from "../states/auth";
+import { TourStop } from "../states/TourStop";
+import { Stop } from "../states/tour";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -185,7 +187,9 @@ export const Dashboard = ({ iframeSrc }: Props) => {
           )}
         </ClassNames>
 
-        <HyloBox container={rightSide} src={iframeSrc} />
+        <TourStop stop={Stop.DISCUSS} placement="left-start">
+          <HyloBox container={rightSide} src={iframeSrc} />
+        </TourStop>
       </RightSide>
       <LoginDialog />
     </Root>

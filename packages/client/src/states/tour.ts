@@ -9,6 +9,7 @@ export enum Stop {
   FILTER,
   HOVER_VALUE,
   OPEN_PLANTING,
+  DISCUSS,
 }
 
 export const Stops = [
@@ -16,6 +17,7 @@ export const Stops = [
   Stop.FILTER,
   Stop.HOVER_VALUE,
   Stop.OPEN_PLANTING,
+  Stop.DISCUSS,
 ];
 
 const StoreSchema = z.object({
@@ -33,7 +35,7 @@ export const readFromStore = () => {
   }
   return {
     currentStop: Stops[0],
-    isTourOn: true
+    isTourOn: true,
   };
 };
 

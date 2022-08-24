@@ -10,28 +10,10 @@ import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import * as React from "react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAuth, useLogin } from "../../states/auth";
 import { useIsAuthDialogOpen, useSetIsAuthDialogOpen } from "../../states/ui";
 import { useRequestMagicLoginLinkMutation } from "./LoginDialog.generated";
-
-function Copyright(props: any) {
-  return (
-    <Typography
-      variant="body2"
-      color="text.secondary"
-      align="center"
-      {...props}
-    >
-      {"Copyright © "}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
 
 enum AuthMethod {
   Password,
@@ -41,12 +23,17 @@ enum AuthMethod {
 export const LoginDialog = () => {
   const [authMethod, setAuthMethod] = useState(AuthMethod.MagicLink);
   const { login, isLoginInProgress } = useLogin();
-  const [requestMagicLoginLink, { loading: isMagicLinkRequestLoading, data: requestMagicLoginLinkData }] =
-    useRequestMagicLoginLinkMutation();
+  const [
+    requestMagicLoginLink,
+    { loading: isMagicLinkRequestLoading, data: requestMagicLoginLinkData },
+  ] = useRequestMagicLoginLinkMutation();
   const isAuthDialogOpen = useIsAuthDialogOpen();
   const setIsAuthDialogOpen = useSetIsAuthDialogOpen();
   const { error: loginError } = useAuth();
-  const error = authMethod === AuthMethod.Password ? loginError : requestMagicLoginLinkData?.requestMagicLoginLink?.error;
+  const error =
+    authMethod === AuthMethod.Password
+      ? loginError
+      : requestMagicLoginLinkData?.requestMagicLoginLink?.error;
 
   const handleSubmit = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
@@ -74,7 +61,7 @@ export const LoginDialog = () => {
           email: data.get("email")?.toString() || "",
         },
       });
-      console.log({result})
+      console.log({ result });
       if (result.data?.requestMagicLoginLink?.success) {
         setIsAuthDialogOpen(false);
       }
@@ -82,8 +69,14 @@ export const LoginDialog = () => {
     []
   );
 
+  // Use `disableScrollLock` because it's applying inline body.styles.overflow style changes 
+  //   with something else at the same time, resulting in non-scrollable window
   return (
-    <Dialog onClose={() => setIsAuthDialogOpen(false)} open={isAuthDialogOpen}>
+    <Dialog
+      onClose={() => setIsAuthDialogOpen(false)}
+      open={isAuthDialogOpen}
+      disableScrollLock
+    >
       <Box
         sx={{
           padding: 4,
@@ -208,7 +201,6 @@ export const LoginDialog = () => {
             : "sign in with password instead"}
         </Button>
       </Box>
-      {/* <Copyright sx={{ mt: 8, mb: 4 }} /> */}
     </Dialog>
   );
 };

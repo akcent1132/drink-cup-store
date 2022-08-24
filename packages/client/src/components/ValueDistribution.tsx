@@ -168,300 +168,307 @@ type Props = {
 /**
  * Primary UI component for user interaction
  */
-export const ValueDistribution = ({
-  label,
-  valueNames,
-  highlightedFilterId,
-  highlightedPlantingId,
-  allData,
-  ...props
-}: Props) => {
-  valueNames = useMemo(
-    () => (Array.isArray(valueNames) ? valueNames : [valueNames]),
-    [valueNames]
-  );
-  const { colors } = useTheme();
-  const [isHovering, setIsHovering] = useState(false);
-  const highlightPlanting = useHighlightPlanting();
-  const unhighlightPlanting = useUnhighlightPlanting();
-  const showPlantingCards = useShowPlantingCards();
-  const addPlantingCard = useAddPlantingCard();
-  const onHoverData = useCallback(
-    (planting: string) => highlightPlanting(planting),
-    []
-  );
-  const onLeaveData = useCallback(
-    (planting: string) => unhighlightPlanting(planting),
-    []
-  );
-  const theme = useTheme();
-  const canvas = useCanvas();
-  // const allData = useMemo(
-  //   () =>
-  //     groupedValues
-  //       .map((v) => {
-  //         return v.values
-  //           .filter((v) => valueNames.includes(v.name))
-  //           .map((data) => ({ ...data, filter: v.filter }));
-  //       })
-  //       .flat(),
-  //   [groupedValues, valueNames]
-  // );
-  const allValues = useMemo(() => allData.map((d) => d.value), [allData]);
-  const scale = useMemo(() => {
-    const [min, max] = extent(allValues);
-    return scaleLinear()
-      .domain([min || 0, max || 1])
-      .rangeRound([
-        theme.valueDistribution.tickWidth / 2,
-        canvas.width - theme.valueDistribution.tickWidth / 2,
-      ]);
-  }, [allValues, canvas.width]);
-  const allMean = useMemo(() => mean(allValues) || 0, [allValues]);
-  const [localHoveredValue, setLocalHoveredValue] = useState<
-    typeof allData[number] | null
-  >(null);
-  const handlePlotMouseMove = useCallback(
-    (e: React.MouseEvent) => {
-      const allSelectableValues = allData.map((d) => d.value);
-      if (allSelectableValues.length === 0) {
-        return;
-      }
-      if (e.nativeEvent.offsetY < theme.valueDistribution.varianceLineHeight) {
-        if (localHoveredValue) {
+export const ValueDistribution = React.forwardRef<HTMLDivElement, Props>(
+  (
+    {
+      label,
+      valueNames,
+      highlightedFilterId,
+      highlightedPlantingId,
+      allData,
+      ...props
+    },
+    ref
+  ) => {
+    valueNames = useMemo(
+      () => (Array.isArray(valueNames) ? valueNames : [valueNames]),
+      [valueNames]
+    );
+    const { colors } = useTheme();
+    const [isHovering, setIsHovering] = useState(false);
+    const highlightPlanting = useHighlightPlanting();
+    const unhighlightPlanting = useUnhighlightPlanting();
+    const showPlantingCards = useShowPlantingCards();
+    const addPlantingCard = useAddPlantingCard();
+    const onHoverData = useCallback(
+      (planting: string) => highlightPlanting(planting),
+      []
+    );
+    const onLeaveData = useCallback(
+      (planting: string) => unhighlightPlanting(planting),
+      []
+    );
+    const theme = useTheme();
+    const canvas = useCanvas();
+    // const allData = useMemo(
+    //   () =>
+    //     groupedValues
+    //       .map((v) => {
+    //         return v.values
+    //           .filter((v) => valueNames.includes(v.name))
+    //           .map((data) => ({ ...data, filter: v.filter }));
+    //       })
+    //       .flat(),
+    //   [groupedValues, valueNames]
+    // );
+    const allValues = useMemo(() => allData.map((d) => d.value), [allData]);
+    const scale = useMemo(() => {
+      const [min, max] = extent(allValues);
+      return scaleLinear()
+        .domain([min || 0, max || 1])
+        .rangeRound([
+          theme.valueDistribution.tickWidth / 2,
+          canvas.width - theme.valueDistribution.tickWidth / 2,
+        ]);
+    }, [allValues, canvas.width]);
+    const allMean = useMemo(() => mean(allValues) || 0, [allValues]);
+    const [localHoveredValue, setLocalHoveredValue] = useState<
+      typeof allData[number] | null
+    >(null);
+    const handlePlotMouseMove = useCallback(
+      (e: React.MouseEvent) => {
+        const allSelectableValues = allData.map((d) => d.value);
+        if (allSelectableValues.length === 0) {
+          return;
+        }
+        if (
+          e.nativeEvent.offsetY < theme.valueDistribution.varianceLineHeight
+        ) {
+          if (localHoveredValue) {
+            onLeaveData(localHoveredValue.plantingId);
+          }
+          return;
+        }
+        const mouseX = e.nativeEvent.offsetX;
+        const targetValue = scale.invert(mouseX);
+        const closestData =
+          allData[
+            minIndex(allSelectableValues, (v) => Math.abs(v - targetValue))
+          ];
+        const closestValueX = scale(closestData.value);
+        const newLocalHoveredValue =
+          Math.abs(closestValueX - mouseX) < 3 ? closestData : null;
+        if (newLocalHoveredValue) {
+          onHoverData(newLocalHoveredValue.plantingId);
+        } else if (localHoveredValue) {
           onLeaveData(localHoveredValue.plantingId);
         }
-        return;
-      }
-      const mouseX = e.nativeEvent.offsetX;
-      const targetValue = scale.invert(mouseX);
-      const closestData =
-        allData[
-          minIndex(allSelectableValues, (v) => Math.abs(v - targetValue))
-        ];
-      const closestValueX = scale(closestData.value);
-      const newLocalHoveredValue =
-        Math.abs(closestValueX - mouseX) < 3 ? closestData : null;
-      if (newLocalHoveredValue) {
-        onHoverData(newLocalHoveredValue.plantingId);
-      } else if (localHoveredValue) {
+        setLocalHoveredValue(newLocalHoveredValue);
+      },
+      [scale, allData, localHoveredValue]
+    );
+    const handlePlotMouseLeave = useCallback(() => {
+      if (localHoveredValue) {
         onLeaveData(localHoveredValue.plantingId);
       }
-      setLocalHoveredValue(newLocalHoveredValue);
-    },
-    [scale, allData, localHoveredValue]
-  );
-  const handlePlotMouseLeave = useCallback(() => {
-    if (localHoveredValue) {
-      onLeaveData(localHoveredValue.plantingId);
-    }
-    setLocalHoveredValue(null);
-  }, [localHoveredValue]);
-  const handlePlotMouseClick = useCallback(() => {
-    if (localHoveredValue) {
-      addPlantingCard(localHoveredValue.plantingId);
-      showPlantingCards();
-    }
-  }, [localHoveredValue]);
-
-  // useEffectDebugger(
-  //   () => {},
-  //   [groupedValues, highlightedPlanting, localHoveredValue, highlightedFilter],
-  //   [
-  //     "groupedValues",
-  //     "highlightedPlanting",
-  //     "localHoveredValue",
-  //     "highlightedFilter",
-  //   ]
-  // );
-
-  // select maximum one filter for each value
-  const allDataWithFilter = useMemo(
-    () =>
-      allData.map((value) => ({
-        ...value,
-        filter:
-          value.matchingFilters.find((f) => f.id === highlightedFilterId) ||
-          value.matchingFilters.length
-            ? value.matchingFilters[0]
-            : null,
-      })),
-    [allData, highlightedFilterId]
-  );
-
-  useEffect(() => {
-    const ctx = canvas.resize();
-    if (!ctx) {
-      return;
-    }
-    // draw background
-    ctx.fillStyle =
-      props.childCount === 0 ? colors.treeBgSecondary : colors.treeBgPrimary;
-    ctx.rect(
-      0,
-      theme.valueDistribution.varianceLineHeight,
-      canvas.width,
-      canvas.height
-    );
-    ctx.fill();
-
-    let valuesGrouppedByFilter = Object.values(
-      groupBy(allDataWithFilter, (value) => value.filter?.id)
-    );
-    // move values to front (top) if they match the highlightedFilterId
-    valuesGrouppedByFilter = sortBy(valuesGrouppedByFilter, (valueSet) =>
-      valueSet[0].matchingFilters.some((f) => f.id === highlightedFilterId)
-    );
-
-    for (const valueSet of valuesGrouppedByFilter) {
-      const filter = valueSet[0].filter;
-      ctx.beginPath();
-      const color = tinycolor(
-        filter?.color || theme.valueDistribution.averageColor
-      );
-      ctx.fillStyle = !highlightedFilterId
-        ? color.toString()
-        : highlightedFilterId === filter?.id
-        ? color.saturate(2).toString()
-        : color
-            .desaturate(12)
-            .setAlpha(color.getAlpha() / 2)
-            .toString();
-
-      // draw variance line
-      if (filter) {
-        const values = valueSet.map((v) => v.value);
-        const q1 = quantile(values, 0.25);
-        const q3 = quantile(values, 0.75);
-        if (q1 && q3) {
-          // Draw variance line
-          ctx.rect(
-            scale(q1),
-            theme.valueDistribution.varianceLineHeight / 2,
-            scale(q3) - scale(q1),
-            theme.valueDistribution.varianceLineHeight / 2
-          );
-
-          // Draw horns
-          [q1, q3].forEach((value, i) => {
-            const hFr2 = theme.valueDistribution.varianceLineHeight / 2;
-            const xValue = scale(value);
-            ctx.moveTo(xValue, 0);
-            ctx.lineTo(xValue, hFr2);
-            if (i === 0) {
-              // left horn
-              ctx.lineTo(xValue + hFr2, hFr2);
-            } else {
-              // right horn
-              ctx.lineTo(xValue - hFr2, hFr2);
-            }
-          });
-          ctx.fill();
-        }
+      setLocalHoveredValue(null);
+    }, [localHoveredValue]);
+    const handlePlotMouseClick = useCallback(() => {
+      if (localHoveredValue) {
+        addPlantingCard(localHoveredValue.plantingId);
+        showPlantingCards();
       }
+    }, [localHoveredValue]);
 
-      // draw ticks
-      valueSet.map((value) => {
-        ctx.rect(
-          scale(value.value) - theme.valueDistribution.tickWidth / 2,
-          theme.valueDistribution.varianceLineHeight,
-          theme.valueDistribution.tickWidth,
-          canvas.height
-        );
-      });
+    // useEffectDebugger(
+    //   () => {},
+    //   [groupedValues, highlightedPlanting, localHoveredValue, highlightedFilter],
+    //   [
+    //     "groupedValues",
+    //     "highlightedPlanting",
+    //     "localHoveredValue",
+    //     "highlightedFilter",
+    //   ]
+    // );
 
-      ctx.fill();
-    }
+    // select maximum one filter for each value
+    const allDataWithFilter = useMemo(
+      () =>
+        allData.map((value) => ({
+          ...value,
+          filter:
+            value.matchingFilters.find((f) => f.id === highlightedFilterId) ||
+            value.matchingFilters.length
+              ? value.matchingFilters[0]
+              : null,
+        })),
+      [allData, highlightedFilterId]
+    );
 
-    // Draw mean
-    if (allValues.length > 0) {
-      ctx.beginPath();
-      ctx.fillStyle = theme.color("red");
+    useEffect(() => {
+      const ctx = canvas.resize();
+      if (!ctx) {
+        return;
+      }
+      // draw background
+      ctx.fillStyle =
+        props.childCount === 0 ? colors.treeBgSecondary : colors.treeBgPrimary;
       ctx.rect(
-        scale(allMean) - theme.valueDistribution.meanTickWidth / 2,
+        0,
         theme.valueDistribution.varianceLineHeight,
-        theme.valueDistribution.meanTickWidth,
+        canvas.width,
         canvas.height
       );
       ctx.fill();
-    }
 
-    // Draw hover
-    if (highlightedPlantingId) {
-      ctx.beginPath();
-      ctx.fillStyle = theme.color("white");
-      allDataWithFilter.map((data) => {
-        if (data.plantingId === highlightedPlantingId) {
+      let valuesGrouppedByFilter = Object.values(
+        groupBy(allDataWithFilter, (value) => value.filter?.id)
+      );
+      // move values to front (top) if they match the highlightedFilterId
+      valuesGrouppedByFilter = sortBy(valuesGrouppedByFilter, (valueSet) =>
+        valueSet[0].matchingFilters.some((f) => f.id === highlightedFilterId)
+      );
+
+      for (const valueSet of valuesGrouppedByFilter) {
+        const filter = valueSet[0].filter;
+        ctx.beginPath();
+        const color = tinycolor(
+          filter?.color || theme.valueDistribution.averageColor
+        );
+        ctx.fillStyle = !highlightedFilterId
+          ? color.toString()
+          : highlightedFilterId === filter?.id
+          ? color.saturate(2).toString()
+          : color
+              .desaturate(12)
+              .setAlpha(color.getAlpha() / 2)
+              .toString();
+
+        // draw variance line
+        if (filter) {
+          const values = valueSet.map((v) => v.value);
+          const q1 = quantile(values, 0.25);
+          const q3 = quantile(values, 0.75);
+          if (q1 && q3) {
+            // Draw variance line
+            ctx.rect(
+              scale(q1),
+              theme.valueDistribution.varianceLineHeight / 2,
+              scale(q3) - scale(q1),
+              theme.valueDistribution.varianceLineHeight / 2
+            );
+
+            // Draw horns
+            [q1, q3].forEach((value, i) => {
+              const hFr2 = theme.valueDistribution.varianceLineHeight / 2;
+              const xValue = scale(value);
+              ctx.moveTo(xValue, 0);
+              ctx.lineTo(xValue, hFr2);
+              if (i === 0) {
+                // left horn
+                ctx.lineTo(xValue + hFr2, hFr2);
+              } else {
+                // right horn
+                ctx.lineTo(xValue - hFr2, hFr2);
+              }
+            });
+            ctx.fill();
+          }
+        }
+
+        // draw ticks
+        valueSet.map((value) => {
           ctx.rect(
-            scale(data.value) - theme.valueDistribution.tickWidth / 2,
+            scale(value.value) - theme.valueDistribution.tickWidth / 2,
             theme.valueDistribution.varianceLineHeight,
             theme.valueDistribution.tickWidth,
             canvas.height
           );
-        }
-      });
-      ctx.fill();
-    }
-  }, [
-    allDataWithFilter,
-    canvas.width,
-    canvas.height,
-    scale,
-    allMean,
-    highlightedPlantingId,
-    highlightedFilterId,
-  ]);
+        });
 
-  const leftBranches = props.nesting - props.hideBranches;
+        ctx.fill();
+      }
 
-  const formatValue = useMemo(() => format(".3f"), []);
+      // Draw mean
+      if (allValues.length > 0) {
+        ctx.beginPath();
+        ctx.fillStyle = theme.color("red");
+        ctx.rect(
+          scale(allMean) - theme.valueDistribution.meanTickWidth / 2,
+          theme.valueDistribution.varianceLineHeight,
+          theme.valueDistribution.meanTickWidth,
+          canvas.height
+        );
+        ctx.fill();
+      }
 
-  return (
-    <Bar className={props.className} openState={props.openState}>
-      {range(props.hideBranches).map((i) => (
-        <BranchLeftHidden key={`blh-${i}`} />
-      ))}
-      {range(leftBranches).map((i) => (
-        <BranchLeft
-          key={`bl-${i}`}
-          isEnd={props.isLastChild && i === leftBranches - 1}
-        />
-      ))}
-      <Label
-        nesting={props.nesting || 0}
-        childCount={props.childCount || 0}
-        onClick={() => props.onToggleChildren()}
-        onMouseEnter={() => setIsHovering(true)}
-        onMouseLeave={() => setIsHovering(false)}
-        isHovering={isHovering && props.openState === "closed"}
-      >
-        {label}
-        {isHovering && props.childCount > 0 ? (
-          <LabelIcon>
-            {props.openState === "open" ? (
-              <ExpandLessIcon fontSize="inherit" />
-            ) : (
-              <ExpandMoreIcon fontSize="inherit" />
-            )}
-          </LabelIcon>
-        ) : null}
-      </Label>
-      <Plot>
-        <PlotCanvas
-          onMouseMove={handlePlotMouseMove}
-          onMouseLeave={handlePlotMouseLeave}
-          onClick={handlePlotMouseClick}
-          ref={canvas.ref}
-        />
+      // Draw hover
+      if (highlightedPlantingId) {
+        ctx.beginPath();
+        ctx.fillStyle = theme.color("white");
+        allDataWithFilter.map((data) => {
+          if (data.plantingId === highlightedPlantingId) {
+            ctx.rect(
+              scale(data.value) - theme.valueDistribution.tickWidth / 2,
+              theme.valueDistribution.varianceLineHeight,
+              theme.valueDistribution.tickWidth,
+              canvas.height
+            );
+          }
+        });
+        ctx.fill();
+      }
+    }, [
+      allDataWithFilter,
+      canvas.width,
+      canvas.height,
+      scale,
+      allMean,
+      highlightedPlantingId,
+      highlightedFilterId,
+    ]);
 
-        {localHoveredValue ? (
-          <ValuePopup
-            value={`${formatValue(localHoveredValue.value)}`}
-            x={scale(localHoveredValue.value)}
-            y={theme.valueDistribution.varianceLineHeight}
+    const leftBranches = props.nesting - props.hideBranches;
+
+    const formatValue = useMemo(() => format(".3f"), []);
+
+    return (
+      <Bar ref={ref} className={props.className} openState={props.openState}>
+        {range(props.hideBranches).map((i) => (
+          <BranchLeftHidden key={`blh-${i}`} />
+        ))}
+        {range(leftBranches).map((i) => (
+          <BranchLeft
+            key={`bl-${i}`}
+            isEnd={props.isLastChild && i === leftBranches - 1}
           />
-        ) : null}
-      </Plot>
-    </Bar>
-  );
-};
+        ))}
+        <Label
+          nesting={props.nesting || 0}
+          childCount={props.childCount || 0}
+          onClick={() => props.onToggleChildren()}
+          onMouseEnter={() => setIsHovering(true)}
+          onMouseLeave={() => setIsHovering(false)}
+          isHovering={isHovering && props.openState === "closed"}
+        >
+          {label}
+          {isHovering && props.childCount > 0 ? (
+            <LabelIcon>
+              {props.openState === "open" ? (
+                <ExpandLessIcon fontSize="inherit" />
+              ) : (
+                <ExpandMoreIcon fontSize="inherit" />
+              )}
+            </LabelIcon>
+          ) : null}
+        </Label>
+        <Plot>
+          <PlotCanvas
+            onMouseMove={handlePlotMouseMove}
+            onMouseLeave={handlePlotMouseLeave}
+            onClick={handlePlotMouseClick}
+            ref={canvas.ref}
+          />
+
+          {localHoveredValue ? (
+            <ValuePopup
+              value={`${formatValue(localHoveredValue.value)}`}
+              x={scale(localHoveredValue.value)}
+              y={theme.valueDistribution.varianceLineHeight}
+            />
+          ) : null}
+        </Plot>
+      </Bar>
+    );
+  }
+);

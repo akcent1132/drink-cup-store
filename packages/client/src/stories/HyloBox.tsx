@@ -6,6 +6,8 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 import useScrollPosition from "@react-hook/window-scroll";
 import { useWindowWidth } from "@react-hook/window-size";
+import { TourStop } from "../states/TourStop";
+import { Stop } from "../states/tour";
 
 const HyloDragger = styled.div<{
   height: number;
@@ -80,63 +82,68 @@ const CloseEarContent = styled.div<{ open: boolean }>`
   }
 `;
 
-export const HyloBox = ({
-  src = "https://www.hylo.com/groups/loud-cacti/explore",
-  container,
-}: {
+type Props = {
   src?: string;
   container: React.RefObject<HTMLDivElement>;
-}) => {
-  const [open, setOpen] = useState(false);
-  const [hovering, setHovering] = useState(false);
-
-  // Delay loading the Holo frame so it doesn't take up bandwidth from the rest of the app
-  const [isWaiting, setIsWaiting] = useState(true);
-  useEffect(() => {
-    setTimeout(() => setIsWaiting(false), 5000);
-  }, []);
-
-  const windowWidth = useWindowWidth();
-  const scrollY = useScrollPosition();
-
-  const [rect, setRect] = useState<DOMRect | null>(null);
-  useLayoutEffect(() => {
-    if (container.current) {
-      setRect(container?.current.getBoundingClientRect());
-    }
-  }, [container?.current, windowWidth, scrollY]);
-
-  const height = useMemo(
-    () => (rect ? window.innerHeight - Math.max(0, rect.top) : 0),
-    [rect?.top]
-  );
-  if (!rect) {
-    return null;
-  }
-  return (
-    <HyloDragger
-      height={height}
-      width={rect.width}
-      left={rect.left}
-      headerHeight={56}
-      open={open}
-      hovering={hovering}
-    >
-      {!isWaiting ? (
-        <HyloIFrame src={src} title="Hylo Group" frameBorder="0"></HyloIFrame>
-      ) : null}
-      <HeaderClick
-        open={open}
-        headerHeight={56}
-        onClick={() => setOpen(!open)}
-        onMouseEnter={() => setHovering(true)}
-        onMouseLeave={() => setHovering(false)}
-      />
-      <CloseEar headerHeight={56} onClick={() => setOpen(false)}>
-        <CloseEarContent open={open}>
-          <ExpandMoreIcon fontSize="large" color="inherit" />
-        </CloseEarContent>
-      </CloseEar>
-    </HyloDragger>
-  );
 };
+export const HyloBox = React.forwardRef<HTMLDivElement, Props>(
+  (
+    { src = "https://www.hylo.com/groups/loud-cacti/explore", container },
+    ref
+  ) => {
+    const [open, setOpen] = useState(false);
+    const [hovering, setHovering] = useState(false);
+
+    // Delay loading the Holo frame so it doesn't take up bandwidth from the rest of the app
+    const [isWaiting, setIsWaiting] = useState(true);
+    useEffect(() => {
+      setTimeout(() => setIsWaiting(false), 5000);
+    }, []);
+
+    const windowWidth = useWindowWidth();
+    const scrollY = useScrollPosition();
+
+    const [rect, setRect] = useState<DOMRect | null>(null);
+    useLayoutEffect(() => {
+      if (container.current) {
+        setRect(container?.current.getBoundingClientRect());
+      }
+    }, [container?.current, windowWidth, scrollY]);
+
+    const height = useMemo(
+      () => (rect ? window.innerHeight - Math.max(0, rect.top) : 0),
+      [rect?.top]
+    );
+    if (!rect) {
+      return null;
+    }
+    return (
+      <HyloDragger
+        ref={ref}
+        height={height}
+        width={rect.width}
+        left={rect.left}
+        headerHeight={56}
+        open={open}
+        hovering={hovering}
+      >
+        {!isWaiting ? (
+          <HyloIFrame src={src} title="Hylo Group" frameBorder="0"></HyloIFrame>
+        ) : null}
+        <HeaderClick
+          open={open}
+          headerHeight={56}
+          onClick={() => setOpen(!open)}
+          onMouseEnter={() => setHovering(true)}
+          onMouseLeave={() => setHovering(false)}
+        />
+
+        <CloseEar headerHeight={56} onClick={() => setOpen(false)}>
+          <CloseEarContent open={open}>
+            <ExpandMoreIcon fontSize="large" color="inherit" />
+          </CloseEarContent>
+        </CloseEar>
+      </HyloDragger>
+    );
+  }
+);
