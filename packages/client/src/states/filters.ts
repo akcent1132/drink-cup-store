@@ -51,13 +51,13 @@ const filters = atom<Filter[]>({
     {
       color: sample(schemeTableau10)!,
       id: Math.random().toString(),
-      name: "Vilicus Farms",
+      name: "Legacy Seed",
       params: [
         {
           active: true,
           dataSource: FilterParamDataSource.FarmOnboarding,
           key: "organization",
-          value: { options: ["Vilicus Farms"] },
+          value: { options: ["Legacy Seed"] },
         },
       ],
     },

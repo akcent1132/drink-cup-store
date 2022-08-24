@@ -95,8 +95,8 @@ export const loadFarmOnboardings = pMemoize(
       values: map(farm, (values, key) => ({
         key,
         values: (isArray(values) ? values : [values])
-          .filter((x) => !isEmpty(x))
-          .map(toString),
+          .filter((v) => !isEmpty(v))
+          .map(v => toString(v).trim()),
       })),
     }));
   }
