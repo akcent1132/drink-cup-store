@@ -21,7 +21,7 @@ enum AuthMethod {
 }
 
 export const LoginDialog = () => {
-  const [authMethod, setAuthMethod] = useState(AuthMethod.MagicLink);
+  const [authMethod, setAuthMethod] = useState(AuthMethod.Password);
   const { login, isLoginInProgress } = useLogin();
   const [
     requestMagicLoginLink,
@@ -186,7 +186,7 @@ export const LoginDialog = () => {
         >
           Continue without login
         </Button>
-        <Button
+        {/* <Button
           variant="text"
           onClick={() =>
             setAuthMethod(
@@ -199,7 +199,7 @@ export const LoginDialog = () => {
           {authMethod === AuthMethod.Password
             ? "email me a sign in link instead"
             : "sign in with password instead"}
-        </Button>
+        </Button> */}
       </Box>
     </Dialog>
   );
