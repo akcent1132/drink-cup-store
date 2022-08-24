@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import LinearProgress from "@mui/material/LinearProgress";
 import { findLastIndex, last } from "lodash";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ValueDistribution } from "../components/ValueDistribution";
 import { RowData } from "../contexts/rows";
 import { Filter } from "../states/filters";
@@ -87,6 +87,7 @@ const flattenRows = (
         return [];
       }
 
+      // mark the last immediate child
       const lastChild = last(children.filter((c) => c.nesting === nesting + 1));
       if (lastChild) {
         lastChild.isLastChild = true;
@@ -129,23 +130,29 @@ export const NestedRows = ({
     () => flattenRows(rows, labeledValues),
     [rows, labeledValues]
   );
-  // rows at the second level and below are closed by default
-  const [isClosed, setIsClosed] = useState<boolean[]>(
-    flatRows.map((r) => r.nesting >= 1)
-  );
-  const toggleOpen = useCallback(
-    (rowIndex: number) => {
-      const states = [...isClosed];
-      states[rowIndex] = !states[rowIndex];
-      setIsClosed(states);
+  const [isClosed, setIsClosed] = useState<{ [key: string]: boolean }>({});
+  const getIsClosed = useCallback(
+    (name: string) => {
+      if (name in isClosed) {
+        return isClosed[name];
+      }
+      // rows at the second level and below are closed by default
+      return flatRows.find((r) => r.row.name === name)?.nesting === 1;
     },
-    [isClosed]
+    [flatRows, isClosed]
+  );
+
+  const toggleOpen = useCallback(
+    (name: string) => {
+      setIsClosed({ ...isClosed, [name]: !getIsClosed(name) });
+    },
+    [isClosed, getIsClosed]
   );
   const openStates = useMemo(() => {
     let closedAtLevel = -1;
-    return flatRows.map(({ nesting }, rowIndex) => {
+    return flatRows.map(({ row: { name }, nesting }) => {
       if (closedAtLevel < 0) {
-        if (isClosed[rowIndex]) {
+        if (getIsClosed(name)) {
           closedAtLevel = nesting;
           return "closed";
         } else {
@@ -154,7 +161,7 @@ export const NestedRows = ({
       } else {
         if (closedAtLevel < nesting) {
           return "parentClosed";
-        } else if (isClosed[rowIndex]) {
+        } else if (getIsClosed(name)) {
           closedAtLevel = nesting;
           return "closed";
         } else {
@@ -163,7 +170,7 @@ export const NestedRows = ({
         }
       }
     });
-  }, [flatRows, isClosed]);
+  }, [flatRows, getIsClosed]);
 
   return (
     <>
@@ -193,7 +200,7 @@ export const NestedRows = ({
               childCount={childCount}
               isLastChild={isLastChild}
               hideBranches={hideBranches}
-              onToggleChildren={() => toggleOpen(i)}
+              onToggleChildren={() => toggleOpen(name)}
               openState={openStates[i]!}
               highlightedFilterId={highlightedFilterId || undefined}
               highlightedPlantingId={highlightedPlantingId || undefined}
