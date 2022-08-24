@@ -37,7 +37,7 @@ export const loadSurveyStackGroups = pMemoize(async (userId, authorization) => {
     return [];
   }
   const data = await fetch(
-    surveyStackApiUrl("api/memberships?user=${userId}&populate=1"),
+    surveyStackApiUrl(`api/memberships?user=${userId}&populate=1`),
     {
       headers: {
         Authorization: authorization,
