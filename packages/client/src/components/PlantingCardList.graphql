@@ -28,6 +28,7 @@ query PlantingCardList($plantingIds: [String!]!) {
     farmOnboarding {
       id
       climateZone
+      hardinessZone
       averageAnnualTemperature
       averageAnnualRainfall
       values {

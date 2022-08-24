@@ -93,6 +93,7 @@ type FarmOnboarding {
   id: String!
   farmDomain: String
   climateZone: String
+  hardinessZone: String
   averageAnnualTemperature: Float
   averageAnnualRainfall: Float
   values: [FarmOnboardingValue!]

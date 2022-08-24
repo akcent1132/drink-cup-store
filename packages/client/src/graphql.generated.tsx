@@ -34,6 +34,7 @@ export type FarmOnboarding = {
   averageAnnualTemperature: Maybe<Scalars['Float']>;
   climateZone: Maybe<Scalars['String']>;
   farmDomain: Maybe<Scalars['String']>;
+  hardinessZone: Maybe<Scalars['String']>;
   id: Scalars['String'];
   values: Maybe<Array<FarmOnboardingValue>>;
 };
@@ -190,12 +191,13 @@ export type AvailableCropTypeFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantingCount?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type FarmOnboardingKeySpecifier = ('averageAnnualRainfall' | 'averageAnnualTemperature' | 'climateZone' | 'farmDomain' | 'id' | 'values' | FarmOnboardingKeySpecifier)[];
+export type FarmOnboardingKeySpecifier = ('averageAnnualRainfall' | 'averageAnnualTemperature' | 'climateZone' | 'farmDomain' | 'hardinessZone' | 'id' | 'values' | FarmOnboardingKeySpecifier)[];
 export type FarmOnboardingFieldPolicy = {
 	averageAnnualRainfall?: FieldPolicy<any> | FieldReadFunction<any>,
 	averageAnnualTemperature?: FieldPolicy<any> | FieldReadFunction<any>,
 	climateZone?: FieldPolicy<any> | FieldReadFunction<any>,
 	farmDomain?: FieldPolicy<any> | FieldReadFunction<any>,
+	hardinessZone?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	values?: FieldPolicy<any> | FieldReadFunction<any>
 };

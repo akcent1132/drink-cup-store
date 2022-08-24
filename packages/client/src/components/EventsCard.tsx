@@ -7,6 +7,7 @@ import ContactPageIcon from "@mui/icons-material/ContactPage";
 import InvertColorsIcon from "@mui/icons-material/InvertColors";
 import PublicIcon from "@mui/icons-material/Public";
 import ThermostatIcon from "@mui/icons-material/Thermostat";
+import WbSunnyIcon from "@mui/icons-material/WbSunny";
 import Tooltip from "@mui/material/Tooltip";
 import { Tip } from "grommet";
 import { isNil } from "lodash";
@@ -16,11 +17,11 @@ import "../index.css";
 import {
   useHighlightedPlantingId,
   useHighlightPlanting,
-  useUnhighlightPlanting
+  useUnhighlightPlanting,
 } from "../states/highlightedPlantingId";
 import {
   useRemovePlantingCard,
-  useShowProfile
+  useShowProfile,
 } from "../states/sidePanelContent";
 import { IconEventsBar } from "./IconEventsBar";
 import { PlantingCardListQuery } from "./PlantingCardList.generated";
@@ -167,8 +168,12 @@ export const EventsCard = ({
   const removePlantingCard = useRemovePlantingCard();
   const showProfile = useShowProfile();
 
-  const { averageAnnualTemperature, averageAnnualRainfall, climateZone } =
-    planting?.farmOnboarding || {};
+  const {
+    averageAnnualTemperature,
+    averageAnnualRainfall,
+    climateZone,
+    hardinessZone,
+  } = planting?.farmOnboarding || {};
   const texture = useMemo(() => {
     const { sandPercentage, clayPercentage } = planting?.params || {};
     const sand = isNil(sandPercentage) ? null : `Sand ${sandPercentage}%`;
@@ -234,6 +239,12 @@ export const EventsCard = ({
               {isNil(averageAnnualRainfall)
                 ? "n/a"
                 : `${averageAnnualRainfall}″`}
+            </ParamValue>
+          </MiniInfo>
+          <MiniInfo tooltip="Hardiness zone">
+            <WbSunnyIcon fontSize="inherit" />
+            <ParamValue>
+              {isNil(hardinessZone) ? "n/a" : hardinessZone}
             </ParamValue>
           </MiniInfo>
           <MiniInfo tooltip="Climate region">

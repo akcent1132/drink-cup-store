@@ -35,6 +35,7 @@ export type FarmOnboarding = {
   averageAnnualTemperature?: Maybe<Scalars['Float']>;
   climateZone?: Maybe<Scalars['String']>;
   farmDomain?: Maybe<Scalars['String']>;
+  hardinessZone?: Maybe<Scalars['String']>;
   id: Scalars['String'];
   values?: Maybe<Array<FarmOnboardingValue>>;
 };
@@ -312,6 +313,7 @@ export type FarmOnboardingResolvers<ContextType = any, ParentType extends Resolv
   averageAnnualTemperature?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   climateZone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   farmDomain?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  hardinessZone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   values?: Resolver<Maybe<Array<ResolversTypes['FarmOnboardingValue']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

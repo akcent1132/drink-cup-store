@@ -90,6 +90,7 @@ export const loadFarmOnboardings = pMemoize(
       id: [farm.farmDomain, farm.surveystack_id].join(),
       farmDomain: toString(farm.farmDomain) || null,
       climateZone: toString(farm.climate_zone) || null,
+      hardinessZone: toString(farm.hardiness_zone) || null,
       averageAnnualTemperature: floatOrNull(farm.average_annual_temperature),
       averageAnnualRainfall: floatOrNull(farm.average_annual_rainfall),
       values: map(farm, (values, key) => ({
