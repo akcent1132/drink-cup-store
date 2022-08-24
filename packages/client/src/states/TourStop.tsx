@@ -169,7 +169,7 @@ export const TourStop: React.FC<{
         anchorEl={anchorEl}
         transition
         placement={placement}
-        sx={{zIndex: 3000}}
+        sx={{zIndex: 1200}} // above the Hylo box but below the dropdowns
         modifiers={[
           {
             name: "flip",
