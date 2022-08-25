@@ -1,20 +1,19 @@
-import { sortBy, without } from "lodash";
-import { useCallback, useMemo, useState } from "react";
-import { Filterable } from "./getFilterables";
-import MenuItem from "@mui/material/MenuItem";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import JoinInnerIcon from "@mui/icons-material/JoinInner";
+import Autocomplete from "@mui/material/Autocomplete";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import Autocomplete from "@mui/material/Autocomplete";
+import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
-import SearchIcon from "@mui/icons-material/Search";
+import { sortBy, without } from "lodash";
+import { useCallback, useMemo, useState } from "react";
 import {
   FilterParam,
   FilterParamDataSource,
   useAddFilterParam,
-  useRemoveFilterParam,
+  useRemoveFilterParam
 } from "../../states/filters";
+import { Filterable } from "./getFilterables";
 import { prettyKey } from "./prettyKey";
 
 type Props = {

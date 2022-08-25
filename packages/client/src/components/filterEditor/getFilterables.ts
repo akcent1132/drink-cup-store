@@ -42,6 +42,8 @@ const BLACKLIST = [
   "farmDomain",
 ];
 
+const FORCE_OPTION_TYPE = ["location_postal_code"];
+
 export const getFilterables = (
   plantings: FilterEditorQuery["plantings"]
 ): Filterable[] => {
@@ -82,7 +84,10 @@ export const getFilterables = (
     values = values.filter((x) => !isEmpty(x));
 
     const numValues = uniq(values.map((v) => Number.parseFloat(v)));
-    if (numValues.every((v) => Number.isFinite(v))) {
+    if (
+      !FORCE_OPTION_TYPE.includes(key) &&
+      numValues.every((v) => Number.isFinite(v))
+    ) {
       if (numValues.length < 2) {
         return null;
       }
