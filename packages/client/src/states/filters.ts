@@ -51,7 +51,7 @@ const filters = atom<Filter[]>({
     {
       color: sample(schemeTableau10)!,
       id: Math.random().toString(),
-      name: "Filter 1",
+      name: "Direct Sales",
       params: [
         {
           active: true,
