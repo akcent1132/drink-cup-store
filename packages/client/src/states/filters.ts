@@ -55,9 +55,9 @@ const filters = atom<Filter[]>({
       params: [
         {
           active: true,
-          dataSource: FilterParamDataSource.Values,
-          key: "Polyphenols",
-          value: { min: 100.0, max: 150.0 },
+          dataSource: FilterParamDataSource.FarmOnboarding,
+          key: "types",
+          value: { options: ["directsale_farm"] },
         },
       ],
     },
