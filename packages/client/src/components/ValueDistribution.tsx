@@ -160,7 +160,8 @@ type Props = {
     }[];
     name: string;
     value: number;
-    modusId?: string | null;
+    modusTestId?: string | null;
+    unit?: string | null;
     plantingId: string;
   }[];
 };
@@ -468,7 +469,7 @@ export const ValueDistribution = React.forwardRef<HTMLDivElement, Props>(
 
           {localHoveredValue ? (
             <ValuePopup
-              value={`${formatValue(localHoveredValue.value)}`}
+              value={`${formatValue(localHoveredValue.value)} ${localHoveredValue.unit || ''}`}
               x={scale(localHoveredValue.value)}
               y={theme.valueDistribution.varianceLineHeight}
             />

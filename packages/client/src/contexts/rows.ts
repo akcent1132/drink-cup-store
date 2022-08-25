@@ -5,8 +5,8 @@ export type RowData = {
   type: string;
   children?: RowData[];
   showAggregation?: boolean;
-  unit?: string;
-  modusTestId?: string;
+  unit?: string | null;
+  modusTestId?: string | null;
 };
 
 type ValueType = {
@@ -14,9 +14,8 @@ type ValueType = {
   hierarchy: string[];
   isAggregatable?: boolean | null;
   unit?: string | null; // ? only if it is the same for all values with the same name
-  modus_test_id?: string | null; // ? only if it is the same for all values with the same name
+  modusTestId?: string | null; // ? only if it is the same for all values with the same name
 };
-
 
 export const covertNormalizedRows = (valueTypes: ValueType[]): RowData[] => {
   const rows: RowData[] = [];
@@ -54,9 +53,13 @@ export const covertNormalizedRows = (valueTypes: ValueType[]): RowData[] => {
     if (!valueType.isAggregatable) {
       groups.forEach((g) => (g.showAggregation = false));
     }
-    last(groups)!.children!.push({ name: valueType.name, type: "value" });
+    last(groups)!.children!.push({
+      name: valueType.name,
+      type: "value",
+      unit: valueType.unit,
+      modusTestId: valueType.modusTestId,
+    });
   });
 
   return rows;
 };
-

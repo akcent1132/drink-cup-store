@@ -62,7 +62,8 @@ const flattenRows = (
     }[];
     name: string;
     value: number;
-    modusId?: string | null;
+    modusTestId?: string | null;
+    unit?: string | null;
     plantingId: string;
   }[];
 }[] =>
@@ -81,7 +82,9 @@ const flattenRows = (
       const childRowNames = children.map((c) => c.row.name);
       const { name, showAggregation } = row;
       const valueNames = showAggregation ? childRowNames : [name];
-      const allData = labeledValues.filter((v) => valueNames.includes(v.name));
+      const allData = labeledValues
+        .filter((v) => valueNames.includes(v.name))
+        .map((v) => ({ ...v, modusTestId: row.modusTestId, unit: row.unit }));
 
       if (
         allData.length === 0 &&
