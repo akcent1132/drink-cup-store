@@ -8,7 +8,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import SearchIcon from '@mui/icons-material/Search';
+import SearchIcon from "@mui/icons-material/Search";
 import {
   FilterParam,
   FilterParamDataSource,
@@ -28,11 +28,12 @@ export const FilterParamSelector = ({
   params,
   filterables: options,
 }: Props) => {
-  const [open, setOpen] = useState(params.length === 0)
+  const [open, setOpen] = useState(params.length === 0);
   const addFilterParam = useAddFilterParam();
   const removeFilterParam = useRemoveFilterParam();
   const sortedOptions = useMemo(
-    () => sortBy(options, ["dataSource", (o) => prettyKey(o.key)]),
+    () =>
+      sortBy(options, ["dataSource", (o) => prettyKey(o.key).toLowerCase()]),
     [options]
   );
   const currentOptions = useMemo(
@@ -85,7 +86,12 @@ export const FilterParamSelector = ({
       value={currentOptions}
       onChange={handleChange}
       renderInput={(params) => (
-        <TextField {...params} variant="standard" label="Select Filters" placeholder="Search..."/>
+        <TextField
+          {...params}
+          variant="standard"
+          label="Select Filters"
+          placeholder="Search..."
+        />
       )}
       noOptionsText="Can't find  filter properties"
       groupBy={(option) =>
