@@ -62,9 +62,9 @@ const LOREM =
 const EMAIL = "684c9b3930413fdab7c6425ec01c878d@comm.surveystack.org";
 type Props = { producerId: string };
 export const FarmerProfile = ({ producerId }: Props) => {
-  const { data: { producer } = {} } = useFarmerProfileQuery({
+  const { producer } = useFarmerProfileQuery({
     variables: { producerId },
-  });
+  })?.data || {};
   const showPlantingCards = useShowPlantingCards();
   const [tabIndex, setTabIndex] = useState(0);
 

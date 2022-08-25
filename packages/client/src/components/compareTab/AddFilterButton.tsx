@@ -24,10 +24,10 @@ const createOptionFilterParam = (key: string, options: string[]) => ({
 
 export const AddFilterButton = React.forwardRef<HTMLButtonElement>((_, ref) => {
   const auth = useAuth();
-  const { data: { connectedFarmIds, surveyStackGroups } = {} } =
+  const { connectedFarmIds, surveyStackGroups } =
     useAddFilterButtonQuery({
       variables: { userId: (auth.isAuthenticated && auth.user.id) || null },
-    });
+    })?.data || {};
   const organizations = useMemo(
     () => (surveyStackGroups || []).map((g) => g.name),
     [surveyStackGroups]
