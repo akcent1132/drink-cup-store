@@ -31,10 +31,20 @@ export const isNumericFilterable = (
   return filterable.type === "numeric";
 };
 
+const BLACKLIST = [
+  "location_address_line1",
+  "location_address_line2",
+  "name",
+  "role",
+  "units",
+  "organization",
+  "organization_id",
+  "farmDomain",
+];
+
 export const getFilterables = (
   plantings: FilterEditorQuery["plantings"]
 ): Filterable[] => {
-  console.time("Get filterables");
   const values: FilterableNumeric[] = Object.values(
     plantings
       .map((p) => p.values)
@@ -98,6 +108,7 @@ export const getFilterables = (
     }
   }).filter(isSomething);
 
-  console.timeEnd("Get filterables");
-  return sortBy([...values, ...farmValues], "key");
+  return sortBy([...values, ...farmValues], "key").filter(
+    ({ key }) => !BLACKLIST.includes(key)
+  );
 };
