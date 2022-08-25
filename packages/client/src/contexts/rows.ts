@@ -101,80 +101,200 @@ export type RowData = {
 // ];
 
 type ValueType = {
-  name: string,
-  hierarchy: string[],
-  isAggregatable: boolean,
-  unit?: string, // ? only if it is the same for all values with the same name
-  modusId?: string, // ? only if it is the same for all values with the same name
-}
+  name: string;
+  hierarchy: string[];
+  isAggregatable: boolean;
+  unit?: string; // ? only if it is the same for all values with the same name
+  modus_test_id?: string; // ? only if it is the same for all values with the same name
+};
 
 export const VALUE_TYPES: ValueType[] = [
-  { name: "LOI Soil Carbon 0-10cm", hierarchy: ["Indicators", "Soil Structure"], isAggregatable: true},
-  { name: "LOI Soil Carbon 10-20cm", hierarchy: ["Indicators", "Soil Structure"], isAggregatable: true},
-  { name: "Organic Matter", hierarchy: ["Indicators", "Soil Structure"], isAggregatable: true},
-
-  { name: "Soil Respiration", hierarchy: ["Indicators", "Soil Biology"], isAggregatable: true},
-  { name: "LOI Soil Carbon 0-10cm", hierarchy: ["Indicators", "Soil Biology"], isAggregatable: true},
-  { name: "LOI Soil Carbon 10-20cm", hierarchy: ["Indicators", "Soil Biology"], isAggregatable: true},
-  { name: "Organic Matter", hierarchy: ["Indicators", "Soil Biology"], isAggregatable: true},
-
-  { name: "Polyphenols", hierarchy: ["Indicators", "Product Quality"], isAggregatable: true},
-  { name: "Antioxidants", hierarchy: ["Indicators", "Product Quality"], isAggregatable: true},
-  { name: "Proteins", hierarchy: ["Indicators", "Product Quality"], isAggregatable: true},
-  { name: "Brix", hierarchy: ["Indicators", "Product Quality"], isAggregatable: true},
-
-  { name: "Cation Exchange Capacity", hierarchy: ["Indicators", "Other"], isAggregatable: true},
-  { name: "Electrical Conductivity", hierarchy: ["Indicators", "Other"], isAggregatable: true},
-  { name: "Boron", hierarchy: ["Indicators", "Other"], isAggregatable: true},
-  { name: "Iron", hierarchy: ["Indicators", "Other"], isAggregatable: true},
-  { name: "Copper", hierarchy: ["Indicators", "Other"], isAggregatable: true},
-  { name: "Zinc", hierarchy: ["Indicators", "Other"], isAggregatable: true},
-  { name: "Aluminum", hierarchy: ["Indicators", "Other"], isAggregatable: true},
-  { name: "Sulfer", hierarchy: ["Indicators", "Other"], isAggregatable: true},
-
-  //      { name: "Growing Degree Days", hierarchy: ["Weather"], isAggregatable: false},
-  { name: "Temperature", hierarchy: ["Weather"], isAggregatable: false},
-  { name: "Rainfall", hierarchy: ["Weather"], isAggregatable: false},
-  { name: "Hardiness zone", hierarchy: ["Weather"], isAggregatable: false},
-  //      { name: "Climate Zone", hierarchy: ["Weather"], isAggregatable: false},
-
-  { name: "Clay %", hierarchy: ["Soil"], isAggregatable: false},
-  { name: "Sand %", hierarchy: ["Soil"], isAggregatable: false},
-  //      { name: "slope", hierarchy: ["Soil"], isAggregatable: false},
-  { name: "pH", hierarchy: ["Soil"], isAggregatable: false},
-
-  { name: "Tillage", hierarchy: ["Management"], isAggregatable: false},
-  { name: "Tillage Index", hierarchy: ["Management"], isAggregatable: false},
-  { name: "Grazing", hierarchy: ["Management"], isAggregatable: false},
-  { name: "Weed Control", hierarchy: ["Management"], isAggregatable: false},
-  { name: "Pest-Disease Control", hierarchy: ["Management"], isAggregatable: false},
-  { name: "Thinning / Pruning", hierarchy: ["Management"], isAggregatable: false},
-  { name: "Amendments", hierarchy: ["Management"], isAggregatable: false},
-  { name: "Irrigation", hierarchy: ["Management"], isAggregatable: false},
+  {
+    name: "Temperature",
+    isAggregatable: false,
+    unit: "mm/month",
+    modus_test_id: "B-AO.19.01",
+    hierarchy: ["Weather"],
+  },
+  {
+    name: "Antioxidants",
+    isAggregatable: true,
+    modus_test_id: "B-AO.19.01",
+    hierarchy: ["Indicators", "Product Quality"],
+  },
+  {
+    name: "Polyphenols",
+    isAggregatable: true,
+    modus_test_id: "B-PLY.19.01",
+    hierarchy: ["Indicators", "Product Quality"],
+  },
+  {
+    name: "Proteins",
+    isAggregatable: true,
+    modus_test_id: "B-LPR.19.01",
+    hierarchy: ["Indicators", "Product Quality"],
+  },
+  {
+    name: "Brix",
+    isAggregatable: true,
+    modus_test_id: "B-BX.20.15",
+    hierarchy: ["Indicators", "Product Quality"],
+  },
+  {
+    name: "Pest-Disease Control",
+    isAggregatable: false,
+    hierarchy: ["Management"],
+  },
+  {
+    name: "Thinning / Prunning",
+    isAggregatable: false,
+    hierarchy: ["Management"],
+  },
+  { name: "Amendment", isAggregatable: false, hierarchy: ["Management"] },
+  { name: "Irrigation", isAggregatable: false, hierarchy: ["Management"] },
+  {
+    name: "pH",
+    isAggregatable: false,
+    modus_test_id: "S-PH-1:1.02.07",
+    hierarchy: ["Soil"],
+  },
+  {
+    name: "Organic Matter",
+    isAggregatable: true,
+    modus_test_id: "S-SOM-LOI.15",
+    hierarchy: ["Indicators", "Other"],
+  },
+  {
+    name: "Sulfur",
+    isAggregatable: true,
+    unit: "ppm",
+    modus_test_id: "S-S-M3.05",
+    hierarchy: ["Indicators", "Other"],
+  },
+  {
+    name: "Phosphorus",
+    isAggregatable: true,
+    modus_test_id: "S-P-M3.04",
+    hierarchy: ["Indicators", "Other"],
+  },
+  {
+    name: "Calcium",
+    isAggregatable: true,
+    modus_test_id: "S-CA-M3.05",
+    hierarchy: ["Indicators", "Other"],
+  },
+  {
+    name: "Magnesium",
+    isAggregatable: true,
+    modus_test_id: "S-MG-M3.05",
+    hierarchy: ["Indicators", "Other"],
+  },
+  {
+    name: "Potassium",
+    isAggregatable: true,
+    modus_test_id: "S-K-M3.05",
+    hierarchy: ["Indicators", "Other"],
+  },
+  {
+    name: "Sodium",
+    isAggregatable: true,
+    modus_test_id: "S-NA-M3.05",
+    hierarchy: ["Indicators", "Other"],
+  },
+  {
+    name: "Boron",
+    isAggregatable: true,
+    unit: "ppm",
+    modus_test_id: "S-B-M3.04",
+    hierarchy: ["Indicators", "Other"],
+  },
+  {
+    name: "Iron",
+    isAggregatable: true,
+    unit: "ppm",
+    modus_test_id: "S-FE-M3.05",
+    hierarchy: ["Indicators", "Other"],
+  },
+  {
+    name: "Manganese",
+    isAggregatable: true,
+    unit: "ppm",
+    modus_test_id: "S-MN-M3.05",
+    hierarchy: ["Indicators", "Other"],
+  },
+  {
+    name: "Copper",
+    isAggregatable: true,
+    unit: "ppm",
+    modus_test_id: "S-CU-M3.05",
+    hierarchy: ["Indicators", "Other"],
+  },
+  {
+    name: "Zinc",
+    isAggregatable: true,
+    unit: "ppm",
+    modus_test_id: "S-ZN-M3.05",
+    hierarchy: ["Indicators", "Other"],
+  },
+  {
+    name: "Aluminum",
+    isAggregatable: true,
+    unit: "ppm",
+    modus_test_id: "S-AL-M3.05",
+    hierarchy: ["Indicators", "Other"],
+  },
+  {
+    name: "Carbonate",
+    isAggregatable: true,
+    unit: "ppm",
+    modus_test_id: "S-CO3-SP.12",
+    hierarchy: ["Indicators", "Other"],
+  },
+  {
+    name: "Soil Mo Available Ppm",
+    isAggregatable: true,
+    unit: "ppm",
+    hierarchy: ["Indicators", "Other"],
+  },
+  {
+    name: "Electrical Conductivity",
+    isAggregatable: true,
+    modus_test_id: "S-EC-1:2.03",
+    hierarchy: ["Indicators", "Other"],
+  },
 ];
 
-const convertValueTypes = (valueTypes: ValueType[]): RowData[]  => {
+const convertValueTypes = (valueTypes: ValueType[]): RowData[] => {
   const rows: RowData[] = [];
-  const getGroup = (rows: RowData[], groupName: string, ...subgroups: string[]): RowData  =>  {
-    let group = rows.find(r => r.name === groupName);
+  const getGroup = (
+    rows: RowData[],
+    groupName: string,
+    ...subgroups: string[]
+  ): RowData => {
+    let group = rows.find((r) => r.name === groupName);
     if (!group) {
       group = {
         name: groupName,
         type: "group",
         showAggregation: true,
-        children: []
-      }
-      rows.push(group)
+        children: [],
+      };
+      rows.push(group);
     }
-    return subgroups.length > 0 ? getGroup(group.children!, subgroups[0], ...subgroups.slice(1)) : group;
-  }
-  valueTypes.forEach(valueType => {
-    const group = getGroup(rows, valueType.hierarchy[0], ...valueType.hierarchy.slice(1))
-    group.children!.push({name: valueType.name, type: 'value'})
-  })
+    return subgroups.length > 0
+      ? getGroup(group.children!, subgroups[0], ...subgroups.slice(1))
+      : group;
+  };
+  valueTypes.forEach((valueType) => {
+    const group = getGroup(
+      rows,
+      valueType.hierarchy[0],
+      ...valueType.hierarchy.slice(1)
+    );
+    group.children!.push({ name: valueType.name, type: "value" });
+  });
 
   return rows;
-}
+};
 
 export const ROWS = convertValueTypes(VALUE_TYPES);
-

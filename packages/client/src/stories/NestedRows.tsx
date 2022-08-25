@@ -2,7 +2,7 @@ import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import LinearProgress from "@mui/material/LinearProgress";
 import Typography from "@mui/material/Typography";
-import { findLastIndex, last } from "lodash";
+import { findLastIndex, last, sortBy } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ValueDistribution } from "../components/ValueDistribution";
 import { RowData } from "../contexts/rows";
@@ -65,7 +65,7 @@ const flattenRows = (
     plantingId: string;
   }[];
 }[] =>
-  rows
+  sortBy(rows, 'name')
     .map((row) => {
       const children = flattenRows(
         row.children || [],
@@ -174,7 +174,7 @@ export const NestedRows = ({
     });
   }, [flatRows, getIsClosed]);
 
-  if (flatRows.length === 0) {
+  if (!loading && flatRows.length === 0) {
     return (
       <Alert severity="warning" sx={{ my: 3 }}>
         We found no data in the selected plantings.
