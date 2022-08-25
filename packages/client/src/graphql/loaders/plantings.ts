@@ -20,7 +20,7 @@ declare module externalData {
   }
 
   export interface Event {
-    drupal_uid: string;
+    drupal_id: string;
     type: null | string;
     date: string;
   }
@@ -66,9 +66,9 @@ const convertExternalPlanting = (planting: externalData.Planting): Planting => {
     drupal_uid: z.string(),
     events: z.array(
       z.object({
-        drupal_uid: z.string({
-          required_error: `Event in planting#${planting.drupal_uid} is missing "drupal_uid"`,
-          invalid_type_error: `Event in planting#${planting.drupal_uid} has invalid "drupal_uid"`,
+        drupal_id: z.string({
+          required_error: `Event in planting#${planting.drupal_uid} is missing "drupal_id"`,
+          invalid_type_error: `Event in planting#${planting.drupal_uid} has invalid "drupal_id"`,
         }),
       })
     ),
@@ -110,7 +110,7 @@ const convertExternalPlanting = (planting: externalData.Planting): Planting => {
     },
     events: planting.events.map((e) => ({
       ...e,
-      id: e.drupal_uid,
+      id: e.drupal_id,
       type: fixEventType(e.type || ""),
       details: [],
       __typename: "PlantingEvent",

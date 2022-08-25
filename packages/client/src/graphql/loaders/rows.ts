@@ -7,7 +7,7 @@ import { Row } from "../resolvers.generated";
 const externalRow = z.object({
   name: z.string(),
   hierarchy: z.array(z.string()),
-  isAggregatable: z.boolean().optional(),
+  isAggregatable: z.boolean(),
   unit: z.string().optional(),
   modus_test_id: z.string().optional(),
 });
