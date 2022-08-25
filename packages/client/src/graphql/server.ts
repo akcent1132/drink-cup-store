@@ -68,7 +68,7 @@ const resolvers: Resolvers = {
       };
     },
     async producers(_, { ids }) {
-      return ids.map(id => ({
+      return ids.map((id) => ({
         id,
         code: seedrandom(id)().toString(32).slice(-7),
         plantings: [],
@@ -113,7 +113,7 @@ const resolvers: Resolvers = {
   },
   Mutation: {
     async login(_, { email, password }) {
-      return await fetch(surveyStackApiUrl('api/auth/login'), {
+      return await fetch(surveyStackApiUrl("api/auth/login"), {
         method: "POST",
         body: JSON.stringify({ email, password }),
         headers: {
@@ -142,16 +142,16 @@ const resolvers: Resolvers = {
     },
 
     async requestMagicLoginLink(_, { email }) {
-      return await fetch(
-        surveyStackApiUrl("/api/auth/request-magic-link"),
-        {
-          method: "POST",
-          body: JSON.stringify({ email, callbackUrl: urlJoin(window.location.origin, '?accept-magic-link') }),
-          headers: {
-            "Content-Type": "application/json;charset=utf-8",
-          },
-        }
-      )
+      return await fetch(surveyStackApiUrl("/api/auth/request-magic-link"), {
+        method: "POST",
+        body: JSON.stringify({
+          email,
+          callbackUrl: urlJoin(window.location.origin, "?accept-magic-link"),
+        }),
+        headers: {
+          "Content-Type": "application/json;charset=utf-8",
+        },
+      })
         .then(() => ({
           success: true,
         }))
@@ -172,14 +172,6 @@ const schema = makeExecutableSchema({
 });
 
 const worker = setupWorker(
-  rest.post("/login", (req, res, ctx) => {
-    return res(
-      ctx.json({
-        firstName: "John",
-      })
-    );
-  }),
-
   rest.post("/graphql", async (req, res, ctx) => {
     const { query, variables, operationName } = await req.json();
     const result = await graphql({
@@ -197,4 +189,10 @@ const worker = setupWorker(
 
 // Register the Service Worker and enable the mocking
 
-worker.start();
+worker.start({
+  onUnhandledRequest: ({ method, url }) => {
+    if (url.pathname.startsWith("/graphql")) {
+      throw new Error(`Unhandled ${method} request to ${url}`);
+    }
+  },
+});
