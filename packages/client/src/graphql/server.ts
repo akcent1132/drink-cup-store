@@ -183,6 +183,9 @@ const worker = setupWorker(
         authorization: req.headers.get("authorization"),
       },
     });
+    if (result.errors) {
+      console.error("result.errors", result.errors)
+    }
     return res(ctx.json(result));
   })
 );
