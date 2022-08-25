@@ -23,6 +23,7 @@ import {
   useRemovePlantingCard,
   useShowProfile,
 } from "../states/sidePanelContent";
+import { climateRegionToLongName } from "../utils/abbreviations";
 import { IconEventsBar } from "./IconEventsBar";
 import { PlantingCardListQuery } from "./PlantingCardList.generated";
 
@@ -247,7 +248,11 @@ export const EventsCard = ({
               {isNil(hardinessZone) ? "n/a" : hardinessZone}
             </ParamValue>
           </MiniInfo>
-          <MiniInfo tooltip="Climate region">
+          <MiniInfo
+            tooltip={`Climate region: ${
+              climateZone ? climateRegionToLongName(climateZone) : "n/a"
+            }`}
+          >
             <PublicIcon fontSize="inherit" />
             <ParamValue>{isNil(climateZone) ? "n/a" : climateZone}</ParamValue>
           </MiniInfo>
