@@ -5,7 +5,7 @@ import Typography from "@mui/material/Typography";
 import { findLastIndex, last, sortBy } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ValueDistribution } from "../components/ValueDistribution";
-import { RowData } from "../contexts/rows";
+import { covertNormalizedRows, RowData } from "../contexts/rows";
 import { Filter } from "../states/filters";
 import { useHighlightedFilterId } from "../states/highlightedFilterId";
 import { useHighlightedPlantingId } from "../states/highlightedPlantingId";
@@ -13,6 +13,7 @@ import { useSelectedCropType } from "../states/selectedCropType";
 import { Stop } from "../states/tour";
 import { TourStop } from "../states/TourStop";
 import { getPlantingIdsOfFilter } from "../utils/getPlantingsOfFilter";
+import { isNonNull } from "../utils/ts";
 import { NestedRowsQuery, useNestedRowsQuery } from "./NestedRows.generated";
 
 const getLabeledValues = (
@@ -65,7 +66,7 @@ const flattenRows = (
     plantingId: string;
   }[];
 }[] =>
-  sortBy(rows, 'name')
+  sortBy(rows, "name")
     .map((row) => {
       const children = flattenRows(
         row.children || [],
@@ -110,18 +111,13 @@ const flattenRows = (
     })
     .flat();
 
-export const NestedRows = ({
-  rows,
-  filters,
-}: {
-  rows: RowData[];
-  filters: Filter[];
-}) => {
+export const NestedRows = ({ filters }: { filters: Filter[] }) => {
   const selectedCropType = useSelectedCropType();
   const { data, loading } = useNestedRowsQuery({
     variables: { cropType: selectedCropType },
   });
-  const { plantings } = data || {};
+  const { plantings, rows: normalizedRows } = data || {};
+  const rows = covertNormalizedRows((normalizedRows || []).filter(isNonNull));
   const highlightedPlantingId = useHighlightedPlantingId();
   const highlightedFilterId = useHighlightedFilterId();
   const labeledValues = useMemo(

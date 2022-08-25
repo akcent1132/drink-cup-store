@@ -1,5 +1,4 @@
 import styled from "@emotion/styled";
-import { ROWS } from "../../contexts/rows";
 import { useFilters } from "../../states/filters";
 import { Stop } from "../../states/tour";
 import { TourStop } from "../../states/TourStop";
@@ -47,7 +46,7 @@ export const CompareTab = () => {
         </TourStop>
       </PaneHead>
 
-      <NestedRows rows={ROWS} filters={filters} />
+      <NestedRows filters={filters} />
     </RowContainer>
   );
 };

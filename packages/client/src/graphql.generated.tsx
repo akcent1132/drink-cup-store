@@ -133,6 +133,7 @@ export type Query = {
   plantingsById: Array<Planting>;
   producer: Maybe<Producer>;
   producers: Maybe<Array<Maybe<Producer>>>;
+  rows: Maybe<Array<Maybe<Row>>>;
   surveyStackGroups: Maybe<Array<SurveyStackGroup>>;
 };
 
@@ -170,6 +171,15 @@ export type RequestMagicLoginLinkResponse = {
   __typename: 'RequestMagicLoginLinkResponse';
   error: Maybe<Scalars['String']>;
   success: Scalars['Boolean'];
+};
+
+export type Row = {
+  __typename: 'Row';
+  hierarchy: Array<Scalars['String']>;
+  isAggregatable: Maybe<Scalars['Boolean']>;
+  modusTestId: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+  unit: Maybe<Scalars['String']>;
 };
 
 export type SurveyStackGroup = {
@@ -264,7 +274,7 @@ export type ProducerFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('allFarmOnboardings' | 'allPlantings' | 'availableCropTypes' | 'connectedFarmIds' | 'planting' | 'plantings' | 'plantingsById' | 'producer' | 'producers' | 'surveyStackGroups' | QueryKeySpecifier)[];
+export type QueryKeySpecifier = ('allFarmOnboardings' | 'allPlantings' | 'availableCropTypes' | 'connectedFarmIds' | 'planting' | 'plantings' | 'plantingsById' | 'producer' | 'producers' | 'rows' | 'surveyStackGroups' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
 	allFarmOnboardings?: FieldPolicy<any> | FieldReadFunction<any>,
 	allPlantings?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -275,12 +285,21 @@ export type QueryFieldPolicy = {
 	plantingsById?: FieldPolicy<any> | FieldReadFunction<any>,
 	producer?: FieldPolicy<any> | FieldReadFunction<any>,
 	producers?: FieldPolicy<any> | FieldReadFunction<any>,
+	rows?: FieldPolicy<any> | FieldReadFunction<any>,
 	surveyStackGroups?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type RequestMagicLoginLinkResponseKeySpecifier = ('error' | 'success' | RequestMagicLoginLinkResponseKeySpecifier)[];
 export type RequestMagicLoginLinkResponseFieldPolicy = {
 	error?: FieldPolicy<any> | FieldReadFunction<any>,
 	success?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type RowKeySpecifier = ('hierarchy' | 'isAggregatable' | 'modusTestId' | 'name' | 'unit' | RowKeySpecifier)[];
+export type RowFieldPolicy = {
+	hierarchy?: FieldPolicy<any> | FieldReadFunction<any>,
+	isAggregatable?: FieldPolicy<any> | FieldReadFunction<any>,
+	modusTestId?: FieldPolicy<any> | FieldReadFunction<any>,
+	name?: FieldPolicy<any> | FieldReadFunction<any>,
+	unit?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type SurveyStackGroupKeySpecifier = ('id' | 'name' | SurveyStackGroupKeySpecifier)[];
 export type SurveyStackGroupFieldPolicy = {
@@ -343,6 +362,10 @@ export type StrictTypedTypePolicies = {
 	RequestMagicLoginLinkResponse?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | RequestMagicLoginLinkResponseKeySpecifier | (() => undefined | RequestMagicLoginLinkResponseKeySpecifier),
 		fields?: RequestMagicLoginLinkResponseFieldPolicy,
+	},
+	Row?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | RowKeySpecifier | (() => undefined | RowKeySpecifier),
+		fields?: RowFieldPolicy,
 	},
 	SurveyStackGroup?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | SurveyStackGroupKeySpecifier | (() => undefined | SurveyStackGroupKeySpecifier),

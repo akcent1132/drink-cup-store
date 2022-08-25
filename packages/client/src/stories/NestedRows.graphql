@@ -15,4 +15,11 @@ query NestedRows($cropType: String!) {
       }
     }
   }
+  rows {
+    name
+    hierarchy
+    isAggregatable
+    unit
+    modusTestId
+  }
 }

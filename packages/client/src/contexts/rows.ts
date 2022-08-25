@@ -103,9 +103,9 @@ export type RowData = {
 type ValueType = {
   name: string;
   hierarchy: string[];
-  isAggregatable: boolean;
-  unit?: string; // ? only if it is the same for all values with the same name
-  modus_test_id?: string; // ? only if it is the same for all values with the same name
+  isAggregatable?: boolean | null;
+  unit?: string | null; // ? only if it is the same for all values with the same name
+  modus_test_id?: string | null; // ? only if it is the same for all values with the same name
 };
 
 export const VALUE_TYPES: ValueType[] = [
@@ -264,7 +264,7 @@ export const VALUE_TYPES: ValueType[] = [
   },
 ];
 
-const convertValueTypes = (valueTypes: ValueType[]): RowData[] => {
+export const covertNormalizedRows = (valueTypes: ValueType[]): RowData[] => {
   const rows: RowData[] = [];
   const getGroup = (
     rows: RowData[],
@@ -297,4 +297,4 @@ const convertValueTypes = (valueTypes: ValueType[]): RowData[] => {
   return rows;
 };
 
-export const ROWS = convertValueTypes(VALUE_TYPES);
+export const ROWS = covertNormalizedRows(VALUE_TYPES);

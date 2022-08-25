@@ -134,6 +134,7 @@ export type Query = {
   plantingsById: Array<Planting>;
   producer?: Maybe<Producer>;
   producers?: Maybe<Array<Maybe<Producer>>>;
+  rows?: Maybe<Array<Maybe<Row>>>;
   surveyStackGroups?: Maybe<Array<SurveyStackGroup>>;
 };
 
@@ -171,6 +172,15 @@ export type RequestMagicLoginLinkResponse = {
   __typename?: 'RequestMagicLoginLinkResponse';
   error?: Maybe<Scalars['String']>;
   success: Scalars['Boolean'];
+};
+
+export type Row = {
+  __typename?: 'Row';
+  hierarchy: Array<Scalars['String']>;
+  isAggregatable?: Maybe<Scalars['Boolean']>;
+  modusTestId?: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+  unit?: Maybe<Scalars['String']>;
 };
 
 export type SurveyStackGroup = {
@@ -266,6 +276,7 @@ export type ResolversTypes = ResolversObject<{
   Producer: ResolverTypeWrapper<Producer>;
   Query: ResolverTypeWrapper<{}>;
   RequestMagicLoginLinkResponse: ResolverTypeWrapper<RequestMagicLoginLinkResponse>;
+  Row: ResolverTypeWrapper<Row>;
   String: ResolverTypeWrapper<Scalars['String']>;
   SurveyStackGroup: ResolverTypeWrapper<SurveyStackGroup>;
 }>;
@@ -289,6 +300,7 @@ export type ResolversParentTypes = ResolversObject<{
   Producer: Producer;
   Query: {};
   RequestMagicLoginLinkResponse: RequestMagicLoginLinkResponse;
+  Row: Row;
   String: Scalars['String'];
   SurveyStackGroup: SurveyStackGroup;
 }>;
@@ -400,12 +412,22 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   plantingsById?: Resolver<Array<ResolversTypes['Planting']>, ParentType, ContextType, RequireFields<QueryPlantingsByIdArgs, 'ids'>>;
   producer?: Resolver<Maybe<ResolversTypes['Producer']>, ParentType, ContextType, RequireFields<QueryProducerArgs, 'id'>>;
   producers?: Resolver<Maybe<Array<Maybe<ResolversTypes['Producer']>>>, ParentType, ContextType, RequireFields<QueryProducersArgs, 'ids'>>;
+  rows?: Resolver<Maybe<Array<Maybe<ResolversTypes['Row']>>>, ParentType, ContextType>;
   surveyStackGroups?: Resolver<Maybe<Array<ResolversTypes['SurveyStackGroup']>>, ParentType, ContextType, Partial<QuerySurveyStackGroupsArgs>>;
 }>;
 
 export type RequestMagicLoginLinkResponseResolvers<ContextType = any, ParentType extends ResolversParentTypes['RequestMagicLoginLinkResponse'] = ResolversParentTypes['RequestMagicLoginLinkResponse']> = ResolversObject<{
   error?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type RowResolvers<ContextType = any, ParentType extends ResolversParentTypes['Row'] = ResolversParentTypes['Row']> = ResolversObject<{
+  hierarchy?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  isAggregatable?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
+  modusTestId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  unit?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -430,6 +452,7 @@ export type Resolvers<ContextType = any> = ResolversObject<{
   Producer?: ProducerResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   RequestMagicLoginLinkResponse?: RequestMagicLoginLinkResponseResolvers<ContextType>;
+  Row?: RowResolvers<ContextType>;
   SurveyStackGroup?: SurveyStackGroupResolvers<ContextType>;
 }>;
 

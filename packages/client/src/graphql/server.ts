@@ -17,6 +17,7 @@ import { loadSurveyStackGroups } from "./loaders/surveyStackGroups";
 import { Planting, Resolvers } from "./resolvers.generated";
 import jsonSchema from "./schema.server.generated.json";
 import { surveyStackApiUrl } from "../utils/env";
+import { loadRows } from "./loaders/rows";
 
 // Construct a schema, using GraphQL schema language
 // @ts-ignore
@@ -78,6 +79,9 @@ const resolvers: Resolvers = {
     },
     async availableCropTypes() {
       return await loadAvailableCropTypes();
+    },
+    async rows() {
+      return await loadRows();
     },
     async connectedFarmIds(_: any, {}, { authorization }: Context) {
       console.log({ authorization });
