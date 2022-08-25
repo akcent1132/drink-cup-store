@@ -1,5 +1,7 @@
+import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import LinearProgress from "@mui/material/LinearProgress";
+import Typography from "@mui/material/Typography";
 import { findLastIndex, last } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ValueDistribution } from "../components/ValueDistribution";
@@ -171,6 +173,14 @@ export const NestedRows = ({
       }
     });
   }, [flatRows, getIsClosed]);
+
+  if (flatRows.length === 0) {
+    return (
+      <Alert severity="warning" sx={{ my: 3 }}>
+        We found no data in the selected plantings.
+      </Alert>
+    );
+  }
 
   return (
     <>

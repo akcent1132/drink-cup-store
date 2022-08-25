@@ -135,11 +135,9 @@ export const loadPlantings = pMemoize(async () => {
 });
 
 export const loadPlantingsOfCrop = pMemoize(async (cropType) => {
-  console.log("loadPlantingsOfCrop");
   const externalPlantings: externalData.Planting[] = await fetch(
     surveyStackApiUrl(`static/coffeeshop/species_plantings/${cropType}`)
   ).then((result) => result.json());
-  console.log("externalPlantings", externalPlantings);
   const clientPlantings: Planting[] = externalPlantings
     .filter((p) => p.cropType !== null)
     .map(convertExternalPlanting);
