@@ -442,12 +442,12 @@ export const ValueDistribution = React.forwardRef<HTMLDivElement, Props>(
           isHovering={isHovering && props.openState === "closed"}
         >
           {label}
-          {isHovering && props.childCount > 0 ? (
+          {props.childCount > 0 ? (
             <LabelIcon>
               {props.openState === "open" ? (
-                <ExpandLessIcon fontSize="inherit" />
+                <ExpandLessIcon fontSize="inherit" sx={{opacity: isHovering ? 1 : 0}} />
               ) : (
-                <ExpandMoreIcon fontSize="inherit" />
+                <ExpandMoreIcon fontSize="inherit" sx={{opacity: isHovering ? 1 : 0.5}}/>
               )}
             </LabelIcon>
           ) : null}
