@@ -18,3 +18,12 @@ ReactDOM.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+
+// remove initial loading screen (added in the index.html)
+try {
+  // @ts-ignore
+  window.loading_screen.finish();
+} catch (e) {
+  console.error('Failed to remove loading screen', e);
+}
+

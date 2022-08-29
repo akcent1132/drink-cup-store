@@ -31,9 +31,23 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <title>Coffee Shop</title>
+
+    <link rel="stylesheet" href="/loading_screen/please-wait.min.css" />
+    <link rel="stylesheet" href="/loading_screen/spinner.css" />
+    <link rel="preload" href="/loading_screen/please-wait.min.js" as="script"/>
+    <link rel="preload" href="/loading_screen/logo_small.png" as="image"/>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
+    <script src="/loading_screen/please-wait.min.js"></script>
+    <script type="text/javascript">
+      window.loading_screen = window.pleaseWait({
+        logo: '/loading_screen/logo_small.png',
+        backgroundColor: '#7cb342',
+        loadingHtml:
+          '<div class="spinner"><div class="rect1"></div><div class="rect2"></div><div class="rect3"></div><div class="rect4"></div><div class="rect5"></div></div>',
+      });
+    </script>
     <div id="root"></div>
     <!--
       This HTML file is a template.
