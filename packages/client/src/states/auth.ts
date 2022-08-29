@@ -3,6 +3,7 @@ import { atom, useRecoilValue, useSetRecoilState } from "recoil";
 import { z } from "zod";
 import { useLoginMutation } from "./auth.generated";
 import { decode as b64Decode } from "js-base64";
+import { useSetIsAuthDialogOpen } from "./ui";
 
 const STORE_KEY = "coffeeshop.authentication";
 
@@ -112,6 +113,7 @@ const UserPayload = z.object({
 });
 export const useTryAcceptingMagicLinkLogin = () => {
   const setAuth = useSetRecoilState(auth);
+  const setIsAuthDialogOpen = useSetIsAuthDialogOpen();
 
   // check the query params once when the app loads
   useEffect(() => {
@@ -126,11 +128,30 @@ export const useTryAcceptingMagicLinkLogin = () => {
         _id: id,
       } = UserPayload.parse(JSON.parse(b64Decode(params.get("user")!)));
 
+      // Update the authentication state
       const user = { email, token, id };
       writeUserToStore(user);
       setAuth({ isAuthenticated: true, user: user });
+      setIsAuthDialogOpen(false);
 
-      window.location.search = "";
+      // Invalidate magic link
+      if (params.has("invalidateMagicLink")) {
+        fetch(params.get("invalidateMagicLink")!).catch((e) =>
+          console.warn("Failed to invalidate magic link", e)
+        );
+      }
+
+      // remove magic-link-login related params from the url
+      params.delete("accept-magic-link");
+      params.delete("user");
+      params.delete("landingPath");
+      params.delete("invalidateMagicLink");
+      const search = params.toString();
+      window.history.pushState(
+        null,
+        "",
+        window.location.pathname + (search ? `?${search}` : "")
+      );
     }
-  }, [])
+  }, []);
 };

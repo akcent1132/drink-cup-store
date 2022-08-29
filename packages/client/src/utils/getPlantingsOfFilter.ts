@@ -1,3 +1,4 @@
+import { intersection } from "lodash";
 import {
   Filter,
   FilterParam,
@@ -63,28 +64,32 @@ export const getPlantingIdsOfFilter = (
   if (activeParams.length === 0) {
     filteredPlantings = [];
   } else {
-    for (const param of activeParams) {
-      if (param.dataSource === FilterParamDataSource.FarmOnboarding) {
-        filteredPlantings = filteredPlantings.filter((planting) =>
-          isMatchingFarmOnboardingValue(planting, param)
-        );
-      } else {
-        if (isRangeFilterParam(param)) {
-          filteredPlantings = filteredPlantings.filter((planting) => {
-            const values = planting.values.filter(
-              (value) => value.name === param.key
+    filteredPlantings = intersection(
+      ...activeParams.map((param) => {
+        for (const param of activeParams) {
+          if (param.dataSource === FilterParamDataSource.FarmOnboarding) {
+            return plantings.filter((planting) =>
+              isMatchingFarmOnboardingValue(planting, param)
             );
-            return (
-              values.length === 0 ||
-              values.some(
-                ({ value }) =>
-                  value >= param.value.min && value <= param.value.max
-              )
-            );
-          });
+          } else {
+            if (isRangeFilterParam(param)) {
+              return plantings.filter((planting) => {
+                const values = planting.values.filter(
+                  (value) => value.name === param.key
+                );
+                return (
+                  values.length === 0 ||
+                  values.some(
+                    ({ value }) =>
+                      value >= param.value.min && value <= param.value.max
+                  )
+                );
+              });
+            }
+          }
         }
-      }
-    }
+      })
+    );
   }
 
   console.timeEnd(`getPlantingsOfFilter ${filter.id}`);
