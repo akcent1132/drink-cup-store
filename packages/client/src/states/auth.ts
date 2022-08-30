@@ -1,5 +1,6 @@
 import { useApolloClient } from "@apollo/client";
 import { decode as b64Decode } from "js-base64";
+import { chain } from "lodash";
 import { useCallback, useEffect } from "react";
 import { atom, useRecoilValue, useSetRecoilState } from "recoil";
 import { z } from "zod";
@@ -7,9 +8,10 @@ import { isNonNil } from "../utils/ts";
 import {
   useLoginMutation,
   UserPlantingsDocument,
-  UserPlantingsQuery,
+  UserPlantingsQuery
 } from "./auth.generated";
 import { createOptionFilterParam, useAddFilter } from "./filters";
+import { useSetSelectedCropType } from "./selectedCropType";
 import { useSetIsAuthDialogOpen } from "./ui";
 
 const STORE_KEY = "coffeeshop.authentication";
@@ -108,7 +110,9 @@ export const useLogin = () => {
 export const useSetupUIToShowRelevantInfoToUser = () => {
   const apolloClient = useApolloClient();
   const addFilter = useAddFilter();
+  const setSelectedCropType = useSetSelectedCropType();
   const auth = useAuth();
+
   // load user data and change dashboard to show the most relevant state
   return useCallback(async () => {
     const farms = await apolloClient.query<UserPlantingsQuery>({
@@ -125,6 +129,19 @@ export const useSetupUIToShowRelevantInfoToUser = () => {
           ),
         ],
       });
+      const topCrop = chain(farms.data.myFarms)
+        .map((farm) => farm?.plantings || [])
+        .flatten()
+        .map((planting) => planting.cropType)
+        .groupBy()
+        .values()
+        .maxBy("length")
+        .first()
+        .value();
+      console.log({ topCrop });
+      if (topCrop) {
+        setSelectedCropType(topCrop);
+      }
     }
   }, [auth]);
 };
