@@ -350,19 +350,19 @@ export const ValueDistribution = React.forwardRef<HTMLDivElement, Props>(
             );
 
             // Draw horns
-            [q1, q3].forEach((value, i) => {
-              const hFr2 = theme.valueDistribution.varianceLineHeight / 2;
-              const xValue = scale(value);
-              ctx.moveTo(xValue, 0);
-              ctx.lineTo(xValue, hFr2);
-              if (i === 0) {
-                // left horn
-                ctx.lineTo(xValue + hFr2, hFr2);
-              } else {
-                // right horn
-                ctx.lineTo(xValue - hFr2, hFr2);
-              }
-            });
+            // [q1, q3].forEach((value, i) => {
+            //   const hFr2 = theme.valueDistribution.varianceLineHeight / 2;
+            //   const xValue = scale(value);
+            //   ctx.moveTo(xValue, 0);
+            //   ctx.lineTo(xValue, hFr2);
+            //   if (i === 0) {
+            //     // left horn
+            //     ctx.lineTo(xValue + hFr2, hFr2);
+            //   } else {
+            //     // right horn
+            //     ctx.lineTo(xValue - hFr2, hFr2);
+            //   }
+            // });
             ctx.fill();
           }
         }
