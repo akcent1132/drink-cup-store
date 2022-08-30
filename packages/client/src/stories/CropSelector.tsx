@@ -20,6 +20,7 @@ import { styled } from "@mui/material/styles";
 import Tooltip from "@mui/material/Tooltip";
 import { Typography } from "@mui/material";
 import { Box } from "grommet/components/Box";
+import { useAuth } from "../states/auth";
 
 const StyledBadge = styled(Badge)<BadgeProps>({
   "& .MuiBadge-badge": {
@@ -32,13 +33,12 @@ const StyledBadge = styled(Badge)<BadgeProps>({
 });
 
 export const CropSelector = React.forwardRef<HTMLDivElement>((_, ref) => {
-  const { availableCropTypes, connectedFarmIds } =
+  const auth = useAuth();
+  const { availableCropTypes } =
     useCropSelectorQuery().data || {};
-  const { producers: ownedFarms } =
+  const { myFarms: ownedFarms } =
     useCropSelectorSlowQuery({
-      variables: {
-        producerIds: (connectedFarmIds || []).filter(isString),
-      },
+      variables: { userId: (auth.isAuthenticated && auth.user.id) || null },
     }).data || {};
   const value = useSelectedCropType();
   const setSelectedCropType = useSetSelectedCropType();

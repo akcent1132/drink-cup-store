@@ -11,7 +11,9 @@ export type LoginMutationVariables = Types.Exact<{
 
 export type LoginMutation = { __typename?: 'Mutation', login?: { __typename?: 'LoginResponse', success: boolean, error?: string | null, user?: { __typename?: 'AuthUser', id: string, token: string, name?: string | null, email: string } | null } | null };
 
-export type UserPlantingsQueryVariables = Types.Exact<{ [key: string]: never; }>;
+export type UserPlantingsQueryVariables = Types.Exact<{
+  userId?: Types.InputMaybe<Types.Scalars['String']>;
+}>;
 
 
 export type UserPlantingsQuery = { __typename?: 'Query', myFarms?: Array<{ __typename?: 'Producer', id: string, plantings: Array<{ __typename?: 'Planting', id: string, cropType: string }> } | null> | null };
@@ -59,8 +61,8 @@ export type LoginMutationHookResult = ReturnType<typeof useLoginMutation>;
 export type LoginMutationResult = Apollo.MutationResult<LoginMutation>;
 export type LoginMutationOptions = Apollo.BaseMutationOptions<LoginMutation, LoginMutationVariables>;
 export const UserPlantingsDocument = gql`
-    query UserPlantings {
-  myFarms {
+    query UserPlantings($userId: String) {
+  myFarms(userId: $userId) {
     id
     plantings {
       id
@@ -82,6 +84,7 @@ export const UserPlantingsDocument = gql`
  * @example
  * const { data, loading, error } = useUserPlantingsQuery({
  *   variables: {
+ *      userId: // value for 'userId'
  *   },
  * });
  */

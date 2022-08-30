@@ -1,5 +1,4 @@
 query CropSelector {
-    connectedFarmIds
     availableCropTypes {
         id
         cropType
@@ -7,8 +6,8 @@ query CropSelector {
     }
 }
 
-query CropSelectorSlow($producerIds: [String!]!) {
-    producers(ids: $producerIds) {
+query CropSelectorSlow($userId: String) {
+    myFarms(userId: $userId) {
         id
         plantings {
             id

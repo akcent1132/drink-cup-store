@@ -141,6 +141,11 @@ export type Query = {
 };
 
 
+export type QueryMyFarmsArgs = {
+  userId?: InputMaybe<Scalars['String']>;
+};
+
+
 export type QueryPlantingArgs = {
   id: Scalars['String'];
 };
@@ -410,7 +415,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   allPlantings?: Resolver<Array<ResolversTypes['Planting']>, ParentType, ContextType>;
   availableCropTypes?: Resolver<Array<ResolversTypes['AvailableCropType']>, ParentType, ContextType>;
   connectedFarmIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
-  myFarms?: Resolver<Maybe<Array<Maybe<ResolversTypes['Producer']>>>, ParentType, ContextType>;
+  myFarms?: Resolver<Maybe<Array<Maybe<ResolversTypes['Producer']>>>, ParentType, ContextType, Partial<QueryMyFarmsArgs>>;
   planting?: Resolver<Maybe<ResolversTypes['Planting']>, ParentType, ContextType, RequireFields<QueryPlantingArgs, 'id'>>;
   plantings?: Resolver<Array<ResolversTypes['Planting']>, ParentType, ContextType, RequireFields<QueryPlantingsArgs, 'cropType'>>;
   plantingsById?: Resolver<Array<ResolversTypes['Planting']>, ParentType, ContextType, RequireFields<QueryPlantingsByIdArgs, 'ids'>>;

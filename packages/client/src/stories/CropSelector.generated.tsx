@@ -6,19 +6,18 @@ const defaultOptions = {} as const;
 export type CropSelectorQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type CropSelectorQuery = { __typename?: 'Query', connectedFarmIds?: Array<string | null> | null, availableCropTypes: Array<{ __typename?: 'AvailableCropType', id: string, cropType: string, plantingCount: number }> };
+export type CropSelectorQuery = { __typename?: 'Query', availableCropTypes: Array<{ __typename?: 'AvailableCropType', id: string, cropType: string, plantingCount: number }> };
 
 export type CropSelectorSlowQueryVariables = Types.Exact<{
-  producerIds: Array<Types.Scalars['String']> | Types.Scalars['String'];
+  userId?: Types.InputMaybe<Types.Scalars['String']>;
 }>;
 
 
-export type CropSelectorSlowQuery = { __typename?: 'Query', producers?: Array<{ __typename?: 'Producer', id: string, plantings: Array<{ __typename?: 'Planting', id: string, cropType: string }> } | null> | null };
+export type CropSelectorSlowQuery = { __typename?: 'Query', myFarms?: Array<{ __typename?: 'Producer', id: string, plantings: Array<{ __typename?: 'Planting', id: string, cropType: string }> } | null> | null };
 
 
 export const CropSelectorDocument = gql`
     query CropSelector {
-  connectedFarmIds
   availableCropTypes {
     id
     cropType
@@ -54,8 +53,8 @@ export type CropSelectorQueryHookResult = ReturnType<typeof useCropSelectorQuery
 export type CropSelectorLazyQueryHookResult = ReturnType<typeof useCropSelectorLazyQuery>;
 export type CropSelectorQueryResult = Apollo.QueryResult<CropSelectorQuery, CropSelectorQueryVariables>;
 export const CropSelectorSlowDocument = gql`
-    query CropSelectorSlow($producerIds: [String!]!) {
-  producers(ids: $producerIds) {
+    query CropSelectorSlow($userId: String) {
+  myFarms(userId: $userId) {
     id
     plantings {
       id
@@ -77,11 +76,11 @@ export const CropSelectorSlowDocument = gql`
  * @example
  * const { data, loading, error } = useCropSelectorSlowQuery({
  *   variables: {
- *      producerIds: // value for 'producerIds'
+ *      userId: // value for 'userId'
  *   },
  * });
  */
-export function useCropSelectorSlowQuery(baseOptions: Apollo.QueryHookOptions<CropSelectorSlowQuery, CropSelectorSlowQueryVariables>) {
+export function useCropSelectorSlowQuery(baseOptions?: Apollo.QueryHookOptions<CropSelectorSlowQuery, CropSelectorSlowQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<CropSelectorSlowQuery, CropSelectorSlowQueryVariables>(CropSelectorSlowDocument, options);
       }

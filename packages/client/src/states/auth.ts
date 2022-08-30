@@ -7,7 +7,7 @@ import { isNonNil } from "../utils/ts";
 import {
   useLoginMutation,
   UserPlantingsDocument,
-  UserPlantingsQuery
+  UserPlantingsQuery,
 } from "./auth.generated";
 import { createOptionFilterParam, useAddFilter } from "./filters";
 import { useSetIsAuthDialogOpen } from "./ui";
@@ -108,11 +108,12 @@ export const useLogin = () => {
 export const useSetupUIToShowRelevantInfoToUser = () => {
   const apolloClient = useApolloClient();
   const addFilter = useAddFilter();
+  const auth = useAuth();
   // load user data and change dashboard to show the most relevant state
   return useCallback(async () => {
     const farms = await apolloClient.query<UserPlantingsQuery>({
+      variables: { userId: (auth.isAuthenticated && auth.user.id) || null },
       query: UserPlantingsDocument,
-      fetchPolicy: "no-cache",
     });
     if (farms.data && farms.data.myFarms?.length) {
       addFilter({
@@ -125,7 +126,7 @@ export const useSetupUIToShowRelevantInfoToUser = () => {
         ],
       });
     }
-  }, []);
+  }, [auth]);
 };
 
 export const useLogout = () => {

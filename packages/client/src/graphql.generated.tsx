@@ -140,6 +140,11 @@ export type Query = {
 };
 
 
+export type QueryMyFarmsArgs = {
+  userId: InputMaybe<Scalars['String']>;
+};
+
+
 export type QueryPlantingArgs = {
   id: Scalars['String'];
 };

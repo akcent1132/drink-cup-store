@@ -11,8 +11,8 @@ mutation login($email: String!, $password: String!) {
   }
 }
 
-query UserPlantings {
-  myFarms {
+query UserPlantings($userId: String) {
+  myFarms(userId: $userId) {
     id
     plantings {
       id

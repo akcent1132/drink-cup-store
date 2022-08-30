@@ -5,7 +5,7 @@ type Query {
   plantingsById(ids: [String!]!): [Planting!]!
   producer(id: String!): Producer
   producers(ids: [String!]!): [Producer]
-  myFarms: [Producer]
+  myFarms(userId: String): [Producer]
   allFarmOnboardings: [FarmOnboarding!]!
   availableCropTypes: [AvailableCropType!]!
   connectedFarmIds: [String]
