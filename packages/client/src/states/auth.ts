@@ -8,9 +8,9 @@ import { isNonNil } from "../utils/ts";
 import {
   useLoginMutation,
   UserPlantingsDocument,
-  UserPlantingsQuery
+  UserPlantingsQuery,
 } from "./auth.generated";
-import { createOptionFilterParam, useAddFilter } from "./filters";
+import { createOptionFilterParam, useAddFilter, useFilters } from "./filters";
 import { useSetSelectedCropType } from "./selectedCropType";
 import { useSetIsAuthDialogOpen } from "./ui";
 
@@ -64,6 +64,14 @@ const auth = atom<AuthState>({
 
 export const useAuth = () => useRecoilValue(auth);
 
+// Is loading user farms in the backgroung to select the most relevant crop-type and filters
+const isLoadingInitialUserData = atom<boolean>({
+  key: "is-loading-initial-user-data",
+  default: false,
+});
+export const useIsLoadingInitialUserData = () =>
+  useRecoilValue(isLoadingInitialUserData);
+
 export const useLogin = () => {
   const [loginMutation, mutationState] = useLoginMutation();
   const setupUi = useSetupUIToShowRelevantInfoToUser();
@@ -111,14 +119,22 @@ export const useSetupUIToShowRelevantInfoToUser = () => {
   const apolloClient = useApolloClient();
   const addFilter = useAddFilter();
   const setSelectedCropType = useSetSelectedCropType();
+  const setIsLoadingInitialUserData = useSetRecoilState(
+    isLoadingInitialUserData
+  );
   const auth = useAuth();
+  const filters = useFilters();
 
   // load user data and change dashboard to show the most relevant state
   return useCallback(async () => {
+    setIsLoadingInitialUserData(true);
     const farms = await apolloClient.query<UserPlantingsQuery>({
       variables: { userId: (auth.isAuthenticated && auth.user.id) || null },
       query: UserPlantingsDocument,
+      fetchPolicy: "no-cache",
     });
+    setIsLoadingInitialUserData(false);
+
     if (farms.data && farms.data.myFarms?.length) {
       addFilter({
         name: "My Farms",
@@ -138,12 +154,18 @@ export const useSetupUIToShowRelevantInfoToUser = () => {
         .maxBy("length")
         .first()
         .value();
-      console.log({ topCrop });
+
       if (topCrop) {
         setSelectedCropType(topCrop);
       }
+    } else if (filters.length === 0) {
+      // Add a default filter when no filters are set
+      addFilter({
+        name: "Direct Sales",
+        params: [createOptionFilterParam("types", ["directsale_farm"])],
+      });
     }
-  }, [auth]);
+  }, [auth, filters]);
 };
 
 export const useLogout = () => {

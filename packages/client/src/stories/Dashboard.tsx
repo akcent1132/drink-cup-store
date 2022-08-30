@@ -32,6 +32,7 @@ import { AuthMenu } from "../components/auth/AuthMenu";
 import { LoginDialog } from "../components/auth/LoginDialog";
 import { Notifications } from "../components/Notifications";
 import {
+  useIsLoadingInitialUserData,
   useSetupUIToShowRelevantInfoToUser,
   useTryAcceptingMagicLinkLogin,
 } from "../states/auth";
@@ -100,6 +101,7 @@ export const Dashboard = ({ iframeSrc }: Props) => {
   useTryAcceptingMagicLinkLogin();
   const { loading } = usePreloadDataQuery();
   const setupUi = useSetupUIToShowRelevantInfoToUser();
+  const isLoadingInitialUserData = useIsLoadingInitialUserData();
   useEffect(() => {
     if (!loading) {
       setupUi();
@@ -141,7 +143,7 @@ export const Dashboard = ({ iframeSrc }: Props) => {
 
   return (
     <Root>
-      {loading ? (
+      {loading || isLoadingInitialUserData ? (
         <Layer full background="rgba(255,255,255,0.3)" animate={false}>
           <Box fill align="center" justify="center">
             <CircularProgress />

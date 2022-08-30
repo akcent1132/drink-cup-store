@@ -47,21 +47,7 @@ export const isRangeFilterParam = (
 
 const filters = atom<Filter[]>({
   key: "filters",
-  default: [
-    {
-      color: sample(schemeTableau10)!,
-      id: Math.random().toString(),
-      name: "Direct Sales",
-      params: [
-        {
-          active: true,
-          dataSource: FilterParamDataSource.FarmOnboarding,
-          key: "types",
-          value: { options: ["directsale_farm"] },
-        },
-      ],
-    },
-  ],
+  default: [],
 });
 
 export const useFilters = () => useRecoilValue(filters);
