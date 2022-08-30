@@ -1,36 +1,33 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import styled from "@emotion/styled";
-import "../index.css";
-import { useCanvas } from "../utils/useCanvas";
 import { useTheme, withTheme } from "@emotion/react";
-import { scaleLinear } from "d3-scale";
-import { extent, mean, minIndex, quantile } from "d3-array";
-import { groupBy, range, sortBy } from "lodash";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import styled from "@emotion/styled";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import tinycolor from "tinycolor2";
-import { ValuePopup } from "./ValuePopup";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { extent, mean, minIndex, quantile } from "d3-array";
 import { format } from "d3-format";
+import { scaleLinear } from "d3-scale";
+import { groupBy, range, sortBy } from "lodash";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import tinycolor from "tinycolor2";
+import "../index.css";
 import {
-  useHighlightedPlantingId,
   useHighlightPlanting,
-  useUnhighlightPlanting,
+  useUnhighlightPlanting
 } from "../states/highlightedPlantingId";
 import {
   useAddPlantingCard,
-  useShowPlantingCards,
+  useShowPlantingCards
 } from "../states/sidePanelContent";
-
-// TODO read height from props
+import { useCanvas } from "../utils/useCanvas";
+import { ValuePopup } from "./ValuePopup";
 
 export const defaultTheme = {
   rowGap: 8,
-  rowHeight: 24,
+  rowHeight: 20,
   tabSize: 6,
   branchWidth: 3,
   tickWidth: 2,
-  meanTickWidth: 6,
-  varianceLineHeight: 8,
+  meanTickWidth: 3,
+  varianceLineHeight: 3,
   labelWidth: 190,
   averageColor: tinycolor("white").setAlpha(0.1).toString(),
 };
@@ -57,13 +54,11 @@ const Bar = withTheme(styled.div<{
 const Label = withTheme(styled.div<{
   nesting: number;
   childCount: number;
-  isHovering: boolean;
+  isHoveringLabel: boolean;
 }>`
   flex: 0;
   position: relative;
-  margin-top: ${(p) =>
-    p.theme.valueDistribution.varianceLineHeight +
-    p.theme.valueDistribution.rowGap / 2}px;
+  margin-top: ${(p) => p.theme.valueDistribution.rowGap / 2}px;
   margin-bottom: ${(p) => p.theme.valueDistribution.rowGap / 2}px;
   min-width: ${(p) =>
     p.theme.valueDistribution.labelWidth -
@@ -72,9 +67,7 @@ const Label = withTheme(styled.div<{
   font-family: ${(p) => p.theme.font};
   font-weight: ${(p) => (p.childCount > 0 ? 700 : 400)};
   text-transform: uppercase;
-  line-height: ${(p) =>
-    p.theme.valueDistribution.rowHeight -
-    p.theme.valueDistribution.varianceLineHeight}px;
+  line-height: ${(p) => p.theme.valueDistribution.rowHeight}px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -186,7 +179,8 @@ export const ValueDistribution = React.forwardRef<HTMLDivElement, Props>(
       [valueNames]
     );
     const { colors } = useTheme();
-    const [isHovering, setIsHovering] = useState(false);
+    const [isHoveringLabel, setIsHoveringLabel] = useState(false);
+    const [isHoveringRow, setIsHoveringRow] = useState(false);
     const highlightPlanting = useHighlightPlanting();
     const unhighlightPlanting = useUnhighlightPlanting();
     const showPlantingCards = useShowPlantingCards();
@@ -304,12 +298,7 @@ export const ValueDistribution = React.forwardRef<HTMLDivElement, Props>(
       // draw background
       ctx.fillStyle =
         props.childCount === 0 ? colors.treeBgSecondary : colors.treeBgPrimary;
-      ctx.rect(
-        0,
-        theme.valueDistribution.varianceLineHeight,
-        canvas.width,
-        canvas.height
-      );
+      ctx.rect(0, 0, canvas.width, canvas.height);
       ctx.fill();
 
       let valuesGrouppedByFilter = Object.values(
@@ -344,9 +333,9 @@ export const ValueDistribution = React.forwardRef<HTMLDivElement, Props>(
             // Draw variance line
             ctx.rect(
               scale(q1),
-              theme.valueDistribution.varianceLineHeight / 2,
+              0,
               scale(q3) - scale(q1),
-              theme.valueDistribution.varianceLineHeight / 2
+              theme.valueDistribution.varianceLineHeight
             );
 
             // Draw horns
@@ -381,14 +370,14 @@ export const ValueDistribution = React.forwardRef<HTMLDivElement, Props>(
       }
 
       // Draw mean
-      if (allValues.length > 0) {
+      if (isHoveringRow && allValues.length > 0) {
         ctx.beginPath();
         ctx.fillStyle = theme.color("red");
         ctx.rect(
           scale(allMean) - theme.valueDistribution.meanTickWidth / 2,
-          theme.valueDistribution.varianceLineHeight,
+          0,
           theme.valueDistribution.meanTickWidth,
-          canvas.height
+          theme.valueDistribution.varianceLineHeight
         );
         ctx.fill();
       }
@@ -417,6 +406,7 @@ export const ValueDistribution = React.forwardRef<HTMLDivElement, Props>(
       allMean,
       highlightedPlantingId,
       highlightedFilterId,
+      isHoveringRow,
     ]);
 
     const leftBranches = props.nesting - props.hideBranches;
@@ -424,7 +414,13 @@ export const ValueDistribution = React.forwardRef<HTMLDivElement, Props>(
     const formatValue = useMemo(() => format(".3f"), []);
 
     return (
-      <Bar ref={ref} className={props.className} openState={props.openState}>
+      <Bar
+        ref={ref}
+        className={props.className}
+        openState={props.openState}
+        onMouseEnter={() => setIsHoveringRow(true)}
+        onMouseLeave={() => setIsHoveringRow(false)}
+      >
         {range(props.hideBranches).map((i) => (
           <BranchLeftHidden key={`blh-${i}`} />
         ))}
@@ -438,9 +434,9 @@ export const ValueDistribution = React.forwardRef<HTMLDivElement, Props>(
           nesting={props.nesting || 0}
           childCount={props.childCount || 0}
           onClick={() => props.onToggleChildren()}
-          onMouseEnter={() => setIsHovering(true)}
-          onMouseLeave={() => setIsHovering(false)}
-          isHovering={isHovering && props.openState === "closed"}
+          onMouseEnter={() => setIsHoveringLabel(true)}
+          onMouseLeave={() => setIsHoveringLabel(false)}
+          isHoveringLabel={isHoveringLabel && props.openState === "closed"}
         >
           {label}
           {props.childCount > 0 ? (
@@ -448,12 +444,12 @@ export const ValueDistribution = React.forwardRef<HTMLDivElement, Props>(
               {props.openState === "open" ? (
                 <ExpandLessIcon
                   fontSize="inherit"
-                  sx={{ opacity: isHovering ? 1 : 0 }}
+                  sx={{ opacity: isHoveringLabel ? 1 : 0 }}
                 />
               ) : (
                 <ExpandMoreIcon
                   fontSize="inherit"
-                  sx={{ opacity: isHovering ? 1 : 0.5 }}
+                  sx={{ opacity: isHoveringLabel ? 1 : 0.5 }}
                 />
               )}
             </LabelIcon>
@@ -469,7 +465,9 @@ export const ValueDistribution = React.forwardRef<HTMLDivElement, Props>(
 
           {localHoveredValue ? (
             <ValuePopup
-              value={`${formatValue(localHoveredValue.value)} ${localHoveredValue.unit || ''}`}
+              value={`${formatValue(localHoveredValue.value)} ${
+                localHoveredValue.unit || ""
+              }`}
               x={scale(localHoveredValue.value)}
               y={theme.valueDistribution.varianceLineHeight}
             />
