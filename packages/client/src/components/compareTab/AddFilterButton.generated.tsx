@@ -8,15 +8,17 @@ export type AddFilterButtonQueryVariables = Types.Exact<{
 }>;
 
 
-export type AddFilterButtonQuery = { __typename?: 'Query', connectedFarmIds?: Array<string | null> | null, surveyStackGroups?: Array<{ __typename?: 'SurveyStackGroup', id: string, name: string }> | null };
+export type AddFilterButtonQuery = { __typename?: 'Query', surveyStackGroups?: Array<{ __typename?: 'SurveyStackGroup', id: string, name: string }> | null, myFarms?: Array<{ __typename?: 'Producer', id: string } | null> | null };
 
 
 export const AddFilterButtonDocument = gql`
     query AddFilterButton($userId: String) {
-  connectedFarmIds
   surveyStackGroups(userId: $userId) {
     id
     name
+  }
+  myFarms(userId: $userId) {
+    id
   }
 }
     `;

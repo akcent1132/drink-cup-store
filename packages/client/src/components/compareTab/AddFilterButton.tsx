@@ -13,15 +13,19 @@ import {
   useFilters,
 } from "../../states/filters";
 import { useShowFilterEditor } from "../../states/sidePanelContent";
+import { isNonNil } from "../../utils/ts";
 import { useAddFilterButtonQuery } from "./AddFilterButton.generated";
 import { DropMenuItem } from "./DropMenuItem";
 
 export const AddFilterButton = React.forwardRef<HTMLButtonElement>((_, ref) => {
   const auth = useAuth();
-  const { connectedFarmIds, surveyStackGroups } =
+  const { myFarms, surveyStackGroups } =
     useAddFilterButtonQuery({
       variables: { userId: (auth.isAuthenticated && auth.user.id) || null },
     })?.data || {};
+  const connectedFarmIds = (myFarms || [])
+    .map((farm) => farm?.id)
+    .filter(isNonNil);
   const organizations = useMemo(
     () => (surveyStackGroups || []).map((g) => g.name),
     [surveyStackGroups]
@@ -50,25 +54,20 @@ export const AddFilterButton = React.forwardRef<HTMLButtonElement>((_, ref) => {
   // Farm Domains
   const handleAddFarmDomainsFilter = useCallback(() => {
     setAnchorEl(null);
-    connectedFarmIds &&
+    connectedFarmIds.map((farmId) =>
       addFilter({
-        name: "My Farms",
-        params: [
-          createOptionFilterParam(
-            "farmDomain",
-            connectedFarmIds.filter(isString)
-          ),
-        ],
-      });
+        name: farmId.split(".")[0],
+        params: [createOptionFilterParam("farmDomain", [farmId])],
+      })
+    );
   }, [connectedFarmIds]);
   const handleAddSingleFarmDomainFilter = useCallback(
     (farmDomain: string) => {
       setAnchorEl(null);
-      connectedFarmIds &&
-        addFilter({
-          name: farmDomain,
-          params: [createOptionFilterParam("farmDomain", [farmDomain])],
-        });
+      addFilter({
+        name: farmDomain,
+        params: [createOptionFilterParam("farmDomain", [farmDomain])],
+      });
     },
     [connectedFarmIds]
   );
@@ -76,11 +75,12 @@ export const AddFilterButton = React.forwardRef<HTMLButtonElement>((_, ref) => {
   // Organizations
   const handleAddOrganizationsFilter = useCallback(() => {
     setAnchorEl(null);
-    connectedFarmIds &&
+    organizations.map((organization) =>
       addFilter({
-        name: "My Organizations",
-        params: [createOptionFilterParam("organization", organizations)],
-      });
+        name: organization,
+        params: [createOptionFilterParam("organization", [organization])],
+      })
+    );
   }, [connectedFarmIds]);
   const handleAddSingleOrganizationFilter = useCallback(
     (organization: string) => {

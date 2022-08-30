@@ -1,7 +1,9 @@
 query AddFilterButton($userId: String) {
-    connectedFarmIds
     surveyStackGroups(userId: $userId) {
         id
         name
+    }
+    myFarms(userId: $userId) {
+        id
     }
 }

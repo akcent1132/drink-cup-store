@@ -136,15 +136,15 @@ export const useSetupUIToShowRelevantInfoToUser = () => {
     setIsLoadingInitialUserData(false);
 
     if (farms.data && farms.data.myFarms?.length) {
-      addFilter({
-        name: "My Farms",
-        params: [
-          createOptionFilterParam(
-            "farmDomain",
-            farms.data.myFarms.map((f) => f?.id).filter(isNonNil)
-          ),
-        ],
-      });
+      farms.data.myFarms
+        .map((f) => f?.id)
+        .filter(isNonNil)
+        .map((farmId) =>
+          addFilter({
+            name: farmId.split(".")[0],
+            params: [createOptionFilterParam("farmDomain", [farmId])],
+          })
+        );
       const topCrop = chain(farms.data.myFarms)
         .map((farm) => farm?.plantings || [])
         .flatten()

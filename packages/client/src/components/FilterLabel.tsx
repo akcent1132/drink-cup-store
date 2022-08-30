@@ -36,7 +36,7 @@ export const FilterLabel = ({ label, color = "green", filterId }: Props) => {
         color="primary"
         variant="contained"
         size="small"
-        sx={{ borderRadius: 3 }}
+        sx={{ borderRadius: 3, overflow: 'hidden' }}
         onMouseEnter={() => highlightFilter(filterId)}
         onMouseLeave={() => unhighlightFilter(filterId)}
         onClick={handleSelect}

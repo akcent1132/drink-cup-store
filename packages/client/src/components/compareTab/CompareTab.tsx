@@ -22,6 +22,13 @@ const RowContainer = styled.div`
   padding: 12px 20px 20px 20px;
 `;
 
+const LabelContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  justify-content: center;
+`;
+
 export const CompareTab = () => {
   const filters = useFilters();
 
@@ -32,15 +39,16 @@ export const CompareTab = () => {
           <CropSelector />
         </TourStop>
         <Spacer />
-        {[...filters].reverse().map((filter) => (
-          <FilterLabel
-            key={filter.id}
-            filterId={filter.id}
-            label={filter.name}
-            color={filter.color}
-          />
-        ))}
-
+        <LabelContainer>
+          {[...filters].reverse().map((filter) => (
+            <FilterLabel
+              key={filter.id}
+              filterId={filter.id}
+              label={filter.name}
+              color={filter.color}
+            />
+          ))}
+        </LabelContainer>
         <TourStop stop={Stop.FILTER} placement="bottom-start">
           <AddFilterButton />
         </TourStop>
