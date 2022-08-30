@@ -185,3 +185,10 @@ export const useRemoveFilterParam = () => {
     []
   );
 };
+
+export const createOptionFilterParam = (key: string, options: string[]) => ({
+  active: true,
+  dataSource: FilterParamDataSource.FarmOnboarding,
+  key,
+  value: { options },
+});

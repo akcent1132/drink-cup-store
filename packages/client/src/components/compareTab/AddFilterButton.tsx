@@ -7,6 +7,7 @@ import React from "react";
 import { useCallback, useMemo, useState } from "react";
 import { useAuth } from "../../states/auth";
 import {
+  createOptionFilterParam,
   FilterParamDataSource,
   useAddFilter,
   useFilters,
@@ -14,13 +15,6 @@ import {
 import { useShowFilterEditor } from "../../states/sidePanelContent";
 import { useAddFilterButtonQuery } from "./AddFilterButton.generated";
 import { DropMenuItem } from "./DropMenuItem";
-
-const createOptionFilterParam = (key: string, options: string[]) => ({
-  active: true,
-  dataSource: FilterParamDataSource.FarmOnboarding,
-  key,
-  value: { options },
-});
 
 export const AddFilterButton = React.forwardRef<HTMLButtonElement>((_, ref) => {
   const auth = useAuth();

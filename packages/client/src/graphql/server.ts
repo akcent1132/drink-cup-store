@@ -34,6 +34,8 @@ type Context = {
   authorization?: string;
 };
 
+const genFarmHash = (id: string) => seedrandom(id)().toString(32).slice(-7);
+
 // The root provides a resolver function for each API endpoint
 const resolvers: Resolvers = {
   Query: {
@@ -61,18 +63,10 @@ const resolvers: Resolvers = {
       if (!id) {
         return null;
       }
-      return {
-        id,
-        code: seedrandom(id)().toString(32).slice(-7),
-        plantings: [],
-      };
+      return { id, code: genFarmHash(id), plantings: [] };
     },
     async producers(_, { ids }) {
-      return ids.map((id) => ({
-        id,
-        code: seedrandom(id)().toString(32).slice(-7),
-        plantings: [],
-      }));
+      return ids.map((id) => ({ id, code: genFarmHash(id), plantings: [] }));
     },
     async allFarmOnboardings() {
       return await loadFarmOnboardings();
@@ -84,8 +78,11 @@ const resolvers: Resolvers = {
       return await loadRows();
     },
     async connectedFarmIds(_: any, {}, { authorization }: Context) {
-      console.log({ authorization });
       return await loadConnectedFarmIds(authorization);
+    },
+    async myFarms(_: any, {}, { authorization }: Context) {
+      const connectedFarmIds = await loadConnectedFarmIds(authorization);
+      return connectedFarmIds.map((id) => ({ id, code: genFarmHash(id), plantings: [] }));
     },
     async surveyStackGroups(_: any, { userId }, { authorization }: Context) {
       return await loadSurveyStackGroups(userId, authorization);
@@ -184,7 +181,7 @@ const worker = setupWorker(
       },
     });
     if (result.errors) {
-      console.error("result.errors", result.errors)
+      console.error("result.errors", result.errors);
     }
     return res(ctx.json(result));
   })

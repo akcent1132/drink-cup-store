@@ -16,6 +16,7 @@ export type Scalars = {
 export type AuthUser = {
   __typename: 'AuthUser';
   email: Scalars['String'];
+  farms: Maybe<Array<Maybe<Producer>>>;
   id: Scalars['String'];
   name: Maybe<Scalars['String']>;
   token: Scalars['String'];
@@ -128,6 +129,7 @@ export type Query = {
   allPlantings: Array<Planting>;
   availableCropTypes: Array<AvailableCropType>;
   connectedFarmIds: Maybe<Array<Maybe<Scalars['String']>>>;
+  myFarms: Maybe<Array<Maybe<Producer>>>;
   planting: Maybe<Planting>;
   plantings: Array<Planting>;
   plantingsById: Array<Planting>;
@@ -188,9 +190,10 @@ export type SurveyStackGroup = {
   name: Scalars['String'];
 };
 
-export type AuthUserKeySpecifier = ('email' | 'id' | 'name' | 'token' | AuthUserKeySpecifier)[];
+export type AuthUserKeySpecifier = ('email' | 'farms' | 'id' | 'name' | 'token' | AuthUserKeySpecifier)[];
 export type AuthUserFieldPolicy = {
 	email?: FieldPolicy<any> | FieldReadFunction<any>,
+	farms?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	name?: FieldPolicy<any> | FieldReadFunction<any>,
 	token?: FieldPolicy<any> | FieldReadFunction<any>
@@ -274,12 +277,13 @@ export type ProducerFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('allFarmOnboardings' | 'allPlantings' | 'availableCropTypes' | 'connectedFarmIds' | 'planting' | 'plantings' | 'plantingsById' | 'producer' | 'producers' | 'rows' | 'surveyStackGroups' | QueryKeySpecifier)[];
+export type QueryKeySpecifier = ('allFarmOnboardings' | 'allPlantings' | 'availableCropTypes' | 'connectedFarmIds' | 'myFarms' | 'planting' | 'plantings' | 'plantingsById' | 'producer' | 'producers' | 'rows' | 'surveyStackGroups' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
 	allFarmOnboardings?: FieldPolicy<any> | FieldReadFunction<any>,
 	allPlantings?: FieldPolicy<any> | FieldReadFunction<any>,
 	availableCropTypes?: FieldPolicy<any> | FieldReadFunction<any>,
 	connectedFarmIds?: FieldPolicy<any> | FieldReadFunction<any>,
+	myFarms?: FieldPolicy<any> | FieldReadFunction<any>,
 	planting?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantingsById?: FieldPolicy<any> | FieldReadFunction<any>,

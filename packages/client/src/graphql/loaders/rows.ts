@@ -24,6 +24,7 @@ export const loadRows = pMemoize(
         const rows = z.array(z.any()).parse(data);
         return rows.map((row) => {
           const parsed = externalRow.safeParse(row);
+          // Notify in the console but don't throw error
           if (!parsed.success) {
             console.error(
               `Received invalid row format: "${JSON.stringify(row)}`,

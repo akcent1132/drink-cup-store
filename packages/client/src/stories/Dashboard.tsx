@@ -1,6 +1,12 @@
 /** @jsxImportSource @emotion/react */
 
-import React, { ComponentProps, useMemo, useRef, useState } from "react";
+import React, {
+  ComponentProps,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { RecoilRoot } from "recoil";
 import RecoilNexus from "recoil-nexus";
 import { useSidePanelContent } from "../states/sidePanelContent";
@@ -25,7 +31,10 @@ import { CompareTab } from "../components/compareTab/CompareTab";
 import { AuthMenu } from "../components/auth/AuthMenu";
 import { LoginDialog } from "../components/auth/LoginDialog";
 import { Notifications } from "../components/Notifications";
-import { useTryAcceptingMagicLinkLogin } from "../states/auth";
+import {
+  useSetupUIToShowRelevantInfoToUser,
+  useTryAcceptingMagicLinkLogin,
+} from "../states/auth";
 import { TourStop } from "../states/TourStop";
 import { Stop } from "../states/tour";
 
@@ -90,6 +99,12 @@ interface Props {
 export const Dashboard = ({ iframeSrc }: Props) => {
   useTryAcceptingMagicLinkLogin();
   const { loading } = usePreloadDataQuery();
+  const setupUi = useSetupUIToShowRelevantInfoToUser();
+  useEffect(() => {
+    if (!loading) {
+      setupUi();
+    }
+  }, [loading]);
   const sidePanelContent = useSidePanelContent();
   const [tabIndex, setTabIndex] = useState(0);
   const rightSide = useRef<HTMLDivElement>(null);

@@ -4,6 +4,7 @@ import { isNumber, toString } from "lodash";
 import seedrandom from "seedrandom";
 import { z } from "zod";
 import { surveyStackApiUrl } from "../../utils/env";
+import { parseZod } from "../utils";
 
 declare module externalData {
   export interface Planting {
@@ -62,7 +63,7 @@ const fixEventType = (type: string): string => {
 };
 
 const convertExternalPlanting = (planting: externalData.Planting): Planting => {
-  const minimalExpectedPlantingData = z.object({
+  const minimalExpectedPlantingData = parseZod(z.object({
     drupal_uid: z.string(),
     events: z.array(
       z.object({
@@ -73,8 +74,8 @@ const convertExternalPlanting = (planting: externalData.Planting): Planting => {
       })
     ),
     producer: z.object({ id: z.string() }),
-  });
-  minimalExpectedPlantingData.parse(planting);
+  }));
+  minimalExpectedPlantingData(planting);
 
   return {
     ...planting,

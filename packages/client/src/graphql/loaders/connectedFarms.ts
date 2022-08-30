@@ -1,6 +1,8 @@
+import { GraphQLError } from "graphql";
 import pMemoize from "p-memoize";
-import { z } from "zod";
+import { z, ZodType, ZodTypeAny } from "zod";
 import { surveyStackApiUrl } from "../../utils/env";
+import { parseZod } from "../utils";
 
 const expectedData = z.array(
   z.object({
@@ -21,9 +23,13 @@ export const loadConnectedFarmIds = pMemoize(async (authorization) => {
       Authorization: authorization,
     },
   })
+    .then(async (result) => {
+      if (!result.ok) {
+        throw new GraphQLError(await result.text());
+      }
+      return result;
+    })
     .then((result) => result.json())
-    .then(expectedData.parse);
-
-  // return ["oursci.farmos.net","farmatsunnyside.farmos.net","jimsheppard.farmos.net"]
+    .then(parseZod(expectedData));
   return data.map((d) => d.instanceName);
 });

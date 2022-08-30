@@ -1,8 +1,15 @@
-import { useCallback, useEffect, useState } from "react";
+import { useApolloClient } from "@apollo/client";
+import { decode as b64Decode } from "js-base64";
+import { useCallback, useEffect } from "react";
 import { atom, useRecoilValue, useSetRecoilState } from "recoil";
 import { z } from "zod";
-import { useLoginMutation } from "./auth.generated";
-import { decode as b64Decode } from "js-base64";
+import { isNonNil } from "../utils/ts";
+import {
+  useLoginMutation,
+  UserPlantingsDocument,
+  UserPlantingsQuery
+} from "./auth.generated";
+import { createOptionFilterParam, useAddFilter } from "./filters";
 import { useSetIsAuthDialogOpen } from "./ui";
 
 const STORE_KEY = "coffeeshop.authentication";
@@ -57,6 +64,7 @@ export const useAuth = () => useRecoilValue(auth);
 
 export const useLogin = () => {
   const [loginMutation, mutationState] = useLoginMutation();
+  const setupUi = useSetupUIToShowRelevantInfoToUser();
   const setAuth = useSetRecoilState(auth);
   const login = useCallback(
     async (email: string, password: string) => {
@@ -77,6 +85,7 @@ export const useLogin = () => {
               isAuthenticated: true,
               user: login.user,
             });
+            setupUi();
           } else {
             setAuth({
               isAuthenticated: false,
@@ -96,13 +105,36 @@ export const useLogin = () => {
   return { login, isLoginInProgress: mutationState.loading };
 };
 
+export const useSetupUIToShowRelevantInfoToUser = () => {
+  const apolloClient = useApolloClient();
+  const addFilter = useAddFilter();
+  // load user data and change dashboard to show the most relevant state
+  return useCallback(async () => {
+    const farms = await apolloClient.query<UserPlantingsQuery>({
+      query: UserPlantingsDocument,
+      fetchPolicy: "no-cache",
+    });
+    if (farms.data && farms.data.myFarms?.length) {
+      addFilter({
+        name: "My Farms",
+        params: [
+          createOptionFilterParam(
+            "farmDomain",
+            farms.data.myFarms.map((f) => f?.id).filter(isNonNil)
+          ),
+        ],
+      });
+    }
+  }, []);
+};
+
 export const useLogout = () => {
   const setAuth = useSetRecoilState(auth);
   return useCallback(() => {
     setAuth({
       isAuthenticated: false,
     });
-    localStorage[STORE_KEY] = undefined;
+    localStorage.removeItem(STORE_KEY);
   }, []);
 };
 

@@ -17,6 +17,7 @@ export type Scalars = {
 export type AuthUser = {
   __typename?: 'AuthUser';
   email: Scalars['String'];
+  farms?: Maybe<Array<Maybe<Producer>>>;
   id: Scalars['String'];
   name?: Maybe<Scalars['String']>;
   token: Scalars['String'];
@@ -129,6 +130,7 @@ export type Query = {
   allPlantings: Array<Planting>;
   availableCropTypes: Array<AvailableCropType>;
   connectedFarmIds?: Maybe<Array<Maybe<Scalars['String']>>>;
+  myFarms?: Maybe<Array<Maybe<Producer>>>;
   planting?: Maybe<Planting>;
   plantings: Array<Planting>;
   plantingsById: Array<Planting>;
@@ -307,6 +309,7 @@ export type ResolversParentTypes = ResolversObject<{
 
 export type AuthUserResolvers<ContextType = any, ParentType extends ResolversParentTypes['AuthUser'] = ResolversParentTypes['AuthUser']> = ResolversObject<{
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  farms?: Resolver<Maybe<Array<Maybe<ResolversTypes['Producer']>>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   token?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -407,6 +410,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   allPlantings?: Resolver<Array<ResolversTypes['Planting']>, ParentType, ContextType>;
   availableCropTypes?: Resolver<Array<ResolversTypes['AvailableCropType']>, ParentType, ContextType>;
   connectedFarmIds?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
+  myFarms?: Resolver<Maybe<Array<Maybe<ResolversTypes['Producer']>>>, ParentType, ContextType>;
   planting?: Resolver<Maybe<ResolversTypes['Planting']>, ParentType, ContextType, RequireFields<QueryPlantingArgs, 'id'>>;
   plantings?: Resolver<Array<ResolversTypes['Planting']>, ParentType, ContextType, RequireFields<QueryPlantingsArgs, 'cropType'>>;
   plantingsById?: Resolver<Array<ResolversTypes['Planting']>, ParentType, ContextType, RequireFields<QueryPlantingsByIdArgs, 'ids'>>;

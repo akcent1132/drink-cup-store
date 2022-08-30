@@ -10,3 +10,13 @@ mutation login($email: String!, $password: String!) {
     }
   }
 }
+
+query UserPlantings {
+  myFarms {
+    id
+    plantings {
+      id
+      cropType
+    }
+  }
+}
