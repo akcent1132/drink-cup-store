@@ -17,9 +17,10 @@ import { ReactComponent as IconIrrigation } from "../assets/foodIcons/noun-water
 import { ReactComponent as IconJoker } from "../assets/foodIcons/noun-indigenous-knowledge-4476235.svg";
 import useSize from "@react-hook/size";
 import { useXOverlap } from "../utils/useOverlap";
-import { capitalize, uniqBy } from "lodash";
+import { capitalize, uniqBy, sortBy } from "lodash";
 import { EventDetailsPopup } from "./EventDetailsPopup";
 import { PlantingCardListQuery } from "./PlantingCardList.generated";
+import { forceManyBody, forceSimulation, forceX } from "d3-force";
 
 export const defaultTheme = {
   iconSize: 26,
@@ -181,7 +182,8 @@ const useLastNonNull = <T,>(value: T) => {
  */
 export const IconEventsBar = (props: Props) => {
   const events = useMemo(
-    () => (props.events || []).map((e) => ({ ...e, date: new Date(e.date) })),
+    () =>
+      (props.events || []).map((e) => ({ ...e, date: new Date(e.date), x: 0 })),
     [props.events]
   );
   const [hoveredEventType, setHoveredEventType] = useState<string | null>(null);
@@ -207,14 +209,16 @@ export const IconEventsBar = (props: Props) => {
   const refDateEnd = useRef<HTMLDivElement>(null);
   const hideStartDate = useXOverlap(refDate, refDateStart, [hoveredEvent]);
   const hideEndDate = useXOverlap(refDate, refDateEnd, [hoveredEvent]);
-  const [width, height] = useSize(ref);
+  const [width, _] = useSize(ref);
   const { iconEventsBar: theme, colors } = useTheme();
 
   const scale = useMemo(() => {
     let [start, end] = extent(
-      [props.minEventDate, props.maxEventDate, ...events.map((e) => e.date)].filter(
-        (d): d is Date => !!d
-      )
+      [
+        props.minEventDate,
+        props.maxEventDate,
+        ...events.map((e) => e.date),
+      ].filter((d): d is Date => !!d)
     );
     if (!start || !end) {
       start = timeYear.floor(new Date());
@@ -230,16 +234,62 @@ export const IconEventsBar = (props: Props) => {
     return scale;
   }, [width, theme.middleLineMargin, props.minEventDate, props.maxEventDate]);
 
+  // spread out overlapping event ticks
+  const spreadOutEvents = useMemo(() => {
+    const minWidth = theme.tickWidth + 1;
+    const positions = sortBy(
+      events.map((event) => ({ ...event, x: scale(event.date) })),
+      "x"
+    );
+
+    // nodge each tick left/right if the closest neighbout is to close
+    // while keeping the original horizontal order
+    const maxIterations = 300;
+    for (let j = 0; j < maxIterations; ++j) {
+      let changed = false;
+      for (let i = 0; i < positions.length; ++i) {
+        if (i < positions.length - 1) {
+          // move to the left
+          const rightDist = positions[i + 1].x - positions[i].x;
+          if (rightDist < minWidth) {
+            changed = true;
+            const leftEdge = positions[i - 1]?.x || 0;
+            const maxLeftMove = positions[i].x - leftEdge;
+            positions[i].x -= Math.min((minWidth - rightDist) / 2, maxLeftMove);
+          }
+        }
+
+        // move to the right
+        if (i > 0) {
+          const leftDist = positions[i].x - positions[i - 1].x;
+          if (leftDist < minWidth) {
+            changed = true;
+            const rightEdge = positions[i + 1]?.x || width;
+            const maxRightMove = rightEdge - positions[i].x;
+            positions[i].x += Math.min((minWidth - leftDist) / 2, maxRightMove);
+          }
+        }
+      }
+
+      if (!changed) {
+        console.log(`Cooled after ${j} iteratiosn`);
+        break;
+      }
+    }
+
+    return positions;
+  }, [scale, events, width]);
+
   const closestEventToMouse = useCallback(
     (mouseEvent: React.MouseEvent) => {
       const mouseX = mouseEvent.nativeEvent.offsetX;
-      const closestEventIndex = minIndex(events, (event) => {
-        const diff = Math.abs(scale(event.date) - mouseX);
+      const closestEventIndex = minIndex(spreadOutEvents, (pos) => {
+        const diff = Math.abs(pos.x - mouseX);
         return diff <= theme.timelineMouseMaxDistance ? diff : null;
       });
-      return closestEventIndex >= 0 ? events[closestEventIndex] : null;
+      return closestEventIndex >= 0 ? spreadOutEvents[closestEventIndex] : null;
     },
-    [events, theme.timelineMouseMaxDistance, scale]
+    [spreadOutEvents, theme.timelineMouseMaxDistance, scale]
   );
   const eventClickOut = useCallback(() => {
     setFixedEvent(null);
@@ -367,9 +417,9 @@ export const IconEventsBar = (props: Props) => {
         onMouseLeave={() => eventLeave()}
       >
         <TimelineLine />
-        {events.map((event) => (
+        {spreadOutEvents.map((event) => (
           <Tick
-            x={scale(event.date)}
+            x={event.x}
             css={getHighlightStyle(
               hoveredEventType || hoveredEvent?.type || null,
               selectedEventType,
