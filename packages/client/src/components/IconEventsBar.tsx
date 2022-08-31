@@ -1,26 +1,26 @@
 /** @jsxImportSource @emotion/react */
 
-import React, { useCallback, useMemo, useRef, useState } from "react";
-import styled from "@emotion/styled";
-import "../index.css";
 import { css, useTheme, withTheme } from "@emotion/react";
-import { timeFormat } from "d3-time-format";
-import { timeMonth, timeYear } from "d3-time";
-import { ScaleTime, scaleTime } from "d3-scale";
+import styled from "@emotion/styled";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
+import useSize from "@react-hook/size";
 import { extent, minIndex } from "d3-array";
+import { scaleTime } from "d3-scale";
+import { timeMonth, timeYear } from "d3-time";
+import { timeFormat } from "d3-time-format";
+import { capitalize, sortBy, uniqBy } from "lodash";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { ReactComponent as IconAmendments } from "../assets/foodIcons/noun-cooperative-4476250.svg";
 import { ReactComponent as IconWeeding } from "../assets/foodIcons/noun-hand-weeding-4475618.svg";
 import { ReactComponent as IconHarvest } from "../assets/foodIcons/noun-harvest-4475810.svg";
+import { ReactComponent as IconJoker } from "../assets/foodIcons/noun-indigenous-knowledge-4476235.svg";
 import { ReactComponent as IconSeeding } from "../assets/foodIcons/noun-seeds-4475904.svg";
 import { ReactComponent as IconTillage } from "../assets/foodIcons/noun-till-amount-4475900.svg";
 import { ReactComponent as IconIrrigation } from "../assets/foodIcons/noun-water-drop-4476116.svg";
-import { ReactComponent as IconJoker } from "../assets/foodIcons/noun-indigenous-knowledge-4476235.svg";
-import useSize from "@react-hook/size";
+import "../index.css";
 import { useXOverlap } from "../utils/useOverlap";
-import { capitalize, uniqBy, sortBy } from "lodash";
 import { EventDetailsPopup } from "./EventDetailsPopup";
 import { PlantingCardListQuery } from "./PlantingCardList.generated";
-import { forceManyBody, forceSimulation, forceX } from "d3-force";
 
 export const defaultTheme = {
   iconSize: 26,
@@ -169,14 +169,6 @@ const useStateLater = <T,>(initialValue: T) => {
   return [value, setLater] as [T, typeof setLater];
 };
 
-const useLastNonNull = <T,>(value: T) => {
-  const last = useRef<T | null>(null);
-  if (value) {
-    last.current = value;
-  }
-  return last.current;
-};
-
 /**
  * Primary UI component for user interaction
  */
@@ -191,18 +183,17 @@ export const IconEventsBar = (props: Props) => {
     null
   );
   // ugly hacks to test event details card behaviors
-  const [hoveredEventPoint, setHoveredEvent] = useStateLater<
+  const [hoveredEvent, setHoveredEvent] = useStateLater<
     typeof events[number] | null
   >(null);
-  const prevHoveredPoint = useLastNonNull(hoveredEventPoint);
   const [hoveredCard, setHoveredCard] = useState<typeof events[number] | null>(
     null
   );
-  const hoveredEvent = hoveredEventPoint || hoveredCard;
-  // console.log({hoveredEventPoint, hoveredCard, prevHoveredPoint, hoveredEvent})
   const [fixedEvent, setFixedEvent] = useState<typeof events[number] | null>(
     null
   );
+  const popupEvent = hoveredCard || hoveredEvent || fixedEvent;
+
   const ref = useRef<HTMLDivElement>(null);
   const refDate = useRef<HTMLDivElement>(null);
   const refDateStart = useRef<HTMLDivElement>(null);
@@ -272,7 +263,6 @@ export const IconEventsBar = (props: Props) => {
       }
 
       if (!changed) {
-        console.log(`Cooled after ${j} iteratiosn`);
         break;
       }
     }
@@ -294,6 +284,7 @@ export const IconEventsBar = (props: Props) => {
   const eventClickOut = useCallback(() => {
     setFixedEvent(null);
     setHoveredEvent(null);
+    setHoveredCard(null);
   }, []);
   const eventHover = useCallback(
     (e: React.MouseEvent) => {
@@ -313,124 +304,116 @@ export const IconEventsBar = (props: Props) => {
   }, []);
 
   return (
-    <Bar ref={ref}>
-      <IconContainer>
-        {uniqBy(events, (e) => e.type).map((event, i) => {
-          const iconProps = {
-            id: `icon-${event.id}`,
-            key: event.id,
-            css: [
-              css`
-                :hover {
-                  opacity: 1;
-                }
-                transition: opacity 0.4s ease-out;
-                opacity: 0.7;
-              `,
-              getHighlightStyle(
-                hoveredEventType || hoveredEvent?.type || null,
-                selectedEventType,
-                event.type,
-                colors.secondary,
-                "icon"
-              ),
-            ],
-            width: theme.iconSize,
-            height: theme.iconSize,
-            // fill: "white",
-            title: event.type,
-            onMouseEnter: () => setHoveredEventType(event.type),
-            onMouseLeave: () => setHoveredEventType(null),
-            onClick: () =>
-              setSelectedEventType(
-                selectedEventType === event.type ? null : event.type
-              ),
-          };
+    <ClickAwayListener onClickAway={eventClickOut}>
+      <Bar ref={ref}>
+        <IconContainer>
+          {uniqBy(events, (e) => e.type).map((event, i) => {
+            const iconProps = {
+              id: `icon-${event.id}`,
+              key: event.id,
+              css: [
+                css`
+                  :hover {
+                    opacity: 1;
+                  }
+                  transition: opacity 0.4s ease-out;
+                  opacity: 0.7;
+                `,
+                getHighlightStyle(
+                  hoveredEventType || hoveredEvent?.type || null,
+                  selectedEventType,
+                  event.type,
+                  colors.secondary,
+                  "icon"
+                ),
+              ],
+              width: theme.iconSize,
+              height: theme.iconSize,
+              // fill: "white",
+              title: event.type,
+              onMouseEnter: () => setHoveredEventType(event.type),
+              onMouseLeave: () => setHoveredEventType(null),
+              onClick: () =>
+                setSelectedEventType(
+                  selectedEventType === event.type ? null : event.type
+                ),
+            };
 
-          const Icon = getEventIcon(event.type);
-          return <Icon {...iconProps} />;
-        })}
-      </IconContainer>
-      <DateContainer>
-        {/* {hoveredEvent ? (
+            const Icon = getEventIcon(event.type);
+            return <Icon {...iconProps} />;
+          })}
+        </IconContainer>
+        <DateContainer>
+          {/* {hoveredEvent ? (
           <DateText left={scale(hoveredEvent.date)}>
             <div ref={refDate}>{timeFormat(theme.timeFormat)(hoveredEvent.date)}</div>
           </DateText>
         ) : null} */}
 
-        <div
-          ref={refDateStart}
-          css={css`
-            opacity: ${hideStartDate ? 0 : 1};
-          `}
-        >
-          {timeFormat(theme.timeFormat)(scale.domain()[0])}
-        </div>
+          <div
+            ref={refDateStart}
+            css={css`
+              opacity: ${hideStartDate ? 0 : 1};
+            `}
+          >
+            {timeFormat(theme.timeFormat)(scale.domain()[0])}
+          </div>
 
+          <div
+            ref={refDateEnd}
+            css={css`
+              opacity: ${hideEndDate ? 0 : 1};
+            `}
+          >
+            {timeFormat(theme.timeFormat)(
+              new Date(scale.domain()[1].getTime() - 1)
+            )}
+          </div>
+        </DateContainer>
         <div
-          ref={refDateEnd}
           css={css`
-            opacity: ${hideEndDate ? 0 : 1};
+            position: relative;
           `}
         >
-          {timeFormat(theme.timeFormat)(
-            new Date(scale.domain()[1].getTime() - 1)
-          )}
+          {popupEvent ? (
+            <EventDetailsPopup
+              eventDetails={popupEvent.details}
+              key={popupEvent.id}
+              date={`${timeFormat("%b %-d, %Y")(popupEvent.date)}`}
+              title={capitalize(popupEvent.type)}
+              x={popupEvent.x}
+              y={theme.tickHeight + theme.timelineTopMargin}
+              onMouseEnter={(e) => popupEvent && setHoveredCard(popupEvent)}
+              onMouseLeave={(e) => setHoveredCard(null)}
+              onClose={eventClickOut}
+              debugInfo={popupEvent}
+            />
+          ) : null}
         </div>
-      </DateContainer>
-      <div
-        css={css`
-          position: relative;
-        `}
-      >
-        {fixedEvent ? (
-          <EventDetailsPopup
-            eventDetails={fixedEvent.details}
-            key={fixedEvent.id}
-            date={`${timeFormat("%b %-d, %Y")(fixedEvent.date)}`}
-            title={capitalize(fixedEvent.type)}
-            x={scale(fixedEvent.date)}
-            y={theme.tickHeight / 2 + theme.timelineTopMargin}
-            onClose={eventClickOut}
-            debugInfo={fixedEvent}
-          />
-        ) : null}
-        {hoveredEvent && hoveredEvent !== fixedEvent ? (
-          <EventDetailsPopup
-            eventDetails={hoveredEvent.details}
-            key={hoveredEvent.id}
-            date={`${timeFormat("%b %-d, %Y")(hoveredEvent.date)}`}
-            title={capitalize(hoveredEvent.type)}
-            x={scale(hoveredEvent.date)}
-            y={theme.tickHeight / 2 + theme.timelineTopMargin}
-            onMouseEnter={(e) =>
-              prevHoveredPoint && setHoveredCard(prevHoveredPoint)
-            }
-            onMouseLeave={(e) => setHoveredCard(null)}
-            debugInfo={hoveredEvent}
-          />
-        ) : null}
-      </div>
-      <TimelineRoot
-        onClick={eventClick}
-        onMouseMove={(e) => eventHover(e)}
-        onMouseLeave={() => eventLeave()}
-      >
-        <TimelineLine />
-        {spreadOutEvents.map((event) => (
-          <Tick
-            x={event.x}
-            css={getHighlightStyle(
-              hoveredEventType || hoveredEvent?.type || null,
-              selectedEventType,
-              event.type,
-              colors.secondary,
-              "tick"
-            )}
-            key={`tick-${event.id}`}
-          />
-        ))}
-      </TimelineRoot>
-    </Bar>
+        <TimelineRoot
+          onClick={eventClick}
+          onMouseMove={(e) => eventHover(e)}
+          onMouseLeave={() => eventLeave()}
+        >
+          <TimelineLine />
+          {spreadOutEvents.map((event) => {
+            const tick = (
+              <Tick
+                x={event.x}
+                css={getHighlightStyle(
+                  hoveredEventType || hoveredEvent?.type || null,
+                  selectedEventType,
+                  event.type,
+                  colors.secondary,
+                  "tick"
+                )}
+                key={`tick-${event.id}`}
+              />
+            );
+            return tick;
+          })}
+        </TimelineRoot>
+      </Bar>
+    </ClickAwayListener>
   );
 };

@@ -1,25 +1,25 @@
-import React, { useCallback, useMemo, useState } from "react";
 import styled from "@emotion/styled";
-import { css, withTheme } from "@emotion/react";
-import "../index.css";
-import {
-  Box,
-  Card,
-  Tag,
-  Drop,
-  Heading,
-  NameValueList,
-  NameValuePair,
-  Text,
-  Button,
-} from "grommet";
-import { getEventIcon } from "./IconEventsBar";
-import CopyAllIcon from "@mui/icons-material/CopyAll";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
-import { Spacer } from "./EventsCard";
-import useCopy from "use-copy";
+import CopyAllIcon from "@mui/icons-material/CopyAll";
+import Box from "@mui/material/Box";
+import CardActions from "@mui/material/CardActions";
+import Chip from "@mui/material/Chip";
+import IconButton from "@mui/material/IconButton";
+import Stack from "@mui/material/Stack";
+import useTheme from "@mui/material/styles/useTheme";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableRow from "@mui/material/TableRow";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
 import { keyBy, mapValues } from "lodash";
+import React, { useCallback } from "react";
+import useCopy from "use-copy";
+import "../index.css";
+import { PopDialog } from "../states/PopDialog";
+import { getEventIcon } from "./IconEventsBar";
 import { PlantingCardListQuery } from "./PlantingCardList.generated";
 
 export const defaultTheme = {
@@ -50,13 +50,13 @@ interface Props {
   onClose?: () => void;
   onMouseEnter?: (e: React.MouseEvent) => void;
   onMouseLeave?: (e: React.MouseEvent) => void;
-  eventDetails?: NonNullable<NonNullable<
-    PlantingCardListQuery["plantings"][number]
-  >["events"]>[number]["details"];
+  eventDetails?: NonNullable<
+    NonNullable<PlantingCardListQuery["plantings"][number]>["events"]
+  >[number]["details"];
   debugInfo?: any;
 }
 
-export const EventDetailsPopup = ({
+export const EventDetailsPopup: React.FC<Props> = ({
   title,
   date,
   x,
@@ -66,9 +66,8 @@ export const EventDetailsPopup = ({
   onMouseLeave,
   debugInfo,
   eventDetails,
-}: Props) => {
-  const [target, setTarget] = useState(null);
-  const ref = useCallback((node) => setTarget(node), []);
+}) => {
+  const theme = useTheme();
   const data = mapValues(
     keyBy(eventDetails, "name"),
     (d) => d.value || d.valueList || "N/A"
@@ -86,126 +85,81 @@ export const EventDetailsPopup = ({
     }, 3000);
   }, [copy, setCopied]);
 
-  const dropAlign = useMemo(() => ({ top: "bottom" as "bottom" }), []);
-
   const Icon = getEventIcon(title.toLowerCase());
   return (
-    <>
-      <Container ref={ref} {...{ x, y }}></Container>
-      {target ? (
-        <Drop
-          target={target}
-          margin="small"
-          responsive
-          align={dropAlign}
-          onClickOutside={onClose}
-          onEsc={onClose}
-          plain
-        >
-          <Card
-            style={{ margin: "0 23px", width: "400px" }}
-            onMouseEnter={onMouseEnter}
-            onMouseLeave={onMouseLeave}
-          >
-            <Box
-              background="light-4"
-              pad="small"
-              direction="row"
-              align="center"
-            >
-              <Box direction="column" align="flex-start" gap="none" flex="grow">
-                <Heading level={3} margin="none">
-                  {title}
-                </Heading>
+    <PopDialog open anchor={<Container {...{ x, y }} />}>
+      <Box
+        sx={{ mx: 1 }}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+      >
+        <Box sx={{ display: "flex", direction: "row", alignItems: "center" }}>
+          <Box>
+            <Typography variant="h5" component="div">
+              {title}
+            </Typography>
+            <Typography color="text.secondary">{date}</Typography>
+          </Box>
+          <Box sx={{ flexGrow: 1 }} />
+          <Icon
+            width="42px"
+            height="42px"
+            color="white"
+            style={{ fill: theme.palette.primary.main }}
+          />
+        </Box>
 
-                <Text size="small">{date}</Text>
-              </Box>
-
-              <Icon
-                width="42px"
-                height="42px"
-                css={css`
-                  margin-left: 6px;
-                `}
-              />
-            </Box>
-            <Box
-              pad="small"
-              background="light-3"
-              css={css`
-                padding-bottom: 4px;
-              `}
+        {eventDetails ? (
+          <Table size="small" sx={{ mt: 2 }}>
+            <TableBody>
+              {Object.entries(data || {}).map(([key, value]) => (
+                <TableRow
+                  key={key}
+                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                >
+                  <TableCell
+                    component="th"
+                    scope="row"
+                    sx={{ whiteSpace: "nowrap" }}
+                  >
+                    {key}
+                  </TableCell>
+                  <TableCell align="right">
+                    {Array.isArray(value) ? (
+                      <Stack direction="row" flexWrap="wrap" gap={1}>
+                        {value.map((v, i) => (
+                          <Chip label={v} key={i} size="small" />
+                        ))}
+                      </Stack>
+                    ) : (
+                      value
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        ) : (
+          "loading..."
+        )}
+        <CardActions>
+          <Box sx={{ flexGrow: 1 }} />
+          <Tooltip title={copied ? "Copied!" : "Copy data"}>
+            <IconButton
+              onClick={copyData}
+              color={copied ? "success" : undefined}
             >
-              {eventDetails ? (
-                <NameValueList>
-                  {Object.entries(data || {}).map(([key, value]) => (
-                    <NameValuePair name={key} key={key}>
-                      {Array.isArray(value) ? (
-                        <Box direction="row" gap="2px">
-                          {value.map((v, i) => (
-                            <Tag size="xsmall" value={v} key={i} />
-                          ))}
-                        </Box>
-                      ) : typeof value === "string" ? (
-                        <Text size="xsmall" color="text-strong">
-                          {value}
-                        </Text>
-                      ) : (
-                        value
-                      )}
-                    </NameValuePair>
-                  ))}
-                </NameValueList>
-              ) : (
-                "loading..."
-              )}
-            </Box>
-            <Box background="light-4" pad="none" direction="row">
-              <Spacer />
-              <Button
-                icon={copied ? <CheckIcon /> : <CopyAllIcon />}
-                onClick={copyData}
-                tip={{
-                  plain: true,
-                  content: (
-                    <Box
-                      background="light-1"
-                      elevation="small"
-                      margin="xsmall"
-                      pad={{ vertical: "xsmall", horizontal: "small" }}
-                      round="small"
-                      align="center"
-                    >
-                      {copied ? "Copied!" : "Copy data"}
-                    </Box>
-                  ),
-                }}
-                color={copied ? "brand" : undefined}
-              />
-              <Button
-                style={{ paddingLeft: 0 }}
-                icon={<CloseIcon />}
-                onClick={onClose}
-                tip={{
-                  plain: true,
-                  content: (
-                    <Box
-                      background="light-1"
-                      elevation="small"
-                      margin="xsmall"
-                      pad={{ vertical: "xsmall", horizontal: "small" }}
-                      round="small"
-                      align="center"
-                    >
-                      Close
-                    </Box>
-                  ),
-                }}
-              />
-            </Box>
-          </Card>
-        </Drop>
-      ) : null}
-    </>
+              {copied ? <CheckIcon /> : <CopyAllIcon />}
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="close">
+            <IconButton onClick={onClose}>
+              <CloseIcon />
+            </IconButton>
+          </Tooltip>
+        </CardActions>
+      </Box>
+    </PopDialog>
   );
 };

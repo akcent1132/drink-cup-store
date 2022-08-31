@@ -80,6 +80,7 @@ const Arrow = styled("div")({
   fontSize: 7,
   width: "3em",
   height: "3em",
+  pointerEvents: "none",
   "&::before": {
     content: '""',
     margin: "auto",
