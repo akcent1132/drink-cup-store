@@ -9,7 +9,6 @@ import PublicIcon from "@mui/icons-material/Public";
 import ThermostatIcon from "@mui/icons-material/Thermostat";
 import WbSunnyIcon from "@mui/icons-material/WbSunny";
 import Tooltip from "@mui/material/Tooltip";
-import { Tip } from "grommet";
 import { isNil } from "lodash";
 import { useCallback, useMemo } from "react";
 import tinycolor from "tinycolor2";
@@ -17,11 +16,11 @@ import "../index.css";
 import {
   useHighlightedPlantingId,
   useHighlightPlanting,
-  useUnhighlightPlanting,
+  useUnhighlightPlanting
 } from "../states/highlightedPlantingId";
 import {
   useRemovePlantingCard,
-  useShowProfile,
+  useShowProfile
 } from "../states/sidePanelContent";
 import { climateRegionToLongName } from "../utils/abbreviations";
 import { IconEventsBar } from "./IconEventsBar";
@@ -210,12 +209,12 @@ export const EventsCard = ({
           <Title>{planting.title}</Title>
           <Spacer />
           {!hideName ? (
-            <Tip content="Producer profile">
+            <Tooltip title="Producer profile">
               <Name onClick={() => showProfile(planting.producer.id)}>
                 <ContactPageIcon fontSize="inherit" />
                 {planting.producer.code}
               </Name>
-            </Tip>
+            </Tooltip>
           ) : null}
 
           {onClose ? (
