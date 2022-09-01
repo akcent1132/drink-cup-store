@@ -33,7 +33,8 @@
     "docker:server": "docker compose exec app yarn server",
     "docker:client": "docker compose exec app yarn client",
     "docker:codegen": "docker compose exec app yarn codegen",
-    "docker:bash": "docker compose exec -it app /bin/bash"
+    "docker:bash": "docker compose exec -it app /bin/bash",
+    "prepare": "husky install"
   },
   "husky": {
     "hooks": {
