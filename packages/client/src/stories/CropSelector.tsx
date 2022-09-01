@@ -1,26 +1,23 @@
 /** @jsxImportSource @emotion/react */
 
-import React, { useMemo } from "react";
-import { css } from "@emotion/react";
-import {
-  useCropSelectorQuery,
-  useCropSelectorSlowQuery,
-} from "./CropSelector.generated";
-import { groupBy, isString, map, sortBy, startCase } from "lodash";
-import {
-  useSelectedCropType,
-  useSetSelectedCropType,
-} from "../states/selectedCropType";
+import Badge, { BadgeProps } from "@mui/material/Badge";
 import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
-import InputLabel from "@mui/material/InputLabel";
-import Badge, { BadgeProps } from "@mui/material/Badge";
 import { styled } from "@mui/material/styles";
 import Tooltip from "@mui/material/Tooltip";
-import { Typography } from "@mui/material";
-import { Box } from "grommet/components/Box";
+import { sortBy, startCase } from "lodash";
+import React, { useMemo } from "react";
 import { useAuth } from "../states/auth";
+import {
+  useSelectedCropType,
+  useSetSelectedCropType
+} from "../states/selectedCropType";
+import {
+  useCropSelectorQuery,
+  useCropSelectorSlowQuery
+} from "./CropSelector.generated";
 
 const StyledBadge = styled(Badge)<BadgeProps>({
   "& .MuiBadge-badge": {

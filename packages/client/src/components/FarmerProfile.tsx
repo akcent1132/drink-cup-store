@@ -1,21 +1,23 @@
 /** @jsxImportSource @emotion/react */
 
-import styled from "@emotion/styled";
-import "../index.css";
 import { css, withTheme } from "@emotion/react";
-import { Box, Button } from "grommet";
-import { EventsCard, Spacer } from "./EventsCard";
-import CloseIcon from "@mui/icons-material/Close";
-import { IconButton } from "./filterEditor/FilterEditor";
-import { useCallback, useMemo, useState } from "react";
-import { sortBy, take } from "lodash";
-import { Tabs } from "./Tabs";
-import CopyAllIcon from "@mui/icons-material/CopyAll";
+import styled from "@emotion/styled";
 import CheckIcon from "@mui/icons-material/Check";
-import useCopy from "use-copy";
-import { useFarmerProfileQuery } from "./FarmerProfile.generated";
-import { useShowPlantingCards } from "../states/sidePanelContent";
+import CloseIcon from "@mui/icons-material/Close";
+import CopyAllIcon from "@mui/icons-material/CopyAll";
+import Button from "@mui/material/Button";
 import LinearProgress from "@mui/material/LinearProgress";
+import Stack from "@mui/material/Stack";
+import Tooltip from "@mui/material/Tooltip";
+import { sortBy, take } from "lodash";
+import { useCallback, useState } from "react";
+import useCopy from "use-copy";
+import "../index.css";
+import { useShowPlantingCards } from "../states/sidePanelContent";
+import { EventsCard, Spacer } from "./EventsCard";
+import { useFarmerProfileQuery } from "./FarmerProfile.generated";
+import { IconButton } from "./filterEditor/FilterEditor";
+import { Tabs } from "./Tabs";
 
 const LS_SHOW_PRODUCER_NAME = "show-producer-name";
 
@@ -62,9 +64,10 @@ const LOREM =
 const EMAIL = "684c9b3930413fdab7c6425ec01c878d@comm.surveystack.org";
 type Props = { producerId: string };
 export const FarmerProfile = ({ producerId }: Props) => {
-  const { producer } = useFarmerProfileQuery({
-    variables: { producerId },
-  })?.data || {};
+  const { producer } =
+    useFarmerProfileQuery({
+      variables: { producerId },
+    })?.data || {};
   const showPlantingCards = useShowPlantingCards();
   const [tabIndex, setTabIndex] = useState(0);
 
@@ -86,15 +89,9 @@ export const FarmerProfile = ({ producerId }: Props) => {
         <LinearProgress />
       ) : (
         <>
-          <Box direction="row">
-            <Box direction="column" flex={{ grow: 1 }} justify="start">
-              <Box
-                direction="row"
-                align="center"
-                css={css`
-                  padding-right: 12px;
-                `}
-              >
+          <Stack direction="row">
+            <Stack direction="column" flexGrow={1} justifyItems="start">
+              <Stack direction="row" alignItems="center" sx={{ pr: 3 }}>
                 <NameContainer>
                   <NameLabel>Producer ID</NameLabel>
                   <Name>
@@ -103,26 +100,17 @@ export const FarmerProfile = ({ producerId }: Props) => {
                       : producer.code}
                   </Name>
                 </NameContainer>
-                {/* <Box
-              align="end"
-              css={css`
-                padding: 0 12px;
-              `}
-            > */}
-                <Button
-                  size="small"
-                  css={css`
-                    align-self: flex-end;
-                    font-weight: bold;
-                  `}
-                  // primary
-                  // color="rgb(13, 195, 159)"
-                  onClick={copyData}
-                  label="Contact"
-                  icon={copied ? <CheckIcon /> : <CopyAllIcon />}
-                  reverse
-                />
-                {/* </Box> */}
+
+                <Tooltip title={copied ? "Copied" : "Copy Email"}>
+                  <Button
+                    size="small"
+                    onClick={copyData}
+                    sx={{ alignSelf: "flex-end" }}
+                  >
+                    Contact {copied ? <CheckIcon /> : <CopyAllIcon />}
+                  </Button>
+                </Tooltip>
+
                 <Spacer />
                 <IconButton
                   onClick={handleClose}
@@ -132,9 +120,9 @@ export const FarmerProfile = ({ producerId }: Props) => {
                 >
                   <CloseIcon fontSize="inherit" color="inherit" />
                 </IconButton>
-              </Box>
-            </Box>
-          </Box>
+              </Stack>
+            </Stack>
+          </Stack>
           <Tabs
             css={css`
               grid-area: values;

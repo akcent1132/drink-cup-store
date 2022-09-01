@@ -3,7 +3,6 @@ import { App } from "./stories/Dashboard";
 import { Global, css } from "@emotion/react";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "./theme/theme";
-import { GrommetConfig } from "./theme/GrommetConfig";
 import CssBaseline from "@mui/material/CssBaseline";
 
 function Main() {
@@ -17,10 +16,8 @@ function Main() {
         `}
       />
       <ThemeProvider theme={theme}>
-        <GrommetConfig>
-          <CssBaseline />
-          <App iframeSrc="https://www.hylo.com/all" />
-        </GrommetConfig>
+        <CssBaseline />
+        <App iframeSrc="https://www.hylo.com/all" />
       </ThemeProvider>
     </div>
   );

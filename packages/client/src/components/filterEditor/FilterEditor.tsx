@@ -1,34 +1,28 @@
 /** @jsxImportSource @emotion/react */
 
+import { withTheme } from "@emotion/react";
 import styled from "@emotion/styled";
-import { Text } from "grommet";
-import { css, withTheme } from "@emotion/react";
+import LinearProgress from "@mui/material/LinearProgress";
+import TextField from "@mui/material/TextField";
 import React, { useCallback, useMemo } from "react";
-import { TagSelect } from "./TagSelect";
-import CloseIcon from "@mui/icons-material/Close";
+import {
+  isOptionFilterParam,
+  isRangeFilterParam, useFilters,
+  useUpdateFilterName
+} from "../../states/filters";
+import { useSelectedCropType } from "../../states/selectedCropType";
 import { Spacer } from "../EventsCard";
 import { useFilterEditorQuery } from "./FilterEditor.generated";
+import { FilterMenu } from "./FilterMenu";
 import { FilterParamSelector } from "./FilterParamSelector";
-import { RangeSlider } from "./RangeSlider";
 import {
   getFilterables,
   isNumericFilterable,
-  isOptionFilterable,
+  isOptionFilterable
 } from "./getFilterables";
-import { useShowPlantingCards } from "../../states/sidePanelContent";
-import {
-  isOptionFilterParam,
-  isRangeFilterParam,
-  useEditFilterParam,
-  useFilters,
-  useUpdateFilterName,
-} from "../../states/filters";
-import { useSelectedCropType } from "../../states/selectedCropType";
-import LinearProgress from "@mui/material/LinearProgress";
-import { prettyKey } from "./prettyKey";
 import { InputActionsWrap } from "./InputActionsWrap";
-import TextField from "@mui/material/TextField";
-import { FilterMenu } from "./FilterMenu";
+import { RangeSlider } from "./RangeSlider";
+import { TagSelect } from "./TagSelect";
 
 const Root = withTheme(styled.div`
   background-color: ${(p) => p.theme.colors.bgSidePanel};
@@ -42,31 +36,6 @@ const Body = withTheme(styled.div`
   padding: 12px;
   gap: 12px;
 `);
-
-export const Label = ({
-  label,
-  children,
-}: React.PropsWithChildren<{ label: string }>) => (
-  <div
-    css={css`
-      display: flex;
-      flex-direction: column;
-      margin: 1px 0;
-    `}
-  >
-    <Text
-      css={css`
-        color: rgba(255, 255, 255, 0.5);
-        margin-left: 12px;
-        font-size: 15px;
-        font-weight: 500;
-      `}
-    >
-      {label}
-    </Text>
-    {children}
-  </div>
-);
 
 const Header = withTheme(styled.div<{ color: string }>`
   // background-color: ${(p) => p.color};

@@ -1,43 +1,37 @@
 /** @jsxImportSource @emotion/react */
 
-import React, {
-  ComponentProps,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { ApolloProvider } from "@apollo/client";
+import { ClassNames } from "@emotion/core";
+import { css, withTheme } from "@emotion/react";
+import styled from "@emotion/styled";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
+import { ComponentProps, useEffect, useMemo, useRef, useState } from "react";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { RecoilRoot } from "recoil";
 import RecoilNexus from "recoil-nexus";
-import { useSidePanelContent } from "../states/sidePanelContent";
-import { CSSTransition, TransitionGroup } from "react-transition-group";
-import { ClassNames } from "@emotion/core";
-import styled from "@emotion/styled";
-import "../index.css";
 import bgCorn from "../assets/images/Background-corngrains.jpg";
 import logoImage from "../assets/images/Farmers-coffeeshop-logo-white_transparent.png";
-import { Tabs } from "../components/Tabs";
-import { css, withTheme } from "@emotion/react";
-import { HyloBox } from "./HyloBox";
-import { FilterEditor } from "../components/filterEditor/FilterEditor";
-import { FarmerProfile } from "../components/FarmerProfile";
-import { PlantingCardList } from "../components/PlantingCardList";
-import { client } from "../graphql/client";
-import { ApolloProvider } from "@apollo/client";
-import { usePreloadDataQuery } from "./Dashboard.generated";
-import { Box, Layer } from "grommet";
-import CircularProgress from "@mui/material/CircularProgress";
-import { CompareTab } from "../components/compareTab/CompareTab";
 import { AuthMenu } from "../components/auth/AuthMenu";
 import { LoginDialog } from "../components/auth/LoginDialog";
+import { CompareTab } from "../components/compareTab/CompareTab";
+import { FarmerProfile } from "../components/FarmerProfile";
+import { FilterEditor } from "../components/filterEditor/FilterEditor";
 import { Notifications } from "../components/Notifications";
+import { PlantingCardList } from "../components/PlantingCardList";
+import { Tabs } from "../components/Tabs";
+import { client } from "../graphql/client";
+import "../index.css";
 import {
   useIsLoadingInitialUserData,
   useSetupUIToShowRelevantInfoToUser,
   useTryAcceptingMagicLinkLogin,
 } from "../states/auth";
-import { TourStop } from "../states/TourStop";
+import { useSidePanelContent } from "../states/sidePanelContent";
 import { Stop } from "../states/tour";
+import { TourStop } from "../states/TourStop";
+import { usePreloadDataQuery } from "./Dashboard.generated";
+import { HyloBox } from "./HyloBox";
 
 const Root = withTheme(styled.div`
   width: 100%;
@@ -143,13 +137,12 @@ export const Dashboard = ({ iframeSrc }: Props) => {
 
   return (
     <Root>
-      {loading || isLoadingInitialUserData ? (
-        <Layer full background="rgba(255,255,255,0.3)" animate={false}>
-          <Box fill align="center" justify="center">
-            <CircularProgress />
-          </Box>
-        </Layer>
-      ) : null}
+      <Backdrop
+        sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading || isLoadingInitialUserData}
+      >
+        <CircularProgress />
+      </Backdrop>
       <Header>
         <AuthMenu></AuthMenu>
         <img
