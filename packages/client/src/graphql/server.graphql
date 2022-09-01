@@ -14,7 +14,7 @@ type Query {
 }
 
 type Mutation {
-  login(email: String! password: String!): LoginResponse
+  login(email: String!, password: String!): LoginResponse
   requestMagicLoginLink(email: String!): RequestMagicLoginLinkResponse
 }
 

@@ -26,17 +26,15 @@ const Head = styled.div`
 
 const Body = withTheme(styled.div`
   flex: 1;
-  background-color: ${p => p.theme.colors.bgTab};
+  background-color: ${(p) => p.theme.colors.bgTab};
   border: 1px solid ${(p) => p.theme.colors.divider};
 `);
 
-const Tab = (
-  props: { active: boolean } & ComponentProps<typeof Button>
-) => {
+const Tab = (props: { active: boolean } & ComponentProps<typeof Button>) => {
   const { colors } = useTheme();
   const { active, ...buttonProps } = props;
   const color = active ? colors.bgTab : colors.bgSidePanel;
-  
+
   return (
     <Button
       {...{ ...buttonProps, color }}
@@ -46,12 +44,20 @@ const Tab = (
         border-bottom-right-radius: 0;
         border: ${active ? 1 : 0}px solid ${colors.divider};
         border-bottom: none;
-        ${active ? `box-shadow: 0px 1px 0px 0px ${colors.bgTab}; z-index: 1;` : ""}
+        ${
+          active
+            ? `box-shadow: 0px 1px 0px 0px ${colors.bgTab}; z-index: 1;`
+            : ""
+        }
         :hover {
-          background: linear-gradient(to bottom, ${tinycolor(color).lighten(7).toString()}, ${color} );
+          background: linear-gradient(to bottom, ${tinycolor(color)
+            .lighten(7)
+            .toString()}, ${color} );
         }
         :active {
-          background: linear-gradient(to bottom, ${tinycolor(color).lighten(10).toString()}, ${color} );
+          background: linear-gradient(to bottom, ${tinycolor(color)
+            .lighten(10)
+            .toString()}, ${color} );
         }
       `}
     />

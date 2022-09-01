@@ -29,7 +29,7 @@ const Root = withTheme(styled.button<{ color: string }>`
     background-color: ${(props) =>
       tinycolor(props.theme.color(props.color)).darken(1).toString()};
   }
-  color: ${(p) => p.theme.colors.textPrimary};;
+  color: ${(p) => p.theme.colors.textPrimary};
 
   display: flex;
   flex-wrap: nowrap;

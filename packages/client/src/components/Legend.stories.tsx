@@ -12,13 +12,13 @@ export default {
 const Template: ComponentStory<typeof Legend> = (args) => <Legend {...args} />;
 
 export const Default = Template.bind({});
-Default.args = {  
+Default.args = {
   entries: [
-    {color: 'red', name: 'tillage'},
-    {color: 'blue', name: 'irigation'},
-    {color: 'green', name: 'harvest'},
-    {color: 'orange', name: 'amendments'},
-    {color: 'violet', name: 'seeding'},
-    {color: 'yellow', name: 'weed contor'},
-  ]
+    { color: "red", name: "tillage" },
+    { color: "blue", name: "irigation" },
+    { color: "green", name: "harvest" },
+    { color: "orange", name: "amendments" },
+    { color: "violet", name: "seeding" },
+    { color: "yellow", name: "weed contor" },
+  ],
 };

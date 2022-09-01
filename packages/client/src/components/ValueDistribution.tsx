@@ -11,11 +11,11 @@ import tinycolor from "tinycolor2";
 import "../index.css";
 import {
   useHighlightPlanting,
-  useUnhighlightPlanting
+  useUnhighlightPlanting,
 } from "../states/highlightedPlantingId";
 import {
   useAddPlantingCard,
-  useShowPlantingCards
+  useShowPlantingCards,
 } from "../states/sidePanelContent";
 import { useCanvas } from "../utils/useCanvas";
 import { ValuePopup } from "./ValuePopup";

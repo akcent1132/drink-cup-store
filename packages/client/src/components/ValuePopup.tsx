@@ -60,8 +60,8 @@ const Root = withTheme(styled.div`
 const Content = withTheme(styled.div`
   margin: auto 12px;
   background: ${(p) => p.theme.valuePopup.backgroundColor};
-  height: ${(p) => p.theme.valuePopup.height-2}px;
-  line-height: ${(p) => p.theme.valuePopup.height-2}px;
+  height: ${(p) => p.theme.valuePopup.height - 2}px;
+  line-height: ${(p) => p.theme.valuePopup.height - 2}px;
 `);
 
 interface Props {
@@ -74,9 +74,7 @@ export const ValuePopup = ({ value, x, y }: Props) => {
   return (
     <Container {...{ x, y }}>
       <Root>
-        <Content>
-          {value}
-        </Content>
+        <Content>{value}</Content>
       </Root>
     </Container>
   );

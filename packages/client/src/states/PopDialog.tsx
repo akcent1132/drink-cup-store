@@ -91,10 +91,9 @@ const Arrow = styled("div")({
   },
 });
 
-
 export const PopDialog: React.FC<{
-    open?: boolean,
-    anchor: ReactNode,
+  open?: boolean;
+  anchor: ReactNode;
   placement?: ComponentProps<typeof Popper>["placement"];
 }> = ({ placement, anchor, open, children }) => {
   const [arrowRef, setArrowRef] = useState<any>(null);
@@ -115,7 +114,7 @@ export const PopDialog: React.FC<{
         anchorEl={anchorEl}
         transition
         placement={placement}
-        sx={{zIndex: 1200}} // above the Hylo box but below the dropdowns
+        sx={{ zIndex: 1200 }} // above the Hylo box but below the dropdowns
         modifiers={[
           {
             name: "flip",

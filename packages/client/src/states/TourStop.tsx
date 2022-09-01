@@ -14,10 +14,9 @@ import {
   useCurrentStop,
   useIsTourOn,
   useNext,
-  useSetIsTourOn
+  useSetIsTourOn,
 } from "./tour";
 import { useIsAuthDialogOpen } from "./ui";
-
 
 const getStopDetails = (stop: Stop) => {
   switch (stop) {
@@ -56,7 +55,6 @@ export const TourStop: React.FC<{
   const open = !isAuthDialogOpen && isTourOn && currentStop === stop;
 
   const activeStep = Stops.indexOf(stop);
-
 
   return (
     <PopDialog placement={placement} open={open} anchor={children}>

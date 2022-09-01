@@ -16,11 +16,11 @@ import "../index.css";
 import {
   useHighlightedPlantingId,
   useHighlightPlanting,
-  useUnhighlightPlanting
+  useUnhighlightPlanting,
 } from "../states/highlightedPlantingId";
 import {
   useRemovePlantingCard,
-  useShowProfile
+  useShowProfile,
 } from "../states/sidePanelContent";
 import { climateRegionToLongName } from "../utils/abbreviations";
 import { IconEventsBar } from "./IconEventsBar";

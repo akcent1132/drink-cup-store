@@ -12,11 +12,11 @@ import React, { useMemo } from "react";
 import { useAuth } from "../states/auth";
 import {
   useSelectedCropType,
-  useSetSelectedCropType
+  useSetSelectedCropType,
 } from "../states/selectedCropType";
 import {
   useCropSelectorQuery,
-  useCropSelectorSlowQuery
+  useCropSelectorSlowQuery,
 } from "./CropSelector.generated";
 
 const StyledBadge = styled(Badge)<BadgeProps>({
@@ -24,15 +24,14 @@ const StyledBadge = styled(Badge)<BadgeProps>({
     top: 13,
     padding: "0 4px",
     marginLeft: 4,
-    position: 'relative',
-    transform: 'scale(1) translate(0, -50%)'
+    position: "relative",
+    transform: "scale(1) translate(0, -50%)",
   },
 });
 
 export const CropSelector = React.forwardRef<HTMLDivElement>((_, ref) => {
   const auth = useAuth();
-  const { availableCropTypes } =
-    useCropSelectorQuery().data || {};
+  const { availableCropTypes } = useCropSelectorQuery().data || {};
   const { myFarms: ownedFarms } =
     useCropSelectorSlowQuery({
       variables: { userId: (auth.isAuthenticated && auth.user.id) || null },
@@ -43,12 +42,14 @@ export const CropSelector = React.forwardRef<HTMLDivElement>((_, ref) => {
     const result = (availableCropTypes || [])
       .map((availableCropType) => ({
         ...availableCropType,
-        ownedPlantingCount: ownedFarms && ownedFarms.length > 0
-          ? ownedFarms
-              .map((f) => f?.plantings)
-              .flat()
-              .filter((p) => p?.cropType === availableCropType.cropType).length
-          : null,
+        ownedPlantingCount:
+          ownedFarms && ownedFarms.length > 0
+            ? ownedFarms
+                .map((f) => f?.plantings)
+                .flat()
+                .filter((p) => p?.cropType === availableCropType.cropType)
+                .length
+            : null,
       }))
       // only show cropTypes if there are more that 30 or the user owns a planting
       .filter((c) => c.plantingCount >= 30 || c.ownedPlantingCount);
@@ -73,10 +74,8 @@ export const CropSelector = React.forwardRef<HTMLDivElement>((_, ref) => {
                   <>
                     {ownedPlantingCount ? (
                       <>{ownedPlantingCount} yours from the </>
-                    ) : (
-                      null
-                    )}
-                    {`${plantingCount} planting${plantingCount > 1 ? "s" : ''}`}
+                    ) : null}
+                    {`${plantingCount} planting${plantingCount > 1 ? "s" : ""}`}
                   </>
                 }
                 placement="top-end"

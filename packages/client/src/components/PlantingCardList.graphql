@@ -18,8 +18,8 @@ query PlantingCardList($plantingIds: [String!]!) {
     }
     title
     params {
-      clayPercentage,
-      sandPercentage,
+      clayPercentage
+      sandPercentage
     }
     values {
       name

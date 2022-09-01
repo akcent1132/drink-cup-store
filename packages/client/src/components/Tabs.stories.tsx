@@ -21,8 +21,8 @@ const Template: ComponentStory<typeof Tabs> = (args) => {
 export const Default = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
 Default.args = {
-  pages: [ 
-    { label: "Compare", renderPanel: () => <div>Compare</div>},
+  pages: [
+    { label: "Compare", renderPanel: () => <div>Compare</div> },
     { label: "My Data", renderPanel: () => <div>My Data</div> },
   ],
 };

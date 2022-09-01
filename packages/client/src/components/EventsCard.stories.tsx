@@ -10,8 +10,9 @@ export default {
   component: EventsCard,
 } as ComponentMeta<typeof EventsCard>;
 
-
-const Template: ComponentStory<typeof EventsCard> = (args) => <EventsCard {...args} />;
+const Template: ComponentStory<typeof EventsCard> = (args) => (
+  <EventsCard {...args} />
+);
 
 // export const Default = Template.bind({});
 // Default.args = {

@@ -6,8 +6,7 @@ const highlightedFilterId = atom<null | string>({
   default: null,
 });
 
-export const useHighlightedFilterId = () =>
-  useRecoilValue(highlightedFilterId);
+export const useHighlightedFilterId = () => useRecoilValue(highlightedFilterId);
 
 export const useHighlightFilter = () => {
   const set = useSetRecoilState(highlightedFilterId);

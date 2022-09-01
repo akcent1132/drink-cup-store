@@ -11,8 +11,6 @@ export default {
   component: Button,
 } as ComponentMeta<typeof Button>;
 
-
-
 const ButtonWithTheme = withEditableTheme(Button);
 
 const Template: ComponentStory<typeof ButtonWithTheme> = (args) => (

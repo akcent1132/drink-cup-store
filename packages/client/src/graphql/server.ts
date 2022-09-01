@@ -82,7 +82,11 @@ const resolvers: Resolvers = {
     },
     async myFarms(_: any, {}, { authorization }: Context) {
       const connectedFarmIds = await loadConnectedFarmIds(authorization);
-      return connectedFarmIds.map((id) => ({ id, code: genFarmHash(id), plantings: [] }));
+      return connectedFarmIds.map((id) => ({
+        id,
+        code: genFarmHash(id),
+        plantings: [],
+      }));
     },
     async surveyStackGroups(_: any, { userId }, { authorization }: Context) {
       return await loadSurveyStackGroups(userId, authorization);

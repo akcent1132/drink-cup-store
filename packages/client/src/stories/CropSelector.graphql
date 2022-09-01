@@ -1,17 +1,17 @@
 query CropSelector {
-    availableCropTypes {
-        id
-        cropType
-        plantingCount
-    }
+  availableCropTypes {
+    id
+    cropType
+    plantingCount
+  }
 }
 
 query CropSelectorSlow($userId: String) {
-    myFarms(userId: $userId) {
-        id
-        plantings {
-            id
-            cropType
-        }
+  myFarms(userId: $userId) {
+    id
+    plantings {
+      id
+      cropType
     }
+  }
 }

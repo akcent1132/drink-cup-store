@@ -46,7 +46,7 @@ export const PlantingCardList = ({
     variables: { plantingIds: openEventCardIds },
   });
   const { plantings } = query.data ?? query.previousData ?? {};
-  console.log({plantings})
+  console.log({ plantings });
   // find out which filter colors should we add to a card
   const filters = useFilters();
   const matchingFilterColorsPerPlanting = useMemo(() => {
@@ -73,12 +73,12 @@ export const PlantingCardList = ({
   return (
     <Events>
       <Backdrop
-      transitionDuration={200}
-      invisible
-        sx={{  zIndex:  3 }}
+        transitionDuration={200}
+        invisible
+        sx={{ zIndex: 3 }}
         open={query.loading}
       >
-        <CircularProgress  />
+        <CircularProgress />
       </Backdrop>
       {/* {(plantings||[]).map((planting, i) => (
         <CardWrapper key={planting.id}>
@@ -94,7 +94,7 @@ export const PlantingCardList = ({
         {({ css }) =>
           !openEventCardIds ? null : (
             <TransitionGroup>
-              {(plantings||[]).map((planting, i) => (
+              {(plantings || []).map((planting, i) => (
                 <CSSTransition
                   key={planting.id}
                   classNames={{
