@@ -128,7 +128,6 @@ export const Dashboard = ({ iframeSrc }: Props) => {
           ]
         : [
             <PlantingCardList
-            
               openEventCardIds={sidePanelContent.plantingIds}
             />,
             `PlantingCards`,
