@@ -1,6 +1,6 @@
-import { defaultTheme as iconEventsBarTheme } from "../components/IconEventsBar";
+import { defaultTheme as iconEventsBarTheme } from "../components/plantingCards/IconEventsBar";
 import { defaultTheme as valueDistributionTheme } from "../components/ValueDistribution";
-import { defaultTheme as eventsCardTheme } from "../components/EventsCard";
+import { defaultTheme as eventsCardTheme } from "../components/plantingCards/PlantingCard";
 import { defaultTheme as valuePopupTheme } from "../components/ValuePopup";
 import { defaultTheme as filterLabelTheme } from "../components/FilterLabel";
 import createTheme from "@mui/material/styles/createTheme";

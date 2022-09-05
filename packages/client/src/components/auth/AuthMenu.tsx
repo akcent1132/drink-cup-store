@@ -1,19 +1,19 @@
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import HelpIcon from "@mui/icons-material/Help";
 import LogoutIcon from "@mui/icons-material/Logout";
-import React, { useCallback, useEffect, useMemo } from "react";
+import Button from "@mui/material/Button";
+import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { useAuth, useLogout } from "../../states/auth";
-import ListItemText from "@mui/material/ListItemText";
-import Divider from "@mui/material/Divider";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import { useSetIsAuthDialogOpen } from "../../states/ui";
-import { useStartTour } from "../../states/tour";
-import Tooltip from "@mui/material/Tooltip";
 import Stack from "@mui/material/Stack";
-import Button from "@mui/material/Button";
+import Tooltip from "@mui/material/Tooltip";
+import React, { useCallback, useEffect } from "react";
+import { useAuth, useLogout } from "../../states/auth";
+import { useStartTour } from "../../states/tour";
+import { useSetIsAuthDialogOpen } from "../../states/ui";
 
 export const AuthMenu = () => {
   const logout = useLogout();
@@ -63,9 +63,6 @@ export const AuthMenu = () => {
             }}
           >
             <MenuItem>
-              {/* <ListItemIcon>
-          <Cloud fontSize="small" />
-        </ListItemIcon> */}
               <ListItemText>{auth.user.email}</ListItemText>
             </MenuItem>
             <Divider />

@@ -8,7 +8,6 @@ import { scaleLinear } from "d3-scale";
 import { groupBy, range, sortBy } from "lodash";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import tinycolor from "tinycolor2";
-import "../index.css";
 import {
   useHighlightPlanting,
   useUnhighlightPlanting,

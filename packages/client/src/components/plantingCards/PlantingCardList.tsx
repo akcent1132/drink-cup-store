@@ -1,16 +1,15 @@
 /** @jsxImportSource @emotion/react */
 
-import styled from "@emotion/styled";
-import "../index.css";
 import { ClassNames } from "@emotion/react";
-import { CSSTransition, TransitionGroup } from "react-transition-group";
-import React, { useEffect, useMemo, useState } from "react";
-import { EventsCard } from "./EventsCard";
-import { usePlantingCardListQuery } from "./PlantingCardList.generated";
+import styled from "@emotion/styled";
+import { Backdrop, CircularProgress } from "@mui/material";
 import { extent } from "d3-array";
-import { useFilters } from "../states/filters";
-import { getPlantingIdsOfFilter } from "../utils/getPlantingsOfFilter";
-import { Backdrop, CircularProgress, LinearProgress } from "@mui/material";
+import { useMemo } from "react";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
+import { useFilters } from "../../states/filters";
+import { getPlantingIdsOfFilter } from "../../utils/getPlantingsOfFilter";
+import { PlantingCard } from "./PlantingCard";
+import { usePlantingCardListQuery } from "./PlantingCardList.generated";
 
 const Events = styled.div`
   display: flex;
@@ -115,7 +114,7 @@ export const PlantingCardList = ({
                   timeout={600}
                 >
                   <CardWrapper>
-                    <EventsCard
+                    <PlantingCard
                       planting={planting}
                       minEventDate={minDate}
                       maxEventDate={maxDate}

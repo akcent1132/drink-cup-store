@@ -1,6 +1,5 @@
 import { withTheme } from "@emotion/react";
 import styled from "@emotion/styled";
-import "../index.css";
 
 export const defaultTheme = {
   borderColor: "rgba(255,255,255,.4)",

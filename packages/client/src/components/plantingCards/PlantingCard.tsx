@@ -12,17 +12,16 @@ import Tooltip from "@mui/material/Tooltip";
 import { isNil } from "lodash";
 import { useCallback, useMemo } from "react";
 import tinycolor from "tinycolor2";
-import "../index.css";
 import {
   useHighlightedPlantingId,
   useHighlightPlanting,
   useUnhighlightPlanting,
-} from "../states/highlightedPlantingId";
+} from "../../states/highlightedPlantingId";
 import {
   useRemovePlantingCard,
   useShowProfile,
-} from "../states/sidePanelContent";
-import { climateRegionToLongName } from "../utils/abbreviations";
+} from "../../states/sidePanelContent";
+import { climateRegionToLongName } from "../../utils/abbreviations";
 import { IconEventsBar } from "./IconEventsBar";
 import { PlantingCardListQuery } from "./PlantingCardList.generated";
 
@@ -154,7 +153,7 @@ interface Props {
   colors?: string[];
 }
 
-export const EventsCard = ({
+export const PlantingCard = ({
   planting,
   hideName = false,
   hideColorBorder = false,

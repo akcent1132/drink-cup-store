@@ -1,5 +1,6 @@
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import MarkunreadMailboxIcon from "@mui/icons-material/MarkunreadMailbox";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Dialog } from "@mui/material";
 import Alert from "@mui/material/Alert";
@@ -14,7 +15,6 @@ import { useCallback, useState } from "react";
 import { useAuth, useLogin } from "../../states/auth";
 import { useIsAuthDialogOpen, useSetIsAuthDialogOpen } from "../../states/ui";
 import { useRequestMagicLoginLinkMutation } from "./LoginDialog.generated";
-import MarkunreadMailboxIcon from "@mui/icons-material/MarkunreadMailbox";
 
 enum AuthMethod {
   Password,
@@ -191,20 +191,22 @@ export const LoginDialog = () => {
 
           {error ? <Alert severity="error">{error}</Alert> : null}
           {/* turn off until https://gitlab.com/our-sci/software/surveystack/-/merge_requests/178 merged */}
-          {false && <Button
-            variant="text"
-            onClick={() =>
-              setAuthMethod(
-                authMethod === AuthMethod.Password
-                  ? AuthMethod.MagicLink
-                  : AuthMethod.Password
-              )
-            }
-          >
-            {authMethod === AuthMethod.Password
-              ? "email me a sign in link instead"
-              : "sign in with password instead"}
-          </Button>}
+          {false && (
+            <Button
+              variant="text"
+              onClick={() =>
+                setAuthMethod(
+                  authMethod === AuthMethod.Password
+                    ? AuthMethod.MagicLink
+                    : AuthMethod.Password
+                )
+              }
+            >
+              {authMethod === AuthMethod.Password
+                ? "email me a sign in link instead"
+                : "sign in with password instead"}
+            </Button>
+          )}
           <Button
             fullWidth
             sx={{ mt: 3, mb: 2 }}

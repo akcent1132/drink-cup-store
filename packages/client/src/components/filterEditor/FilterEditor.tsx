@@ -7,18 +7,19 @@ import TextField from "@mui/material/TextField";
 import React, { useCallback, useMemo } from "react";
 import {
   isOptionFilterParam,
-  isRangeFilterParam, useFilters,
-  useUpdateFilterName
+  isRangeFilterParam,
+  useFilters,
+  useUpdateFilterName,
 } from "../../states/filters";
 import { useSelectedCropType } from "../../states/selectedCropType";
-import { Spacer } from "../EventsCard";
+import { Spacer } from "../plantingCards/PlantingCard";
 import { useFilterEditorQuery } from "./FilterEditor.generated";
 import { FilterMenu } from "./FilterMenu";
 import { FilterParamSelector } from "./FilterParamSelector";
 import {
   getFilterables,
   isNumericFilterable,
-  isOptionFilterable
+  isOptionFilterable,
 } from "./getFilterables";
 import { InputActionsWrap } from "./InputActionsWrap";
 import { RangeSlider } from "./RangeSlider";
@@ -77,15 +78,16 @@ export const FilterEditor = ({ selectedFilterId }: Props) => {
     [selectedFilterId, filters]
   );
   const updateFilterName = useUpdateFilterName();
-  const { plantings } = useFilterEditorQuery({
-    variables: { cropType: selectedCropType },
-  }).data || {};
+  const { plantings } =
+    useFilterEditorQuery({
+      variables: { cropType: selectedCropType },
+    }).data || {};
 
   const filterables = useMemo(
     () => getFilterables(plantings || []),
     [plantings && plantings.map((p) => p.id).join()]
   );
-  
+
   const updateName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) =>
       filter && updateFilterName(filter.id, event.target.value),

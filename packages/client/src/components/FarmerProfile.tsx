@@ -12,9 +12,8 @@ import Tooltip from "@mui/material/Tooltip";
 import { sortBy, take } from "lodash";
 import { useCallback, useState } from "react";
 import useCopy from "use-copy";
-import "../index.css";
 import { useShowPlantingCards } from "../states/sidePanelContent";
-import { EventsCard, Spacer } from "./EventsCard";
+import { PlantingCard, Spacer } from "./plantingCards/PlantingCard";
 import { useFarmerProfileQuery } from "./FarmerProfile.generated";
 import { IconButton } from "./filterEditor/FilterEditor";
 import { Tabs } from "./Tabs";
@@ -141,7 +140,7 @@ export const FarmerProfile = ({ producerId }: Props) => {
                       ).reverse(),
                       5
                     ).map((p) => (
-                      <EventsCard
+                      <PlantingCard
                         key={p.id}
                         planting={p}
                         hideName

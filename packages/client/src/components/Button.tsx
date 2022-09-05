@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { withTheme } from "@emotion/react";
-import "../index.css";
 import tinycolor from "tinycolor2";
 // TODO read height from props
 

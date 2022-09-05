@@ -1,11 +1,10 @@
 /** @jsxImportSource @emotion/react */
 
-import { ComponentProps } from "react";
-import styled from "@emotion/styled";
-import "../index.css";
-import { Button } from "./Button";
 import { css, useTheme, withTheme } from "@emotion/react";
+import styled from "@emotion/styled";
+import { ComponentProps } from "react";
 import tinycolor from "tinycolor2";
+import { Button } from "./Button";
 // TODO read height from props
 
 const BG_COLOR = "#4B5F25";
@@ -39,25 +38,27 @@ const Tab = (props: { active: boolean } & ComponentProps<typeof Button>) => {
     <Button
       {...{ ...buttonProps, color }}
       css={css`
-        height-100%;
+        height: 100%;
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
         border: ${active ? 1 : 0}px solid ${colors.divider};
         border-bottom: none;
-        ${
-          active
-            ? `box-shadow: 0px 1px 0px 0px ${colors.bgTab}; z-index: 1;`
-            : ""
-        }
+        ${active
+          ? `box-shadow: 0px 1px 0px 0px ${colors.bgTab}; z-index: 1;`
+          : ""}
         :hover {
-          background: linear-gradient(to bottom, ${tinycolor(color)
-            .lighten(7)
-            .toString()}, ${color} );
+          background: linear-gradient(
+            to bottom,
+            ${tinycolor(color).lighten(7).toString()},
+            ${color}
+          );
         }
         :active {
-          background: linear-gradient(to bottom, ${tinycolor(color)
-            .lighten(10)
-            .toString()}, ${color} );
+          background: linear-gradient(
+            to bottom,
+            ${tinycolor(color).lighten(10).toString()},
+            ${color}
+          );
         }
       `}
     />

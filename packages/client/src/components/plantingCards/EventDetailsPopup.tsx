@@ -17,8 +17,7 @@ import Typography from "@mui/material/Typography";
 import { keyBy, mapValues } from "lodash";
 import React, { useCallback } from "react";
 import useCopy from "use-copy";
-import "../index.css";
-import { PopDialog } from "../states/PopDialog";
+import { PopDialog } from "../../states/PopDialog";
 import { getEventIcon } from "./IconEventsBar";
 import { PlantingCardListQuery } from "./PlantingCardList.generated";
 

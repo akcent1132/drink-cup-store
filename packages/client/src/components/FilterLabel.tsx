@@ -2,7 +2,6 @@ import Button from "@mui/material/Button";
 import createTheme from "@mui/material/styles/createTheme";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
 import { useCallback, useMemo } from "react";
-import "../index.css";
 import {
   useHighlightFilter,
   useUnhighlightFilter,
