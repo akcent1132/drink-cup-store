@@ -111,16 +111,5 @@ export const CropSelector = React.forwardRef<HTMLDivElement>((_, ref) => {
         </Select>
       </FormControl>
     </div>
-    // <Select
-    //   css={css`
-    //     height: 0px;
-    //   `}
-    //   placeholder="Select a crop"
-    //   value={value}
-    //   valueKey={{ key: "value", reduce: true }}
-    //   labelKey="label"
-    //   options={options}
-    //   onChange={({ value }) => setSelectedCropType(value)}
-    // />
   );
 });

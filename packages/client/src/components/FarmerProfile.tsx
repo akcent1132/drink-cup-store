@@ -58,12 +58,11 @@ const CardContainer = styled.div`
   padding-top: 20px;
 `;
 
-const LOREM =
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec non congue ex, ac tempus eros. Pellentesque varius finibus velit, in auctor sem tristique eu. Sed blandit luctus blandit. In sollicitudin malesuada ullamcorper. Pellentesque porttitor, lectus id auctor fermentum, leo neque pulvinar ipsum, vel sagittis ipsum eros non nisi.";
-
 const EMAIL = "684c9b3930413fdab7c6425ec01c878d@comm.surveystack.org";
+
 type Props = { producerId: string };
 export const FarmerProfile = ({ producerId }: Props) => {
+  const showContactButton = false;
   const { producer } =
     useFarmerProfileQuery({
       variables: { producerId },
@@ -100,16 +99,17 @@ export const FarmerProfile = ({ producerId }: Props) => {
                       : producer.code}
                   </Name>
                 </NameContainer>
-
-                <Tooltip title={copied ? "Copied" : "Copy Email"}>
-                  <Button
-                    size="small"
-                    onClick={copyData}
-                    sx={{ alignSelf: "flex-end" }}
-                  >
-                    Contact {copied ? <CheckIcon /> : <CopyAllIcon />}
-                  </Button>
-                </Tooltip>
+                {showContactButton ? (
+                  <Tooltip title={copied ? "Copied" : "Copy Email"}>
+                    <Button
+                      size="small"
+                      onClick={copyData}
+                      sx={{ alignSelf: "flex-end" }}
+                    >
+                      Contact {copied ? <CheckIcon /> : <CopyAllIcon />}
+                    </Button>
+                  </Tooltip>
+                ) : null}
 
                 <Spacer />
                 <IconButton
