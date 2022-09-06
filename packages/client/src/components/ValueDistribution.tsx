@@ -369,7 +369,7 @@ export const ValueDistribution = React.forwardRef<HTMLDivElement, Props>(
       }
 
       // Draw mean
-      if (isHoveringRow && allValues.length > 0) {
+      if (allValues.length > 0) {
         ctx.beginPath();
         ctx.fillStyle = theme.color("red");
         ctx.rect(
