@@ -11,8 +11,6 @@ const Root = withTheme(styled.button<{ color: string }>`
   overflow: hidden;
   text-transform: none;
   -webkit-appearance: button;
-
-  height: 100%;
   border-radius: 15px;
   height: 30px;
   line-height: 31px;
