@@ -1,13 +1,9 @@
-import { isNil, isObject, toString } from "lodash";
+import { isNil, isObject } from "lodash";
 import pMemoize from "p-memoize";
 import { z } from "zod";
 import { surveyStackApiUrl } from "../../utils/env";
+import { formatValue } from "../../utils/format";
 import { PlantingEventDetail } from "../resolvers.generated";
-
-const formatValue = (value: any) =>
-  isObject(value)
-    ? JSON.stringify(value, null, 2)
-    : toString(value).replaceAll("_", " ").trim();
 
 const notesSchema = z.object({ Notes: z.object({ value: z.string() }) });
 

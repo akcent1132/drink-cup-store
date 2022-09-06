@@ -1,3 +1,4 @@
+import { formatValue } from "../../utils/format";
 import { convertEventDetails } from "./farmEvents";
 
 describe("remove empty values", () => {
@@ -65,7 +66,7 @@ describe("parse Notes", () => {
       expected: [
         {
           name: "Notes",
-          value: JSON.stringify({ format: '{"format":"default"}' }, null, 2),
+          value: formatValue({ format: '{"format":"default"}' }),
         },
       ],
     },
@@ -75,11 +76,9 @@ describe("parse Notes", () => {
       expected: [
         {
           name: "Notes",
-          value: JSON.stringify(
-            { value: '{""""""""class":"synth_pre_emergent"}' },
-            null,
-            2
-          ),
+          value: formatValue({
+            value: '{""""""""class":"synth_pre_emergent"}',
+          }),
         },
       ],
     },
