@@ -14,8 +14,8 @@ import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import { keyBy, mapValues } from "lodash";
-import React, { useCallback } from "react";
+import { isNil, remove, sortBy } from "lodash";
+import React, { useCallback, useMemo } from "react";
 import useCopy from "use-copy";
 import { PopDialog } from "../../states/PopDialog";
 import { getEventIcon } from "./IconEventsBar";
@@ -56,8 +56,8 @@ interface Props {
 }
 
 export const EventDetailsPopup: React.FC<Props> = ({
-  title,
   date,
+  title,
   x,
   y,
   onClose,
@@ -67,13 +67,31 @@ export const EventDetailsPopup: React.FC<Props> = ({
   eventDetails,
 }) => {
   const theme = useTheme();
-  const data = mapValues(
-    keyBy(eventDetails, "name"),
-    (d) => d.value || d.valueList || "N/A"
-  );
+  const [details, name] = useMemo(() => {
+    const detailsLeft = [...(eventDetails || [])];
+    const name = detailsLeft.find(
+      (detail) => detail.name.toLowerCase() === "name"
+    );
+    // Hide drupal_uid for now, later we might use it to generate direct link the the FarmOS page
+    const blacklist = ["drupal_uid", "name", "date"];
+    remove(detailsLeft, (detail) =>
+      blacklist.includes(detail.name.toLowerCase())
+    );
+    // Remove empty details
+    remove(
+      detailsLeft,
+      (detail) => isNil(detail.value) && isNil(detail.valueList)
+    );
+    // Make sure class comes first
+    const details = sortBy(detailsLeft, [
+      (detail) => (["class"].includes(detail.name.toLowerCase()) ? -1 : 0),
+      (detail) => detail.name,
+    ]);
+    return [details, name];
+  }, [eventDetails]);
 
   const [copied, copy, setCopied] = useCopy(
-    JSON.stringify({ title, date, debugInfo, ...data }, null, 2)
+    JSON.stringify({ title, date, debugInfo, ...details }, null, 2)
   );
 
   const copyData = useCallback(() => {
@@ -97,23 +115,29 @@ export const EventDetailsPopup: React.FC<Props> = ({
             <Typography variant="h5" component="div">
               {title}
             </Typography>
+
+            {name?.value ? (
+              <Typography color="primary">{name.value}</Typography>
+            ) : null}
             <Typography color="text.secondary">{date}</Typography>
           </Box>
           <Box sx={{ flexGrow: 1 }} />
-          <Icon
-            width="42px"
-            height="42px"
-            color="white"
-            style={{ fill: theme.palette.primary.main }}
-          />
+          <Box sx={{ ml: 2, mt: 1, alignSelf: "flex-start" }}>
+            <Icon
+              width="42px"
+              height="42px"
+              color="white"
+              style={{ fill: theme.palette.primary.main }}
+            />
+          </Box>
         </Box>
 
         {eventDetails ? (
           <Table size="small" sx={{ mt: 2 }}>
             <TableBody>
-              {Object.entries(data || {}).map(([key, value]) => (
+              {details.map((detail) => (
                 <TableRow
-                  key={key}
+                  key={detail.name}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell
@@ -121,17 +145,17 @@ export const EventDetailsPopup: React.FC<Props> = ({
                     scope="row"
                     sx={{ whiteSpace: "nowrap" }}
                   >
-                    {key}
+                    {detail.name}
                   </TableCell>
                   <TableCell align="right">
-                    {Array.isArray(value) ? (
+                    {detail.valueList ? (
                       <Stack direction="row" flexWrap="wrap" gap={1}>
-                        {value.map((v, i) => (
+                        {detail.valueList.map((v, i) => (
                           <Chip label={v} key={i} size="small" />
                         ))}
                       </Stack>
                     ) : (
-                      value
+                      detail.value
                     )}
                   </TableCell>
                 </TableRow>

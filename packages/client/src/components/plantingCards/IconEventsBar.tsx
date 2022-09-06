@@ -17,6 +17,7 @@ import { ReactComponent as IconJoker } from "../../assets/foodIcons/noun-indigen
 import { ReactComponent as IconSeeding } from "../../assets/foodIcons/noun-seeds-4475904.svg";
 import { ReactComponent as IconTillage } from "../../assets/foodIcons/noun-till-amount-4475900.svg";
 import { ReactComponent as IconIrrigation } from "../../assets/foodIcons/noun-water-drop-4476116.svg";
+import { surveyStackApiUrl } from "../../utils/env";
 import { useXOverlap } from "../../utils/useOverlap";
 import { EventDetailsPopup } from "./EventDetailsPopup";
 import { PlantingCardListQuery } from "./PlantingCardList.generated";
@@ -385,7 +386,12 @@ export const IconEventsBar = (props: Props) => {
               onMouseEnter={(e) => popupEvent && setHoveredCard(popupEvent)}
               onMouseLeave={(e) => setHoveredCard(null)}
               onClose={eventClickOut}
-              debugInfo={popupEvent}
+              debugInfo={{
+                detailsSource: surveyStackApiUrl(
+                  `static/coffeeshop/events_new/${popupEvent.id}`
+                ),
+                ...popupEvent,
+              }}
             />
           ) : null}
         </div>

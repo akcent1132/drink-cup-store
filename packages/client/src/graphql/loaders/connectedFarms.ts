@@ -1,6 +1,6 @@
 import { GraphQLError } from "graphql";
 import pMemoize from "p-memoize";
-import { z, ZodType, ZodTypeAny } from "zod";
+import { z } from "zod";
 import { surveyStackApiUrl } from "../../utils/env";
 import { parseZod } from "../utils";
 
@@ -18,6 +18,7 @@ export const loadConnectedFarmIds = pMemoize(async (authorization) => {
   if (!authorization) {
     return [];
   }
+
   const data = await fetch(surveyStackApiUrl("api/farmos/farms"), {
     headers: {
       Authorization: authorization,
