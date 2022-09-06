@@ -44,6 +44,7 @@ const BLACKLIST = [
 
 const FORCE_OPTION_TYPE = ["location_postal_code"];
 
+// TODO add tests
 export const getFilterables = (
   plantings: FilterEditorQuery["plantings"]
 ): Filterable[] => {
@@ -64,7 +65,9 @@ export const getFilterables = (
         acc[value.name].values.push(value.value);
         return acc;
       }, {} as { [key: string]: FilterableNumeric })
-  ).map((filterable) => ({ ...filterable, values: uniq(filterable.values) }));
+  )
+    .map((filterable) => ({ ...filterable, values: uniq(filterable.values) }))
+    .filter((filterable) => filterable.values.length > 2);
 
   const isSomething = <T>(x: T | null | undefined): x is T =>
     x !== undefined && x !== null;
