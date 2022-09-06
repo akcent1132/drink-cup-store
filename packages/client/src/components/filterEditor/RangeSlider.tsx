@@ -9,9 +9,9 @@ import {
 import { FilterableNumeric } from "./getFilterables";
 import { styled } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
-import { prettyKey } from "./prettyKey";
 import { sortBy } from "lodash";
 import Box from "@mui/material/Box";
+import { prettyKey } from "../../utils/format";
 
 const TickedSlider = styled(Slider)({
   "& .MuiSlider-mark": {

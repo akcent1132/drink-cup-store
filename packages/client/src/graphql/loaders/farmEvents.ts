@@ -2,7 +2,7 @@ import { isNil, isObject } from "lodash";
 import pMemoize from "p-memoize";
 import { z } from "zod";
 import { surveyStackApiUrl } from "../../utils/env";
-import { formatValue } from "../../utils/format";
+import { formatValue, prettyKey } from "../../utils/format";
 import { PlantingEventDetail } from "../resolvers.generated";
 
 const notesSchema = z.object({ Notes: z.object({ value: z.string() }) });
@@ -51,7 +51,7 @@ export const convertEventDetails = (
           ? value.map((v) => formatValue(v))
           : null,
         value: Array.isArray(value) ? null : formatValue(value),
-        name: formatValue(key),
+        name: prettyKey(key),
       }))
       // Convert quantities
       .map((detail) => {
@@ -61,8 +61,8 @@ export const convertEventDetails = (
           rxQuantityValue.test(detail.value)
         ) {
           let [_, name, value] = detail.value.match(rxQuantityValue)!;
-          name = name.trim();
-          value = value.trim();
+          name = prettyKey(name);
+          value = formatValue(value);
           return value && name ? { ...detail, name, value } : detail;
         }
         return detail;

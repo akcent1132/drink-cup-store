@@ -11,10 +11,10 @@ import {
   FilterParam,
   FilterParamDataSource,
   useAddFilterParam,
-  useRemoveFilterParam
+  useRemoveFilterParam,
 } from "../../states/filters";
+import { prettyKey } from "../../utils/format";
 import { Filterable } from "./getFilterables";
-import { prettyKey } from "./prettyKey";
 
 type Props = {
   filterables: Filterable[];
@@ -98,7 +98,7 @@ export const FilterParamSelector = ({
           ? "Farm Onboarding Data"
           : "Statistical Data"
       }
-      getOptionLabel={(option) => option.key}
+      getOptionLabel={(option) => prettyKey(option.key)}
       renderOption={(liProps, option) => (
         <MenuItem key={option.key} {...liProps}>
           <ListItemText>{prettyKey(option.key)}</ListItemText>

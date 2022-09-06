@@ -6,11 +6,12 @@ import { useCallback, useMemo } from "react";
 import {
   FilterParam,
   FilterValueOption,
-  useEditFilterParam
+  useEditFilterParam,
 } from "../../states/filters";
 
 import styled from "@mui/material/styles/styled";
 import { FilterableOption } from "./getFilterables";
+import { formatValue, prettyKey } from "../../utils/format";
 
 const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -62,9 +63,9 @@ export const TagSelect = ({
       onChange={handleChange}
       options={options}
       value={param.value.options}
-      getOptionLabel={(option) => option}
-      disableCloseOnSelect   
-      disableClearable   
+      getOptionLabel={(option) => formatValue(option)}
+      disableCloseOnSelect
+      disableClearable
       renderOption={(props, option, { selected }) => (
         <li {...props}>
           <StyledBadge
@@ -72,7 +73,7 @@ export const TagSelect = ({
             color="secondary"
             showZero
           >
-            {option}
+            {formatValue(option)}
           </StyledBadge>
         </li>
       )}
@@ -80,7 +81,7 @@ export const TagSelect = ({
         <TextField
           {...params}
           variant="outlined"
-          label={param.key}
+          label={prettyKey(param.key)}
         />
       )}
     />
