@@ -1,6 +1,6 @@
 import "@emotion/react";
 import { defaultTheme as iconEventsBarTheme } from "../components/IconEventsBar";
-import { defaultTheme as valueDistributionTheme } from "../components/ValueDistribution";
+import { defaultTheme as valueDistributionTheme } from "../components/compareTab/ValueDistribution";
 import { defaultTheme as eventsCardTheme } from "../components/plantingCards/PlantingCard";
 import { defaultTheme as valuePopupTheme } from "../components/ValuePopup";
 import { defaultTheme as valfilterLabelThemeuePopupTheme } from "../components/FilterLabel";

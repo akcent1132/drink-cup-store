@@ -1,9 +1,8 @@
-import React from "react";
-import { App } from "./stories/Dashboard";
-import { Global, css } from "@emotion/react";
-import { ThemeProvider } from "@mui/material/styles";
-import { theme } from "./theme/theme";
+import { css, Global } from "@emotion/react";
 import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider } from "@mui/material/styles";
+import { App } from "./components/Dashboard";
+import { theme } from "./theme/theme";
 
 function Main() {
   return (

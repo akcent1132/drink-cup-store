@@ -9,11 +9,11 @@ import { styled } from "@mui/material/styles";
 import Tooltip from "@mui/material/Tooltip";
 import { sortBy, startCase } from "lodash";
 import React, { useMemo } from "react";
-import { useAuth } from "../states/auth";
+import { useAuth } from "../../states/auth";
 import {
   useSelectedCropType,
   useSetSelectedCropType,
-} from "../states/selectedCropType";
+} from "../../states/selectedCropType";
 import {
   useCropSelectorQuery,
   useCropSelectorSlowQuery,

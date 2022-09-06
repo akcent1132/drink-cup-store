@@ -19,7 +19,7 @@ import { FarmerProfile } from "../components/FarmerProfile";
 import { FilterEditor } from "../components/filterEditor/FilterEditor";
 import { Notifications } from "../components/Notifications";
 import { PlantingCardList } from "../components/plantingCards/PlantingCardList";
-import { Tabs } from "../components/Tabs";
+import { Tabs } from "../components/tabs/Tabs";
 import { client } from "../graphql/client";
 import {
   useIsLoadingInitialUserData,

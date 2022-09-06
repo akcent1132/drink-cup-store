@@ -1,10 +1,8 @@
+import { ComponentMeta, ComponentStory } from "@storybook/react";
 import React, { useCallback, useState } from "react";
-import { ComponentStory, ComponentMeta } from "@storybook/react";
 
+import { withEditableTheme } from "../../../theme/withEditableTheme";
 import { ValuePopup } from "./ValuePopup";
-import { theme } from "../theme/theme";
-import { withEditableTheme } from "../theme/withEditableTheme";
-import { number } from "@storybook/addon-knobs";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {

@@ -67,7 +67,6 @@ export const RangeSlider = ({
     [intMode]
   );
   const step = intMode ? 1 : 0.01;
-  console.log({ allValues });
   const marks = useMemo(
     () =>
       allValues.map((value, i) =>

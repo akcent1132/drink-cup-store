@@ -2,11 +2,11 @@ import styled from "@emotion/styled";
 import { useFilters } from "../../states/filters";
 import { Stop } from "../../states/tour";
 import { TourStop } from "../../states/TourStop";
-import { CropSelector } from "../../stories/CropSelector";
-import { NestedRows } from "../../stories/NestedRows";
 import { Spacer } from "../plantingCards/PlantingCard";
 import { FilterLabel } from "../FilterLabel";
 import { AddFilterButton } from "./AddFilterButton";
+import { CropSelector } from "./CropSelector";
+import { NestedRows } from "./valueRows/NestedRows";
 
 const PaneHead = styled.div`
   display: flex;

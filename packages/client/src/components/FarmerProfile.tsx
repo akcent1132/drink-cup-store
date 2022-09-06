@@ -16,7 +16,7 @@ import { useShowPlantingCards } from "../states/sidePanelContent";
 import { PlantingCard, Spacer } from "./plantingCards/PlantingCard";
 import { useFarmerProfileQuery } from "./FarmerProfile.generated";
 import { IconButton } from "./filterEditor/FilterEditor";
-import { Tabs } from "./Tabs";
+import { Tabs } from "./tabs/Tabs";
 
 const LS_SHOW_PRODUCER_NAME = "show-producer-name";
 

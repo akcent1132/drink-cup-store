@@ -11,12 +11,12 @@ import tinycolor from "tinycolor2";
 import {
   useHighlightPlanting,
   useUnhighlightPlanting,
-} from "../states/highlightedPlantingId";
+} from "../../../states/highlightedPlantingId";
 import {
   useAddPlantingCard,
   useShowPlantingCards,
-} from "../states/sidePanelContent";
-import { useCanvas } from "../utils/useCanvas";
+} from "../../../states/sidePanelContent";
+import { useCanvas } from "../../../utils/useCanvas";
 import { ValuePopup } from "./ValuePopup";
 
 export const defaultTheme = {

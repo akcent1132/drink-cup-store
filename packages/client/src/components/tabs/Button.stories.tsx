@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 
 import { Button } from "./Button";
-import { theme } from "../theme/theme";
-import { withEditableTheme } from "../theme/withEditableTheme";
+import { theme } from "../../theme/theme";
+import { withEditableTheme } from "../../theme/withEditableTheme";
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {

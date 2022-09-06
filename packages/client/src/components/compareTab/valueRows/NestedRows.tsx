@@ -1,20 +1,19 @@
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import LinearProgress from "@mui/material/LinearProgress";
-import Typography from "@mui/material/Typography";
 import { findLastIndex, last, sortBy } from "lodash";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { ValueDistribution } from "../components/ValueDistribution";
-import { covertNormalizedRows, RowData } from "../contexts/rows";
-import { Filter } from "../states/filters";
-import { useHighlightedFilterId } from "../states/highlightedFilterId";
-import { useHighlightedPlantingId } from "../states/highlightedPlantingId";
-import { useSelectedCropType } from "../states/selectedCropType";
-import { Stop } from "../states/tour";
-import { TourStop } from "../states/TourStop";
-import { getPlantingIdsOfFilter } from "../utils/getPlantingsOfFilter";
-import { isNonNull } from "../utils/ts";
+import { useCallback, useMemo, useState } from "react";
+import { covertNormalizedRows, RowData } from "../../../utils/rows";
+import { Filter } from "../../../states/filters";
+import { useHighlightedFilterId } from "../../../states/highlightedFilterId";
+import { useHighlightedPlantingId } from "../../../states/highlightedPlantingId";
+import { useSelectedCropType } from "../../../states/selectedCropType";
+import { Stop } from "../../../states/tour";
+import { TourStop } from "../../../states/TourStop";
+import { getPlantingIdsOfFilter } from "../../../utils/getPlantingsOfFilter";
+import { isNonNull } from "../../../utils/ts";
 import { NestedRowsQuery, useNestedRowsQuery } from "./NestedRows.generated";
+import { ValueDistribution } from "./ValueDistribution";
 
 const getLabeledValues = (
   filters: Filter[],
