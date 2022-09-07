@@ -77,7 +77,8 @@ export const useLogin = () => {
   const setupUi = useSetupUIToShowRelevantInfoToUser();
   const setAuth = useSetRecoilState(auth);
   const login = useCallback(
-    async (email: string, password: string) => {
+    async (email: string, password: string): Promise<boolean> => {
+      setAuth((prev) => ({ ...prev, error: null }));
       const { data, errors } = await loginMutation({
         variables: { email, password },
       });
@@ -96,6 +97,7 @@ export const useLogin = () => {
               user: login.user,
             });
             setupUi();
+            return true;
           } else {
             setAuth({
               isAuthenticated: false,
@@ -109,9 +111,12 @@ export const useLogin = () => {
           });
         }
       }
+
+      return false;
     },
-    [loginMutation]
+    [loginMutation, setAuth, setupUi],
   );
+
   return { login, isLoginInProgress: mutationState.loading };
 };
 
@@ -120,7 +125,7 @@ export const useSetupUIToShowRelevantInfoToUser = () => {
   const addFilter = useAddFilter();
   const setSelectedCropType = useSetSelectedCropType();
   const setIsLoadingInitialUserData = useSetRecoilState(
-    isLoadingInitialUserData
+    isLoadingInitialUserData,
   );
   const auth = useAuth();
   const filters = useFilters();
@@ -143,7 +148,7 @@ export const useSetupUIToShowRelevantInfoToUser = () => {
           addFilter({
             name: farmId.split(".")[0],
             params: [createOptionFilterParam("farmDomain", [farmId])],
-          })
+          }),
         );
       const topCrop = chain(farms.data.myFarms)
         .map((farm) => farm?.plantings || [])
@@ -165,7 +170,14 @@ export const useSetupUIToShowRelevantInfoToUser = () => {
         params: [createOptionFilterParam("types", ["directsale_farm"])],
       });
     }
-  }, [auth, filters]);
+  }, [
+    addFilter,
+    apolloClient,
+    auth,
+    filters.length,
+    setIsLoadingInitialUserData,
+    setSelectedCropType,
+  ]);
 };
 
 export const useLogout = () => {
@@ -175,7 +187,7 @@ export const useLogout = () => {
       isAuthenticated: false,
     });
     localStorage.removeItem(STORE_KEY);
-  }, []);
+  }, [setAuth]);
 };
 
 const UserPayload = z.object({
@@ -209,7 +221,7 @@ export const useTryAcceptingMagicLinkLogin = () => {
       // Invalidate magic link
       if (params.has("invalidateMagicLink")) {
         fetch(params.get("invalidateMagicLink")!).catch((e) =>
-          console.warn("Failed to invalidate magic link", e)
+          console.warn("Failed to invalidate magic link", e),
         );
       }
 
@@ -222,8 +234,8 @@ export const useTryAcceptingMagicLinkLogin = () => {
       window.history.pushState(
         null,
         "",
-        window.location.pathname + (search ? `?${search}` : "")
+        window.location.pathname + (search ? `?${search}` : ""),
       );
     }
-  }, []);
+  }, [setAuth, setIsAuthDialogOpen]);
 };
