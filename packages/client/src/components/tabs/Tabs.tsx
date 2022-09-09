@@ -17,7 +17,6 @@ const Root = styled.div`
 `;
 
 const Head = styled.div`
-  height: 39px;
   flex: 0;
   display: flex;
   justify-content: flex-start;
@@ -38,7 +37,6 @@ const Tab = (props: { active: boolean } & ComponentProps<typeof Button>) => {
     <Button
       {...{ ...buttonProps, color }}
       css={css`
-        height: 100%;
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
         border: ${active ? 1 : 0}px solid ${colors.divider};
