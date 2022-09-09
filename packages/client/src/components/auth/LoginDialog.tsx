@@ -41,19 +41,21 @@ export const LoginDialog = () => {
   const close = useCallback(() => {
     setIsAuthDialogOpen(false);
     setShowMagicLinkSent(false);
-  }, []);
+  }, [setIsAuthDialogOpen]);
 
   const handleSubmit = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       const data = new FormData(event.currentTarget);
-      await login(
+      const result = await login(
         data.get("email")?.toString() || "",
-        data.get("password")?.toString() || ""
+        data.get("password")?.toString() || "",
       );
-      close();
+      if (result) {
+        close();
+      }
     },
-    []
+    [close, login],
   );
 
   const handleRequestMagicLoginLink = useCallback(
@@ -71,7 +73,7 @@ export const LoginDialog = () => {
         setShowMagicLinkSent(true);
       }
     },
-    []
+    [requestMagicLoginLink],
   );
 
   // Use `disableScrollLock` because it's applying inline body.styles.overflow style changes
@@ -198,7 +200,7 @@ export const LoginDialog = () => {
                 setAuthMethod(
                   authMethod === AuthMethod.Password
                     ? AuthMethod.MagicLink
-                    : AuthMethod.Password
+                    : AuthMethod.Password,
                 )
               }
             >
