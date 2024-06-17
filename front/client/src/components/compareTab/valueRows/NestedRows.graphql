@@ -1,0 +1,25 @@
+query NestedRows($cropType: String!) {
+  plantings(cropType: $cropType) {
+    id
+    values {
+      name
+      value
+      plantingId
+      modusId
+    }
+    farmOnboarding {
+      id
+      values {
+        key
+        values
+      }
+    }
+  }
+  rows {
+    name
+    hierarchy
+    isAggregatable
+    unit
+    modusTestId
+  }
+}

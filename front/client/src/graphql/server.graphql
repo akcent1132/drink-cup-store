@@ -1,16 +1,69 @@
+<<<<<<< HEAD:front/client/src/graphql/server.graphql
 extend type Query {
   plantings(cropType: String!): [Planting!]!
   allPlantings: [Planting!]!
   planting(id: String!): Planting
 }
+=======
+type Query {
+  plantings(cropType: String!): [Planting!]!
+  allPlantings: [Planting!]!
+  planting(id: String!): Planting
+  plantingsById(ids: [String!]!): [Planting!]!
+  producer(id: String!): Producer
+  producers(ids: [String!]!): [Producer]
+  myFarms(userId: String): [Producer]
+  allFarmOnboardings: [FarmOnboarding!]!
+  availableCropTypes: [AvailableCropType!]!
+  connectedFarmIds: [String]
+  surveyStackGroups(userId: String): [SurveyStackGroup!]
+  rows: [Row]
+}
+
+type Mutation {
+  login(email: String!, password: String!): LoginResponse
+  requestMagicLoginLink(email: String!): RequestMagicLoginLinkResponse
+}
+
+type SurveyStackGroup {
+  id: String!
+  name: String!
+}
+
+type LoginResponse {
+  success: Boolean!
+  user: AuthUser
+  error: String
+}
+
+type RequestMagicLoginLinkResponse {
+  success: Boolean!
+  error: String
+}
+
+type AuthUser {
+  id: String!
+  email: String!
+  name: String
+  token: String!
+  farms: [Producer]
+}
+
+>>>>>>> leftbra:packages/client/src/graphql/server.graphql
 type Planting {
   id: String!
   cropType: String!
   values: [PlantingValue!]!
   title: String!
   producer: Producer!
+<<<<<<< HEAD:front/client/src/graphql/server.graphql
   params: PlantingParams!
   events: [PlantingEvent!]!
+=======
+  params: PlantingParams
+  events: [PlantingEvent!]
+  farmOnboarding: FarmOnboarding
+>>>>>>> leftbra:packages/client/src/graphql/server.graphql
 }
 type PlantingValue {
   name: String!
@@ -19,17 +72,29 @@ type PlantingValue {
   modusId: String
 }
 type PlantingParams {
+<<<<<<< HEAD:front/client/src/graphql/server.graphql
   zone: String!
   temperature: String!
   precipitation: String!
   texture: String!
+=======
+  sandPercentage: Int
+  clayPercentage: Int
+  soilGroup: String
+  soilOrder: String
+  soilSuborder: String
+  soilTexture: Int
+>>>>>>> leftbra:packages/client/src/graphql/server.graphql
 }
 
 type PlantingEvent {
   id: String!
   type: String!
   date: String!
+<<<<<<< HEAD:front/client/src/graphql/server.graphql
   detailsKey: String
+=======
+>>>>>>> leftbra:packages/client/src/graphql/server.graphql
   details: [PlantingEventDetail!]
 }
 
@@ -45,3 +110,35 @@ type Producer {
   code: String!
   plantings: [Planting!]!
 }
+<<<<<<< HEAD:front/client/src/graphql/server.graphql
+=======
+
+type FarmOnboardingValue {
+  key: String!
+  values: [String!]!
+}
+
+type FarmOnboarding {
+  id: String!
+  farmDomain: String
+  climateZone: String
+  hardinessZone: String
+  averageAnnualTemperature: Float
+  averageAnnualRainfall: Float
+  values: [FarmOnboardingValue!]
+}
+
+type AvailableCropType {
+  id: String!
+  cropType: String!
+  plantingCount: Int!
+}
+
+type Row {
+  name: String!
+  hierarchy: [String!]!
+  isAggregatable: Boolean
+  unit: String
+  modusTestId: String
+}
+>>>>>>> leftbra:packages/client/src/graphql/server.graphql

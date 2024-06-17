@@ -1,8 +1,9 @@
-import { defaultTheme as iconEventsBarTheme } from "../components/IconEventsBar";
-import { defaultTheme as valueDistributionTheme } from "../components/ValueDistribution";
-import { defaultTheme as eventsCardTheme } from "../components/EventsCard";
-import { defaultTheme as valuePopupTheme } from "../components/ValuePopup";
+import createTheme from "@mui/material/styles/createTheme";
+import { defaultTheme as valueDistributionTheme } from "../components/compareTab/valueRows/ValueDistribution";
+import { defaultTheme as valuePopupTheme } from "../components/compareTab/valueRows/ValuePopup";
 import { defaultTheme as filterLabelTheme } from "../components/FilterLabel";
+import { defaultTheme as iconEventsBarTheme } from "../components/plantingCards/IconEventsBar";
+import { defaultTheme as eventsCardTheme } from "../components/plantingCards/PlantingCard";
 
 const colors = {
   // purple: "#5d54af",
@@ -14,8 +15,8 @@ const colors = {
   // orange: "#ff8500",
   // red: "#f40000",
   // violet: "#c42687",
-  primary: '#7cb342',
-  secondary: '#ffea00',
+  primary: "#7cb342",
+  secondary: "#ffea00",
   darkTransparent: "rgba(23,23,23,.5)",
   bg: "#181818",
   bgTab: "#212121",
@@ -26,7 +27,7 @@ const colors = {
   treeTitlePrimary: "#444444",
   treeTitleSecondary: "#333333",
   treeBgPrimary: "#444444",
-  treeBgSecondary: "#333333"
+  treeBgSecondary: "#333333",
 };
 
 interface IDictionary {
@@ -39,6 +40,19 @@ const fonts = {
   baseBold: "Acumin Pro Bold",
   baseBoldItalic: "Acumin Pro Bold Italic",
 };
+
+const muiTheme = createTheme({
+  palette: {
+    mode: "dark",
+
+    primary: {
+      main: "#7cb342",
+    },
+    secondary: {
+      main: "#ffea00",
+    },
+  },
+});
 
 export const theme = {
   color(color: string) {
@@ -53,6 +67,7 @@ export const theme = {
   valueDistribution: valueDistributionTheme,
   filterLabel: filterLabelTheme,
   useBackgroundImage: true,
+  ...muiTheme,
 };
 
 export const regularColor = (t: typeof theme, color: string) =>

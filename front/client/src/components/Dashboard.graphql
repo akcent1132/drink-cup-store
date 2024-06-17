@@ -1,0 +1,9 @@
+query PreloadData {
+  allFarmOnboardings {
+    farmDomain
+    values {
+      key
+      values
+    }
+  }
+}

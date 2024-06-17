@@ -1,32 +1,16 @@
-import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
-import { get, remove } from "lodash";
 import {
-  eventDetailsMap,
-  farmProfiles,
-  filters,
-  highlightedFilterId,
-  highlightedPlantingId,
-  isDemo,
-  loadEventDetails,
-  openEventCardIds,
-  plantings,
-  producers,
-  selectedCropType,
-  selectedFilterId,
-  selectedProducerId,
-} from "../contexts/FiltersContext";
-import { loader } from "graphql.macro";
-import {
-  FilterParam,
-  FilterParamDataSource,
-  Planting,
-  Producer,
-  StrictTypedTypePolicies,
-} from "../graphql.generated";
-import seedrandom from "seedrandom";
-import { authState } from "./auth";
-import "./server"
+  ApolloClient,
+  InMemoryCache,
+  ApolloLink,
+  HttpLink,
+} from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
+import { onError } from "@apollo/client/link/error";
+import { readUserFromStore } from "../states/auth";
+import "./server";
+import { addErrorNotification } from "../states/ui";
 
+<<<<<<< HEAD:front/client/src/graphql/client.ts
 const typeDefs = loader("./local.graphql");
 
 const getPlantings = (cropType: string) => {
@@ -225,101 +209,47 @@ const typePolicies: StrictTypedTypePolicies = {
         const id = selectedProducerId();
         return producers().find((p) => p.id === id) || null;
       },
+=======
+const authLink = setContext((_, { headers }) => {
+  const user = readUserFromStore();
+  return {
+    headers: {
+      ...headers,
+      authorization: user ? `${user.email} ${user.token}` : "",
+>>>>>>> leftbra:packages/client/src/graphql/client.ts
     },
-  },
-  Filter: {
-    fields: {
-      plantings: {
-        read(_, { readField }) {
-          const id = readField<string>("id") || "";
-          const cropType = readField<string>("cropType") || "";
-          const params = readField<FilterParam[]>("params") || [];
-          return getPlantingsOfFilter(id, cropType, [...params]);
-        },
-      },
-      isHighlighted: {
-        read(_, { readField }) {
-          const id = readField<string>("id");
-          return id === highlightedFilterId();
-        },
-      },
-    },
-  },
-  Planting: {
-    fields: {
-      matchingFilters: {
-        read(_, { readField }) {
-          const id = readField<string>("id");
-          return filters().filter((filter) =>
-            getPlantingsOfFilter(
-              filter.id,
-              filter.cropType,
-              filter.params
-            ).some((planting) => planting.id === id)
-          );
-        },
-      },
-      isHighlighted: {
-        read(_, { readField }) {
-          const id = readField<string>("id");
-          return id === highlightedPlantingId();
-        },
-      },
-    },
-  },
-  PlantingEvent: {
-    fields: {
-      details: {
-        read(_, { readField }) {
-          if (isDemo()) {
-            return FAKE_PLANTING_DETAILS;
-          }
-          const detailsKey = readField<string | null>("detailsKey");
-          const [producerKey, plantingId] = (detailsKey || "").split("/");
-          loadEventDetails(producerKey, plantingId);
-          // console.log("ED", detailsKey, eventDetailsMap()[detailsKey || ""]);
-          const details = eventDetailsMap[detailsKey || ""];
-          return (details && details()) || null;
-        },
-      },
-    },
-  },
-  Producer: {
-    fields: {
-      plantings: {
-        read(_, { readField }) {
-          const producerId = readField<string>("id") || "";
-          return plantings().filter((p) => p.producer.id === producerId);
-        },
-      },
-    },
-  },
-};
-
-const FAKE_PLANTING_DETAILS = [
-  { name: "Name", value: "Herbicide Spark 65P 30 liter_acre" },
-  {
-    name: "Notes",
-    value:
-      "Added 300 liters of Spark total but diluted it with extra water for this field.",
-  },
-  { name: "Quantity 1", value: "Spark 65P (rate) 30 litre_acre" },
-  { name: "Quantity 2", value: "Spark 65P (quantity) 300 litre" },
-  { name: "Material 1", valueList: ["Spark 65P"] },
-  { name: "Flags", value: null, valueList: ["Greenhouse", "Organic"] },
-].map((d) => ({
-  value: null,
-  valueList: null,
-  ...d,
-  __typename: "PlantingEventDetail",
-}));
-
-const cache = new InMemoryCache({
-  // typePolicies,
+  };
 });
+
 export const client = new ApolloClient({
-  cache,
+  cache: new InMemoryCache(),
+  defaultOptions: {
+    query: {
+      errorPolicy: "all",
+    },
+    watchQuery: {
+      errorPolicy: "all",
+    },
+  },
+  link: ApolloLink.from([
+    onError(({ graphQLErrors, networkError }) => {
+      if (networkError) {
+        console.warn(`[Network error]: ${networkError}`);
+      }
+
+      if (graphQLErrors) {
+        graphQLErrors.forEach(({ message, locations, path }) => {
+          console.error(
+            `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+          );
+          addErrorNotification({
+            message: `[GraphQL error]: ${message}, Path: ${path}`,
+          });
+        });
+      }
+    }),
+    authLink,
+    new HttpLink({ uri: "/graphql" }),
+  ]),
   connectToDevTools: true,
-  uri: "/graphql",
-  // typeDefs,
 });

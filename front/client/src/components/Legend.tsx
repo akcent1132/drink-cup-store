@@ -1,8 +1,5 @@
-import React, { useCallback, useEffect, useState } from "react";
-import styled from "@emotion/styled";
 import { withTheme } from "@emotion/react";
-import "../index.css";
-import tinycolor from "tinycolor2";
+import styled from "@emotion/styled";
 // TODO read height from props
 
 const Root = withTheme(styled.div`
@@ -13,10 +10,10 @@ const Root = withTheme(styled.div`
 `);
 
 const ColorDot = withTheme(styled.div<{ color: string }>`
-    background-color: ${(props) => props.theme.color(props.color)};
-    height: 16px;
-    width: 16px;
-    border-radius: 50%;
+  background-color: ${(props) => props.theme.color(props.color)};
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
 `);
 
 const Tag = withTheme(styled.div`
@@ -36,24 +33,26 @@ const Tag = withTheme(styled.div`
 `);
 
 type Entry = {
-    color: string,
-    name: string,
-}
+  color: string;
+  name: string;
+};
 interface Props {
-  entries: Entry[]
-  className?: string
+  entries: Entry[];
+  className?: string;
 }
 
 /**
  * Legend component
  */
-export const Legend = ({
-  entries,
-  className
-}: Props) => {
+export const Legend = ({ entries, className }: Props) => {
   return (
     <Root className={className}>
-      {entries.map((entry, i) => <Tag key={i}><ColorDot color={entry.color} />{entry.name}</Tag>)}
+      {entries.map((entry, i) => (
+        <Tag key={i}>
+          <ColorDot color={entry.color} />
+          {entry.name}
+        </Tag>
+      ))}
     </Root>
   );
 };

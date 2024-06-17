@@ -1,71 +1,97 @@
-import { Box, RangeSelector, Select, Stack, Text } from "grommet";
-import styled from "@emotion/styled";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { format } from "d3-format";
+import Slider from "@mui/material/Slider";
+import {
+  FilterParam,
+  FilterValueRange,
+  useEditFilterParam,
+} from "../../states/filters";
+import { FilterableNumeric } from "./getFilterables";
+import { styled } from "@mui/material/styles";
+import Typography from "@mui/material/Typography";
+import { sortBy } from "lodash";
+import Box from "@mui/material/Box";
+import { prettyKey } from "../../utils/format";
 
-const TickBox = styled.div`
-  width: 100%;
-  height: 16px;
-  position: relative;
-`;
-const Tick = styled.div`
-  width: 1px;
-  height: 100%;
-  position: absolute;
-  background-color: white;
-  top: 0;
-  opacity: 0.4;
-`;
+const TickedSlider = styled(Slider)({
+  "& .MuiSlider-mark": {
+    height: 4,
+    width: 2,
+    opacity: 0.4,
+  },
+});
+
+const Label = styled(Typography)({
+  color: "rgba(255, 255, 255, 0.7)",
+});
 
 export const RangeSlider = ({
-  min,
-  max,
-  value,
-  allValues,
-  onChange,
+  filterable,
+  param,
+  filterId,
 }: {
-  min: number;
-  max: number;
-  value: number[];
-  allValues: number[];
-  onChange: (bounds: number[]) => void;
+  filterable?: FilterableNumeric;
+  param: FilterParam & { value: FilterValueRange };
+  filterId: string;
 }) => {
-  const intMode = useMemo(() => allValues.every(Number.isInteger), [allValues]);
+  const editFilterParam = useEditFilterParam();
+
+  const handleChange = useCallback(
+    (_: any, value: number | number[]) =>
+      Array.isArray(value) &&
+      editFilterParam(filterId, param.key, {
+        min: value[0],
+        max: value[1],
+      }),
+    [filterId, param]
+  );
+
+  const allValues = useMemo(
+    () => sortBy(filterable?.values || []),
+    [filterable?.values]
+  );
+  const intMode = useMemo(
+    () => allValues.length > 0 && allValues.every(Number.isInteger),
+    [allValues]
+  );
+  const min = useMemo(
+    () => Math.min(param.value.min, ...allValues),
+    [allValues]
+  );
+  const max = useMemo(
+    () => Math.max(param.value.max, ...allValues),
+    [allValues]
+  );
   const formatter = useMemo(
     () => (intMode ? format("") : format(".1f")),
     [intMode]
   );
   const step = intMode ? 1 : 0.01;
+  const marks = useMemo(
+    () =>
+      allValues.map((value, i) =>
+        i === 0 || i === allValues.length - 1
+          ? { value, label: formatter(value) }
+          : { value }
+      ),
+    [allValues]
+  );
+
   return (
-    <Box gap="small">
-      <Stack>
-        <TickBox>
-          {allValues.map((v, i) => (
-            <Tick
-              key={i}
-              style={{
-                left: `${((v - min) / (max - min)) * 100}%`,
-              }}
-            />
-          ))}
-        </TickBox>
-        <RangeSelector
-          direction="horizontal"
-          min={min}
-          max={max}
-          step={step}
-          values={value}
-          onChange={(values) => {
-            console.log(values);
-            onChange(values);
-          }}
-        />
-      </Stack>
-      <Box align="center">
-        <Text size="small">{`${formatter(value[0])} - ${formatter(
-          value[1]
-        )}`}</Text>
-      </Box>
+    <Box mx={1}>
+      <Label variant="caption">{prettyKey(param.key)}</Label>
+      <TickedSlider
+        disabled={!filterable}
+        getAriaLabel={() => prettyKey(param.key)}
+        getAriaValueText={formatter}
+        value={[param.value.min, param.value.max]}
+        onChange={handleChange}
+        valueLabelDisplay="auto"
+        step={step}
+        min={min}
+        max={max}
+        marks={marks}
+      />
     </Box>
   );
 };

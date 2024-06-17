@@ -13,75 +13,70 @@ export type Scalars = {
   Float: number;
 };
 
-export type AuthState = {
-  __typename: 'AuthState';
-  isLoggedIn: Scalars['Boolean'];
-  user: Maybe<AuthUser>;
-};
-
 export type AuthUser = {
   __typename: 'AuthUser';
   email: Scalars['String'];
+  farms: Maybe<Array<Maybe<Producer>>>;
   id: Scalars['String'];
-  name: Scalars['String'];
+  name: Maybe<Scalars['String']>;
+  token: Scalars['String'];
 };
 
-export type Filter = {
-  __typename: 'Filter';
-  color: Scalars['String'];
+export type AvailableCropType = {
+  __typename: 'AvailableCropType';
   cropType: Scalars['String'];
   id: Scalars['String'];
-  isHighlighted: Scalars['Boolean'];
-  name: Scalars['String'];
-  params: Array<FilterParam>;
-  plantings: Array<Maybe<Planting>>;
+  plantingCount: Scalars['Int'];
 };
 
-export type FilterParam = {
-  __typename: 'FilterParam';
-  active: Scalars['Boolean'];
-  dataSource: Maybe<FilterParamDataSource>;
-  key: Scalars['String'];
-  modusId: Maybe<Scalars['String']>;
-  value: FilterValue;
-};
-
-export enum FilterParamDataSource {
-  FarmOnboarding = 'FARM_ONBOARDING',
-  Values = 'VALUES'
-}
-
-export type FilterValue = FilterValueOption | FilterValueRange;
-
-export type FilterValueOption = {
-  __typename: 'FilterValueOption';
-  allOptions: Array<Scalars['String']>;
-  occurences: Array<Scalars['Int']>;
-  options: Array<Scalars['String']>;
-};
-
-export type FilterValueRange = {
-  __typename: 'FilterValueRange';
-  max: Scalars['Float'];
-  min: Scalars['Float'];
-  values: Array<Scalars['Float']>;
-};
-
-export type GroupedValues = {
-  __typename: 'GroupedValues';
-  filter: Maybe<Filter>;
+export type FarmOnboarding = {
+  __typename: 'FarmOnboarding';
+  averageAnnualRainfall: Maybe<Scalars['Float']>;
+  averageAnnualTemperature: Maybe<Scalars['Float']>;
+  climateZone: Maybe<Scalars['String']>;
+  farmDomain: Maybe<Scalars['String']>;
+  hardinessZone: Maybe<Scalars['String']>;
   id: Scalars['String'];
-  values: Array<PlantingValue>;
+  values: Maybe<Array<FarmOnboardingValue>>;
+};
+
+export type FarmOnboardingValue = {
+  __typename: 'FarmOnboardingValue';
+  key: Scalars['String'];
+  values: Array<Scalars['String']>;
+};
+
+export type LoginResponse = {
+  __typename: 'LoginResponse';
+  error: Maybe<Scalars['String']>;
+  success: Scalars['Boolean'];
+  user: Maybe<AuthUser>;
+};
+
+export type Mutation = {
+  __typename: 'Mutation';
+  login: Maybe<LoginResponse>;
+  requestMagicLoginLink: Maybe<RequestMagicLoginLinkResponse>;
+};
+
+
+export type MutationLoginArgs = {
+  email: Scalars['String'];
+  password: Scalars['String'];
+};
+
+
+export type MutationRequestMagicLoginLinkArgs = {
+  email: Scalars['String'];
 };
 
 export type Planting = {
   __typename: 'Planting';
   cropType: Scalars['String'];
-  events: Array<PlantingEvent>;
+  events: Maybe<Array<PlantingEvent>>;
+  farmOnboarding: Maybe<FarmOnboarding>;
   id: Scalars['String'];
-  isHighlighted: Scalars['Boolean'];
-  matchingFilters: Array<Filter>;
-  params: PlantingParams;
+  params: Maybe<PlantingParams>;
   producer: Producer;
   title: Scalars['String'];
   values: Array<PlantingValue>;
@@ -91,7 +86,6 @@ export type PlantingEvent = {
   __typename: 'PlantingEvent';
   date: Scalars['String'];
   details: Maybe<Array<PlantingEventDetail>>;
-  detailsKey: Maybe<Scalars['String']>;
   id: Scalars['String'];
   type: Scalars['String'];
 };
@@ -106,10 +100,12 @@ export type PlantingEventDetail = {
 
 export type PlantingParams = {
   __typename: 'PlantingParams';
-  precipitation: Scalars['String'];
-  temperature: Scalars['String'];
-  texture: Scalars['String'];
-  zone: Scalars['String'];
+  clayPercentage: Maybe<Scalars['Int']>;
+  sandPercentage: Maybe<Scalars['Int']>;
+  soilGroup: Maybe<Scalars['String']>;
+  soilOrder: Maybe<Scalars['String']>;
+  soilSuborder: Maybe<Scalars['String']>;
+  soilTexture: Maybe<Scalars['Int']>;
 };
 
 export type PlantingValue = {
@@ -129,40 +125,23 @@ export type Producer = {
 
 export type Query = {
   __typename: 'Query';
+  allFarmOnboardings: Array<FarmOnboarding>;
   allPlantings: Array<Planting>;
-  auth: Maybe<AuthState>;
-  filter: Maybe<Filter>;
-  filters: Array<Filter>;
-  groupedValues: Array<GroupedValues>;
-  highlightedFilter: Maybe<Filter>;
-  highlightedPlanting: Maybe<Planting>;
-  openEventCards: Array<Planting>;
+  availableCropTypes: Array<AvailableCropType>;
+  connectedFarmIds: Maybe<Array<Maybe<Scalars['String']>>>;
+  myFarms: Maybe<Array<Maybe<Producer>>>;
   planting: Maybe<Planting>;
   plantings: Array<Planting>;
-  selectedCropType: Scalars['String'];
-  selectedFilter: Maybe<Filter>;
-  selectedProducer: Maybe<Producer>;
-  test: Scalars['Boolean'];
+  plantingsById: Array<Planting>;
+  producer: Maybe<Producer>;
+  producers: Maybe<Array<Maybe<Producer>>>;
+  rows: Maybe<Array<Maybe<Row>>>;
+  surveyStackGroups: Maybe<Array<SurveyStackGroup>>;
 };
 
 
-export type QueryFilterArgs = {
-  id: Scalars['String'];
-};
-
-
-export type QueryFiltersArgs = {
-  cropType: Scalars['String'];
-};
-
-
-export type QueryGroupedValuesArgs = {
-  cropType: Scalars['String'];
-};
-
-
-export type QueryOpenEventCardsArgs = {
-  cropType: Scalars['String'];
+export type QueryMyFarmsArgs = {
+  userId: InputMaybe<Scalars['String']>;
 };
 
 
@@ -175,70 +154,102 @@ export type QueryPlantingsArgs = {
   cropType: Scalars['String'];
 };
 
-export type AuthStateKeySpecifier = ('isLoggedIn' | 'user' | AuthStateKeySpecifier)[];
-export type AuthStateFieldPolicy = {
-	isLoggedIn?: FieldPolicy<any> | FieldReadFunction<any>,
-	user?: FieldPolicy<any> | FieldReadFunction<any>
+
+export type QueryPlantingsByIdArgs = {
+  ids: Array<Scalars['String']>;
 };
-export type AuthUserKeySpecifier = ('email' | 'id' | 'name' | AuthUserKeySpecifier)[];
+
+
+export type QueryProducerArgs = {
+  id: Scalars['String'];
+};
+
+
+export type QueryProducersArgs = {
+  ids: Array<Scalars['String']>;
+};
+
+
+export type QuerySurveyStackGroupsArgs = {
+  userId: InputMaybe<Scalars['String']>;
+};
+
+export type RequestMagicLoginLinkResponse = {
+  __typename: 'RequestMagicLoginLinkResponse';
+  error: Maybe<Scalars['String']>;
+  success: Scalars['Boolean'];
+};
+
+export type Row = {
+  __typename: 'Row';
+  hierarchy: Array<Scalars['String']>;
+  isAggregatable: Maybe<Scalars['Boolean']>;
+  modusTestId: Maybe<Scalars['String']>;
+  name: Scalars['String'];
+  unit: Maybe<Scalars['String']>;
+};
+
+export type SurveyStackGroup = {
+  __typename: 'SurveyStackGroup';
+  id: Scalars['String'];
+  name: Scalars['String'];
+};
+
+export type AuthUserKeySpecifier = ('email' | 'farms' | 'id' | 'name' | 'token' | AuthUserKeySpecifier)[];
 export type AuthUserFieldPolicy = {
 	email?: FieldPolicy<any> | FieldReadFunction<any>,
+	farms?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
-	name?: FieldPolicy<any> | FieldReadFunction<any>
+	name?: FieldPolicy<any> | FieldReadFunction<any>,
+	token?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type FilterKeySpecifier = ('color' | 'cropType' | 'id' | 'isHighlighted' | 'name' | 'params' | 'plantings' | FilterKeySpecifier)[];
-export type FilterFieldPolicy = {
-	color?: FieldPolicy<any> | FieldReadFunction<any>,
+export type AvailableCropTypeKeySpecifier = ('cropType' | 'id' | 'plantingCount' | AvailableCropTypeKeySpecifier)[];
+export type AvailableCropTypeFieldPolicy = {
 	cropType?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
-	isHighlighted?: FieldPolicy<any> | FieldReadFunction<any>,
-	name?: FieldPolicy<any> | FieldReadFunction<any>,
-	params?: FieldPolicy<any> | FieldReadFunction<any>,
-	plantings?: FieldPolicy<any> | FieldReadFunction<any>
+	plantingCount?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type FilterParamKeySpecifier = ('active' | 'dataSource' | 'key' | 'modusId' | 'value' | FilterParamKeySpecifier)[];
-export type FilterParamFieldPolicy = {
-	active?: FieldPolicy<any> | FieldReadFunction<any>,
-	dataSource?: FieldPolicy<any> | FieldReadFunction<any>,
-	key?: FieldPolicy<any> | FieldReadFunction<any>,
-	modusId?: FieldPolicy<any> | FieldReadFunction<any>,
-	value?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type FilterValueOptionKeySpecifier = ('allOptions' | 'occurences' | 'options' | FilterValueOptionKeySpecifier)[];
-export type FilterValueOptionFieldPolicy = {
-	allOptions?: FieldPolicy<any> | FieldReadFunction<any>,
-	occurences?: FieldPolicy<any> | FieldReadFunction<any>,
-	options?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type FilterValueRangeKeySpecifier = ('max' | 'min' | 'values' | FilterValueRangeKeySpecifier)[];
-export type FilterValueRangeFieldPolicy = {
-	max?: FieldPolicy<any> | FieldReadFunction<any>,
-	min?: FieldPolicy<any> | FieldReadFunction<any>,
-	values?: FieldPolicy<any> | FieldReadFunction<any>
-};
-export type GroupedValuesKeySpecifier = ('filter' | 'id' | 'values' | GroupedValuesKeySpecifier)[];
-export type GroupedValuesFieldPolicy = {
-	filter?: FieldPolicy<any> | FieldReadFunction<any>,
+export type FarmOnboardingKeySpecifier = ('averageAnnualRainfall' | 'averageAnnualTemperature' | 'climateZone' | 'farmDomain' | 'hardinessZone' | 'id' | 'values' | FarmOnboardingKeySpecifier)[];
+export type FarmOnboardingFieldPolicy = {
+	averageAnnualRainfall?: FieldPolicy<any> | FieldReadFunction<any>,
+	averageAnnualTemperature?: FieldPolicy<any> | FieldReadFunction<any>,
+	climateZone?: FieldPolicy<any> | FieldReadFunction<any>,
+	farmDomain?: FieldPolicy<any> | FieldReadFunction<any>,
+	hardinessZone?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	values?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type PlantingKeySpecifier = ('cropType' | 'events' | 'id' | 'isHighlighted' | 'matchingFilters' | 'params' | 'producer' | 'title' | 'values' | PlantingKeySpecifier)[];
+export type FarmOnboardingValueKeySpecifier = ('key' | 'values' | FarmOnboardingValueKeySpecifier)[];
+export type FarmOnboardingValueFieldPolicy = {
+	key?: FieldPolicy<any> | FieldReadFunction<any>,
+	values?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type LoginResponseKeySpecifier = ('error' | 'success' | 'user' | LoginResponseKeySpecifier)[];
+export type LoginResponseFieldPolicy = {
+	error?: FieldPolicy<any> | FieldReadFunction<any>,
+	success?: FieldPolicy<any> | FieldReadFunction<any>,
+	user?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type MutationKeySpecifier = ('login' | 'requestMagicLoginLink' | MutationKeySpecifier)[];
+export type MutationFieldPolicy = {
+	login?: FieldPolicy<any> | FieldReadFunction<any>,
+	requestMagicLoginLink?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type PlantingKeySpecifier = ('cropType' | 'events' | 'farmOnboarding' | 'id' | 'params' | 'producer' | 'title' | 'values' | PlantingKeySpecifier)[];
 export type PlantingFieldPolicy = {
 	cropType?: FieldPolicy<any> | FieldReadFunction<any>,
 	events?: FieldPolicy<any> | FieldReadFunction<any>,
+	farmOnboarding?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
-	isHighlighted?: FieldPolicy<any> | FieldReadFunction<any>,
-	matchingFilters?: FieldPolicy<any> | FieldReadFunction<any>,
 	params?: FieldPolicy<any> | FieldReadFunction<any>,
 	producer?: FieldPolicy<any> | FieldReadFunction<any>,
 	title?: FieldPolicy<any> | FieldReadFunction<any>,
 	values?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type PlantingEventKeySpecifier = ('date' | 'details' | 'detailsKey' | 'id' | 'type' | PlantingEventKeySpecifier)[];
+export type PlantingEventKeySpecifier = ('date' | 'details' | 'id' | 'type' | PlantingEventKeySpecifier)[];
 export type PlantingEventFieldPolicy = {
 	date?: FieldPolicy<any> | FieldReadFunction<any>,
 	details?: FieldPolicy<any> | FieldReadFunction<any>,
-	detailsKey?: FieldPolicy<any> | FieldReadFunction<any>,
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	type?: FieldPolicy<any> | FieldReadFunction<any>
 };
@@ -249,12 +260,14 @@ export type PlantingEventDetailFieldPolicy = {
 	value?: FieldPolicy<any> | FieldReadFunction<any>,
 	valueList?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type PlantingParamsKeySpecifier = ('precipitation' | 'temperature' | 'texture' | 'zone' | PlantingParamsKeySpecifier)[];
+export type PlantingParamsKeySpecifier = ('clayPercentage' | 'sandPercentage' | 'soilGroup' | 'soilOrder' | 'soilSuborder' | 'soilTexture' | PlantingParamsKeySpecifier)[];
 export type PlantingParamsFieldPolicy = {
-	precipitation?: FieldPolicy<any> | FieldReadFunction<any>,
-	temperature?: FieldPolicy<any> | FieldReadFunction<any>,
-	texture?: FieldPolicy<any> | FieldReadFunction<any>,
-	zone?: FieldPolicy<any> | FieldReadFunction<any>
+	clayPercentage?: FieldPolicy<any> | FieldReadFunction<any>,
+	sandPercentage?: FieldPolicy<any> | FieldReadFunction<any>,
+	soilGroup?: FieldPolicy<any> | FieldReadFunction<any>,
+	soilOrder?: FieldPolicy<any> | FieldReadFunction<any>,
+	soilSuborder?: FieldPolicy<any> | FieldReadFunction<any>,
+	soilTexture?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type PlantingValueKeySpecifier = ('modusId' | 'name' | 'plantingId' | 'value' | PlantingValueKeySpecifier)[];
 export type PlantingValueFieldPolicy = {
@@ -269,51 +282,63 @@ export type ProducerFieldPolicy = {
 	id?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('allPlantings' | 'auth' | 'filter' | 'filters' | 'groupedValues' | 'highlightedFilter' | 'highlightedPlanting' | 'openEventCards' | 'planting' | 'plantings' | 'selectedCropType' | 'selectedFilter' | 'selectedProducer' | 'test' | QueryKeySpecifier)[];
+export type QueryKeySpecifier = ('allFarmOnboardings' | 'allPlantings' | 'availableCropTypes' | 'connectedFarmIds' | 'myFarms' | 'planting' | 'plantings' | 'plantingsById' | 'producer' | 'producers' | 'rows' | 'surveyStackGroups' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
+	allFarmOnboardings?: FieldPolicy<any> | FieldReadFunction<any>,
 	allPlantings?: FieldPolicy<any> | FieldReadFunction<any>,
-	auth?: FieldPolicy<any> | FieldReadFunction<any>,
-	filter?: FieldPolicy<any> | FieldReadFunction<any>,
-	filters?: FieldPolicy<any> | FieldReadFunction<any>,
-	groupedValues?: FieldPolicy<any> | FieldReadFunction<any>,
-	highlightedFilter?: FieldPolicy<any> | FieldReadFunction<any>,
-	highlightedPlanting?: FieldPolicy<any> | FieldReadFunction<any>,
-	openEventCards?: FieldPolicy<any> | FieldReadFunction<any>,
+	availableCropTypes?: FieldPolicy<any> | FieldReadFunction<any>,
+	connectedFarmIds?: FieldPolicy<any> | FieldReadFunction<any>,
+	myFarms?: FieldPolicy<any> | FieldReadFunction<any>,
 	planting?: FieldPolicy<any> | FieldReadFunction<any>,
 	plantings?: FieldPolicy<any> | FieldReadFunction<any>,
-	selectedCropType?: FieldPolicy<any> | FieldReadFunction<any>,
-	selectedFilter?: FieldPolicy<any> | FieldReadFunction<any>,
-	selectedProducer?: FieldPolicy<any> | FieldReadFunction<any>,
-	test?: FieldPolicy<any> | FieldReadFunction<any>
+	plantingsById?: FieldPolicy<any> | FieldReadFunction<any>,
+	producer?: FieldPolicy<any> | FieldReadFunction<any>,
+	producers?: FieldPolicy<any> | FieldReadFunction<any>,
+	rows?: FieldPolicy<any> | FieldReadFunction<any>,
+	surveyStackGroups?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type RequestMagicLoginLinkResponseKeySpecifier = ('error' | 'success' | RequestMagicLoginLinkResponseKeySpecifier)[];
+export type RequestMagicLoginLinkResponseFieldPolicy = {
+	error?: FieldPolicy<any> | FieldReadFunction<any>,
+	success?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type RowKeySpecifier = ('hierarchy' | 'isAggregatable' | 'modusTestId' | 'name' | 'unit' | RowKeySpecifier)[];
+export type RowFieldPolicy = {
+	hierarchy?: FieldPolicy<any> | FieldReadFunction<any>,
+	isAggregatable?: FieldPolicy<any> | FieldReadFunction<any>,
+	modusTestId?: FieldPolicy<any> | FieldReadFunction<any>,
+	name?: FieldPolicy<any> | FieldReadFunction<any>,
+	unit?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type SurveyStackGroupKeySpecifier = ('id' | 'name' | SurveyStackGroupKeySpecifier)[];
+export type SurveyStackGroupFieldPolicy = {
+	id?: FieldPolicy<any> | FieldReadFunction<any>,
+	name?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type StrictTypedTypePolicies = {
-	AuthState?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | AuthStateKeySpecifier | (() => undefined | AuthStateKeySpecifier),
-		fields?: AuthStateFieldPolicy,
-	},
 	AuthUser?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | AuthUserKeySpecifier | (() => undefined | AuthUserKeySpecifier),
 		fields?: AuthUserFieldPolicy,
 	},
-	Filter?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | FilterKeySpecifier | (() => undefined | FilterKeySpecifier),
-		fields?: FilterFieldPolicy,
+	AvailableCropType?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | AvailableCropTypeKeySpecifier | (() => undefined | AvailableCropTypeKeySpecifier),
+		fields?: AvailableCropTypeFieldPolicy,
 	},
-	FilterParam?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | FilterParamKeySpecifier | (() => undefined | FilterParamKeySpecifier),
-		fields?: FilterParamFieldPolicy,
+	FarmOnboarding?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | FarmOnboardingKeySpecifier | (() => undefined | FarmOnboardingKeySpecifier),
+		fields?: FarmOnboardingFieldPolicy,
 	},
-	FilterValueOption?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | FilterValueOptionKeySpecifier | (() => undefined | FilterValueOptionKeySpecifier),
-		fields?: FilterValueOptionFieldPolicy,
+	FarmOnboardingValue?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | FarmOnboardingValueKeySpecifier | (() => undefined | FarmOnboardingValueKeySpecifier),
+		fields?: FarmOnboardingValueFieldPolicy,
 	},
-	FilterValueRange?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | FilterValueRangeKeySpecifier | (() => undefined | FilterValueRangeKeySpecifier),
-		fields?: FilterValueRangeFieldPolicy,
+	LoginResponse?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | LoginResponseKeySpecifier | (() => undefined | LoginResponseKeySpecifier),
+		fields?: LoginResponseFieldPolicy,
 	},
-	GroupedValues?: Omit<TypePolicy, "fields" | "keyFields"> & {
-		keyFields?: false | GroupedValuesKeySpecifier | (() => undefined | GroupedValuesKeySpecifier),
-		fields?: GroupedValuesFieldPolicy,
+	Mutation?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | MutationKeySpecifier | (() => undefined | MutationKeySpecifier),
+		fields?: MutationFieldPolicy,
 	},
 	Planting?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | PlantingKeySpecifier | (() => undefined | PlantingKeySpecifier),
@@ -342,6 +367,18 @@ export type StrictTypedTypePolicies = {
 	Query?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | QueryKeySpecifier | (() => undefined | QueryKeySpecifier),
 		fields?: QueryFieldPolicy,
+	},
+	RequestMagicLoginLinkResponse?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | RequestMagicLoginLinkResponseKeySpecifier | (() => undefined | RequestMagicLoginLinkResponseKeySpecifier),
+		fields?: RequestMagicLoginLinkResponseFieldPolicy,
+	},
+	Row?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | RowKeySpecifier | (() => undefined | RowKeySpecifier),
+		fields?: RowFieldPolicy,
+	},
+	SurveyStackGroup?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | SurveyStackGroupKeySpecifier | (() => undefined | SurveyStackGroupKeySpecifier),
+		fields?: SurveyStackGroupFieldPolicy,
 	}
 };
 export type TypedTypePolicies = StrictTypedTypePolicies & TypePolicies;

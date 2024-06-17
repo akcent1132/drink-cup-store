@@ -1,0 +1,6 @@
+mutation requestMagicLoginLink($email: String!) {
+  requestMagicLoginLink(email: $email) {
+    success
+    error
+  }
+}

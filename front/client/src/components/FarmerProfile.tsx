@@ -1,20 +1,22 @@
 /** @jsxImportSource @emotion/react */
 
-import styled from "@emotion/styled";
-import "../index.css";
 import { css, withTheme } from "@emotion/react";
-import { Box, Button } from "grommet";
-import { EventsCard, Spacer } from "./EventsCard";
-import CloseIcon from "@mui/icons-material/Close";
-import { IconButton } from "./filterEditor/FilterEditor";
-import { useCallback, useMemo, useState } from "react";
-import { selectProducer } from "../contexts/FiltersContext";
-import { sortBy, take } from "lodash";
-import { Tabs } from "./Tabs";
-import CopyAllIcon from "@mui/icons-material/CopyAll";
+import styled from "@emotion/styled";
 import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
+import CopyAllIcon from "@mui/icons-material/CopyAll";
+import Button from "@mui/material/Button";
+import LinearProgress from "@mui/material/LinearProgress";
+import Stack from "@mui/material/Stack";
+import Tooltip from "@mui/material/Tooltip";
+import { sortBy, take } from "lodash";
+import { useCallback, useState } from "react";
 import useCopy from "use-copy";
-import { DashboardQuery } from "../stories/Dashboard.generated";
+import { useShowPlantingCards } from "../states/sidePanelContent";
+import { PlantingCard, Spacer } from "./plantingCards/PlantingCard";
+import { useFarmerProfileQuery } from "./FarmerProfile.generated";
+import { IconButton } from "./filterEditor/FilterEditor";
+import { Tabs } from "./tabs/Tabs";
 
 const LS_SHOW_PRODUCER_NAME = "show-producer-name";
 
@@ -55,12 +57,16 @@ const CardContainer = styled.div`
   padding-top: 20px;
 `;
 
-const LOREM =
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec non congue ex, ac tempus eros. Pellentesque varius finibus velit, in auctor sem tristique eu. Sed blandit luctus blandit. In sollicitudin malesuada ullamcorper. Pellentesque porttitor, lectus id auctor fermentum, leo neque pulvinar ipsum, vel sagittis ipsum eros non nisi.";
-
 const EMAIL = "684c9b3930413fdab7c6425ec01c878d@comm.surveystack.org";
-type Props = { producer: NonNullable<DashboardQuery["selectedProducer"]> };
-export const FarmerProfile = ({ producer }: Props) => {
+
+type Props = { producerId: string };
+export const FarmerProfile = ({ producerId }: Props) => {
+  const showContactButton = false;
+  const { producer } =
+    useFarmerProfileQuery({
+      variables: { producerId },
+    })?.data || {};
+  const showPlantingCards = useShowPlantingCards();
   const [tabIndex, setTabIndex] = useState(0);
 
   const [copied, copy, setCopied] = useCopy(EMAIL);
@@ -73,117 +79,98 @@ export const FarmerProfile = ({ producer }: Props) => {
     }, 3000);
   }, [copy, setCopied]);
 
-  const handleClose = useCallback(() => selectProducer(null), []);
+  const handleClose = useCallback(() => showPlantingCards(), []);
 
-  // const plantings = useMemo(
-  //   () =>
-  //     range(1 + Math.random() * 5).map((id) =>
-  //       createFakePlantingCardData(id.toString(), "")
-  //     ),
-  //   []
-  // );
-  // const fields = useMemo(
-  //   () =>
-  //     range(1 + Math.random() * 5).map((id) =>
-  //       createFakePlantingCardData(id.toString(), "")
-  //     ),
-  //   []
-  // );
   return (
     <Root>
-      <Box direction="row">
-        <Box direction="column" flex={{ grow: 1 }} justify="start">
-          <Box
-            direction="row"
-            align="center"
+      {!producer ? (
+        <LinearProgress />
+      ) : (
+        <>
+          <Stack direction="row">
+            <Stack direction="column" flexGrow={1} justifyItems="start">
+              <Stack direction="row" alignItems="center" sx={{ pr: 3 }}>
+                <NameContainer>
+                  <NameLabel>Producer ID</NameLabel>
+                  <Name>
+                    {localStorage[LS_SHOW_PRODUCER_NAME] === "true"
+                      ? producer.id
+                      : producer.code}
+                  </Name>
+                </NameContainer>
+                {showContactButton ? (
+                  <Tooltip title={copied ? "Copied" : "Copy Email"}>
+                    <Button
+                      size="small"
+                      onClick={copyData}
+                      sx={{ alignSelf: "flex-end" }}
+                    >
+                      Contact {copied ? <CheckIcon /> : <CopyAllIcon />}
+                    </Button>
+                  </Tooltip>
+                ) : null}
+
+                <Spacer />
+                <IconButton
+                  onClick={handleClose}
+                  css={css`
+                    font-size: 19px;
+                  `}
+                >
+                  <CloseIcon fontSize="inherit" color="inherit" />
+                </IconButton>
+              </Stack>
+            </Stack>
+          </Stack>
+          <Tabs
             css={css`
-              padding-right: 12px;
+              grid-area: values;
+              /* header_height - tabs-height */
+              margin-top: 30px;
             `}
-          >
-            <NameContainer>
-              <NameLabel>Producer ID</NameLabel>
-              <Name>
-                {localStorage[LS_SHOW_PRODUCER_NAME] === "true"
-                  ? producer.id
-                  : producer.code}
-              </Name>
-            </NameContainer>
-            {/* <Box
-              align="end"
-              css={css`
-                padding: 0 12px;
-              `}
-            > */}
-            <Button
-              size="small"
-              css={css`
-                align-self: flex-end;
-                font-weight: bold;
-              `}
-              // primary
-              // color="rgb(13, 195, 159)"
-              onClick={copyData}
-              label="Contact"
-              icon={copied ? <CheckIcon /> : <CopyAllIcon />}
-              reverse
-            />
-            {/* </Box> */}
-            <Spacer />
-            <IconButton
-              onClick={handleClose}
-              css={css`
-                font-size: 19px;
-              `}
-            >
-              <CloseIcon fontSize="inherit" color="inherit" />
-            </IconButton>
-          </Box>
-        </Box>
-      </Box>
-      <Tabs
-        css={css`
-          grid-area: values;
-          /* header_height - tabs-height */
-          margin-top: 30px;
-        `}
-        pages={[
-          {
-            label: "Plantings",
-            renderPanel: () => (
-              <CardContainer>
-                {take(
-                  sortBy(producer.plantings, (p) => p.events.length).reverse(),
-                  5
-                ).map((p) => (
-                  <EventsCard
-                    key={p.id}
-                    plantingId={p.id}
-                    hideName
-                    hideColorBorder
-                  />
-                ))}
-              </CardContainer>
-            ),
-          },
-          {
-            label: "Fields",
-            renderPanel: () => (
-              <CardContainer>
-                {producer.plantings.map((p) => (
-                  <EventsCard
-                    key={p.id}
-                    plantingId={p.id}
-                    hideName
-                    hideColorBorder
-                  />
-                ))}
-              </CardContainer>
-            ),
-          },
-        ]}
-        index={tabIndex}
-        onChange={setTabIndex}
-      />
+            pages={[
+              {
+                label: "Plantings",
+                renderPanel: () => (
+                  <CardContainer>
+                    {take(
+                      sortBy(
+                        producer.plantings,
+                        (p) => p.events?.length
+                      ).reverse(),
+                      5
+                    ).map((p) => (
+                      <PlantingCard
+                        key={p.id}
+                        planting={p}
+                        hideName
+                        hideColorBorder
+                      />
+                    ))}
+                  </CardContainer>
+                ),
+              },
+              // {
+              //   label: "Fields",
+              //   renderPanel: () => (
+              //     <CardContainer>
+              //       {producer.plantings.map((p) => (
+              //         <EventsCard
+              //           key={p.id}
+              //           plantingId={p.id}
+              //           hideName
+              //           hideColorBorder
+              //         />
+              //       ))}
+              //     </CardContainer>
+              //   ),
+              // },
+            ]}
+            index={tabIndex}
+            onChange={setTabIndex}
+          />
+        </>
+      )}
     </Root>
   );
 };

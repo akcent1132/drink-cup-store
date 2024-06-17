@@ -1,8 +1,8 @@
-import React from "react";
-import { App } from "./stories/Dashboard";
-import { ThemeProvider, Global, css } from "@emotion/react";
+import { css, Global } from "@emotion/react";
+import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider } from "@mui/material/styles";
+import { App } from "./components/Dashboard";
 import { theme } from "./theme/theme";
-import { GrommetConfig } from "./theme/GrommetConfig";
 
 function Main() {
   return (
@@ -15,9 +15,8 @@ function Main() {
         `}
       />
       <ThemeProvider theme={theme}>
-        <GrommetConfig>
-          <App iframeSrc="https://www.hylo.com/all" />
-        </GrommetConfig>
+        <CssBaseline />
+        <App iframeSrc="https://www.hylo.com/all" />
       </ThemeProvider>
     </div>
   );

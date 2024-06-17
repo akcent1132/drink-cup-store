@@ -4,36 +4,27 @@ import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
 export type FilterEditorQueryVariables = Types.Exact<{
-  filterId: Types.Scalars['String'];
+  cropType?: Types.Scalars['String'];
 }>;
 
 
-export type FilterEditorQuery = { __typename?: 'Query', filter?: { __typename?: 'Filter', id: string, color: string, name: string, params: Array<{ __typename?: 'FilterParam', key: string, active: boolean, modusId?: string | null, dataSource?: Types.FilterParamDataSource | null, value: { __typename: 'FilterValueOption', allOptions: Array<string>, occurences: Array<number>, options: Array<string> } | { __typename: 'FilterValueRange', min: number, max: number, values: Array<number> } }> } | null };
+export type FilterEditorQuery = { __typename?: 'Query', plantings: Array<{ __typename?: 'Planting', id: string, values: Array<{ __typename?: 'PlantingValue', name: string, value: number, modusId?: string | null }>, farmOnboarding?: { __typename?: 'FarmOnboarding', id: string, values?: Array<{ __typename?: 'FarmOnboardingValue', key: string, values: Array<string> }> | null } | null }> };
 
 
 export const FilterEditorDocument = gql`
-    query FilterEditor($filterId: String!) {
-  filter(id: $filterId) {
+    query FilterEditor($cropType: String! = "") {
+  plantings(cropType: $cropType) {
     id
-    color
-    name
-    params {
-      key
-      active
+    values {
+      name
+      value
       modusId
-      dataSource
-      value {
-        __typename
-        ... on FilterValueRange {
-          min
-          max
-          values
-        }
-        ... on FilterValueOption {
-          allOptions
-          occurences
-          options
-        }
+    }
+    farmOnboarding {
+      id
+      values {
+        key
+        values
       }
     }
   }
@@ -52,11 +43,11 @@ export const FilterEditorDocument = gql`
  * @example
  * const { data, loading, error } = useFilterEditorQuery({
  *   variables: {
- *      filterId: // value for 'filterId'
+ *      cropType: // value for 'cropType'
  *   },
  * });
  */
-export function useFilterEditorQuery(baseOptions: Apollo.QueryHookOptions<FilterEditorQuery, FilterEditorQueryVariables>) {
+export function useFilterEditorQuery(baseOptions?: Apollo.QueryHookOptions<FilterEditorQuery, FilterEditorQueryVariables>) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<FilterEditorQuery, FilterEditorQueryVariables>(FilterEditorDocument, options);
       }

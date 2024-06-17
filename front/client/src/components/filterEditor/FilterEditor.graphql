@@ -1,25 +1,16 @@
-query FilterEditor($filterId: String!) {
-  filter(id: $filterId) {
+query FilterEditor($cropType: String! = "") {
+  plantings(cropType: $cropType) {
     id
-    color
-    name
-    params {
-      key
-      active
+    values {
+      name
+      value
       modusId
-      dataSource
-      value {
-        __typename
-        ... on FilterValueRange {
-          min
-          max
-          values
-        }
-        ... on FilterValueOption {
-          allOptions
-          occurences
-          options
-        }
+    }
+    farmOnboarding {
+      id
+      values {
+        key
+        values
       }
     }
   }

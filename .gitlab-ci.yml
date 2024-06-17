@@ -24,11 +24,9 @@
 #   stage: test
 #   script:
 #     - cd ./packages/client
-#     - ls -la 
+#     - ls -la
 #     - yarn
 #     - yarn chromatic --debug --project-token=$CHROMATIC_PROJECT_TOKEN --exit-zero-on-changes
-
-
 
 # This file is a template, and might need editing before it works on your project.
 # To contribute improvements to CI/CD templates, please follow the Development guide at:
@@ -56,3 +54,9 @@ pages:
       - public
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+tests:
+  script:
+    - yarn install
+    - yarn lerna bootstrap --scope client
+    - ./.husky/pre-commit

@@ -2,15 +2,12 @@ import { ThemeProvider } from "@emotion/react";
 import { addDecorator } from "@storybook/react";
 // import { withThemes } from '@react-theming/storybook-addon';
 import { theme } from "../src/theme/theme";
-import { GrommetConfig } from "../src/theme/GrommetConfig";
 
 // addDecorator(withThemes(ThemeProvider, [theme]))
 // add emotion theme
 addDecorator((Story) => (
   <ThemeProvider theme={theme}>
-    <GrommetConfig>
-      <Story />
-    </GrommetConfig>
+    <Story />
   </ThemeProvider>
 ));
 
