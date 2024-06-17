@@ -1,7 +1,0 @@
-query CropSelector {
-    selectedCropType
-    allPlantings {
-        id
-        cropType
-    }
-}

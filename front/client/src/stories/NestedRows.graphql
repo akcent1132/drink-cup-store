@@ -1,0 +1,22 @@
+query NestedRows($cropType: String! = "") {
+  selectedCropType @client @export(as: "cropType")
+  groupedValues(cropType: $cropType) @client {
+    id
+    filter {
+      id
+      color
+    }
+    values {
+      name
+      value
+      plantingId
+      modusId
+    }
+  }
+  highlightedPlanting @client {
+    id
+  }
+  highlightedFilter @client {
+    id
+  }
+}
