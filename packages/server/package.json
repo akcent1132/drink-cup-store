@@ -2,21 +2,12 @@
   "name": "server",
   "version": "0.0.0",
   "description": "> TODO: description",
-  "author": "Our Sci",
-  "license": "GPL-3.0-only",
+
   "private": true,
-  "homepage": "https://gitlab.com/our-sci/software/coffee-shop#readme",
   "type": "module",
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@gitlab.com/our-sci/software/coffee-shop.git"
-  },
   "scripts": {
     "start": "nodemon --watch './**/*.ts' --exec 'node --experimental-specifier-resolution=node --loader ts-node/esm' src/index.ts",
     "test": "echo \"Error: run tests from root\" && exit 1"
-  },
-  "bugs": {
-    "url": "https://gitlab.com/our-sci/software/coffee-shop/issues"
   },
   "dependencies": {
     "@graphql-tools/schema": "^8.3.1",

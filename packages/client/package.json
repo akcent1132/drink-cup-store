@@ -1,8 +1,6 @@
 {
   "name": "client",
   "version": "0.1.0",
-  "author": "Our Sci",
-  "license": "GPL-3.0-only",
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.5.10",

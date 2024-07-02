@@ -1,7 +1,5 @@
 {
   "name": "root",
-  "author": "Our Sci",
-  "license": "GPL-3.0-only",
   "private": true,
   "devDependencies": {
     "cross-env": "^7.0.3",
