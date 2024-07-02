@@ -1,24 +1,62 @@
-# .gitlab-ci.yml
+# # .gitlab-ci.yml
 
-# Sets the docker image for the job
+# # Sets the docker image for the job
+# image: node:latest
+
+# # Sets the stages for the pipeline
+# stages:
+#   - test
+
+# # Cache the dependencies
+# cache:
+#   key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
+#   paths:
+#     - ./packages/client/.yarn
+
+# # Installs the dependencies
+# # TODO find out why it's not working
+# # before_script:
+# #   - cd ./packages/client
+# #   - yarn chromatic install --frozen-lockfile --prefer-offline --cache-folder .yarn
+
+# #👇Adds Chromatic as a job
+# chromatic_publish:
+#   stage: test
+#   script:
+#     - cd ./packages/client
+#     - ls -la
+#     - yarn
+#     - yarn chromatic --debug --project-token=$CHROMATIC_PROJECT_TOKEN --exit-zero-on-changes
+
+# This file is a template, and might need editing before it works on your project.
+# To contribute improvements to CI/CD templates, please follow the Development guide at:
+# https://docs.gitlab.com/ee/development/cicd/templates.html
+# This specific template is located at:
+# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Pages/Gatsby.gitlab-ci.yml
+
 image: node:latest
 
-# Sets the stages for the pipeline
-stages:
-  - test
-
-# Cache the dependencies
+# This folder is cached between builds
+# https://docs.gitlab.com/ee/ci/yaml/index.html#cache
 cache:
-  key: $CI_COMMIT_REF_SLUG-$CI_PROJECT_DIR
   paths:
-    - ./packages/client/.yarn
+    - node_modules/
+    - packages/client/node_modules/
 
-# Installs the dependencies
-before_script:
-  - yarn --cwd ./packages/client chromatic install --frozen-lockfile --prefer-offline --cache-folder .yarn
-
-#👇Adds Chromatic as a job
-chromatic_publish:
-  stage: test
+pages:
   script:
-    - yarn --cwd ./packages/client chromatic --project-token=$CHROMATIC_PROJECT_TOKEN
+    - yarn install
+    - yarn lerna bootstrap --scope client
+    - CI=false yarn client:build # accept warning with CI=false
+    - mv packages/client/build public
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+tests:
+  script:
+    - yarn install
+    - yarn lerna bootstrap --scope client
+    - ./.husky/pre-commit

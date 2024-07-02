@@ -1,0 +1,6 @@
+node_modules
+npm-debug.log
+Dockerfile.dev
+docker-compose.yaml
+node_modules.server
+node_modules.client

@@ -1,0 +1,20 @@
+{
+  "short_name": "React App",
+  "name": "Farmer's Coffee Shop",
+  "icons": [
+    {
+      "src": "icons/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#7cb342",
+  "background_color": "#ffffff"
+}

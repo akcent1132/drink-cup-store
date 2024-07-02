@@ -1,0 +1,9 @@
+query AddFilterButton($userId: String) {
+    surveyStackGroups(userId: $userId) {
+        id
+        name
+    }
+    myFarms(userId: $userId) {
+        id
+    }
+}

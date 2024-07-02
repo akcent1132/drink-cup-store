@@ -1,0 +1,17 @@
+query FilterEditor($cropType: String! = "") {
+  plantings(cropType: $cropType) {
+    id
+    values {
+      name
+      value
+      modusId
+    }
+    farmOnboarding {
+      id
+      values {
+        key
+        values
+      }
+    }
+  }
+}
